@@ -8,8 +8,10 @@ __pycache__/
 .venv/
 venv/
 
-# Xcode
+# Xcode / SwiftPM
 build/
+.build/
 DerivedData/
 xcuserdata/
 *.xcuserstate
+.swiftpm/
