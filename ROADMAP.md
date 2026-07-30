@@ -45,13 +45,14 @@
 
 **周末**:
 - 写 `Ch06_Color_Processing/00_yuv_warmup.py`(热身,不看书):
-  - 构造或从视频抽一帧 I420 数据,手写 BT.709 YUV→RGB
-  - 与 `cv2.cvtColor(..., cv2.COLOR_YUV2RGB_I420)` 对比,误差 ±1 以内(注意 full/video range)
+  - 先用纯色块探测 `cv2` 的 I420 转换用什么系数/range(实测:BT.601 + video range)
+  - 手写 Kr/Kb 参数化的 YUV→RGB,匹配配置与 `cv2.COLOR_YUV2RGB_I420` 误差 ±1 以内
+  - 故意用 BT.709 解码,可视化偏色 —— 第 8 周 pitfalls 实验的预告
 - Metal:建最小 macOS App(`Metal-Implementation/DIPMetalEngine/`),加载图片 → MTKView 显示
 
 **本周产出**:2 个脚本 + App 骨架 + 笔记《图像的内存布局:HWC、stride、BGR/RGB、YUV planar/semi-planar》
 
-- [ ] 第 1 周完成
+- [x] 第 1 周完成(2026-07-30,环境 + 测试图 + 双脚本 + Metal 骨架)
 
 ### ▸ 第 2 周(阶段 1):采样、量化与像素关系
 
