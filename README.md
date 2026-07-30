@@ -4,7 +4,8 @@
 
 **路线**:代码先行、理论跟进、按需补数学。Python/OpenCV 为主线验证概念,Swift/Metal 挑有实时价值的算法落地。
 
-📍 **详细计划见 [ROADMAP.md](ROADMAP.md)**(逐阶段的阅读范围、实践清单、验收问题、避坑提示)。
+📍 **详细计划见 [ROADMAP.md](ROADMAP.md)**(18 周逐周计划:阅读小节、代码任务、验收问题)。
+🗺️ **全书章节知识点地图见 [Documents/book-outline.md](Documents/book-outline.md)**(12 章知识版图 + 每章在路线中的定位)。
 
 ## 仓库结构
 
