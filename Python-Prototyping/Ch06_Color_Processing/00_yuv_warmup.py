@@ -7,6 +7,7 @@
 3. 可视化 601 vs 709 解码差异 —— 推流开发中经典的"矩阵用错"偏色
 
 I420 内存布局:H×W 的 Y 平面,后跟 (H/2)×(W/2) 的 U 平面、V 平面。
+转换公式的完整推导见本目录 README「转换原理详解」一节。
 
 用法:
     .venv/bin/python Ch06_Color_Processing/00_yuv_warmup.py [--show]
