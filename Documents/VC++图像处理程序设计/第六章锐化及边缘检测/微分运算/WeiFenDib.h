@@ -7,12 +7,12 @@ public:
 	WeiFenDib();
 	~WeiFenDib();
 public:
-	void HengXiang();   //ºáÏòÎ¢·Öº¯Êı
-	void ZongXiang();   //×İÏòÎ¢·Öº¯Êı
-	void ShuangXiang();    //Ë«ÏòÒ»´ÎÎ¢·Öº¯Êı
-	void ErCi1();   //¶ş´ÎÎ¢·Ö1º¯Êı
-    void ErCi2();   //¶ş´ÎÎ¢·Ö2º¯Êı
-    void ErCi3();   //¶ş´ÎÎ¢·Ö3º¯Êı
+	void HengXiang();   //æ¨ªå‘å¾®åˆ†å‡½æ•°
+	void ZongXiang();   //çºµå‘å¾®åˆ†å‡½æ•°
+	void ShuangXiang();    //åŒå‘ä¸€æ¬¡å¾®åˆ†å‡½æ•°
+	void ErCi1();   //äºŒæ¬¡å¾®åˆ†1å‡½æ•°
+    void ErCi2();   //äºŒæ¬¡å¾®åˆ†2å‡½æ•°
+    void ErCi3();   //äºŒæ¬¡å¾®åˆ†3å‡½æ•°
 	
 protected:
 	

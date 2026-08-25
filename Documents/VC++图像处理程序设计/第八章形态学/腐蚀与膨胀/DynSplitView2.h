@@ -26,11 +26,11 @@ public:
 // Operations
 public:
 		CPalette *CreateBitmapPalette( FuShiYuPengZhangDib* pBitmap);
- 		CString filename;   //´ò¿ªµÄÎÄ¼şÃû
-		FuShiYuPengZhangDib *CDibNew1;  //´¦ÀíºóÍ¼ÏñµÄÒıÓÃ
-		CDib *CDib1;   //Ô­Í¼ÏñµÄÒıÓÃ
+ 		CString filename;   //æ‰“å¼€çš„æ–‡ä»¶å
+		FuShiYuPengZhangDib *CDibNew1;  //å¤„ç†åå›¾åƒçš„å¼•ç”¨
+		CDib *CDib1;   //åŸå›¾åƒçš„å¼•ç”¨
 		CPalette hPalette;
-		int state2;    //ÏÔÊ¾×´Ì¬±äÁ¿£¬Îª1Ê±ÓÒÊÓÍ¼ÏÔÊ¾Í¼Ïñ
+		int state2;    //æ˜¾ç¤ºçŠ¶æ€å˜é‡ï¼Œä¸º1æ—¶å³è§†å›¾æ˜¾ç¤ºå›¾åƒ
 		void clearmem();
 
 // Overrides

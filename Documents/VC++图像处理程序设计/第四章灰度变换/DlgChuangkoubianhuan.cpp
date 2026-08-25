@@ -51,10 +51,10 @@ BOOL CDlgChuangkoubianhuan::OnInitDialog()
 	
 	CDialog::OnInitDialog();
 	
-	// »ñÈ¡»æÖÆÖ±·½Í¼µÄ±êÇ©
+	// èŽ·å–ç»˜åˆ¶ç›´æ–¹å›¾çš„æ ‡ç­¾
 	CWnd* pWnd = GetDlgItem(IDC_COORD);
 	
-	// ¼ÆËã½ÓÊÜÊó±êÊÂ¼þµÄÓÐÐ§ÇøÓò
+	// è®¡ç®—æŽ¥å—é¼ æ ‡äº‹ä»¶çš„æœ‰æ•ˆåŒºåŸŸ
 	CRect rect;
 	GetClientRect(rect);
 	return TRUE;  // return TRUE unless you set the focus to a control
@@ -63,110 +63,110 @@ BOOL CDlgChuangkoubianhuan::OnInitDialog()
 
 void CDlgChuangkoubianhuan::OnKillfocusEDITLow() 
 {
-	// ¸üÐÂ
+	// æ›´æ–°
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bLow > m_bUp)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bLow;
 		m_bLow = m_bUp;
 		m_bUp = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
 void CDlgChuangkoubianhuan::OnKillfocusEDITUp() 
 {
-	// ¸üÐÂ
+	// æ›´æ–°
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bLow > m_bUp)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bLow;
 		m_bLow = m_bUp;
 		m_bUp = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
 void CDlgChuangkoubianhuan::OnOK() 
 {
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bLow > m_bUp)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bLow;
 		m_bLow = m_bUp;
 		m_bUp = bTemp;
 	}
 	
-	// Ä¬ÈÏ´¦ÀíÊÂ¼þ
+	// é»˜è®¤å¤„ç†äº‹ä»¶
 	CDialog::OnOK();
 }
 
 void CDlgChuangkoubianhuan::OnPaint() 
 {
-	// ×Ö·û´®
+	// å­—ç¬¦ä¸²
 	CString str;
 	
-	// Éè±¸ÉÏÏÂÎÄ
+	// è®¾å¤‡ä¸Šä¸‹æ–‡
 	CPaintDC dc(this);
 	
-	// »ñÈ¡»æÖÆ×ø±êµÄÎÄ±¾¿ò
+	// èŽ·å–ç»˜åˆ¶åæ ‡çš„æ–‡æœ¬æ¡†
 	CWnd* pWnd = GetDlgItem(IDC_COORD);
 	
-	// Ö¸Õë
+	// æŒ‡é’ˆ
 	CDC* pDC = pWnd->GetDC();
 	pWnd->Invalidate();
 	pWnd->UpdateWindow();
 	
 	pDC->Rectangle(0,0,330,300);
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenRed = new CPen;
 	
-	// ºìÉ«»­±Ê
+	// çº¢è‰²ç”»ç¬”
 	pPenRed->CreatePen(PS_SOLID,2,RGB(255,0,0));
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenBlue = new CPen;
 	
-	// À¶É«»­±Ê
+	// è“è‰²ç”»ç¬”
 	pPenBlue->CreatePen(PS_SOLID,2,RGB(0,0, 255));
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenGreen = new CPen;
 	
-	// ÂÌÉ«»­±Ê
+	// ç»¿è‰²ç”»ç¬”
 	pPenGreen->CreatePen(PS_DOT,1,RGB(0,255,0));
 	
-	// Ñ¡ÖÐµ±Ç°ºìÉ«»­±Ê£¬²¢±£´æÒÔÇ°µÄ»­±Ê
+	// é€‰ä¸­å½“å‰çº¢è‰²ç”»ç¬”ï¼Œå¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 	CGdiObject* pOldPen = pDC->SelectObject(pPenRed);
 	
-	// »æÖÆ×ø±êÖá
+	// ç»˜åˆ¶åæ ‡è½´
 	pDC->MoveTo(10,10);
 	
-	// ´¹Ö±Öá
+	// åž‚ç›´è½´
 	pDC->LineTo(10,280);
 	
-	// Ë®Æ½Öá
+	// æ°´å¹³è½´
 	pDC->LineTo(320,280);
 	
-	// Ð´×ø±ê
+	// å†™åæ ‡
 	str.Format("0");
 	pDC->TextOut(10, 281, str);
 	
@@ -174,37 +174,37 @@ void CDlgChuangkoubianhuan::OnPaint()
 	pDC->TextOut(265, 281, str);
 	pDC->TextOut(11, 25, str);
 	
-	// »æÖÆXÖá¼ýÍ·
+	// ç»˜åˆ¶Xè½´ç®­å¤´
 	pDC->LineTo(315,275);
 	pDC->MoveTo(320,280);
 	pDC->LineTo(315,285);
 	
-	// »æÖÆXÖá¼ýÍ·
+	// ç»˜åˆ¶Xè½´ç®­å¤´
 	pDC->MoveTo(10,10);
 	pDC->LineTo(5,15);
 	pDC->MoveTo(10,10);
 	pDC->LineTo(15,15);
 	
-	// ¸ü¸Ä³ÉÂÌÉ«»­±Ê
+	// æ›´æ”¹æˆç»¿è‰²ç”»ç¬”
 	pDC->SelectObject(pPenGreen);	
 	
-	// »æÖÆ´°¿ÚÉÏÏÂÏÞ
+	// ç»˜åˆ¶çª—å£ä¸Šä¸‹é™
 	pDC->MoveTo(m_bLow + 10, 25);
 	pDC->LineTo(m_bLow + 10, 280);
 	
 	pDC->MoveTo(m_bUp + 10, 25);
 	pDC->LineTo(m_bUp + 10, 280);
 	
-	// ¸ü¸Ä³ÉÀ¶É«»­±Ê
+	// æ›´æ”¹æˆè“è‰²ç”»ç¬”
 	pDC->SelectObject(pPenBlue);	
 	
-	// »æÖÆ×ø±êÖµ
+	// ç»˜åˆ¶åæ ‡å€¼
 	str.Format("(%d, %d)", m_bLow, m_bLow);
 	pDC->TextOut(m_bLow + 10, 281 - m_bLow, str);
 	str.Format("(%d, %d)", m_bUp, m_bUp);
 	pDC->TextOut(m_bUp + 10, 281 - m_bUp, str);
 	
-	// »æÖÆÓÃ»§Ö¸¶¨µÄ´°¿Ú£¨×¢Òâ×ª»»×ø±êÏµ£©
+	// ç»˜åˆ¶ç”¨æˆ·æŒ‡å®šçš„çª—å£ï¼ˆæ³¨æ„è½¬æ¢åæ ‡ç³»ï¼‰
 	pDC->MoveTo(10, 280);
 	pDC->LineTo(m_bLow + 10, 280);
 	pDC->LineTo(m_bLow + 10, 280 - m_bLow);
@@ -212,15 +212,15 @@ void CDlgChuangkoubianhuan::OnPaint()
 	pDC->LineTo(m_bUp + 10, 25);
 	pDC->LineTo(265, 25);
 	
-	// »Ö¸´ÒÔÇ°µÄ»­±Ê
+	// æ¢å¤ä»¥å‰çš„ç”»ç¬”
 	pDC->SelectObject(pOldPen);	
 	
-	// »æÖÆ±ßÔµ
+	// ç»˜åˆ¶è¾¹ç¼˜
 	pDC->MoveTo(10,25);
 	pDC->LineTo(265,25);
 	pDC->LineTo(265,280);
 	
-	// É¾³ýÐÂµÄ»­±Ê
+	// åˆ é™¤æ–°çš„ç”»ç¬”
 	delete pPenRed;
 	delete pPenBlue;
 	delete pPenGreen;

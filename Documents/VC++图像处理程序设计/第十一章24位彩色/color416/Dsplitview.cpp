@@ -126,8 +126,8 @@ BOOL CDSplitView::OnEraseBkgnd(CDC* pDC)
 void CDSplitView::OnYuantu() 
 {
 	CDSplitDoc* pDoc = GetDocument();
-	ASSERT_VALID(pDoc);         //È¡µ½ÎÄµµ×ÊÔ´
-    filename=pDoc->filename;    //È¡µ½ÎÄ¼şÃû
-	state1=1;       //ÉèÖÃ±êÖ¾
-	Invalidate();	    //µ÷ÓÃË¢ĞÂº¯Êı
+	ASSERT_VALID(pDoc);         //å–åˆ°æ–‡æ¡£èµ„æº
+    filename=pDoc->filename;    //å–åˆ°æ–‡ä»¶å
+	state1=1;       //è®¾ç½®æ ‡å¿—
+	Invalidate();	    //è°ƒç”¨åˆ·æ–°å‡½æ•°
 }

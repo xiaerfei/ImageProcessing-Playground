@@ -147,7 +147,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -156,26 +156,26 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*ÃÅÏŞÈñ»¯ÏûÏ¢Ó³Éä*/
+/*é—¨é™é”åŒ–æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnMenxianruihua() 
 {
   	clearmem();
-    CDibNew1->Menxianruihua();     //¶ÔÍ¼Ïñ½øĞĞÃÅÏŞÈñ»¯
+    CDibNew1->Menxianruihua();     //å¯¹å›¾åƒè¿›è¡Œé—¨é™é”åŒ–
 	Invalidate();	
 }
 
-/*¶şÖµÈñ»¯ÏûÏ¢Ó³Éä*/
+/*äºŒå€¼é”åŒ–æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnErzhiruihua() 
 {
 	clearmem();
-    CDibNew1->Erzhirihua();     //¶ÔÍ¼Ïñ½øĞĞ¶şÖµÈñ»¯
+    CDibNew1->Erzhirihua();     //å¯¹å›¾åƒè¿›è¡ŒäºŒå€¼é”åŒ–
 	Invalidate();
 }
 
-/*¹Ì¶¨ãĞÖµÈñ»¯ÏûÏ¢Ó³Éä*/
+/*å›ºå®šé˜ˆå€¼é”åŒ–æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnGuDingYuZhi() 
 {
 	clearmem();
-    CDibNew1->GuDingRuiHua();     //¶ÔÍ¼Ïñ½øĞĞ¹Ì¶¨ãĞÖµÈñ»¯
+    CDibNew1->GuDingRuiHua();     //å¯¹å›¾åƒè¿›è¡Œå›ºå®šé˜ˆå€¼é”åŒ–
 	Invalidate();
 }

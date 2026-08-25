@@ -26,7 +26,7 @@ CDynSplitView2::CDynSplitView2()
 }
 
 
-/*³õÊ¼»¯Í¼ÏñÊı¾İ*/
+/*åˆå§‹åŒ–å›¾åƒæ•°æ®*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -168,7 +168,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -177,221 +177,221 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-//´¦ÀíºóÖ±·½Í¼ÏÔÊ¾
+//å¤„ç†åç›´æ–¹å›¾æ˜¾ç¤º
 void CDynSplitView2::OnZhifangtutongji() 
 {
 	int i;
-	// ¸÷ÑÕÉ«·ÖÁ¿µÄ»Ò¶È·Ö²¼ÃÜ¶È
+	// å„é¢œè‰²åˆ†é‡çš„ç°åº¦åˆ†å¸ƒå¯†åº¦
     float midu[256];
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	pDoc ->statedoc=0;
     state2=1;
 	
-	CDibNew1->ZhiFangTu(midu);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	CDibNew1->ZhiFangTu(midu);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg;	 
     dlg=new CDlgZhiFangTu(this);
     dlg->Create(IDD_DLG_zhifangtufenbu);
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg->m_fIntensity[i] = midu[i];
 	
-	// ÏÔÊ¾´¦ÀíºóµÄÖ±·½Í¼
+	// æ˜¾ç¤ºå¤„ç†åçš„ç›´æ–¹å›¾
 	dlg->ShowWindow(SW_RESTORE);
 }
 
-//·´É«±ä»»ÏûÏ¢Ó³Éä
+//åè‰²å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnFanSeBianHuan() 
 {
     clearmem();
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);									//µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);									//è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2; 
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->FanSeBianHuan();								//µ÷ÓÃ·´É«±ä»»´¦Àíº¯Êı
-		Invalidate();											//µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->FanSeBianHuan();								//è°ƒç”¨åè‰²å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();											//è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->FanSeBianHuan();								//µ÷ÓÃ·´É«±ä»»´¦Àíº¯Êı
-		Invalidate();											//µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->FanSeBianHuan();								//è°ƒç”¨åè‰²å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();											//è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 }
 
-//»Ò¶È´°¿Ú±ä»»ÏûÏ¢Ó³Éä
+//ç°åº¦çª—å£å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnChuangkoubianhuan() 
 {
 	clearmem();
 	int i;
 	state3=0;
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);									//µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);									//è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;	 
 	dlg2=new CDlgZhiFangTu(this);
 	dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgChuangkoubianhuan  dlg;
 	
-	// ´°¿ÚÏÂÏŞ
+	// çª—å£ä¸‹é™
 	BYTE	bLow;	
-	// ´°¿ÚÉÏÏŞ
+	// çª—å£ä¸Šé™
 	BYTE	bUp;
 	
-	// ³õÊ¼»¯±äÁ¿Öµ
+	// åˆå§‹åŒ–å˜é‡å€¼
 	dlg.m_bLow = 50;
 	dlg.m_bUp = 200;
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨´°¿ÚÉÏÏÂÏŞ
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šçª—å£ä¸Šä¸‹é™
 	if (dlg.DoModal() != IDOK)
 	{
-		// ·µ»Ø
+		// è¿”å›
 		return;
 	}	
-	// »ñÈ¡ÓÃ»§Éè¶¨µÄ´°¿ÚÉÏÏÂÏŞ
+	// è·å–ç”¨æˆ·è®¾å®šçš„çª—å£ä¸Šä¸‹é™
 	bLow = dlg.m_bLow;
 	bUp = dlg.m_bUp;
 	
-	// É¾³ı¶Ô»°¿ò
+	// åˆ é™¤å¯¹è¯æ¡†
 	delete dlg;			
-	// µ÷ÓÃWindowTrans()º¯Êı½øĞĞ´°¿Ú±ä»»
-	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	// è°ƒç”¨WindowTrans()å‡½æ•°è¿›è¡Œçª—å£å˜æ¢
+	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Chuangkoubianhuan(  bLow,   bUp);             //µ÷ÓÃ´°¿Ú±ä»»´¦Àíº¯Êı
-		Invalidate();											//µ÷ÓÃË¢ĞÂº¯Êı 
+		CDibNew1->Chuangkoubianhuan(  bLow,   bUp);             //è°ƒç”¨çª—å£å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();											//è°ƒç”¨åˆ·æ–°å‡½æ•° 
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Chuangkoubianhuan(  bLow,   bUp);             //µ÷ÓÃ´°¿Ú±ä»»´¦Àíº¯Êı
-		Invalidate();											//µ÷ÓÃË¢ĞÂº¯Êı 
+		CDibNew1->Chuangkoubianhuan(  bLow,   bUp);             //è°ƒç”¨çª—å£å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();											//è°ƒç”¨åˆ·æ–°å‡½æ•° 
 	}
 	
 }
 
 
-//ÕÛÏß±ä»»ÏûÏ¢Ó³Éä
+//æŠ˜çº¿å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnZheXianBianHuan() 
 {
 	clearmem();
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhexianbianhuan dlgPara;
 	
-	// µã1×ø±ê
+	// ç‚¹1åæ ‡
 	BYTE	bX1;
 	BYTE	bY1;	
-	// µã2×ø±ê
+	// ç‚¹2åæ ‡
 	BYTE	bX2;
 	BYTE	bY2;
 	
-	// ³õÊ¼»¯±äÁ¿Öµ
+	// åˆå§‹åŒ–å˜é‡å€¼
 	dlgPara.m_bX1 = 50;
 	dlgPara.m_bY1 = 30;
 	dlgPara.m_bX2 = 200;
 	dlgPara.m_bY2 = 220;
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨À­ÉìÎ»ÖÃ
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šæ‹‰ä¼¸ä½ç½®
 	if (dlgPara.DoModal() != IDOK)
 	{
-		// ·µ»Ø
+		// è¿”å›
 		return;
 	}
 	
-	// »ñÈ¡ÓÃ»§µÄÉè¶¨
+	// è·å–ç”¨æˆ·çš„è®¾å®š
 	bX1 = dlgPara.m_bX1;
 	bY1 = dlgPara.m_bY1;
 	bX2 = dlgPara.m_bX2;
 	bY2 = dlgPara.m_bY2;
 	
-	// É¾³ı¶Ô»°¿ò
+	// åˆ é™¤å¯¹è¯æ¡†
 	delete dlgPara;	
-	if  (CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if  (CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
-		// µ÷ÓÃZhexianbianhuan()º¯Êı½øĞĞ»Ò¶ÈÀ­Éì	 
+		// è°ƒç”¨Zhexianbianhuan()å‡½æ•°è¿›è¡Œç°åº¦æ‹‰ä¼¸	 
 		clearmem();
-		CDibNew1->Zhexianbianhuan( bX1,bY1,bX2,bY2);             //µ÷ÓÃÕÛÏß±ä»»´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Zhexianbianhuan( bX1,bY1,bX2,bY2);             //è°ƒç”¨æŠ˜çº¿å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
-		// µ÷ÓÃZhexianbianhuan()º¯Êı½øĞĞ»Ò¶ÈÀ­Éì	 
+		// è°ƒç”¨Zhexianbianhuan()å‡½æ•°è¿›è¡Œç°åº¦æ‹‰ä¼¸	 
 		clearmem2();
-		CDibNew1->Zhexianbianhuan( bX1,bY1,bX2,bY2);             //µ÷ÓÃÕÛÏß±ä»»´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Zhexianbianhuan( bX1,bY1,bX2,bY2);             //è°ƒç”¨æŠ˜çº¿å˜æ¢å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 }
 
-//Í¼Ïñ»Ò¶È·Ö²¼¾ùºâ»¯ÏûÏ¢Ó³Éä
+//å›¾åƒç°åº¦åˆ†å¸ƒå‡è¡¡åŒ–æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnFenbujunhenghua() 
 {
 	clearmem();
 	int i;
 	state3=0;
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2; 
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Fenbujunhenghua();             //µ÷ÓÃ·Ö²¼¾ùºâ»¯´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Fenbujunhenghua();             //è°ƒç”¨åˆ†å¸ƒå‡è¡¡åŒ–å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Fenbujunhenghua();             //µ÷ÓÃ·Ö²¼¾ùºâ»¯´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Fenbujunhenghua();             //è°ƒç”¨åˆ†å¸ƒå‡è¡¡åŒ–å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 }
 
-//Æ¥Åä±ä»»ÏûÏ¢Ó³Éä
+//åŒ¹é…å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnPipeibianhuan() 
 {
 	
@@ -399,19 +399,19 @@ void CDynSplitView2::OnPipeibianhuan()
 	int n;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (n = 0; n <256; n++)
 		dlg2->m_fIntensity[n] = midu2[n];
 	
-	//--------Ö±·½Í¼ÉèÖÃ ¿ªÊ¼------------------------------------------
+	//--------ç›´æ–¹å›¾è®¾ç½® å¼€å§‹------------------------------------------
 	int nu[64];
 	float pu[64];
 	
@@ -421,160 +421,160 @@ void CDynSplitView2::OnPipeibianhuan()
 		nu[i]=i*4;
 		pu[i]=a*i;
 	}
-	//--------Ö±·½Í¼ÉèÖÃ ½áÊø------------------------------------------
-	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	//--------ç›´æ–¹å›¾è®¾ç½® ç»“æŸ------------------------------------------
+	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Pipeibianhuan(64,nu, pu);             //µ÷ÓÃÆ¥Åä±ä»¯´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Pipeibianhuan(64,nu, pu);             //è°ƒç”¨åŒ¹é…å˜åŒ–å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Pipeibianhuan(64,nu, pu);             //µ÷ÓÃÆ¥Åä±ä»¯´¦Àíº¯Êı
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		CDibNew1->Pipeibianhuan(64,nu, pu);             //è°ƒç”¨åŒ¹é…å˜åŒ–å¤„ç†å‡½æ•°
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 }
  
-//Ô­Í¼Ö±·½Í¼ÏÔÊ¾
+//åŸå›¾ç›´æ–¹å›¾æ˜¾ç¤º
 void CDynSplitView2::OnYuantuzhifangtu()  
 {
 	int i;
 	clearmem();
-	// ¸÷ÑÕÉ«·ÖÁ¿µÄ»Ò¶È·Ö²¼ÃÜ¶È
+	// å„é¢œè‰²åˆ†é‡çš„ç°åº¦åˆ†å¸ƒå¯†åº¦
 	float midu[256];
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È 	 
-	CDibNew1->ZhiFangTu(midu);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦ 	 
+	CDibNew1->ZhiFangTu(midu);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg3;
 	dlg3=new CDlgZhiFangTu(this);
 	dlg3->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg3->m_fIntensity[i] = midu[i];
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÓÉÓÃ»§½øĞĞ»Ò¶ÈÕÛÏß±ä»»
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œç”±ç”¨æˆ·è¿›è¡Œç°åº¦æŠ˜çº¿å˜æ¢
 	dlg3->ShowWindow(SW_RESTORE);
 }
 
-//Ë®Æ½Í¶Ó°ÏûÏ¢Ó³Éä
+//æ°´å¹³æŠ•å½±æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnShuipingtouying()
 {
 	clearmem();
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Shuipingtouying();             //µ÷ÓÃË®Æ½Í¶Ó°´¦Àíº¯Êı
+		CDibNew1->Shuipingtouying();             //è°ƒç”¨æ°´å¹³æŠ•å½±å¤„ç†å‡½æ•°
 		Invalidate();
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Shuipingtouying();             //µ÷ÓÃË®Æ½Í¶Ó°´¦Àíº¯Êı
+		CDibNew1->Shuipingtouying();             //è°ƒç”¨æ°´å¹³æŠ•å½±å¤„ç†å‡½æ•°
 		Invalidate();
 	}
 }
 
 
-//´¹Ö±Í¶Ó°ÏûÏ¢Ó³Éä
+//å‚ç›´æŠ•å½±æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnChuizhitouying()  
 {
 	clearmem();
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;	 
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Chuizhitouying();             //µ÷ÓÃ´¹Ö±Í¶Ó°´¦Àíº¯Êı
+		CDibNew1->Chuizhitouying();             //è°ƒç”¨å‚ç›´æŠ•å½±å¤„ç†å‡½æ•°
 		Invalidate();
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Chuizhitouying();             //µ÷ÓÃ´¹Ö±Í¶Ó°´¦Àíº¯Êı
+		CDibNew1->Chuizhitouying();             //è°ƒç”¨å‚ç›´æŠ•å½±å¤„ç†å‡½æ•°
 		Invalidate();
 	}
 }
  
-//·ÇÁãÈ¡Ò»·¨»Ò¶È±ä»»ÏûÏ¢Ó³Éä
+//éé›¶å–ä¸€æ³•ç°åº¦å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnFei0() 
 {
 	clearmem();
 	int i;
 	state3=0;
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;	 
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+    if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
-		CDibNew1->Fei0();             //µ÷ÓÃ·ÇÁãÈ¡Ò»´¦Àíº¯Êı
+		CDibNew1->Fei0();             //è°ƒç”¨éé›¶å–ä¸€å¤„ç†å‡½æ•°
 		Invalidate();
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
-		CDibNew1->Fei0();             //µ÷ÓÃ·ÇÁãÈ¡Ò»´¦Àíº¯Êı
+		CDibNew1->Fei0();             //è°ƒç”¨éé›¶å–ä¸€å¤„ç†å‡½æ•°
 		Invalidate();
 	}
 }
 
-//¹Ì¶¨·§Öµ»Ò¶È±ä»»ÏûÏ¢Ó³Éä
+//å›ºå®šé˜€å€¼ç°åº¦å˜æ¢æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnGuding() 
 {
 	clearmem();
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
 		CDlgGuDingFaZhi dlg;
@@ -584,7 +584,7 @@ void CDynSplitView2::OnGuding()
 			Invalidate();
 		}
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
 		CDlgGuDingFaZhi dlg;
@@ -602,18 +602,18 @@ void CDynSplitView2::OnShuanGuDingFa()
 	int i;
 	state3=0;
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È
-	CDibNew1->ZhiFangTu(midu2);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦
+	CDibNew1->ZhiFangTu(midu2);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg2;
     dlg2=new CDlgZhiFangTu(this);
     dlg2->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg2->m_fIntensity[i] = midu2[i];
-	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		clearmem();
 		CDialogShuangYu dlg;
@@ -623,7 +623,7 @@ void CDynSplitView2::OnShuanGuDingFa()
 			Invalidate();
 		}
 	}
-	else		//24Î»²ÊÉ«
+	else		//24ä½å½©è‰²
 	{
 		clearmem2();
 		CDialogShuangYu dlg;
@@ -651,22 +651,22 @@ void CDynSplitView2::OnRedZhiFangtu()
 {
 	int i;
 	clearmem();
-	// ¸÷ÑÕÉ«·ÖÁ¿µÄ»Ò¶È·Ö²¼ÃÜ¶È
+	// å„é¢œè‰²åˆ†é‡çš„ç°åº¦åˆ†å¸ƒå¯†åº¦
 	float midu[256];
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È 	 
-	CDibNew1->RedZhiFangTu(midu);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦ 	 
+	CDibNew1->RedZhiFangTu(midu);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg3;
 	dlg3=new CDlgZhiFangTu(this);
 	dlg3->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg3->m_fIntensity[i] = midu[i];
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÓÉÓÃ»§½øĞĞ»Ò¶ÈÕÛÏß±ä»»
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œç”±ç”¨æˆ·è¿›è¡Œç°åº¦æŠ˜çº¿å˜æ¢
 	dlg3->ShowWindow(SW_RESTORE);
 }
 
@@ -674,22 +674,22 @@ void CDynSplitView2::OnBlueZhiFangtu()
 {
 	int i;
 	clearmem();
-	// ¸÷ÑÕÉ«·ÖÁ¿µÄ»Ò¶È·Ö²¼ÃÜ¶È
+	// å„é¢œè‰²åˆ†é‡çš„ç°åº¦åˆ†å¸ƒå¯†åº¦
 	float midu[256];
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È 	 
-	CDibNew1->BlueZhiFangTu(midu);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦ 	 
+	CDibNew1->BlueZhiFangTu(midu);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg3;
 	dlg3=new CDlgZhiFangTu(this);
 	dlg3->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg3->m_fIntensity[i] = midu[i];
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÓÉÓÃ»§½øĞĞ»Ò¶ÈÕÛÏß±ä»»
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œç”±ç”¨æˆ·è¿›è¡Œç°åº¦æŠ˜çº¿å˜æ¢
 	dlg3->ShowWindow(SW_RESTORE);
 }
 
@@ -697,21 +697,21 @@ void CDynSplitView2::OnGreenZhifangtu()
 {
 	int i;
 	clearmem();
-	// ¸÷ÑÕÉ«·ÖÁ¿µÄ»Ò¶È·Ö²¼ÃÜ¶È
+	// å„é¢œè‰²åˆ†é‡çš„ç°åº¦åˆ†å¸ƒå¯†åº¦
 	float midu[256];
 	
-	// ¼ÆËã»Ò¶È·Ö²¼ÃÜ¶È 	 
-	CDibNew1->GreenZhiFangTu(midu);             //µ÷ÓÃ»Ò¶ÈÍ³¼Æ´¦Àíº¯Êı
+	// è®¡ç®—ç°åº¦åˆ†å¸ƒå¯†åº¦ 	 
+	CDibNew1->GreenZhiFangTu(midu);             //è°ƒç”¨ç°åº¦ç»Ÿè®¡å¤„ç†å‡½æ•°
 	
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgZhiFangTu*  dlg3;
 	dlg3=new CDlgZhiFangTu(this);
 	dlg3->Create(IDD_DLG_zhifangtufenbu);
 	
-	// ´«µİ»Ò¶È·Ö²¼ÃÜ¶ÈÊı¾İ¸øÃæ°åÀà
+	// ä¼ é€’ç°åº¦åˆ†å¸ƒå¯†åº¦æ•°æ®ç»™é¢æ¿ç±»
 	for (i = 0; i <256; i++)
 		dlg3->m_fIntensity[i] = midu[i];
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÓÉÓÃ»§½øĞĞ»Ò¶ÈÕÛÏß±ä»»
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œç”±ç”¨æˆ·è¿›è¡Œç°åº¦æŠ˜çº¿å˜æ¢
 	dlg3->ShowWindow(SW_RESTORE);
 }

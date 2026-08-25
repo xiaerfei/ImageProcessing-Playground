@@ -22,7 +22,7 @@ CDynSplitView2::CDynSplitView2()
 }
 
 
-/*³õÊ¼»¯Í¼ÏñÊı¾İ*/
+/*åˆå§‹åŒ–å›¾åƒæ•°æ®*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -33,7 +33,7 @@ void CDynSplitView2::clearmem()
 	CDibNew1=&pDoc->CDibNew;
     CDib1=&pDoc->CDib;
 	long int  size=CDib1->GetHeight()*CDib1->GetWidth();
-	memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//¸´ÖÆÔ­Í¼Ïñµ½´¦ÀíÇø
+	memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//å¤åˆ¶åŸå›¾åƒåˆ°å¤„ç†åŒº
 	
 
 }
@@ -169,7 +169,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 void CDynSplitView2::OnFilesave() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 		CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -178,15 +178,15 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*ÏòÏÂÉ¨ÃèÌØĞ§ÏÔÊ¾*/
+/*å‘ä¸‹æ‰«æç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnXiangxia() 
 {	 
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();	 
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -229,19 +229,19 @@ void CDynSplitView2::OnXiangxia()
 }
 
 
-/*ÏòÉÏÉ¨ÃèÌØĞ§ÏÔÊ¾*/
+/*å‘ä¸Šæ‰«æç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnXiangshang() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	//ÏòÉÏÉ¨Ãè´¦Àí
+	//å‘ä¸Šæ‰«æå¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -280,15 +280,15 @@ void CDynSplitView2::OnXiangshang()
     Invalidate();
 }
 
-/*ÏòÓÒÉ¨ÃèÌØĞ§ÏÔÊ¾*/
+/*å‘å³æ‰«æç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnXiangyou() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));
 	pDC->FillRect(&rect,&brush);
-    //¸´ÖÆÍ¼ÏñÊı¾İ
+    //å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -330,15 +330,15 @@ void CDynSplitView2::OnXiangyou()
 	Invalidate();
 }
 
-/*Ïò×óÉ¨ÃèÌØĞ§ÏÔÊ¾*/
+/*å‘å·¦æ‰«æç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnXiangzuo() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-    //¸´ÖÆÍ¼ÏñÊı¾İ
+    //å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -380,19 +380,19 @@ void CDynSplitView2::OnXiangzuo()
 	Invalidate();
 }
 
-/*Ë®Æ½°ÙÒ¶´°ÌØĞ§ÏÔÊ¾*/
+/*æ°´å¹³ç™¾å¶çª—ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnShuiping() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-    //¸´ÖÆÍ¼ÏñÊı¾İ
+    //å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	//½øĞĞË®Æ½°ÙÒ¶´°ÌØĞ§´¦Àí
+	//è¿›è¡Œæ°´å¹³ç™¾å¶çª—ç‰¹æ•ˆå¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -433,19 +433,19 @@ void CDynSplitView2::OnShuiping()
 	}
 }
 
-/*´¹Ö±°ÙÒ¶´°ÌØĞ§*/
+/*å‚ç›´ç™¾å¶çª—ç‰¹æ•ˆ*/
 void CDynSplitView2::OnChuizhi() 
 {
-	//Ë¢ĞÂÆÁÄ»    
+	//åˆ·æ–°å±å¹•    
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	//½øĞĞÌØĞ§´¦Àí
+	//è¿›è¡Œç‰¹æ•ˆå¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -486,21 +486,21 @@ void CDynSplitView2::OnChuizhi()
 	}
 }
 
-/*ÂíÈü¿ËÌØĞ§ÏÔÊ¾*/
+/*é©¬èµ›å…‹ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnMasaike() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-    //¸´ÖÆÍ¼ÏñÊı¾İ
+    //å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
 	long mx=0;
 	long my=0;
-	int nscanline=8;  //ÉèÖÃÏÔÊ¾¶¨Î»Á¿
+	int nscanline=8;  //è®¾ç½®æ˜¾ç¤ºå®šä½é‡
 	int k=0;
 	if(!pDoc ->statedoc&&state2==1)
 	{
@@ -574,21 +574,21 @@ void CDynSplitView2::OnMasaike()
 	Invalidate();
 }
 
-/*Ë®Æ½Õ¤ÌõÌØĞ§ÏÔÊ¾*/
+/*æ°´å¹³æ …æ¡ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnShuipingshantiao() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-    //¸´ÖÆÍ¼ÏñÊı¾İ
+    //å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
-	int nscanline=8;  //Éè¶¨ÏÔÊ¾¶¨Î»Á¿
+	int nscanline=8;  //è®¾å®šæ˜¾ç¤ºå®šä½é‡
 	int k=0;
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-    //½øĞĞË®Æ½Õ¤ÌõÌØĞ§´¦Àí
+    //è¿›è¡Œæ°´å¹³æ …æ¡ç‰¹æ•ˆå¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -641,21 +641,21 @@ void CDynSplitView2::OnShuipingshantiao()
 	Invalidate();
 }
 
-/*´¹Ö±Õ¤ÌõÌØĞ§ÏÔÊ¾*/
+/*å‚ç›´æ …æ¡ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnChuizhishantiao() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ 
+	//å¤åˆ¶å›¾åƒæ•°æ® 
 	clearmem();
-	int nscanline=8;  //ÉèÖÃÍ¼ÏñÏÔÊ¾¶¨Î»Á¿
+	int nscanline=8;  //è®¾ç½®å›¾åƒæ˜¾ç¤ºå®šä½é‡
 	int k=0;
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-    //½øĞĞ´¹Ö±Õ¤ÌõÌØĞ§´¦Àí
+    //è¿›è¡Œå‚ç›´æ …æ¡ç‰¹æ•ˆå¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -708,15 +708,15 @@ void CDynSplitView2::OnChuizhishantiao()
 	Invalidate();   
 }
 
-/*½¥ÏÔÌØĞ§ÏÔÊ¾*/
+/*æ¸æ˜¾ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnJianxian() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -785,19 +785,19 @@ void CDynSplitView2::OnJianxian()
 	}
 }
 
-/*Ë®Æ½ÓÒÒÆÌØĞ§ÏÔÊ¾*/
+/*æ°´å¹³å³ç§»ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnYouyi() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));	
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	//½øĞĞÓÒÒÆ´¦Àí
+	//è¿›è¡Œå³ç§»å¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -840,19 +840,19 @@ void CDynSplitView2::OnYouyi()
 	Invalidate();
 }
 
-/*ÖĞ¼äÀ©ÕÅÌØĞ§ÏÔÊ¾*/
+/*ä¸­é—´æ‰©å¼ ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnZhongJianKuoZhang() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem(); 
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-    //½øĞĞÖĞ¼äÀ©ÕÅ´¦Àí
+    //è¿›è¡Œä¸­é—´æ‰©å¼ å¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{	     
         BYTE* pBitmapData = CDibNew1->GetData();
@@ -900,19 +900,19 @@ void CDynSplitView2::OnZhongJianKuoZhang()
 }
 
 
-/*Í¼ÏñÉÏÒÆÌØĞ§ÏÔÊ¾*/
+/*å›¾åƒä¸Šç§»ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnShangyi() 
 {
-	// Ë¢ĞÂÆÁÄ»
+	// åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush); 
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
-	//½øĞĞÉÏÒÆ´¦Àí
+	//è¿›è¡Œä¸Šç§»å¤„ç†
 	if(!pDoc ->statedoc&&state2==1)
 	{
 		BYTE* pBitmapData = CDibNew1->GetData();
@@ -957,17 +957,17 @@ void CDynSplitView2::OnShangyi()
 	Invalidate();
 }
 
-/*½»²æ·ÉÈëÌØĞ§ÏÔÊ¾*/
+/*äº¤å‰é£å…¥ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnJiaoChaFeiRu() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();
-	int nscanline=8;//ÉèÖÃÏÔÊ¾¶¨Î»Á¿
+	int nscanline=8;//è®¾ç½®æ˜¾ç¤ºå®šä½é‡
 	int k=0;
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -977,7 +977,7 @@ void CDynSplitView2::OnJiaoChaFeiRu()
         LPBITMAPINFO pBitmapInfo = CDibNew1->GetInfo();
         int bitmapHeight = CDibNew1->GetHeight();
         int bitmapWidth = CDibNew1->GetWidth();
-		if (CDibNew1->GetRGB()) // »ñµÃµ÷É«°å
+		if (CDibNew1->GetRGB()) // è·å¾—è°ƒè‰²æ¿
 		{
 			CPalette * hPalette=CreateBitmapPalette(CDibNew1);
             CPalette * hOldPalette =
@@ -1026,15 +1026,15 @@ void CDynSplitView2::OnJiaoChaFeiRu()
 }
 
 
-/*ÖĞ¼äÊÕËõÌØĞ§ÏÔÊ¾*/
+/*ä¸­é—´æ”¶ç¼©ç‰¹æ•ˆæ˜¾ç¤º*/
 void CDynSplitView2::OnZhongJianShouSuo() 
 {
-	//Ë¢ĞÂÆÁÄ»
+	//åˆ·æ–°å±å¹•
 	CDC *pDC=GetDC();
 	CRect rect(0,0,1000,1000);
 	CBrush brush(RGB(255,255,255));		
 	pDC->FillRect(&rect,&brush);
-	//¸´ÖÆÍ¼ÏñÊı¾İ
+	//å¤åˆ¶å›¾åƒæ•°æ®
 	clearmem();	 
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);

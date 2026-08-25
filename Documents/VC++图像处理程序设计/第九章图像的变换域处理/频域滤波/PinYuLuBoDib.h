@@ -14,21 +14,21 @@ public:
 	~PinYuLuBoDib();
 
 public:
-	 CNumber Add(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ¼Ó·¨ÔËËã
-	 CNumber Sub(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ¼õ·¨ÔËËã
-	 CNumber Mul(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ³Ë·¨ÔËËã
-	 void QFC(CNumber* t,CNumber* f,int power);//ÊµÏÖ¿ìËÙ¸µÁ¢Ò¶±ä»»
-	 void QuickFourier();//ÊµÏÖÍ¼Ïñ¿ìËÙ¸µÁ¢Ò¶±ä»»
-     void fourier(double * data, int height, int width, int isign);//ÊµÏÖ¶şÎ¬¸µÁ¢Ò¶±ä»»
-	 void BWFilterL(int u,int v,int n);//²¼ÌØÎÖË¹µÍÍ¨ÂË²¨
-	 void BWFilterH(int u,int v,int n);//²¼ÌØÎÖË¹¸ßÍ¨ÂË²¨
-	 void PerfectFilterL(int u,int v);//ÀíÏëµÍÍ¨ÂË²¨Æ÷
-	 void PerfectFilterH(int u,int v);//ÀíÏëµÍÍ¨ÂË²¨Æ÷
-	 void TLFilter(int u,int v,int u1,int v1);//ÌİĞÎµÍÍ¨ÂË²¨
-	 void THFilter(int u,int v,int u1,int v1);//ÌİĞÎ¸ßÍ¨ÂË²¨
-	 void ZLFilter(int u,int v,int n);//Ö¸ÊıµÍÍ¨ÂË²¨
-	 void ZHFilter(int u,int v,int n);//Ö¸Êı¸ßÍ¨ÂË²¨
-     void FirstQuickFourier();//ÊµÏÖÍ¼Ïñ¿ìËÙ¸µÁ¢Ò¶±ä»»(Î´½øĞĞÆ½ÒÆ)
+	 CNumber Add(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„åŠ æ³•è¿ç®—
+	 CNumber Sub(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„å‡æ³•è¿ç®—
+	 CNumber Mul(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„ä¹˜æ³•è¿ç®—
+	 void QFC(CNumber* t,CNumber* f,int power);//å®ç°å¿«é€Ÿå‚…ç«‹å¶å˜æ¢
+	 void QuickFourier();//å®ç°å›¾åƒå¿«é€Ÿå‚…ç«‹å¶å˜æ¢
+     void fourier(double * data, int height, int width, int isign);//å®ç°äºŒç»´å‚…ç«‹å¶å˜æ¢
+	 void BWFilterL(int u,int v,int n);//å¸ƒç‰¹æ²ƒæ–¯ä½é€šæ»¤æ³¢
+	 void BWFilterH(int u,int v,int n);//å¸ƒç‰¹æ²ƒæ–¯é«˜é€šæ»¤æ³¢
+	 void PerfectFilterL(int u,int v);//ç†æƒ³ä½é€šæ»¤æ³¢å™¨
+	 void PerfectFilterH(int u,int v);//ç†æƒ³ä½é€šæ»¤æ³¢å™¨
+	 void TLFilter(int u,int v,int u1,int v1);//æ¢¯å½¢ä½é€šæ»¤æ³¢
+	 void THFilter(int u,int v,int u1,int v1);//æ¢¯å½¢é«˜é€šæ»¤æ³¢
+	 void ZLFilter(int u,int v,int n);//æŒ‡æ•°ä½é€šæ»¤æ³¢
+	 void ZHFilter(int u,int v,int n);//æŒ‡æ•°é«˜é€šæ»¤æ³¢
+     void FirstQuickFourier();//å®ç°å›¾åƒå¿«é€Ÿå‚…ç«‹å¶å˜æ¢(æœªè¿›è¡Œå¹³ç§»)
 	 
 
 protected:

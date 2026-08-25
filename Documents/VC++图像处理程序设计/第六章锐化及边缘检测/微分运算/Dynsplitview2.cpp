@@ -21,7 +21,7 @@ CDynSplitView2::CDynSplitView2()
 	state2=0;
 }
 
-/*��ʼ��ͼ������*/
+/*初始化图像数据*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -151,7 +151,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("λͼ�ļ�(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("位图文件(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -160,50 +160,50 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*����΢����Ϣӳ��*/
+/*横向微分消息映射*/
 void CDynSplitView2::OnHengXiang() 
 {
 	clearmem();
-	CDibNew1->HengXiang();      //��ͼ����к���΢��
+	CDibNew1->HengXiang();      //对图像进行横向微分
 	Invalidate();		
 }
 
-/*����΢����Ϣӳ��*/
+/*纵向微分消息映射*/
 void CDynSplitView2::OnZongXiang() 
 {
 	clearmem();
-    CDibNew1->ZongXiang();//��ͼ���������΢��
+    CDibNew1->ZongXiang();//对图像进行纵向微分
 	Invalidate();	
 }
 
-/*˫��һ��΢����Ϣӳ��*/
+/*双向一次微分消息映射*/
 void CDynSplitView2::OnShuangXiang() 
 {
 	clearmem();
-    CDibNew1->ShuangXiang();     //��ͼ�����˫��һ��΢��
+    CDibNew1->ShuangXiang();     //对图像进行双向一次微分
 	Invalidate();	
 }
 
-/*����΢��1��Ϣӳ��*/
+/*二次微分1消息映射*/
 void CDynSplitView2::OnErCi1() 
 {
 	clearmem();
-    CDibNew1->ErCi1();     //��ͼ����ж���΢��
+    CDibNew1->ErCi1();     //对图像进行二次微分
 	Invalidate();		
 }
 
-/*����΢��2��Ϣӳ��*/
+/*二次微分2消息映射*/
 void CDynSplitView2::OnErCi2() 
 {
 	clearmem();
-    CDibNew1->ErCi2();     //��ͼ����ж���΢��
+    CDibNew1->ErCi2();     //对图像进行二次微分
 	Invalidate();		
 }
 
-/*����΢��3��Ϣӳ��*/
+/*二次微分3消息映射*/
 void CDynSplitView2::OnErCi3() 
 {
 	clearmem();
-    CDibNew1->ErCi3();     //��ͼ����ж���΢��
+    CDibNew1->ErCi3();     //对图像进行二次微分
 	Invalidate();	
 }

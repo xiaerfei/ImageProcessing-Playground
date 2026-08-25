@@ -23,7 +23,7 @@ start[i]=0;
 }
 
 
-/*³õÊ¼»¯Í¼ÏñÊı¾İ*/
+/*åˆå§‹åŒ–å›¾åƒæ•°æ®*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -172,7 +172,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 void CDynSplitView2::OnFilesave() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -184,89 +184,89 @@ void CDynSplitView2::OnFilesave()
 
 
 
-/*´¹Ö±¸¯Ê´ÏûÏ¢Ó³Éä*/
+/*å‚ç›´è…èš€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnChuizhifushi() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->ChuiZhiFuShi();    //µ÷ÓÃ´¹Ö±¸¯Ê´º¯Êı
+	CDibNew1->ChuiZhiFuShi();    //è°ƒç”¨å‚ç›´è…èš€å‡½æ•°
  	Invalidate();
 }
 
 
-/*Ë®Æ½¸¯Ê´ÏûÏ¢Ó³Éä*/
+/*æ°´å¹³è…èš€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnShuipingfushi() 
 {
 
 //	 TODO: Add your command handler code here
 	 clearmem();
-	CDibNew1->Shuipingfushi();             //µ÷ÓÃË®Æ½¸¯Ê´º¯Êı
+	CDibNew1->Shuipingfushi();             //è°ƒç”¨æ°´å¹³è…èš€å‡½æ•°
  	Invalidate();
 }
 
 
-/*È«·½Ïò¸¯Ê´ÏûÏ¢Ó³Éä*/
+/*å…¨æ–¹å‘è…èš€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnQuanfangwei() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->Quanfangxiangfushi();             //µ÷ÓÃÈ«·½Î»¸¯Ê´º¯Êı
+	CDibNew1->Quanfangxiangfushi();             //è°ƒç”¨å…¨æ–¹ä½è…èš€å‡½æ•°
  	Invalidate();
 }
 
 
-/*Ë®Æ½ÅòÕÍÏûÏ¢Ó³Éä*/
+/*æ°´å¹³è†¨èƒ€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnShuipingpengzhang() 
 {
 	// TODO: Add your command handler code here
     clearmem();
-	CDibNew1->Shuipingpengzhang();             //µ÷ÓÃË®Æ½ÅòÕÍº¯Êı
+	CDibNew1->Shuipingpengzhang();             //è°ƒç”¨æ°´å¹³è†¨èƒ€å‡½æ•°
  	Invalidate();
 }
 
 
-/*´¹Ö±ÅòÕÍÏûÏ¢Ó³Éä*/
+/*å‚ç›´è†¨èƒ€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnChuizhipengzhang() 
 {
 	 //TODO: Add your command handler code here
 	
-	//³õÊ¼»¯Í¼ÏñÊı¾İ
+	//åˆå§‹åŒ–å›¾åƒæ•°æ®
 	 clearmem();
-	CDibNew1->Chuizhipengzhang();             //µ÷ÓÃ´¹Ö±ÅòÕÍº¯Êı
+	CDibNew1->Chuizhipengzhang();             //è°ƒç”¨å‚ç›´è†¨èƒ€å‡½æ•°
  	Invalidate();
 }
 
 
-/*È«·½ÏòÅòÕÍÏûÏ¢Ó³Éä*/
+/*å…¨æ–¹å‘è†¨èƒ€æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnQuanfangxiangpengzhang() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->Quanfangxiangpengzhang();             //µ÷ÓÃÈ«·½ÏòÅòÕÍº¯Êı
+	CDibNew1->Quanfangxiangpengzhang();             //è°ƒç”¨å…¨æ–¹å‘è†¨èƒ€å‡½æ•°
  	Invalidate();
 }
 
 
 
-/*¿ªÔËËãÏûÏ¢Ó³Éä*/
+/*å¼€è¿ç®—æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnKaiqi() 
 {
 	// TODO: Add your command handler code here
     clearmem();
     CDibNew1->Quanfangxiangfushi(); 
-	CDibNew1->Quanfangxiangpengzhang();             //µ÷ÓÃÈ«·½Ïò¿ªÆôº¯Êı
+	CDibNew1->Quanfangxiangpengzhang();             //è°ƒç”¨å…¨æ–¹å‘å¼€å¯å‡½æ•°
  	Invalidate();
 }
 
 
 
-/*±ÕÔËËãÏûÓ³Éä*/
+/*é—­è¿ç®—æ¶ˆæ˜ å°„*/
 void CDynSplitView2::OnBihe() 
 {
 	// TODO: Add your command handler code here
     clearmem();
 	CDibNew1->Quanfangxiangpengzhang(); 
-    CDibNew1->Quanfangxiangfushi();         //µ÷ÓÃÈ«·½Ïò¿ªÆôº¯Êı
+    CDibNew1->Quanfangxiangfushi();         //è°ƒç”¨å…¨æ–¹å‘å¼€å¯å‡½æ•°
  	Invalidate();
 }
 

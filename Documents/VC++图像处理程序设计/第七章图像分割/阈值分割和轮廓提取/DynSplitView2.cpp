@@ -24,7 +24,7 @@ CDynSplitView2::CDynSplitView2()
 	state=0;
 }
 
-/*��ʼ��ͼ������*/
+/*初始化图像数据*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -34,7 +34,7 @@ void CDynSplitView2::clearmem()
 	CDibNew1=&pDoc->CDibNew;
     CDib1=&pDoc->CDib;
     long int  size=CDib1->GetHeight()*CDib1->GetDibWidthBytes();
-	memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//����ԭͼ�񵽴�����
+	memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//复制原图像到处理区
 }
 
 CPalette * CDynSplitView2::CreateBitmapPalette(BingXingBianJieDib * pBitmap)
@@ -161,7 +161,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("λͼ�ļ�(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("位图文件(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -170,105 +170,105 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*������ֵ��Ϣӳ��*/
+/*迭代阀值消息映射*/
 void CDynSplitView2::OnDiedaifazhi() 
 {
 	clearmem();
-	// ����ɫ�����ĻҶȷֲ��ܶ�
+	// 各颜色分量的灰度分布密度
 	int tongji[256];
-	//��ʼΪ0
+	//初始为0
 	memset(tongji, 0, sizeof(tongji));
-    CDibNew1->Fenbutongji(tongji);      //ͳ��ֱ��ͼ�Ҷ�ֵ
-	CDibNew1->Diedaifazhi(tongji);             //���õ�����ֵ��⴦������
+    CDibNew1->Fenbutongji(tongji);      //统计直方图灰度值
+	CDibNew1->Diedaifazhi(tongji);             //调用迭代法值检测处理函数
 	Invalidate();
 }
 
-/*������ȡ��Ϣӳ��*/
+/*轮廓提取消息映射*/
 void CDynSplitView2::OnLunKuoTiQu() 
 {
 	clearmem();
 	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)
 	{
 		
-		CDibNew1->Lunkuotiqu();             //����������ȡ��������
+		CDibNew1->Lunkuotiqu();             //调用轮廓提取处理函数
 		Invalidate();
 	}
 	else
 	{
 		Invalidate();
-		MessageBox("����ͼ����������ѡȡ���ӵ�");
+		MessageBox("在右图单击鼠标左键选取种子点");
 		state=3;
 	}
 }
 
-/*����������Ϣӳ��*/
+/*轮廓跟踪消息映射*/
 void CDynSplitView2::OnLunkuogenzong() 
 {
 	clearmem();
 	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)
 	{
 		
-		CDibNew1->Lunkuogenzong();             //�����������ٴ�������
+		CDibNew1->Lunkuogenzong();             //调用轮廓跟踪处理函数
 		Invalidate();
 	}
 	else
 	{
 		Invalidate();
-		MessageBox("����ͼ����������ѡȡ���ӵ�");
+		MessageBox("在右图单击鼠标左键选取种子点");
 		state=4;
 	}
 }
 
-/*���������Ϣӳ��*/
+/*种子填充消息映射*/
 void CDynSplitView2::OnZhongzitianchong() 
 {
 	clearmem();
 	Invalidate();
-	MessageBox("����ͼ����������ѡȡ���ӵ�");
+	MessageBox("在右图单击鼠标左键选取种子点");
 	state=1;
 }
 
-/*��ֵ�ָ���Ϣӳ��*/ 
+/*阈值分割消息映射*/ 
 void CDynSplitView2::OnYuzhifenge() 
 {
 	int i;
-	int Yuzhi;   //��ֵ����
-	// ����ɫ�����ĻҶȷֲ��ܶ�
+	int Yuzhi;   //阈值变量
+	// 各颜色分量的灰度分布密度
     float midu[256];
 	
-	// ����Ҷȷֲ��ܶ�	 	  
+	// 计算灰度分布密度	 	  
 	clearmem();
-	CDibNew1->Zhifangtu(midu);             //���ûҶ�ͳ�ƴ�������
+	CDibNew1->Zhifangtu(midu);             //调用灰度统计处理函数
 	
-	// �����Ҷ�ֱ��ͼ�Ի���
+	// 创建灰度直方图对话框
 	CDlgZhiFangTu*    dlg;
 	dlg=new CDlgZhiFangTu(this);
 	dlg->Create(IDD_DIALOG_ZhiFangTu);
-	// ���ݻҶȷֲ��ܶ����ݸ������
+	// 传递灰度分布密度数据给面板类
 	for (i = 0; i <256; i++)
 		dlg->m_fIntensity[i] = midu[i];
 	
-	// ��ʾ�Ի������û����лҶ����߱任
+	// 显示对话框，由用户进行灰度折线变换
 	dlg->ShowWindow(SW_RESTORE);
 	
-    //������ֵѡ��Ի���
+    //创建阈值选择对话框
 	CDlgYuZhiFenGe  dlg1;
 	dlg1.m_Yuzhi=0;
 	
-	// ��ʾ�Ի�����ʾ�û�������ֵ
+	// 显示对话框，提示用户输入阈值
 	if (dlg1.DoModal() != IDOK)
 	{
-		// ����
+		// 返回
 		return;
 	}
     Yuzhi=dlg1.m_Yuzhi;
 	
-	// ɾ���Ի���
+	// 删除对话框
 	delete dlg1;
 	delete dlg;
 	
 	clearmem();
-	CDibNew1->Yuzhifenge(Yuzhi);             //������ֵ�ָ������
+	CDibNew1->Yuzhifenge(Yuzhi);             //调用阈值分割处理函数
 	Invalidate();
 }
 
@@ -281,7 +281,7 @@ void CDynSplitView2::OnLButtonDown(UINT nFlags, CPoint point)
 		SeedPoint.y=point.y;
 		
 		clearmem();
-		CDibNew1->Zhongzitianchong(SeedPoint);             //����������䴦������
+		CDibNew1->Zhongzitianchong(SeedPoint);             //调用种子填充处理函数
 		Invalidate();
 		state=0;
 	}
@@ -290,7 +290,7 @@ void CDynSplitView2::OnLButtonDown(UINT nFlags, CPoint point)
 		SeedPoint.x=point.x;
 		SeedPoint.y=point.y;
 		clearmem();
-		CDibNew1->Qiyuzengzhang(point);             //��������������������
+		CDibNew1->Qiyuzengzhang(point);             //调用区域增长处理函数
 		Invalidate();
 		state=0;
 	}
@@ -299,7 +299,7 @@ void CDynSplitView2::OnLButtonDown(UINT nFlags, CPoint point)
 		SeedPoint.x=point.x;
 		SeedPoint.y=point.y;
 		clearmem();
-		CDibNew1->Lunkuotiqu(SeedPoint);             //����������ȡ��������
+		CDibNew1->Lunkuotiqu(SeedPoint);             //调用轮廓提取处理函数
 		Invalidate();
 		state=0;
 	}
@@ -308,19 +308,19 @@ void CDynSplitView2::OnLButtonDown(UINT nFlags, CPoint point)
 		SeedPoint.x=point.x;
 		SeedPoint.y=point.y;
 		clearmem();
-		CDibNew1->Lunkuogenzong(SeedPoint);             //�����������ٴ�������
+		CDibNew1->Lunkuogenzong(SeedPoint);             //调用轮廓跟踪处理函数
 		Invalidate();
 		state=0;
 	}
 	CView::OnLButtonDown(nFlags, point);
 }
 
-/*����������Ϣӳ��*/
+/*区域生长消息映射*/
 void CDynSplitView2::OnQuyushengzhang() 
 {
 	clearmem();
 	Invalidate();
-	MessageBox("����ͼ����������ѡȡ������");
+	MessageBox("在右图单击鼠标左键选取生长点");
 	state=2;
 }
 
@@ -332,53 +332,53 @@ void CDynSplitView2::OnRButtonDown(UINT nFlags, CPoint point)
 		point.x=point.x;
 		point.y=point.y;
 		clearmem();
-		CDibNew1->Qiyuzengzhang(point);             //����������䴦������
+		CDibNew1->Qiyuzengzhang(point);             //调用种子填充处理函数
 		Invalidate();
 		state=0;
 	}
 	CView::OnRButtonDown(nFlags, point);
 }
 
-/*����ֵ�ָ���Ϣӳ��*/ 
+/*半阈值分割消息映射*/ 
 void CDynSplitView2::OnBanYuZhi() 
 {
 	int i;
-	int Yuzhi;   //��ֵ����
-	// ����ɫ�����ĻҶȷֲ��ܶ�
+	int Yuzhi;   //阈值变量
+	// 各颜色分量的灰度分布密度
     float midu[256];
 	
-	// ����Ҷȷֲ��ܶ�	 	  
+	// 计算灰度分布密度	 	  
 	clearmem();
-	CDibNew1->Zhifangtu(midu);             //���ûҶ�ͳ�ƴ�������
+	CDibNew1->Zhifangtu(midu);             //调用灰度统计处理函数
 	
-	// �����Ҷ�ֱ��ͼ�Ի���
+	// 创建灰度直方图对话框
 	CDlgZhiFangTu*    dlg;
 	dlg=new CDlgZhiFangTu(this);
 	dlg->Create(IDD_DIALOG_ZhiFangTu);
-	// ���ݻҶȷֲ��ܶ����ݸ������
+	// 传递灰度分布密度数据给面板类
 	for (i = 0; i <256; i++)
 		dlg->m_fIntensity[i] = midu[i];
 	
-	// ��ʾ�Ի������û����лҶ����߱任
+	// 显示对话框，由用户进行灰度折线变换
 	dlg->ShowWindow(SW_RESTORE);
 	
-    //������ֵѡ��Ի���
+    //创建阈值选择对话框
 	CDlgYuZhiFenGe  dlg1;
 	dlg1.m_Yuzhi=0;
 	
-	// ��ʾ�Ի�����ʾ�û�������ֵ
+	// 显示对话框，提示用户输入阈值
 	if (dlg1.DoModal() != IDOK)
 	{
-		// ����
+		// 返回
 		return;
 	}
     Yuzhi=dlg1.m_Yuzhi;
 	
-	// ɾ���Ի���
+	// 删除对话框
 	delete dlg1;
 	delete dlg;
 	
 	clearmem();
-	CDibNew1->BanYuZhi(Yuzhi);             //���ð���ֵ�ָ������
+	CDibNew1->BanYuZhi(Yuzhi);             //调用半阈值分割处理函数
 	Invalidate();
 }

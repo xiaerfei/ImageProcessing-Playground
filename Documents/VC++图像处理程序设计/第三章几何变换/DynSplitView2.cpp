@@ -26,7 +26,7 @@ CDynSplitView2::CDynSplitView2()
 	state3=1;
 }
 
-/*³õÊ¼»¯Í¼ÏñÊı¾İ*/
+/*åˆå§‹åŒ–å›¾åƒæ•°æ®*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -174,7 +174,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
  
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 		CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -183,56 +183,56 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*Æ½ÒÆÏûÏ¢Ó³Éä*/
+/*å¹³ç§»æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnTuxiangpingyi() 
 {
 	int x,y;
 	if(state3==0)
 		CDibNew1->clearmem2(); 
-	MessageBox("ÕıÊı±íÊ¾ÓÒÒÆÁ¿»òÏÂÒÆÁ¿£¬¸ºÊı±íÊ¾×óÒÆÁ¿»òÉÏÒÆÁ¿");
-	//³õÊ¼»¯Í¼ÏñÊı¾İ
+	MessageBox("æ­£æ•°è¡¨ç¤ºå³ç§»é‡æˆ–ä¸‹ç§»é‡ï¼Œè´Ÿæ•°è¡¨ç¤ºå·¦ç§»é‡æˆ–ä¸Šç§»é‡");
+	//åˆå§‹åŒ–å›¾åƒæ•°æ®
 	clearmem();
-	// ´´½¨¶Ô»°¿ò
+	// åˆ›å»ºå¯¹è¯æ¡†
 	CDlgPingYi  dlg;
 	dlg.m_Xmove=10;
 	dlg.m_Ymove=10;
 
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨´°¿ÚÉÏÏÂÏŞ
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šçª—å£ä¸Šä¸‹é™
 	if (dlg.DoModal() != IDOK)
-		return;// ·µ»Ø
+		return;// è¿”å›
 
 	x=dlg.m_Xmove;
 	y=dlg.m_Ymove;
 	
-	// É¾³ı¶Ô»°¿ò
+	// åˆ é™¤å¯¹è¯æ¡†
 	delete dlg;	
 	CDibNew1->PingYi(x,y); 
-	Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+	Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	state3=1;
 }
 
-/*Ë®Æ½¾µÏñÏûÏ¢Ó³Éä*/
+/*æ°´å¹³é•œåƒæ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnShuipingjingxiang() 
 {
 	clearmem();
-	CDibNew1->JingXiang(TRUE);             //µ÷ÓÃË®Æ½¾µÏñ´¦Àíº¯Êı
-    Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+	CDibNew1->JingXiang(TRUE);             //è°ƒç”¨æ°´å¹³é•œåƒå¤„ç†å‡½æ•°
+    Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 }
 
-/*´¹Ö±¾µÏñÏûÏ¢Ó³Éä*/
+/*å‚ç›´é•œåƒæ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnChuizhijingxiang() 
 {
 	clearmem();
-	CDibNew1->JingXiang(FALSE);             //µ÷ÓÃ´¹Ö±¾µÏñ´¦Àíº¯Êı
-    Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+	CDibNew1->JingXiang(FALSE);             //è°ƒç”¨å‚ç›´é•œåƒå¤„ç†å‡½æ•°
+    Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 }
 
-/*×ªÖÃÏûÏ¢Ó³Éä*/
+/*è½¬ç½®æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnZhuanzhi() 
 {
 	clearmem();	
-	CDibNew1->Zhuanzhi();             //µ÷ÓÃ×ªÖÃ´¦Àíº¯Êı
-    Invalidate(); //µ÷ÓÃË¢ĞÂº¯Êı
+	CDibNew1->Zhuanzhi();             //è°ƒç”¨è½¬ç½®å¤„ç†å‡½æ•°
+    Invalidate(); //è°ƒç”¨åˆ·æ–°å‡½æ•°
     state3=0;
 }
  
@@ -241,113 +241,113 @@ void CDynSplitView2::OnZhuanzhi()
 
 void CDynSplitView2::OnXuanzhuan() 
 {
-	MessageBox("½Ç¶ÈÓ¦Îª90¶ÈµÄÕûÊı±¶£¬ÇÒÍ¼ÏñµÄ¸ßºÍ¿íĞèÏàÍ¬");
+	MessageBox("è§’åº¦åº”ä¸º90åº¦çš„æ•´æ•°å€ï¼Œä¸”å›¾åƒçš„é«˜å’Œå®½éœ€ç›¸åŒ");
 	clearmem();
 	
-	int iRotateAngle;			// Ğı×ª½Ç¶È
-	CDlgXuanZhuan dlg;			// ´´½¨¶Ô»°¿ò
-	dlg.m_iRotateAngle = 90;	// ³õÊ¼»¯±äÁ¿Öµ
+	int iRotateAngle;			// æ—‹è½¬è§’åº¦
+	CDlgXuanZhuan dlg;			// åˆ›å»ºå¯¹è¯æ¡†
+	dlg.m_iRotateAngle = 90;	// åˆå§‹åŒ–å˜é‡å€¼
 	
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨Ğı×ª½Ç¶È
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šæ—‹è½¬è§’åº¦
 	if (dlg.DoModal() != IDOK)
 	{
-		return;// ·µ»Ø
+		return;// è¿”å›
 	}
 	
-	// »ñÈ¡ÓÃ»§Éè¶¨µÄĞı×ªÁ¿
+	// è·å–ç”¨æˆ·è®¾å®šçš„æ—‹è½¬é‡
 	iRotateAngle = dlg.m_iRotateAngle;
 	CDibNew1->Xuanzhuan(iRotateAngle);
 	this->Invalidate();
 }
 
-//Í¼Ïñ·Å´óÏûÏ¢Ó³Éä
+//å›¾åƒæ”¾å¤§æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnFangda() 
 {
 	if(state3==0)
 		CDibNew1->clearmem2(); 
 	clearmem();	
 	float xzoom,yzoom;
-	CDlgSuoFang  dlg;		// ¶¨Òå¶Ô»°¿ò
+	CDlgSuoFang  dlg;		// å®šä¹‰å¯¹è¯æ¡†
 	dlg.m_XZoom=2.0;
 	dlg.m_YZoom=2.0;
 
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨´°¿ÚÉÏÏÂÏŞ
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šçª—å£ä¸Šä¸‹é™
 	if (dlg.DoModal() != IDOK)
 	{
-		return;				// ·µ»Ø
+		return;				// è¿”å›
 	}
     xzoom=dlg.m_XZoom;
     yzoom=dlg.m_YZoom;
-	delete dlg;				// É¾³ı¶Ô»°¿ò
+	delete dlg;				// åˆ é™¤å¯¹è¯æ¡†
 
-	// Ô´Í¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+	// æºå›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	LONG	wide;
 	LONG	height;
 	
-	// Ëõ·ÅºóÍ¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+	// ç¼©æ”¾åå›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	LONG	newwide;
 	LONG	newheight;
 	LONG	newLineBytes;
 	LPBYTE	temp;
 	
-	// »ñÈ¡Í¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+	// è·å–å›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	wide = CDibNew1->GetWidth();
 	height = CDibNew1->GetHeight();
 
 	if(CDibNew1->m_pBitmapInfoHeader->biBitCount<9)
 	{
-		// ¼ÆËãËõ·ÅºóµÄÍ¼Ïñ¿í¶ÈºÍ¸ß¶È
+		// è®¡ç®—ç¼©æ”¾åçš„å›¾åƒå®½åº¦å’Œé«˜åº¦
 		newwide = (LONG) (wide * xzoom +0.5);
 		newheight = (LONG) (height * yzoom+0.5);
 		newLineBytes=(newwide*8+31)/32*4;
 
-		// ·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂDIB
+		// åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°DIB
 		temp = new BYTE[ newLineBytes * newheight ];
 		memset(temp,0,newLineBytes * newheight);
 		CDibNew1->m_pData=CDibNew1->FangDa(temp,xzoom,yzoom,wide,height,newLineBytes,newheight);  
 		CDibNew1->SetWidth(newwide);
 		CDibNew1->SetHeight(newheight);
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 	else
 	{
-		// ¼ÆËãËõ·ÅºóµÄÍ¼Ïñ¿í¶ÈºÍ¸ß¶È
+		// è®¡ç®—ç¼©æ”¾åçš„å›¾åƒå®½åº¦å’Œé«˜åº¦
 		newwide = (LONG) (wide * xzoom*3);
 		newheight = (LONG) (height * yzoom);
 		
-		// ·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂDIB
+		// åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°DIB
 		temp = new BYTE[ newwide * newheight];
 		memset(temp,0,newwide * newheight);
 		CDibNew1->m_pData=CDibNew1->FangDa(temp,xzoom,yzoom,wide,height,newwide,newheight); 
 		CDibNew1->SetWidth(newwide/3);
 		CDibNew1->SetHeight(newheight);
-		Invalidate();           //µ÷ÓÃË¢ĞÂº¯Êı
+		Invalidate();           //è°ƒç”¨åˆ·æ–°å‡½æ•°
 	}
 }
 
-//Í¼ÏñËõĞ¡ÏûÏ¢Ó³Éä
+//å›¾åƒç¼©å°æ¶ˆæ¯æ˜ å°„
 void CDynSplitView2::OnSuoXiao() 
 {
 	if(state3==0)
 		CDibNew1->clearmem2(); 
 
-	float x,y;					//ËõĞ¡±¶Êı
+	float x,y;					//ç¼©å°å€æ•°
 	clearmem();	
-	CDlgSuoFang  dlg;			//´´½¨¶Ô»°¿ò
+	CDlgSuoFang  dlg;			//åˆ›å»ºå¯¹è¯æ¡†
 	dlg.m_XZoom=0.5;
 	dlg.m_YZoom=0.5;
 
-	// ÏÔÊ¾¶Ô»°¿ò£¬ÌáÊ¾ÓÃ»§Éè¶¨´°¿ÚÉÏÏÂÏŞ
+	// æ˜¾ç¤ºå¯¹è¯æ¡†ï¼Œæç¤ºç”¨æˆ·è®¾å®šçª—å£ä¸Šä¸‹é™
 	if (dlg.DoModal() != IDOK)
 	{
-		return;					//·µ»Ø
+		return;					//è¿”å›
 	}
 	x=dlg.m_XZoom;
 	y=dlg.m_YZoom;
 
-	delete dlg;					//É¾³ı¶Ô»°¿ò	 
-	CDibNew1->SuoXiao( x, y );	//µ÷ÓÃËõĞ¡´¦Àíº¯Êı
-    Invalidate();				//µ÷ÓÃË¢ĞÂº¯Êı
+	delete dlg;					//åˆ é™¤å¯¹è¯æ¡†	 
+	CDibNew1->SuoXiao( x, y );	//è°ƒç”¨ç¼©å°å¤„ç†å‡½æ•°
+    Invalidate();				//è°ƒç”¨åˆ·æ–°å‡½æ•°
 	state3=1;
 }
 

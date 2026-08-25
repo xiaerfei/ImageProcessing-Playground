@@ -43,21 +43,21 @@ CNumber PinYuLuBoDib::Mul(CNumber c1,CNumber c2)
 }
 
 ///////////////////////////////////////////////////
-//´Ëº¯ÊıÊµÏÖ¿ìËÙ¸µÁ¢Ò¶±ä»»
-//²ÎÊıt¡¢f·Ö±ğÊÇÖ¸ÏòÊ±ÓòºÍÆµÓòµÄÖ¸Õë£¬powerÊÇ2µÄÃİÊı
+//æ­¤å‡½æ•°å®ç°å¿«é€Ÿå‚…ç«‹å¶å˜æ¢
+//å‚æ•°tã€fåˆ†åˆ«æ˜¯æŒ‡å‘æ—¶åŸŸå’Œé¢‘åŸŸçš„æŒ‡é’ˆï¼Œpoweræ˜¯2çš„å¹‚æ•°
 ///////////////////////////////////////////////////
 void PinYuLuBoDib::QFC(CNumber* t,CNumber* f,int power)
 {
-	long count;//¸µÁ¢Ò¶±ä»»µãÊı
+	long count;//å‚…ç«‹å¶å˜æ¢ç‚¹æ•°
 	int i,j,k,p,bfsize;
-	CNumber *w,*x,*a,*b;//¸´Êı½á¹¹ÀàĞÍµÄÖ¸Õë±äÁ¿£¬ÆäÖĞwÖ¸Ïò¼ÓÈ¨ÏµÊı
-	double angle;//¼ÆËã¼ÓÈ¨ÏµÊıËùÓÃµÄ½Ç¶ÈÖµ
-	count=1<<power;//¼ÆËã¸µÁ¢Ò¶±ä»»µãÊı
-	//·ÖÅäËùĞèÔËËã¿Õ¼ä
+	CNumber *w,*x,*a,*b;//å¤æ•°ç»“æ„ç±»å‹çš„æŒ‡é’ˆå˜é‡ï¼Œå…¶ä¸­wæŒ‡å‘åŠ æƒç³»æ•°
+	double angle;//è®¡ç®—åŠ æƒç³»æ•°æ‰€ç”¨çš„è§’åº¦å€¼
+	count=1<<power;//è®¡ç®—å‚…ç«‹å¶å˜æ¢ç‚¹æ•°
+	//åˆ†é…æ‰€éœ€è¿ç®—ç©ºé—´
 	w=new CNumber[count/2];
 	a=new CNumber[count];
 	b=new CNumber[count];
-	//¼ÆËã¼ÓÈ¨ÏµÊı
+	//è®¡ç®—åŠ æƒç³»æ•°
 	for(i=0;i<count/2;i++)
 	{
 		angle=-i*pi*2/count;
@@ -65,7 +65,7 @@ void PinYuLuBoDib::QFC(CNumber* t,CNumber* f,int power)
 		w[i].im=sin(angle);
 	}
 	memcpy(a,t,sizeof(CNumber)*count);
-	//²ÉÓÃÆµÂÊ·Ö½â·¨½øĞĞµûĞÎÔËËã
+	//é‡‡ç”¨é¢‘ç‡åˆ†è§£æ³•è¿›è¡Œè¶å½¢è¿ç®—
 	for(k=0;k<power;k++)
 	{
 		for(j=0;j<1<<k;j++)
@@ -82,7 +82,7 @@ void PinYuLuBoDib::QFC(CNumber* t,CNumber* f,int power)
 		a=b;
 		b=x;
 	}
-	//½«ÂÒĞòµÄ±ä»»ĞòÁĞÖØĞÂÅÅĞò
+	//å°†ä¹±åºçš„å˜æ¢åºåˆ—é‡æ–°æ’åº
 	for(j=0;j<count;j++)
 	{
 		p=0;
@@ -93,65 +93,65 @@ void PinYuLuBoDib::QFC(CNumber* t,CNumber* f,int power)
 		}
 		f[j]=a[p];
 	}
-	//ÊÍ·Å´æ´¢Æ÷¿Õ¼ä
+	//é‡Šæ”¾å­˜å‚¨å™¨ç©ºé—´
 	delete w;
 	delete a;
 	delete b;
 }
 
 ///////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄ¸µÁ¢Ò¶±ä»»
-//Á½´Îµ÷ÓÃ¿ìËÙ¸µÁ¢Ò¶±ä»»QFC()ÊµÏÖ¶şÎ¬¸µÁ¢Ò¶±ä»»
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„å‚…ç«‹å¶å˜æ¢
+//ä¸¤æ¬¡è°ƒç”¨å¿«é€Ÿå‚…ç«‹å¶å˜æ¢QFC()å®ç°äºŒç»´å‚…ç«‹å¶å˜æ¢
 ///////////////////////////////////////////////
 void PinYuLuBoDib::QuickFourier()
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
-	long w=1,h=1;//½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¿í¶ÈºÍ¸ß¶È£¨2µÄÕûÊı´Î·½£©
-	int wp=0,hp=0;//µü´ú´ÎÊı
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
+	long w=1,h=1;//è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„å®½åº¦å’Œé«˜åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
+	int wp=0,hp=0;//è¿­ä»£æ¬¡æ•°
 	int i,j;
-	double temp;//ÖĞ¼ä±äÁ¿
+	double temp;//ä¸­é—´å˜é‡
 	CNumber *t,*f;
-    if(this->byBitCount==8)	//»Ò¶ÈÍ¼Ïñ
-		   p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else	//24Î»Õæ²ÊÉ«
+    if(this->byBitCount==8)	//ç°åº¦å›¾åƒ
+		   p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else	//24ä½çœŸå½©è‰²
 		   p_data=this->GetData2();
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	while(w*2<=width)//¼ÆËã½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¿í¶È£¨2µÄÕûÊı´Î·½£©
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	while(w*2<=width)//è®¡ç®—è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„å®½åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
 	{
 		w*=2;
 		wp++;
 	}
-	while(h*2<=height)//¼ÆËã½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¸ß¶È£¨2µÄÕûÊı´Î·½£©
+	while(h*2<=height)//è®¡ç®—è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„é«˜åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
 	{
 		h*=2;
 		hp++;
 	}
-	t=new CNumber[w*h];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	t=new CNumber[w*h];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	f=new CNumber[w*h];
 	for(j=0;j<h;j++)
 	{
 		for(i=0;i<w;i++)
 		{
-			p=p_data+lLineBytes*(height-j-1)+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[i+w*j].re=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*(height-j-1)+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[i+w*j].re=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[i+w*j].im=0;
 		}
 	}
-	for(j=0;j<h;j++)//ÔÚ´¹Ö±·½ÏòÉÏ½øĞĞ¿ìËÙ¸µÁ¢Ò¶±ä»»
+	for(j=0;j<h;j++)//åœ¨å‚ç›´æ–¹å‘ä¸Šè¿›è¡Œå¿«é€Ÿå‚…ç«‹å¶å˜æ¢
 	{
 		QFC(&t[w*j],&f[w*j],wp);
 	}
-	for(j=0;j<h;j++)//×ª»»±ä»»½á¹û
+	for(j=0;j<h;j++)//è½¬æ¢å˜æ¢ç»“æœ
 	{
 		for(i=0;i<w;i++)
 		{
 			t[j+h*i]=f[i+w*j];
 		}
 	}
-	for(j=0;j<w;j++)//Ë®Æ½·½Ïò½øĞĞ¿ìËÙ¸µÁ¢Ò¶±ä»»
+	for(j=0;j<w;j++)//æ°´å¹³æ–¹å‘è¿›è¡Œå¿«é€Ÿå‚…ç«‹å¶å˜æ¢
 	{
 		QFC(&t[j*h],&f[j*h],hp);
 	}
@@ -164,7 +164,7 @@ void PinYuLuBoDib::QuickFourier()
 				temp=255;
 			
 			p=p_data+lLineBytes*(height-(j<h/2?j+h/2:j-h/2)-1)+
-				(i<w/2?i+w/2:i-w/2);//½«±ä»»ºóµÄÔ­µãÒÆµ½ÖĞĞÄ
+				(i<w/2?i+w/2:i-w/2);//å°†å˜æ¢åçš„åŸç‚¹ç§»åˆ°ä¸­å¿ƒ
 			
 			*(p)=(BYTE)(temp);
 		}
@@ -174,58 +174,58 @@ void PinYuLuBoDib::QuickFourier()
 }
 
 ///////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄ¸µÁ¢Ò¶±ä»»(Ã»ÓĞ¶Ô´¦ÀíºóµÄÏÔÊ¾½á¹û½øĞĞÆ½ÒÆ)
-//Á½´Îµ÷ÓÃ¿ìËÙ¸µÁ¢Ò¶±ä»»QFC()ÊµÏÖ¶şÎ¬¸µÁ¢Ò¶±ä»»
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„å‚…ç«‹å¶å˜æ¢(æ²¡æœ‰å¯¹å¤„ç†åçš„æ˜¾ç¤ºç»“æœè¿›è¡Œå¹³ç§»)
+//ä¸¤æ¬¡è°ƒç”¨å¿«é€Ÿå‚…ç«‹å¶å˜æ¢QFC()å®ç°äºŒç»´å‚…ç«‹å¶å˜æ¢
 ///////////////////////////////////////////////
 void PinYuLuBoDib::FirstQuickFourier()
 {
-	LPBYTE  p_data,p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
-	long w=1,h=1;//½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¿í¶ÈºÍ¸ß¶È£¨2µÄÕûÊı´Î·½£©
-	int wp=0,hp=0;//µü´ú´ÎÊı
+	LPBYTE  p_data,p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
+	long w=1,h=1;//è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„å®½åº¦å’Œé«˜åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
+	int wp=0,hp=0;//è¿­ä»£æ¬¡æ•°
 	int i,j;
-	double temp;//ÖĞ¼ä±äÁ¿
+	double temp;//ä¸­é—´å˜é‡
 	CNumber *t,*f;
-    if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		   p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
+    if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		   p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
 		   p_data=this->GetData2();
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	while(w*2<=width)//¼ÆËã½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¿í¶È£¨2µÄÕûÊı´Î·½£©
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	while(w*2<=width)//è®¡ç®—è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„å®½åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
 	{
 		w*=2;
 		wp++;
 	}
-	while(h*2<=height)//¼ÆËã½øĞĞ¸µÁ¢Ò¶±ä»»µÄ¸ß¶È£¨2µÄÕûÊı´Î·½£©
+	while(h*2<=height)//è®¡ç®—è¿›è¡Œå‚…ç«‹å¶å˜æ¢çš„é«˜åº¦ï¼ˆ2çš„æ•´æ•°æ¬¡æ–¹ï¼‰
 	{
 		h*=2;
 		hp++;
 	}
-	t=new CNumber[w*h];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	t=new CNumber[w*h];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	f=new CNumber[w*h];
 	for(j=0;j<h;j++)
 	{
 		for(i=0;i<w;i++)
 		{
-			p=p_data+lLineBytes*(height-j-1)+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[i+w*j].re=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*(height-j-1)+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[i+w*j].re=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[i+w*j].im=0;
 		}
 	}
-	for(j=0;j<h;j++)//ÔÚ´¹Ö±·½ÏòÉÏ½øĞĞ¿ìËÙ¸µÁ¢Ò¶±ä»»
+	for(j=0;j<h;j++)//åœ¨å‚ç›´æ–¹å‘ä¸Šè¿›è¡Œå¿«é€Ÿå‚…ç«‹å¶å˜æ¢
 	{
 		QFC(&t[w*j],&f[w*j],wp);
 	}
-	for(j=0;j<h;j++)//×ª»»±ä»»½á¹û
+	for(j=0;j<h;j++)//è½¬æ¢å˜æ¢ç»“æœ
 	{
 		for(i=0;i<w;i++)
 		{
 			t[j+h*i]=f[i+w*j];
 		}
 	}
-	for(j=0;j<w;j++)//Ë®Æ½·½Ïò½øĞĞ¿ìËÙ¸µÁ¢Ò¶±ä»»
+	for(j=0;j<w;j++)//æ°´å¹³æ–¹å‘è¿›è¡Œå¿«é€Ÿå‚…ç«‹å¶å˜æ¢
 	{
 		QFC(&t[j*h],&f[j*h],hp);
 	}
@@ -237,7 +237,7 @@ void PinYuLuBoDib::FirstQuickFourier()
 			if(temp>255)
 				temp=255;
 			p=p_data+lLineBytes*(height-(j<h/2?j+h/2:j-h/2)-1)+
-				(i<w/2?i+w/2:i-w/2);//½«±ä»»ºóµÄÔ­µãÒÆµ½ÖĞĞÄ
+				(i<w/2?i+w/2:i-w/2);//å°†å˜æ¢åçš„åŸç‚¹ç§»åˆ°ä¸­å¿ƒ
 			p=p_data+lLineBytes*(height-(j<h/2?j:j)-1)+
 				(i<w/2?i:i);
 			*(p)=(BYTE)(temp);
@@ -249,8 +249,8 @@ void PinYuLuBoDib::FirstQuickFourier()
 
 
 //////////////////////////////////////////////////////////////
-//¸Ãº¯ÊıÓÃÀ´ÊµÏÖ¶şÎ¬¸µÁ¢Ò¶±ä»»
-//²ÎÊıheight¡¢width·Ö±ğ±íÊ¾Í¼ÏóµÄ¸ß¶ÈºÍ¿í¶È£¬ising±íÊ¾Õı·´±ä»»
+//è¯¥å‡½æ•°ç”¨æ¥å®ç°äºŒç»´å‚…ç«‹å¶å˜æ¢
+//å‚æ•°heightã€widthåˆ†åˆ«è¡¨ç¤ºå›¾è±¡çš„é«˜åº¦å’Œå®½åº¦ï¼Œisingè¡¨ç¤ºæ­£åå˜æ¢
 //////////////////////////////////////////////////////////////
 void PinYuLuBoDib::fourier(double * data, int height, int width, int isign)
 {
@@ -329,34 +329,34 @@ void PinYuLuBoDib::fourier(double * data, int height, int width, int isign)
 }
 
 /*************************************************************************
-* º¯Êı£ºBWFilterL(int u,int v,int u1,int v1)
-*²ÎÊı£ºu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
-*¹¦ÄÜ£º´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄ²¼ÌØÎÖË¹µÍÍ¨ÂË²¨
+* å‡½æ•°ï¼šBWFilterL(int u,int v,int u1,int v1)
+*å‚æ•°ï¼šuã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
+*åŠŸèƒ½ï¼šæ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„å¸ƒç‰¹æ²ƒæ–¯ä½é€šæ»¤æ³¢
 /*************************************************************************/
 
 void PinYuLuBoDib::BWFilterL(int u,int v,int n)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		   p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		   p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		   p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		   p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(i*i+j*j);
 			H[2*i+(2*lLineBytes)*j+1]=1/(1+pow((d/d0),(2*n)));
@@ -394,32 +394,32 @@ void PinYuLuBoDib::BWFilterL(int u,int v,int n)
 
 
 ////////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄ²¼ÌØÎÖË¹¸ßÍ¨ÂË²¨
-//²ÎÊıu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„å¸ƒç‰¹æ²ƒæ–¯é«˜é€šæ»¤æ³¢
+//å‚æ•°uã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
 ////////////////////////////////////////////////
 void PinYuLuBoDib::BWFilterH(int u,int v,int n)
 {
-	LPBYTE p_data,p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE p_data,p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		   p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		   p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		   p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		   p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(j*j+i*i);
 			H[2*i+(2*lLineBytes)*j+1]=1/(1+pow((d0/d),(2*n)));
@@ -456,34 +456,34 @@ void PinYuLuBoDib::BWFilterH(int u,int v,int n)
 
 
 /*************************************************************************
-* º¯Êı£ºPerfectFilterL(int u,int v)
-*²ÎÊı£ºu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
-*¹¦ÄÜ£º´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÀíÏëµÍÍ¨ÂË²¨
+* å‡½æ•°ï¼šPerfectFilterL(int u,int v)
+*å‚æ•°ï¼šuã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
+*åŠŸèƒ½ï¼šæ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„ç†æƒ³ä½é€šæ»¤æ³¢
 /*************************************************************************/
 
  void PinYuLuBoDib::PerfectFilterL(int u,int v)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double d0,max=0.0;//ÖĞ¼ä±äÁ¿
+	double d0,max=0.0;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			if((sqrt(i*i+j*j))<=d0)
 				H[2*i+(2*lLineBytes)*j+1]=1.0;
@@ -522,32 +522,32 @@ void PinYuLuBoDib::BWFilterH(int u,int v,int n)
 
 
 ////////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÀíÏë¸ßÍ¨ÂË²¨
-//²ÎÊıu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„ç†æƒ³é«˜é€šæ»¤æ³¢
+//å‚æ•°uã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
 ////////////////////////////////////////////////
 void PinYuLuBoDib::PerfectFilterH(int u,int v)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double d0,max=0.0;//ÖĞ¼ä±äÁ¿
+	double d0,max=0.0;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			if((sqrt(i*i+j*j))<=d0)
 				H[2*i+(2*lLineBytes)*j+1]=0.0;
@@ -585,36 +585,36 @@ void PinYuLuBoDib::PerfectFilterH(int u,int v)
 }
 
 /*************************************************************************
-* º¯Êı£ºTLFilter(int u,int v,int u1,int v1)
-*²ÎÊı£ºu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
-*¹¦ÄÜ£º´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÌİĞÎµÍÍ¨ÂË²¨
+* å‡½æ•°ï¼šTLFilter(int u,int v,int u1,int v1)
+*å‚æ•°ï¼šuã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
+*åŠŸèƒ½ï¼šæ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„æ¢¯å½¢ä½é€šæ»¤æ³¢
 /*************************************************************************/
 
 void PinYuLuBoDib::TLFilter(int u,int v,int u1,int v1)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d,d1;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d,d1;//ä¸­é—´å˜é‡
 	double *t,*H;
 
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		   p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		   p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		   p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		   p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	d1=sqrt(u1*u1+v1*v1);
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(i*i+j*j);
 			if(d<d0)
@@ -664,33 +664,33 @@ void PinYuLuBoDib::TLFilter(int u,int v,int u1,int v1)
 
 
 ////////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÌİĞÎ¸ßÍ¨ÂË²¨
-//²ÎÊıu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„æ¢¯å½¢é«˜é€šæ»¤æ³¢
+//å‚æ•°uã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
 ////////////////////////////////////////////////
 void PinYuLuBoDib::THFilter(int u,int v,int u1,int v1)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d,d1;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d,d1;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	d1=sqrt(u1*u1+v1*v1);
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(i*i+j*j);
 			
@@ -740,33 +740,33 @@ void PinYuLuBoDib::THFilter(int u,int v,int u1,int v1)
 }
 
 /*************************************************************************
-* º¯Êı£ºZLFilter(int u,int v,int u1,int v1)
-*²ÎÊı£ºu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
-*¹¦ÄÜ£º´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÖ¸ÊıµÍÍ¨ÂË²¨
+* å‡½æ•°ï¼šZLFilter(int u,int v,int u1,int v1)
+*å‚æ•°ï¼šuã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
+*åŠŸèƒ½ï¼šæ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„æŒ‡æ•°ä½é€šæ»¤æ³¢
 ///////////////////////////////////////////////*/
 void PinYuLuBoDib::ZLFilter(int u,int v,int n)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(i*i+j*j);
 			H[2*i+(2*lLineBytes)*j+1]=exp(-pow((d/d0),n));
@@ -803,32 +803,32 @@ void PinYuLuBoDib::ZLFilter(int u,int v,int n)
 
 
 ////////////////////////////////////////////////
-//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄÖ¸Êı¸ßÍ¨ÂË²¨
-//²ÎÊıu¡¢v·Ö±ğÊÇ½ØÖ¹ÆµÂÊµÄx¡¢y·ÖÁ¿Öµ£¬ÓÉÓÃ»§¸ø¶¨
+//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„æŒ‡æ•°é«˜é€šæ»¤æ³¢
+//å‚æ•°uã€våˆ†åˆ«æ˜¯æˆªæ­¢é¢‘ç‡çš„xã€yåˆ†é‡å€¼ï¼Œç”±ç”¨æˆ·ç»™å®š
 ////////////////////////////////////////////////
 void PinYuLuBoDib::ZHFilter(int u,int v,int n)
 {
-	LPBYTE  p_data, p;//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇøÖ¸Õë
-	int width,height;//Ô­Í¼ÏóµÄ¿í¶ÈºÍ¸ß¶È       
+	LPBYTE  p_data, p;//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒºæŒ‡é’ˆ
+	int width,height;//åŸå›¾è±¡çš„å®½åº¦å’Œé«˜åº¦       
 	int i,j;
-	double max=0.0,d0,d;//ÖĞ¼ä±äÁ¿
+	double max=0.0,d0,d;//ä¸­é—´å˜é‡
 	double *t,*H;
-	if(this->byBitCount==8)//»Ò¶ÈÍ¼Ïñ
-		p_data=this->GetData();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	else//24Î»Õæ²ÊÉ«
-		p_data=this->GetData2();//Ö¸ÏòÔ­Í¼ÏóÊı¾İÇø
-	width=this->GetWidth();//µÃµ½Í¼Ïó¿í¶È
-	height=this->GetHeight();//µÃµ½Í¼Ïó¸ß¶È
-    long lLineBytes=WIDTHBYTES(width*8);//¼ÆËãÍ¼ÏóÃ¿ĞĞµÄ×Ö½ÚÊı
-	t=new double [height*lLineBytes*2+1];//·ÖÅä´æ´¢Æ÷¿Õ¼ä
+	if(this->byBitCount==8)//ç°åº¦å›¾åƒ
+		p_data=this->GetData();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	else//24ä½çœŸå½©è‰²
+		p_data=this->GetData2();//æŒ‡å‘åŸå›¾è±¡æ•°æ®åŒº
+	width=this->GetWidth();//å¾—åˆ°å›¾è±¡å®½åº¦
+	height=this->GetHeight();//å¾—åˆ°å›¾è±¡é«˜åº¦
+    long lLineBytes=WIDTHBYTES(width*8);//è®¡ç®—å›¾è±¡æ¯è¡Œçš„å­—èŠ‚æ•°
+	t=new double [height*lLineBytes*2+1];//åˆ†é…å­˜å‚¨å™¨ç©ºé—´
 	H=new double [height*lLineBytes*2+1];
-	d0=sqrt(u*u+v*v);//¼ÆËã½ØÖ¹ÆµÂÊd0
+	d0=sqrt(u*u+v*v);//è®¡ç®—æˆªæ­¢é¢‘ç‡d0
 	for(j=0;j<height;j++)
 	{
 		for(i=0;i<lLineBytes;i++)
 		{
-			p=p_data+lLineBytes*j+i;//Ö¸ÏòµÚiĞĞµÚjÁĞÏóËØ
-			t[(2*lLineBytes)*j+2*i+1]=*(p);//¸øÊ±Óò¸³Öµ
+			p=p_data+lLineBytes*j+i;//æŒ‡å‘ç¬¬iè¡Œç¬¬jåˆ—è±¡ç´ 
+			t[(2*lLineBytes)*j+2*i+1]=*(p);//ç»™æ—¶åŸŸèµ‹å€¼
 			t[(2*lLineBytes)*j+2*i+2]=0.0;
 			d=sqrt(i*i+j*j);
 			H[2*i+(2*lLineBytes)*j+1]=exp(-pow((d0/d),n));

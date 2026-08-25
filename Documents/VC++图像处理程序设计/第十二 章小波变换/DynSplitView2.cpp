@@ -23,7 +23,7 @@ n=0;
 }
 
 
-/*��ʼ��ͼ������*/
+/*初始化图像数据*/
 void CDynSplitView2::clearmem()
 {
 /*	CDSplitDoc* pDoc = GetDocument();
@@ -34,7 +34,7 @@ void CDynSplitView2::clearmem()
 	CDibNew1=&pDoc->CDibNew;
     CDib1=&pDoc->CDib;
     long int  size=CDib1->GetHeight()*CDib1->GetWidth();
-     memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//����ԭͼ�񵽴�����
+     memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//复制原图像到处理区
 */
 }
 
@@ -164,7 +164,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-/*	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("λͼ�ļ�(*.BMP)|*.BMP|"));	
+/*	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("位图文件(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -184,7 +184,7 @@ void CDynSplitView2::clearmem2()
 	CDibNew1=&pDoc->CDibNew;
     CDib1=&pDoc->CDib;
     long int  size=CDib1->GetHeight()*CDib1->GetWidth();
-   memcpy(CDibNew1->m_pData2,CDib1->m_pData2,size);//����ԭͼ�񵽴�����
+   memcpy(CDibNew1->m_pData2,CDib1->m_pData2,size);//复制原图像到处理区
 
 }
 

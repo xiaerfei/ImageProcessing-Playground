@@ -11,16 +11,16 @@ public:
 public:
 	void Chaoxian(int T);
 	void HeiBaiFanZhuan();
-	void GuDing(int YuZhi);    //¹Ì¶¨ãĞÖµ·¨¶şÖµ»¯º¯Êı
-    void black(int connec);    //Ïû³ı¹ÂÁ¢ºÚÏñËØµãº¯Êı
-	void threethree();//3*3¾ùÖµÂË²¨
-	void nn(int n);//n*n¾ùÖµÂË²¨
-	void nnzhong(int n);//n*nÖĞÖµÂË²¨
-	void shizi(int n); //Ê®×ÖĞÍÖĞÖµÂË²¨Æ÷
-	void nnzuida(int n); //n*n×î´óÖµÂË²¨
-	void suijizaosheng();//²úÉúËæ»úÔëÉù
-    void jiaoyanzaosheng();//²úÉú½·ÑÎÔëÉù
-    void jubupingjun();//ÓĞÑ¡ÔñµÄ¾Ö²¿Æ½¾ù»¯ 
+	void GuDing(int YuZhi);    //å›ºå®šé˜ˆå€¼æ³•äºŒå€¼åŒ–å‡½æ•°
+    void black(int connec);    //æ¶ˆé™¤å­¤ç«‹é»‘åƒç´ ç‚¹å‡½æ•°
+	void threethree();//3*3å‡å€¼æ»¤æ³¢
+	void nn(int n);//n*nå‡å€¼æ»¤æ³¢
+	void nnzhong(int n);//n*nä¸­å€¼æ»¤æ³¢
+	void shizi(int n); //åå­—å‹ä¸­å€¼æ»¤æ³¢å™¨
+	void nnzuida(int n); //n*næœ€å¤§å€¼æ»¤æ³¢
+	void suijizaosheng();//äº§ç”Ÿéšæœºå™ªå£°
+    void jiaoyanzaosheng();//äº§ç”Ÿæ¤’ç›å™ªå£°
+    void jubupingjun();//æœ‰é€‰æ‹©çš„å±€éƒ¨å¹³å‡åŒ– 
 protected: 
 };
 #endif

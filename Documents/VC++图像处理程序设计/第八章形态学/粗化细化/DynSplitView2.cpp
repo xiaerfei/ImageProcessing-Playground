@@ -21,7 +21,7 @@ CDynSplitView2::CDynSplitView2()
 }
 
 
-/*³õÊ¼»¯Í¼ÏñÊı¾İ*/
+/*åˆå§‹åŒ–å›¾åƒæ•°æ®*/
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -32,7 +32,7 @@ void CDynSplitView2::clearmem()
 	CDibNew1=&pDoc->CDibNew;
     CDib1=&pDoc->CDib;
     long int  size=CDib1->GetHeight()*CDib1->GetDibWidthBytes();//GetWidth();
-     memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//¸´ÖÆÔ­Í¼Ïñµ½´¦ÀíÇø
+     memcpy(CDibNew1->m_pData,CDib1->m_pData,size);//å¤åˆ¶åŸå›¾åƒåˆ°å¤„ç†åŒº
 
 }
 
@@ -180,7 +180,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 void CDynSplitView2::OnFilesave() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -191,32 +191,32 @@ void CDynSplitView2::OnFilesave()
 }
 
 
-/*Ï¸»¯ÏûÏ¢Ó³Éä*/
+/*ç»†åŒ–æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnXihua() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->Xihua();             //µ÷ÓÃÏ¸»¯´¦Àíº¯Êı
+	CDibNew1->Xihua();             //è°ƒç”¨ç»†åŒ–å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
 
 
-/*´Ö»¯ÏûÏ¢Ó³Éä*/
+/*ç²—åŒ–æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnCuhua() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->Cuhua();             //µ÷ÓÃ´Ö»¯´¦Àíº¯Êı
+	CDibNew1->Cuhua();             //è°ƒç”¨ç²—åŒ–å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
 
-/*ÖĞÖá±ä»»ÏûÏ¢Ó³Éä*/
+/*ä¸­è½´å˜æ¢æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnZhongzhoubianhuan() 
 {
 	// TODO: Add your command handler code here
 	clearmem();
-	CDibNew1->Zhongzhoubianhuan();             //µ÷ÓÃÖĞÖá±ä»»´¦Àíº¯Êı
+	CDibNew1->Zhongzhoubianhuan();             //è°ƒç”¨ä¸­è½´å˜æ¢å¤„ç†å‡½æ•°
  	Invalidate();
 }

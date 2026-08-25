@@ -85,7 +85,7 @@ void CDSplitDoc::Dump(CDumpContext& dc) const
 void CDSplitDoc::OnFileopen() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(TRUE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("λͼ�ļ�(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(TRUE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("位图文件(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal ())
     filename.Format ("%s",dlg.GetPathName() );    
 	CDib.LoadFile(filename);

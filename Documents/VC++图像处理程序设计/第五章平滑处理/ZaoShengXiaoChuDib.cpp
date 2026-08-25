@@ -15,17 +15,17 @@ ZaoShengXiaoChuDib::~ZaoShengXiaoChuDib()
 }
 
 /***************************************************************/           
-/*º¯ÊıÃû³Æ£ºGuDing()                                           */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint Yuzhi£¬Éè¶¨µÄãĞÖµ                                  */
-/*¹¦ÄÜ£º¶ÔÍ¼ÏñÊ¹ÓÃ¹Ì¶¨ãĞÖµ·¨½øĞĞ¶şÖµ»¯¡£                       */
+/*å‡½æ•°åç§°ï¼šGuDing()                                           */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint Yuzhiï¼Œè®¾å®šçš„é˜ˆå€¼                                  */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒä½¿ç”¨å›ºå®šé˜ˆå€¼æ³•è¿›è¡ŒäºŒå€¼åŒ–ã€‚                       */
 /***************************************************************/
 void ZaoShengXiaoChuDib::GuDing(int YuZhi)
 {
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	p_data=this->GetData ();     //È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ		
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	p_data=this->GetData ();     //å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ		
 	{
 		wide=this->GetWidth ();
 		height=this->GetHeight ();
@@ -33,26 +33,26 @@ void ZaoShengXiaoChuDib::GuDing(int YuZhi)
 		{
 			for(int i=0;i<wide;i++)
 			{
-				if(*p_data>YuZhi)          //»Ò¶ÈÖµ´óÓÚ¸ø¶¨ãĞÖµ£¬ÖÃÎª255
+				if(*p_data>YuZhi)          //ç°åº¦å€¼å¤§äºç»™å®šé˜ˆå€¼ï¼Œç½®ä¸º255
 					*p_data=255;
 				else
-					*p_data=0;             //²»´óÓÚÖÃÎª0
+					*p_data=0;             //ä¸å¤§äºç½®ä¸º0
 				p_data++;
 			}
 		}
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
 		wide=this->GetWidth();
 		height=this->GetHeight ();
 		for(int j=0;j<height;j++)
 		{
-			for(int i=0;i<wide;i++)    //ËùÓĞÏñËØÒÀ´ÎÑ­»·
+			for(int i=0;i<wide;i++)    //æ‰€æœ‰åƒç´ ä¾æ¬¡å¾ªç¯
 			{
-				if(*p_data>YuZhi)          //ÈôÏñËØÖµ²»Îª0
-					*p_data=255;   //½«ÆäÖÃÎª255
+				if(*p_data>YuZhi)          //è‹¥åƒç´ å€¼ä¸ä¸º0
+					*p_data=255;   //å°†å…¶ç½®ä¸º255
 				else
-					*p_data=0;             //²»´óÓÚÖÃÎª0
+					*p_data=0;             //ä¸å¤§äºç½®ä¸º0
 				p_data++; 				 
 			}
 		}
@@ -60,30 +60,30 @@ void ZaoShengXiaoChuDib::GuDing(int YuZhi)
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºHeiBaiFanZhuan()                                   */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*¹¦ÄÜ£º¶Ô¶şÖµÍ¼ÏñµÄºÚ°×µãÔëÉùÏû³ı¡£                           */
+/*å‡½æ•°åç§°ï¼šHeiBaiFanZhuan()                                   */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*åŠŸèƒ½ï¼šå¯¹äºŒå€¼å›¾åƒçš„é»‘ç™½ç‚¹å™ªå£°æ¶ˆé™¤ã€‚                           */
 /***************************************************************/
 void ZaoShengXiaoChuDib::HeiBaiFanZhuan()
 {
 	int averg,averg2,averg3;
-	BYTE *p_data;		//Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	p_data=this->GetData ();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	BYTE *p_data;		//åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	p_data=this->GetData ();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		wide=this->GetWidth ();		//È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight ();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		GuDing(100);				//½øĞĞ¶şÖµ»¯
-		BYTE* p_temp=new BYTE[wide*height];// ÉêÇë²¢·ÖÅäÖĞ¼ä»º´æ
-		memcpy(p_temp,m_pData,wide*height);// ¸´ÖÆÍ¼ÏóÊı¾İµ½ÖĞ¼ä»º´æ
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		wide=this->GetWidth ();		//å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight ();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		GuDing(100);				//è¿›è¡ŒäºŒå€¼åŒ–
+		BYTE* p_temp=new BYTE[wide*height];// ç”³è¯·å¹¶åˆ†é…ä¸­é—´ç¼“å­˜
+		memcpy(p_temp,m_pData,wide*height);// å¤åˆ¶å›¾è±¡æ•°æ®åˆ°ä¸­é—´ç¼“å­˜
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{	
 			for(int i=1;i<wide-1;i++)
 			{
 				averg=0;			
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)((p_data[(j-1)*wide+(i-1)]+p_data[(j-1)*wide+i]
 					+p_data[(j-1)*wide+(i+1)]+p_data[j*wide+(i-1)]
 					+p_data[j*wide+i+1]+p_data[(j+1)*wide+(i-1)]
@@ -95,14 +95,14 @@ void ZaoShengXiaoChuDib::HeiBaiFanZhuan()
 		memcpy(p_data,p_temp,wide*height);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
-		wide=this->GetWidth();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight ();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		GuDing(100);  //½øĞĞ¶şÖµ»¯
-		BYTE* p_temp=new BYTE[wide*height*3];// ÉêÇë²¢·ÖÅäÖĞ¼ä»º´æ
-		memcpy(p_temp,m_pData,wide*height*3);// ¸´ÖÆÍ¼ÏóÊı¾İµ½ÖĞ¼ä»º´æ
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		wide=this->GetWidth();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight ();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		GuDing(100);  //è¿›è¡ŒäºŒå€¼åŒ–
+		BYTE* p_temp=new BYTE[wide*height*3];// ç”³è¯·å¹¶åˆ†é…ä¸­é—´ç¼“å­˜
+		memcpy(p_temp,m_pData,wide*height*3);// å¤åˆ¶å›¾è±¡æ•°æ®åˆ°ä¸­é—´ç¼“å­˜
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{	
 			for(int i=1;i<wide-1;i++)
@@ -110,7 +110,7 @@ void ZaoShengXiaoChuDib::HeiBaiFanZhuan()
 				averg=0;
 				averg2=0;
 				averg3=0;
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)((p_data[(j-1)*wide*3+(i-1)*3]+p_data[(j-1)*wide*3+i*3]
 					+p_data[(j-1)*wide*3+(i+1)*3]+p_data[j*wide*3+(i-1)*3]
 					+p_data[j*wide*3+(i+1)*3]+p_data[(j+1)*wide*3+(i-1)*3]
@@ -137,27 +137,27 @@ void ZaoShengXiaoChuDib::HeiBaiFanZhuan()
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºblack(int connec)                                  */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint connec£¬Éè¶¨µÄÁ¬Í¨Ñ¡Ôñ                             */
-/*¹¦ÄÜ£º¶Ô¶şÖµÍ¼Ïñ½øĞĞÏû³ı¹ÂÁ¢ºÚÏñËØµã¡£                       */
+/*å‡½æ•°åç§°ï¼šblack(int connec)                                  */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint connecï¼Œè®¾å®šçš„è¿é€šé€‰æ‹©                             */
+/*åŠŸèƒ½ï¼šå¯¹äºŒå€¼å›¾åƒè¿›è¡Œæ¶ˆé™¤å­¤ç«‹é»‘åƒç´ ç‚¹ã€‚                       */
 /***************************************************************/
 void ZaoShengXiaoChuDib::black(int connec)
 {
-	// Ö¸ÏòDIBÏóËØÖ¸Õë
+	// æŒ‡å‘DIBè±¡ç´ æŒ‡é’ˆ
 	BYTE *p_data;
-    p_data=this->GetData();  	//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë 
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+    p_data=this->GetData();  	//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ 
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		int wide=this->GetWidth();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		int height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		//¶şÖµ»¯
+		int wide=this->GetWidth();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		int height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		//äºŒå€¼åŒ–
 		GuDing(100);	
-		// ÉêÇë²¢·ÖÅäÖĞ¼ä»º´æ
+		// ç”³è¯·å¹¶åˆ†é…ä¸­é—´ç¼“å­˜
 		BYTE* p_temp=new BYTE[wide*height]; 	
-		// ¸´ÖÆÍ¼ÏóÊı¾İµ½ÖĞ¼ä»º´æ
+		// å¤åˆ¶å›¾è±¡æ•°æ®åˆ°ä¸­é—´ç¼“å­˜
 		memcpy(p_temp,p_data,wide*height);
-		// 4Á¬½ÓµÄÇé¿öÏÂ£¬ÏûÈ¥ÉÏÏÂ×óÓÒ¶¼Îª255(°×µã)µÄ¹ÂÁ¢ºÚµã	
+		// 4è¿æ¥çš„æƒ…å†µä¸‹ï¼Œæ¶ˆå»ä¸Šä¸‹å·¦å³éƒ½ä¸º255(ç™½ç‚¹)çš„å­¤ç«‹é»‘ç‚¹	
 		if (connec==4)
 		{
 			for (int j=1;j<height-1;j++)
@@ -177,7 +177,7 @@ void ZaoShengXiaoChuDib::black(int connec)
 			}
 	delete p_temp;
 		}
-		// 8Á¬½ÓµÄÇé¿öÏÂ£¬ÏûÈ¥ÖÜÎ§¶¼Îª255(°×µã)µÄ¹ÂÁ¢ºÚµã	
+		// 8è¿æ¥çš„æƒ…å†µä¸‹ï¼Œæ¶ˆå»å‘¨å›´éƒ½ä¸º255(ç™½ç‚¹)çš„å­¤ç«‹é»‘ç‚¹	
 		if (connec==8)
 		{
 			for (int j = 1; j < height-1; j ++)
@@ -203,17 +203,17 @@ delete p_temp;
 		}
 			
 	}
-/*	else	//24Î»²ÊÉ«
+/*	else	//24ä½å½©è‰²
 	{
-		int wide= this->GetWidth();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		int height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		//¶şÖµ»¯
+		int wide= this->GetWidth();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		int height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		//äºŒå€¼åŒ–
 		GuDing(100);	
-		// ÉêÇë²¢·ÖÅäÖĞ¼ä»º´æ
+		// ç”³è¯·å¹¶åˆ†é…ä¸­é—´ç¼“å­˜
 		BYTE* p_temp=new BYTE[wide*height*3]; 	
-		// ¸´ÖÆÍ¼ÏóÊı¾İµ½ÖĞ¼ä»º´æ
+		// å¤åˆ¶å›¾è±¡æ•°æ®åˆ°ä¸­é—´ç¼“å­˜
 		memcpy(p_temp,p_data,wide*height*3);
-		// 4Á¬½ÓµÄÇé¿öÏÂ£¬ÏûÈ¥ÉÏÏÂ×óÓÒ¶¼Îª255(°×µã)µÄ¹ÂÁ¢ºÚµã	
+		// 4è¿æ¥çš„æƒ…å†µä¸‹ï¼Œæ¶ˆå»ä¸Šä¸‹å·¦å³éƒ½ä¸º255(ç™½ç‚¹)çš„å­¤ç«‹é»‘ç‚¹	
 		if (connec==4)
 		{
 			for (int j=1;j<height-1;j++)
@@ -245,7 +245,7 @@ delete p_temp;
 			}
 			delete p_temp;
 		}
-		// 8Á¬½ÓµÄÇé¿öÏÂ£¬ÏûÈ¥ÖÜÎ§¶¼Îª255(°×µã)µÄ¹ÂÁ¢ºÚµã	
+		// 8è¿æ¥çš„æƒ…å†µä¸‹ï¼Œæ¶ˆå»å‘¨å›´éƒ½ä¸º255(ç™½ç‚¹)çš„å­¤ç«‹é»‘ç‚¹	
 		if (connec==8)
 		{
 			for (int j = 1; j < height-1; j ++)
@@ -294,30 +294,30 @@ delete p_temp;
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºthreethree()                                       */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ3*3¾ùÖµÂË²¨´¦Àí¡£                            */
+/*å‡½æ•°åç§°ï¼šthreethree()                                       */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œ3*3å‡å€¼æ»¤æ³¢å¤„ç†ã€‚                            */
 /***************************************************************/
 void ZaoShengXiaoChuDib::threethree() 
 {
 	float averg,averg2,averg3;
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	p_data=this->GetData ();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	wide=this->GetWidth (); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight ();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	p_data=this->GetData ();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	wide=this->GetWidth (); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight ();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{    
 		BYTE* p_temp=new BYTE[wide*height];
 		int size=wide*height;
 		memset(p_temp,255,size);
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{
 			for(int i=1;i<wide-1;i++)
 			{
 				averg=0;
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)(p_data[(j-1)*wide+(i-1)]+p_data[(j-1)*wide+i]
 					+p_data[(j-1)*wide+(i+1)]+p_data[j*wide+(i-1)]
 					+p_data[j*wide+i+1]+p_data[(j+1)*wide+(i-1)]
@@ -329,13 +329,13 @@ void ZaoShengXiaoChuDib::threethree()
 		memcpy(p_data,p_temp,wide*height);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{		
 		BYTE* p_temp=new BYTE[wide*height*3];
 		int size=wide*height*3;
 		memset(p_temp,255,size);
 		
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{
 			for(int i=1;i<wide-1;i++)
@@ -343,7 +343,7 @@ void ZaoShengXiaoChuDib::threethree()
 				averg=0;
 				averg2=0;
 				averg3=0;
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)(p_data[(j-1)*wide*3+(i-1)*3]+p_data[(j-1)*wide*3+i*3]
 					+p_data[(j-1)*wide*3+(i+1)*3]+p_data[j*wide*3+(i-1)*3]
 					+p_data[j*wide*3+(i+1)*3]+p_data[(j+1)*wide*3+(i-1)*3]
@@ -367,31 +367,31 @@ void ZaoShengXiaoChuDib::threethree()
 }
 
 /***************************************************************/
-/*º¯ÊıÃû³Æ£ºChaoxian(int T)                                    */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint T£¬Éè¶¨µÄãĞÖµ                                      */
-/*¹¦ÄÜ£º³¬ÏŞÁÚÓòÆ½¾ù·¨¡£                                       */
+/*å‡½æ•°åç§°ï¼šChaoxian(int T)                                    */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint Tï¼Œè®¾å®šçš„é˜ˆå€¼                                      */
+/*åŠŸèƒ½ï¼šè¶…é™é‚»åŸŸå¹³å‡æ³•ã€‚                                       */
 /***************************************************************/
 void ZaoShengXiaoChuDib::Chaoxian(int T)
 {
 	int averg,averg2,averg3;
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	p_data=this->GetData ();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	wide=this->GetWidth (); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight ();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	p_data=this->GetData ();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	wide=this->GetWidth (); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight ();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{    
 		BYTE* p_temp=new BYTE[wide*height];
 		int size=wide*height;
 		memset(p_temp,255,size);
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{
 			for(int i=1;i<wide-1;i++)
 			{
 				averg=0;
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)(p_data[(j-1)*wide+(i-1)]+p_data[(j-1)*wide+i]
 					+p_data[(j-1)*wide+(i+1)]+p_data[j*wide+(i-1)]
 					+p_data[j*wide+i+1]+p_data[(j+1)*wide+(i-1)]
@@ -403,12 +403,12 @@ void ZaoShengXiaoChuDib::Chaoxian(int T)
 		memcpy(p_data,p_temp,wide*height);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{	
 		BYTE* p_temp=new BYTE[wide*height*3];
 		int size=wide*height*3;
 		memset(p_temp,255,size);
-		//ÓÃ3*3ÆÁ±Î´°¿ÚµÄ8½üÁÚ¾ùÖµ½øĞĞÂË²¨
+		//ç”¨3*3å±è”½çª—å£çš„8è¿‘é‚»å‡å€¼è¿›è¡Œæ»¤æ³¢
 		for(int j=1;j<height-1;j++)
 		{
 			for(int i=1;i<wide-1;i++)
@@ -416,7 +416,7 @@ void ZaoShengXiaoChuDib::Chaoxian(int T)
 				averg=0;
 				averg2=0;
 				averg3=0;
-				//ÇóÖÜÎ§8½üÁÚ¾ùÖµ
+				//æ±‚å‘¨å›´8è¿‘é‚»å‡å€¼
 				averg=(int)(p_data[(j-1)*wide*3+(i-1)*3]+p_data[(j-1)*wide+i*3]
 					+p_data[(j-1)*wide*3+(i+1)*3]+p_data[j*wide+(i-1)*3]
 					+p_data[j*wide*3+(i+1)*3]+p_data[(j+1)*wide+(i-1)*3]
@@ -443,10 +443,10 @@ void ZaoShengXiaoChuDib::Chaoxian(int T)
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºnn(int n)                                          */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint n£¬Éè¶¨µÄÆÁ±Î´°¿Ú²ÎÊı£¨ÆæÊı£©                      */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞn*n¾ùÖµÂË²¨´¦Àí¡£                            */
+/*å‡½æ•°åç§°ï¼šnn(int n)                                          */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint nï¼Œè®¾å®šçš„å±è”½çª—å£å‚æ•°ï¼ˆå¥‡æ•°ï¼‰                      */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œn*nå‡å€¼æ»¤æ³¢å¤„ç†ã€‚                            */
 /***************************************************************/
 void ZaoShengXiaoChuDib::nn(int n)
 {
@@ -454,28 +454,28 @@ void ZaoShengXiaoChuDib::nn(int n)
 	size=GetSize();
 	BYTE *p_data;
 	int xx,yy,n2,sum,sum2,sum3;
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
 		BYTE* p_temp=new BYTE [size];
 		memset(p_temp,255,size);
-		if(n<3||n%2!=1)//È·ÈÏnÎªÆæÊı
-			AfxMessageBox("ÇëÊäÈëÒ»¸ö´óÓÚµÈÓÚ3µÄÆæÊı");
+		if(n<3||n%2!=1)//ç¡®è®¤nä¸ºå¥‡æ•°
+			AfxMessageBox("è¯·è¾“å…¥ä¸€ä¸ªå¤§äºç­‰äº3çš„å¥‡æ•°");
 		if(n>=3&&n%2==1)
 			n2=(n-1)/2;
-		p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-		wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		//ÓÃN*NÆÁ±Î´°¿ÚÆ½¾ù»¯
+		p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+		wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		//ç”¨N*Nå±è”½çª—å£å¹³å‡åŒ–
 		for(int j=n2;j<height-n2;j++)
 		{
 			for(int i=n2;i<wide-n2;i++)
-			{	//ÇóN*NÆÁ±Î´°¿ÚÄÚµÄ×ÜºÍsum
+			{	//æ±‚N*Nå±è”½çª—å£å†…çš„æ€»å’Œsum
 				sum=0;
 				for(yy=j-n2;yy<=j+n2;yy++)
 					for(xx=i-n2;xx<=i+n2;xx++)
 						sum+=p_data[yy*wide+xx];
-				//°Ñn*nÆÁ±Î´°¿ÚÄÚµÄÆ½¾ùÖµËÄÉáÎåÈëºó×÷ÎªÏÔÊ¾Í¼ÏñÏñËØÖµ
+				//æŠŠn*nå±è”½çª—å£å†…çš„å¹³å‡å€¼å››èˆäº”å…¥åä½œä¸ºæ˜¾ç¤ºå›¾åƒåƒç´ å€¼
 				p_temp[j*wide+i]=(int)((float)sum/(n*n)+0.5);
 					
 			}
@@ -483,23 +483,23 @@ void ZaoShengXiaoChuDib::nn(int n)
 		memcpy(p_data,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{			
-		if(n<3||n%2!=1)//È·ÈÏnÎªÆæÊı
-			AfxMessageBox("ÇëÊäÈëÒ»¸ö´óÓÚµÈÓÚ3µÄÆæÊı");
+		if(n<3||n%2!=1)//ç¡®è®¤nä¸ºå¥‡æ•°
+			AfxMessageBox("è¯·è¾“å…¥ä¸€ä¸ªå¤§äºç­‰äº3çš„å¥‡æ•°");
 		if(n>=3&&n%2==1)
 			n2=(n-1)/2;
-		p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-		wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
+		p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+		wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
 		BYTE* p_temp=new BYTE [wide*height*3];
 		memset(p_temp,255,wide*height*3);
-		//ÓÃN*NÆÁ±Î´°¿ÚÆ½¾ù»¯
+		//ç”¨N*Nå±è”½çª—å£å¹³å‡åŒ–
 		for(int j=n2;j<height-n2;j++)
 		{
 			for(int i=n2;i<wide-n2;i++)
 			{	
-				//ÇóN*NÆÁ±Î´°¿ÚÄÚµÄ×ÜºÍsum
+				//æ±‚N*Nå±è”½çª—å£å†…çš„æ€»å’Œsum
 				sum=0;
 				sum2=0;
 				sum3=0;
@@ -510,7 +510,7 @@ void ZaoShengXiaoChuDib::nn(int n)
 						sum2+=p_data[yy*wide*3+xx*3+1];
 						sum3+=p_data[yy*wide*3+xx*3+2];
 					}
-				//°Ñn*nÆÁ±Î´°¿ÚÄÚµÄÆ½¾ùÖµËÄÉáÎåÈëºó×÷ÎªÏÔÊ¾Í¼ÏñÏñËØÖµ
+				//æŠŠn*nå±è”½çª—å£å†…çš„å¹³å‡å€¼å››èˆäº”å…¥åä½œä¸ºæ˜¾ç¤ºå›¾åƒåƒç´ å€¼
 				p_temp[j*wide*3+i*3]=(int)((float)sum/(n*n)+0.5);
 				p_temp[j*wide*3+i*3+1]=(int)((float)sum2/(n*n)+0.5);
 				p_temp[j*wide*3+i*3+2]=(int)((float)sum3/(n*n)+0.5);
@@ -522,10 +522,10 @@ void ZaoShengXiaoChuDib::nn(int n)
 } 
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºnnzhong(int n)                                     */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint n£¬Éè¶¨µÄÆÁ±Î´°¿Ú²ÎÊı£¨ÆæÊı£©                      */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞn*nÖĞÖµÂË²¨´¦Àí¡£                            */
+/*å‡½æ•°åç§°ï¼šnnzhong(int n)                                     */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint nï¼Œè®¾å®šçš„å±è”½çª—å£å‚æ•°ï¼ˆå¥‡æ•°ï¼‰                      */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œn*nä¸­å€¼æ»¤æ³¢å¤„ç†ã€‚                            */
 /***************************************************************/
 void ZaoShengXiaoChuDib::nnzhong(int n)
 {
@@ -534,24 +534,24 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 	BYTE* p_temp=new BYTE [size];
 	memset(p_temp,255,size);
 	int yy,xx,n2,nn,chuo,chg,m,medi,medi2,medi3,madom,mado[1000],mado2[1000],mado3[1000];
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	if(n<3||n%2!=1)//¼ì²éÈ¡ÖµÊÇ·ñÎª3.5.7µÈµÄÆæÊı
-		AfxMessageBox("ÇëÊäÈëÒ»¸ö´óÓÚµÈÓÚ3µÄÆæÊı");
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	if(n<3||n%2!=1)//æ£€æŸ¥å–å€¼æ˜¯å¦ä¸º3.5.7ç­‰çš„å¥‡æ•°
+		AfxMessageBox("è¯·è¾“å…¥ä¸€ä¸ªå¤§äºç­‰äº3çš„å¥‡æ•°");
 	if(n>=3&&n%2==1)
 		n2=(n-1)/2;
     nn=n*n;
 	chuo=(nn-1)/2;
-	p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		//n*nÖĞÖµÂË²¨
+		//n*nä¸­å€¼æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 			for(int i=n2;i<wide-n2;i++)
 			{
-				//°Ñn*nÆÁ±Î´°¿Ú²¿·ÖµÄËùÓĞÏñËØÖµ·ÅÈëmado[m]
+				//æŠŠn*nå±è”½çª—å£éƒ¨åˆ†çš„æ‰€æœ‰åƒç´ å€¼æ”¾å…¥mado[m]
 				m=0;
 				for(yy=j-n2;yy<=j+n2;yy++)
 					for(xx=i-n2;xx<=i+n2;xx++)
@@ -559,7 +559,7 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 						mado[m]=p_data[yy*wide+xx];
 						m++;
 					}
-				//°Ñmado[m]ÖĞµÄÖµ°´ÏÂ½µË³ĞòÓÃÃ°Åİ·¨ÅÅĞò
+				//æŠŠmado[m]ä¸­çš„å€¼æŒ‰ä¸‹é™é¡ºåºç”¨å†’æ³¡æ³•æ’åº
 				do{
 					chg=0;
 					for(m=0;m<nn-1;m++)
@@ -573,21 +573,21 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 						}
 					}
 				}while(chg==1);	
-				//ÇóÖĞÖµmedi
+				//æ±‚ä¸­å€¼medi
 				medi=mado[chuo];
-				//°ÑÖĞÖµ´úÈëÏÔÊ¾Í¼ÏñÖĞ
+				//æŠŠä¸­å€¼ä»£å…¥æ˜¾ç¤ºå›¾åƒä¸­
 				p_temp[j*wide+i]=medi;
 			}
 		memcpy(p_data,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
-		//n*nÖĞÖµÂË²¨
+		//n*nä¸­å€¼æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 			for(int i=n2;i<wide-n2;i++)
 			{
-				//°Ñn*nÆÁ±Î´°¿Ú²¿·ÖµÄËùÓĞÏñËØÖµ·ÅÈëmado[m]
+				//æŠŠn*nå±è”½çª—å£éƒ¨åˆ†çš„æ‰€æœ‰åƒç´ å€¼æ”¾å…¥mado[m]
 				m=0;
 				for(yy=j-n2;yy<=j+n2;yy++)
 					for(xx=i-n2;xx<=i+n2;xx++)
@@ -597,7 +597,7 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 						mado3[m]=p_data[yy*wide*3+xx*3+2];
 						m++;
 					}
-				//°Ñmado[m]ÖĞµÄÖµ°´ÏÂ½µË³ĞòÓÃÃ°Åİ·¨ÅÅĞò
+				//æŠŠmado[m]ä¸­çš„å€¼æŒ‰ä¸‹é™é¡ºåºç”¨å†’æ³¡æ³•æ’åº
 				do{
 					chg=0;
 					for(m=0;m<nn-1;m++)
@@ -625,11 +625,11 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 						}
 					}
 				}while(chg==1);	
-				//ÇóÖĞÖµmedi
+				//æ±‚ä¸­å€¼medi
 				medi=mado[chuo];
 				medi2=mado2[chuo];
 				medi3=mado3[chuo];
-				//°ÑÖĞÖµ´úÈëÏÔÊ¾Í¼ÏñÖĞ
+				//æŠŠä¸­å€¼ä»£å…¥æ˜¾ç¤ºå›¾åƒä¸­
 				p_temp[j*wide*3+i*3]=medi;
 				p_temp[j*wide*3+i*3+1]=medi2;
 				p_temp[j*wide*3+i*3+2]=medi3;
@@ -640,10 +640,10 @@ void ZaoShengXiaoChuDib::nnzhong(int n)
 }
 
 /***************************************************************/
-/*º¯ÊıÃû³Æ£ºshizi(int n)                                       */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint n£¬Éè¶¨µÄÆÁ±Î´°¿Ú²ÎÊı£¨ÆæÊı£©                      */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞÊ®×ÖĞÍÖĞÖµÂË²¨¡£                             */
+/*å‡½æ•°åç§°ï¼šshizi(int n)                                       */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint nï¼Œè®¾å®šçš„å±è”½çª—å£å‚æ•°ï¼ˆå¥‡æ•°ï¼‰                      */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œåå­—å‹ä¸­å€¼æ»¤æ³¢ã€‚                             */
 /***************************************************************/
 void ZaoShengXiaoChuDib::shizi(int n)
 { 
@@ -652,39 +652,39 @@ void ZaoShengXiaoChuDib::shizi(int n)
 	BYTE* p_temp=new BYTE [size];
 	memset(p_temp,255,size);
     int yy,xx,n2,nn,chuo,chg,m,medi,medi2,medi3,madom,mado[1000],mado2[1000],mado3[1000];
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
-	if(n<3||n%2!=1)//¼ì²éÈ¡ÖµÊÇ·ñÎª3.5.7µÈµÄÆæÊı
-	AfxMessageBox("ÇëÊäÈëÒ»¸ö´óÓÚµÈÓÚ3µÄÆæÊı");
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
+	if(n<3||n%2!=1)//æ£€æŸ¥å–å€¼æ˜¯å¦ä¸º3.5.7ç­‰çš„å¥‡æ•°
+	AfxMessageBox("è¯·è¾“å…¥ä¸€ä¸ªå¤§äºç­‰äº3çš„å¥‡æ•°");
 	if(n>=3&&n%2==1)
     n2=(n-1)/2;
     nn=n+n-1;
     chuo=(nn-1)/2;
-	p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		//Ê®×ÖĞÍÖĞÖµÂË²¨
+		//åå­—å‹ä¸­å€¼æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 		for(int i=n2;i<wide-n2;i++)
 		{
-			//°ÑÊ®×ÖĞÍÆÁ±Î´°¿Ú²¿·ÖµÄËùÓĞÏñËØÖµ´úÈëmado[m]
-			//(´úÈëº¬ÖĞĞÄµÄ´¹Ö±²¿·Ö)
+			//æŠŠåå­—å‹å±è”½çª—å£éƒ¨åˆ†çš„æ‰€æœ‰åƒç´ å€¼ä»£å…¥mado[m]
+			//(ä»£å…¥å«ä¸­å¿ƒçš„å‚ç›´éƒ¨åˆ†)
 			m=0;
 			for(yy=j-n2;yy<=j+n2;yy++)
 			{
 				mado[m]=p_data[yy*wide+i];
 				m++;
 			}
-			//£¨´úÈëÖĞĞÄÒÔÍâµÄµÄË®Æ½²¿·Ö£©
+			//ï¼ˆä»£å…¥ä¸­å¿ƒä»¥å¤–çš„çš„æ°´å¹³éƒ¨åˆ†ï¼‰
 			for(xx=i-n2;xx<=i+n2;xx++)
 			{
 				if(xx==i)continue;
 				mado[m]=p_data[j*wide+xx];
 				m++;
 			}
-			//°Ñmado[m]µÄÄÚÈİ°´ÏÂ½µË³ĞòÃ°Åİ·¨·ÖÀà
+			//æŠŠmado[m]çš„å†…å®¹æŒ‰ä¸‹é™é¡ºåºå†’æ³¡æ³•åˆ†ç±»
 			do{
 				chg=0;
 				for(m=0;m<nn-1;m++)
@@ -698,21 +698,21 @@ void ZaoShengXiaoChuDib::shizi(int n)
 					}
 				}
 			}while(chg==1);
-			//ÇóÖĞÖµmedi
+			//æ±‚ä¸­å€¼medi
 			medi=mado[chuo];
 			p_temp[j*wide+i]=medi;
 		}		
 		memcpy(m_pData,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{	
-		//Ê®×ÖĞÍÖĞÖµÂË²¨
+		//åå­—å‹ä¸­å€¼æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 		for(int i=n2;i<wide-n2;i++)
 		{
-			//°ÑÊ®×ÖĞÍÆÁ±Î´°¿Ú²¿·ÖµÄËùÓĞÏñËØÖµ´úÈëmado[m]
-			//(´úÈëº¬ÖĞĞÄµÄ´¹Ö±²¿·Ö)
+			//æŠŠåå­—å‹å±è”½çª—å£éƒ¨åˆ†çš„æ‰€æœ‰åƒç´ å€¼ä»£å…¥mado[m]
+			//(ä»£å…¥å«ä¸­å¿ƒçš„å‚ç›´éƒ¨åˆ†)
 			m=0;
 			for(yy=j-n2;yy<=j+n2;yy++)
 			{
@@ -721,7 +721,7 @@ void ZaoShengXiaoChuDib::shizi(int n)
 				mado3[m]=p_data[yy*wide*3+i*3+2];
 				m++;
 			}
-			//£¨´úÈëÖĞĞÄÒÔÍâµÄµÄË®Æ½²¿·Ö£©
+			//ï¼ˆä»£å…¥ä¸­å¿ƒä»¥å¤–çš„çš„æ°´å¹³éƒ¨åˆ†ï¼‰
 			for(xx=i-n2;xx<=i+n2;xx++)
 			{
 				if(xx==i)continue;
@@ -730,7 +730,7 @@ void ZaoShengXiaoChuDib::shizi(int n)
 				mado3[m]=p_data[j*wide*3+xx*3+2];
 				m++;
 			}
-			//°Ñmado[m]µÄÄÚÈİ°´ÏÂ½µË³ĞòÃ°Åİ·¨·ÖÀà
+			//æŠŠmado[m]çš„å†…å®¹æŒ‰ä¸‹é™é¡ºåºå†’æ³¡æ³•åˆ†ç±»
 			do{
 				chg=0;
 				for(m=0;m<nn-1;m++)
@@ -758,7 +758,7 @@ void ZaoShengXiaoChuDib::shizi(int n)
 					}
 				}
 			}while(chg==1);
-			//ÇóÖĞÖµmedi
+			//æ±‚ä¸­å€¼medi
 			medi=mado[chuo];
 			medi2=mado2[chuo];
 			medi3=mado3[chuo];
@@ -772,35 +772,35 @@ void ZaoShengXiaoChuDib::shizi(int n)
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºnnzuida(int n)                                     */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºint n£¬Éè¶¨µÄÆÁ±Î´°¿Ú²ÎÊı£¨ÆæÊı£©                      */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞN*N×î´óÖµÂË²¨¡£                              */
+/*å‡½æ•°åç§°ï¼šnnzuida(int n)                                     */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šint nï¼Œè®¾å®šçš„å±è”½çª—å£å‚æ•°ï¼ˆå¥‡æ•°ï¼‰                      */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡ŒN*Næœ€å¤§å€¼æ»¤æ³¢ã€‚                              */
 /***************************************************************/
 void ZaoShengXiaoChuDib::nnzuida(int n)
 {
     DWORD size;
 	size=GetSize();
 	int yy,xx,n2,nn,m,madomax,madomax2,madomax3,mado[1000],mado2[1000],mado3[1000];
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
 	int wide,height;
     BYTE* p_temp=new BYTE [size];
 	memset(p_temp,255,size);
-	if(n<3||n%2!=1)//È·ÈÏnÊÇ3ÒÔÉÏµÄÆæÊı
-	AfxMessageBox("ÇëÊäÈëÒ»¸ö´óÓÚµÈÓÚ3µÄÆæÊı");
+	if(n<3||n%2!=1)//ç¡®è®¤næ˜¯3ä»¥ä¸Šçš„å¥‡æ•°
+	AfxMessageBox("è¯·è¾“å…¥ä¸€ä¸ªå¤§äºç­‰äº3çš„å¥‡æ•°");
 	if(n>=3&&n%2==1)
 	n2=(n-1)/2;
 	nn=n*n;
-	p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-   	wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+   	wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		//n*n×î´óÖµÆµÂÊÂË²¨
+		//n*næœ€å¤§å€¼é¢‘ç‡æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 		for(int i=n2;i<wide-n2;i++)
 		{
-			//°Ñn*nÆÁ±Î´°¿Ú²¿·Ö¸´ÖÆµ½mado[m]
+			//æŠŠn*nå±è”½çª—å£éƒ¨åˆ†å¤åˆ¶åˆ°mado[m]
 			m=0;
 			for(yy=j-n2;yy<=j+n2;yy++)
 			for(xx=i-n2;xx<=i+n2;xx++)
@@ -808,7 +808,7 @@ void ZaoShengXiaoChuDib::nnzuida(int n)
 				mado[m]=p_data[yy*wide+xx];
 				m++;
 			}
-			//ÕÒ³ömado[m]ÖĞµÄ×î´óÖµmadomax,ÓÃ×÷×î´óÆµÂÊÖµ
+			//æ‰¾å‡ºmado[m]ä¸­çš„æœ€å¤§å€¼madomax,ç”¨ä½œæœ€å¤§é¢‘ç‡å€¼
 			madomax=mado[0];
 			for(m=1;m<nn;m++)
 				if(madomax<mado[m])
@@ -818,13 +818,13 @@ void ZaoShengXiaoChuDib::nnzuida(int n)
 		memcpy(m_pData,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{		    
-		//n*n×î´óÖµÆµÂÊÂË²¨
+		//n*næœ€å¤§å€¼é¢‘ç‡æ»¤æ³¢
 		for(int j=n2;j<height-n2;j++)
 		for(int i=n2;i<wide-n2;i++)
 		{
-			//°Ñn*nÆÁ±Î´°¿Ú²¿·Ö¸´ÖÆµ½mado[m]
+			//æŠŠn*nå±è”½çª—å£éƒ¨åˆ†å¤åˆ¶åˆ°mado[m]
 			m=0;
 			for(yy=j-n2;yy<=j+n2;yy++)
 			for(xx=i-n2;xx<=i+n2;xx++)
@@ -834,7 +834,7 @@ void ZaoShengXiaoChuDib::nnzuida(int n)
 				mado3[m]=p_data[yy*wide*3+xx*3+2];
 				m++;
 			}
-			//ÕÒ³ömado[m]ÖĞµÄ×î´óÖµmadomax,ÓÃ×÷×î´óÆµÂÊÖµ
+			//æ‰¾å‡ºmado[m]ä¸­çš„æœ€å¤§å€¼madomax,ç”¨ä½œæœ€å¤§é¢‘ç‡å€¼
 			madomax=mado[0];
 			madomax2=mado2[0];
 			madomax3=mado3[0];
@@ -857,26 +857,26 @@ void ZaoShengXiaoChuDib::nnzuida(int n)
 }
 
 /***************************************************************/  
-/*º¯ÊıÃû³Æ£ºsuijizaosheng()                                    */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞËæ»úÔëÉù´¦Àí¡£                               */
+/*å‡½æ•°åç§°ï¼šsuijizaosheng()                                    */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œéšæœºå™ªå£°å¤„ç†ã€‚                               */
 /***************************************************************/
 void ZaoShengXiaoChuDib::suijizaosheng()
 {
 	int noisepoint;
     DWORD size;
 	size=GetSize();
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
 	int wide,height;
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
 		BYTE* p_temp=new BYTE [size];
 		memset(p_temp,255,size);
-		p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
+		p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
 		memcpy(p_temp,p_data,size);
-		wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		//²úÉúËæ»úÔëÉù
+		wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		//äº§ç”Ÿéšæœºå™ªå£°
 		for(int j=0;j<height;j++)
 		for(int i=0;i<wide;i++)
 		{
@@ -886,16 +886,16 @@ void ZaoShengXiaoChuDib::suijizaosheng()
 		memcpy(m_pData,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
 		size=GetSize();
 		BYTE* p_temp=new BYTE [size];
 		memset(p_temp,255,size);
-		p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
+		p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
 		memcpy(p_temp,p_data,size);
-		wide=this->GetWidth()*3; //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-		//²úÉúËæ»úÔëÉù
+		wide=this->GetWidth()*3; //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+		//äº§ç”Ÿéšæœºå™ªå£°
 		for(int j=0;j<height;j++)
 		for(int i=0;i<wide;i++)
 		{
@@ -908,23 +908,23 @@ void ZaoShengXiaoChuDib::suijizaosheng()
 }
 
 /***************************************************************/
-/*º¯ÊıÃû³Æ£ºjiaoyanzaosheng()                                  */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ½·ÑÎÔëÉù´¦Àí¡£                               */
+/*å‡½æ•°åç§°ï¼šjiaoyanzaosheng()                                  */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œæ¤’ç›å™ªå£°å¤„ç†ã€‚                               */
 /***************************************************************/
 void ZaoShengXiaoChuDib::jiaoyanzaosheng()
 {
     DWORD size;
 	size=GetSize();
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
 	int wide,height;
     BYTE* p_temp=new BYTE [size];
-	p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
+	p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
 	memcpy(p_temp,p_data,size);
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{
-		wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
+		wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
 		for(int j=0;j<height;j++)
 		for(int i=0;i<wide;i++)
 		{
@@ -934,14 +934,14 @@ void ZaoShengXiaoChuDib::jiaoyanzaosheng()
 		memcpy(m_pData,p_temp,size);
 		delete p_temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
 		size=GetSize();
 		BYTE* p_temp=new BYTE [size];
-		p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
+		p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
 		memcpy(p_temp,p_data,size);
-		wide=this->GetWidth()*3; //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-		height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
+		wide=this->GetWidth()*3; //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+		height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
 		for(int j=0;j<height;j++)
 		for(int i=0;i<wide;i++)
 		{
@@ -954,30 +954,30 @@ void ZaoShengXiaoChuDib::jiaoyanzaosheng()
 }
 
 /***************************************************************/ 
-/*º¯ÊıÃû³Æ£ºjubupingjun()                                      */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ¾Ö²¿Æ½¾ù»¯´¦Àí¡£                             */
+/*å‡½æ•°åç§°ï¼šjubupingjun()                                      */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œå±€éƒ¨å¹³å‡åŒ–å¤„ç†ã€‚                             */
 /***************************************************************/
 void ZaoShengXiaoChuDib::jubupingjun() 
 {
     DWORD size;
 	size=GetSize();
-	BYTE *p_data;//Ô­Í¼Êı¾İÇøÖ¸Õë
+	BYTE *p_data;//åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
 	BYTE* p_temp=new BYTE[size];
 	int wide,height;
     int n,ji[9],nmin;
 	float mean[9],bunsan[9],bmin;
-	p_data=this->GetData();//È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-	wide=this->GetWidth(); //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í
-    height=this->GetHeight();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß
-	if(m_pBitmapInfoHeader->biBitCount<9)	//»Ò¶ÈÍ¼Ïñ
+	p_data=this->GetData();//å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+	wide=this->GetWidth(); //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½
+    height=this->GetHeight();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜
+	if(m_pBitmapInfoHeader->biBitCount<9)	//ç°åº¦å›¾åƒ
 	{    
 		memset(p_temp,255,size);
 		for(int j=2;j<=height-3;j++)
 		for(int i=2;i<=wide-3;i++)
 		{
-		//Çó9ÖÖ½üÁÚÇøÓòµÄ¾ùÖµ¼°Æä·½²î
-			//µÚ1½üÁÚÇøÓò
+		//æ±‚9ç§è¿‘é‚»åŒºåŸŸçš„å‡å€¼åŠå…¶æ–¹å·®
+			//ç¬¬1è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[(j-1)*wide+(i-1)];
 			ji[1]=p_data[(j-1)*wide+i];
 			ji[2]=p_data[(j-1)*wide+(i+1)];
@@ -991,7 +991,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 			bunsan[0]=0;
 			for(n=0;n<=8;n++)
 				bunsan[0]+=ji[n]*ji[n]-mean[0]*mean[0];
-			//µÚ2½üÁÚÇøÓò
+			//ç¬¬2è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[(j-2)*wide+(i-1)];
 			ji[1]=p_data[(j-2)*wide+i];
 			ji[2]=p_data[(j-2)*wide+(i+1)];
@@ -1003,7 +1003,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 			bunsan[1]=0;
 			for(n=0;n<=6;n++)
 				bunsan[1]+=ji[n]*ji[n]-mean[1]*mean[1];
-			//µÚ3½üÁÚÇøÓò
+			//ç¬¬3è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[(j-1)*wide+(i-2)];
 			ji[1]=p_data[(j-1)*wide+(i-1)];
 			ji[2]=p_data[j*wide+(i-2)];
@@ -1015,7 +1015,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 			bunsan[2]=0;
 			for(n=0;n<=6;n++)
 				bunsan[2]+=ji[n]*ji[n]-mean[2]*mean[2];
-			//µÚ4½üÁÚÇøÓò
+			//ç¬¬4è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[j*wide+i];
 			ji[1]=p_data[(j+1)*wide+(i-1)];
 			ji[2]=p_data[(j+1)*wide+i];
@@ -1027,7 +1027,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  		bunsan[3]=0;
 			for(n=0;n<=6;n++)
 				bunsan[3]+=ji[n]*ji[n]-mean[3]*mean[3];
-			//µÚ5½üÁÚÇøÓò
+			//ç¬¬5è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[(j-1)*wide+(i+1)];
 			ji[1]=p_data[(j-1)*wide+(i+2)];
 			ji[2]=p_data[j*wide+i];
@@ -1039,7 +1039,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 			bunsan[4]=0;
 			for(n=0;n<=6;n++)
 				bunsan[4]+=ji[n]*ji[n]-mean[4]*mean[4];	
-			//µÚ6½üÁÚÇøÓò
+			//ç¬¬6è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[(j-2)*wide+(i+1)];
 			ji[1]=p_data[(j-2)*wide+(i+2)];
 			ji[2]=p_data[(j-1)*wide+i];
@@ -1051,7 +1051,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  		bunsan[5]=0;
 			for(n=0;n<=6;n++)
 				bunsan[5]+=ji[n]*ji[n]-mean[5]*mean[5];
-			//µÚ7½üÁÚÇøÓò
+			//ç¬¬7è¿‘é‚»åŒºåŸŸ
 			ji[0]=m_pData[(j-2)*wide+(i-2)];
 			ji[1]=p_data[(j-2)*wide+(i-1)];
 			ji[2]=p_data[(j-1)*wide+(i-2)];
@@ -1063,7 +1063,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	 		bunsan[6]=0;
 			for(n=0;n<=6;n++)
 				bunsan[6]+=ji[n]*ji[n]-mean[6]*mean[6];
-			//µÚ8½üÁÚÇøÓò
+			//ç¬¬8è¿‘é‚»åŒºåŸŸ
 			ji[0]=m_pData[j*wide+(i-1)];
 			ji[1]=p_data[j*wide+i];
 			ji[2]=p_data[(j+1)*wide+(i-2)];
@@ -1075,7 +1075,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  		bunsan[7]=0;
 			for(n=0;n<=6;n++)
 				bunsan[7]+=ji[n]*ji[n]-mean[7]*mean[7];
-			//µÚ9½üÁÚÇøÓò
+			//ç¬¬9è¿‘é‚»åŒºåŸŸ
 			ji[0]=p_data[j*wide+i];
 			ji[1]=p_data[j*wide+(i+1)];
 			ji[2]=p_data[(j+1)*wide+i];
@@ -1087,7 +1087,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  		bunsan[8]=0;
 			for(n=0;n<=6;n++)
 				bunsan[8]+=ji[n]*ji[n]-mean[8]*mean[8];
-			//Çó·½²î×îĞ¡µÄ½üÁÚÇøÓònmin
+			//æ±‚æ–¹å·®æœ€å°çš„è¿‘é‚»åŒºåŸŸnmin
 			bmin=bunsan[0];
 			nmin=0;
 			for(n=0;n<=8;n++)
@@ -1097,14 +1097,14 @@ void ZaoShengXiaoChuDib::jubupingjun()
 					bmin=bunsan[n];
 					nmin=n;
 				}
-				//°ÑnminµÄÖµËÄÉáÎåÈëºó×÷ÎªÏÔÊ¾Í¼ÏñµÄÖµ
+				//æŠŠnminçš„å€¼å››èˆäº”å…¥åä½œä¸ºæ˜¾ç¤ºå›¾åƒçš„å€¼
 				p_temp[j*wide+i]=(int)(mean[nmin]+0.5);
 			}				 
 		}
 		memcpy(p_data,p_temp,size);
 		delete p_temp;	
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{		    
 		p_temp=new BYTE[wide*height*3];
 		memset(p_temp,255,wide*height*3);
@@ -1113,8 +1113,8 @@ void ZaoShengXiaoChuDib::jubupingjun()
 		{
 			for(int i=2;i<=wide-3;i++)
 			{
-			//Çó9ÖÖ½üÁÚÇøÓòµÄ¾ùÖµ¼°Æä·½²î
-				//µÚ1½üÁÚÇøÓò
+			//æ±‚9ç§è¿‘é‚»åŒºåŸŸçš„å‡å€¼åŠå…¶æ–¹å·®
+				//ç¬¬1è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[(j-1)*wide*3+(i-1)*3+k+k];
 				ji[1]=p_data[(j-1)*wide*3+i*3+k];
 				ji[2]=p_data[(j-1)*wide*3+(i+1)*3+k];
@@ -1128,7 +1128,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 				bunsan[0]=0;
 				for(n=0;n<=8;n++)
 					bunsan[0]+=ji[n]*ji[n]-mean[0]*mean[0];
-				//µÚ2½üÁÚÇøÓò
+				//ç¬¬2è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[(j-2)*wide*3+(i-1)*3+k];
 				ji[1]=p_data[(j-2)*wide*3+i*3+k];
 				ji[2]=p_data[(j-2)*wide*3+(i+1)*3+k];
@@ -1140,7 +1140,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 				bunsan[1]=0;
 				for(n=0;n<=6;n++)
 					bunsan[1]+=ji[n]*ji[n]-mean[1]*mean[1];
-				//µÚ3½üÁÚÇøÓò
+				//ç¬¬3è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[(j-1)*wide*3+(i-2)*3+k];
 				ji[1]=p_data[(j-1)*wide*3+(i-1)*3+k];
 				ji[2]=p_data[j*wide*3+(i-2)*3+k];
@@ -1152,7 +1152,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 				bunsan[2]=0;
 				for(n=0;n<=6;n++)
 					bunsan[2]+=ji[n]*ji[n]-mean[2]*mean[2];
-				//µÚ4½üÁÚÇøÓò
+				//ç¬¬4è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[j*wide*3+i*3+k];
 				ji[1]=p_data[(j+1)*wide*3+(i-1)*3+k];
 				ji[2]=p_data[(j+1)*wide*3+i*3+k];
@@ -1164,7 +1164,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  			bunsan[3]=0;
 				for(n=0;n<=6;n++)
 					bunsan[3]+=ji[n]*ji[n]-mean[3]*mean[3];
-				//µÚ5½üÁÚÇøÓò
+				//ç¬¬5è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[(j-1)*wide*3+(i+1)*3+k];
 				ji[1]=p_data[(j-1)*wide*3+(i+2)*3+k];
 				ji[2]=p_data[j*wide*3+i*3+k];
@@ -1176,7 +1176,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 				bunsan[4]=0;
 				for(n=0;n<=6;n++)
 					bunsan[4]+=ji[n]*ji[n]-mean[4]*mean[4];	
-				//µÚ6½üÁÚÇøÓò
+				//ç¬¬6è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[(j-2)*wide*3+(i+1)*3+k];
 				ji[1]=p_data[(j-2)*wide*3+(i+2)*3+k];
 				ji[2]=p_data[(j-1)*wide*3+i*3+k];
@@ -1188,7 +1188,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  			bunsan[5]=0;
 				for(n=0;n<=6;n++)
 					bunsan[5]+=ji[n]*ji[n]-mean[5]*mean[5];
-				//µÚ7½üÁÚÇøÓò
+				//ç¬¬7è¿‘é‚»åŒºåŸŸ
 				ji[0]=m_pData[(j-2)*wide*3+(i-2)*3+k];
 				ji[1]=p_data[(j-2)*wide*3+(i-1)*3+k];
 				ji[2]=p_data[(j-1)*wide*3+(i-2)*3+k];
@@ -1200,7 +1200,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	 			bunsan[6]=0;
 				for(n=0;n<=6;n++)
 					bunsan[6]+=ji[n]*ji[n]-mean[6]*mean[6];
-				//µÚ8½üÁÚÇøÓò
+				//ç¬¬8è¿‘é‚»åŒºåŸŸ
 				ji[0]=m_pData[j*wide*3+(i-1)*3+k];
 				ji[1]=p_data[j*wide*3+i*3+k];
 				ji[2]=p_data[(j+1)*wide*3+(i-2)*3+k];
@@ -1212,7 +1212,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  			bunsan[7]=0;
 				for(n=0;n<=6;n++)
 					bunsan[7]+=ji[n]*ji[n]-mean[7]*mean[7];
-				//µÚ9½üÁÚÇøÓò
+				//ç¬¬9è¿‘é‚»åŒºåŸŸ
 				ji[0]=p_data[j*wide*3+i*3+k];
 				ji[1]=p_data[j*wide*3+(i+1)*3+k];
 				ji[2]=p_data[(j+1)*wide*3+i*3+k];
@@ -1224,7 +1224,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 	  			bunsan[8]=0;
 				for(n=0;n<=6;n++)
 					bunsan[8]+=ji[n]*ji[n]-mean[8]*mean[8];
-				//Çó·½²î×îĞ¡µÄ½üÁÚÇøÓònmin
+				//æ±‚æ–¹å·®æœ€å°çš„è¿‘é‚»åŒºåŸŸnmin
 				bmin=bunsan[0];
 				nmin=0;
 				for(n=0;n<=8;n++)
@@ -1234,7 +1234,7 @@ void ZaoShengXiaoChuDib::jubupingjun()
 						bmin=bunsan[n];
 						nmin=n;
 					}
-					//°ÑnminµÄÖµËÄÉáÎåÈëºó×÷ÎªÏÔÊ¾Í¼ÏñµÄÖµ
+					//æŠŠnminçš„å€¼å››èˆäº”å…¥åä½œä¸ºæ˜¾ç¤ºå›¾åƒçš„å€¼
 					p_temp[j*wide*3+i*3+k]=(int)(mean[nmin]+0.5);		
 				}				 
 			}

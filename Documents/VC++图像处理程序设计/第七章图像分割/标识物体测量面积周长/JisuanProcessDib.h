@@ -41,8 +41,8 @@ public:
              JisuanProcessDib();
 	virtual ~JisuanProcessDib();
 
-	BYTE *p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
+	BYTE *p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
 ////////////////////////////////////////////////////
     object pppp[255];//*pppp,
 

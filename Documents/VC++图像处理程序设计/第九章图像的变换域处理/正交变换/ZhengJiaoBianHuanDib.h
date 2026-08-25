@@ -15,15 +15,15 @@ public:
 	~ZhengJiaoBianHuanDib();
 
 public:
-	 CNumber Add(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ¼Ó·¨ÔËËã
-	 CNumber Sub(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ¼õ·¨ÔËËã
-	 CNumber Mul(CNumber c1,CNumber c2);//ÊµÏÖ¸´ÊıµÄ³Ë·¨ÔËËã
-	 void QFC(CNumber* t,CNumber* f,int power);//´Ëº¯ÊıÊµÏÖ¿ìËÙ¸µÁ¢Ò¶±ä»»
-	 void QuickFourier();//´Ëº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏóµÄ¸µÁ¢Ò¶±ä»»
-     void LiSan(double *t, double *f, int r);//´Ëº¯ÊıÊµÏÖÀëÉ¢ÓàÏÒ±ä»»
-     void WALSH(double *t, double *f, int r);//¸Ãº¯ÊıÓÃÀ´ÊµÏÖ¿ìËÙÎÖ¶ûÊ²-¹ş´ïÂê±ä»»¡£
-     bool DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight);//´Ëº¯ÊıÊµÏÖÍ¼ÏñµÄÀëÉ¢ÓàÏÒ±ä»»
-     bool DIBWalsh(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight);//¸Ãº¯ÊıÓÃÀ´ÊµÏÖÍ¼ÏñµÄÎÖ¶ûÊ²-¹ş´ïÂê±ä»»¡£
+	 CNumber Add(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„åŠ æ³•è¿ç®—
+	 CNumber Sub(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„å‡æ³•è¿ç®—
+	 CNumber Mul(CNumber c1,CNumber c2);//å®ç°å¤æ•°çš„ä¹˜æ³•è¿ç®—
+	 void QFC(CNumber* t,CNumber* f,int power);//æ­¤å‡½æ•°å®ç°å¿«é€Ÿå‚…ç«‹å¶å˜æ¢
+	 void QuickFourier();//æ­¤å‡½æ•°ç”¨æ¥å®ç°å›¾è±¡çš„å‚…ç«‹å¶å˜æ¢
+     void LiSan(double *t, double *f, int r);//æ­¤å‡½æ•°å®ç°ç¦»æ•£ä½™å¼¦å˜æ¢
+     void WALSH(double *t, double *f, int r);//è¯¥å‡½æ•°ç”¨æ¥å®ç°å¿«é€Ÿæ²ƒå°”ä»€-å“ˆè¾¾ç›å˜æ¢ã€‚
+     bool DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight);//æ­¤å‡½æ•°å®ç°å›¾åƒçš„ç¦»æ•£ä½™å¼¦å˜æ¢
+     bool DIBWalsh(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight);//è¯¥å‡½æ•°ç”¨æ¥å®ç°å›¾åƒçš„æ²ƒå°”ä»€-å“ˆè¾¾ç›å˜æ¢ã€‚
 
 protected:
 

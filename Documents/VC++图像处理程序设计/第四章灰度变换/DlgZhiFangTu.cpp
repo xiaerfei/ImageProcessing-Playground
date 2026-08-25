@@ -44,64 +44,64 @@ END_MESSAGE_MAP()
 
 void CDlgZhiFangTu::OnPaint() 
 {
-	// ×Ö·û´®
+	// å­—ç¬¦ä¸²
 	CString str;
 	
-	// Ñ­»·±äÁ¿
+	// å¾ªçŽ¯å˜é‡
 	int i;
 	
-	// ×î´ó¼ÆÊý
+	// æœ€å¤§è®¡æ•°
 	float fMaxIntensity = 0;
 	
-	// Éè±¸ÉÏÏÂÎÄ
+	// è®¾å¤‡ä¸Šä¸‹æ–‡
 	CPaintDC dc(this);
 	
-	// »ñÈ¡»æÖÆ×ø±êµÄ¾²Ì¬¿ò
+	// èŽ·å–ç»˜åˆ¶åæ ‡çš„é™æ€æ¡†
 	CWnd* pWnd = GetDlgItem(IDC_COORD);
 	
-	// Ö¸Õë
+	// æŒ‡é’ˆ
 	CDC* pDC = pWnd->GetDC();
 	pWnd->Invalidate();
 	pWnd->UpdateWindow();
 	
 	pDC->Rectangle(0,0,330,300);
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenRed = new CPen;
 	
-	// ºìÉ«»­±Ê
+	// çº¢è‰²ç”»ç¬”
 	pPenRed->CreatePen(PS_SOLID,1,RGB(255,0,0));
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenBlue = new CPen;
 	
-	// À¶É«»­±Ê
+	// è“è‰²ç”»ç¬”
 	pPenBlue->CreatePen(PS_SOLID,1,RGB(0,0, 255));
 	
-	// Ñ¡ÖÐµ±Ç°ºìÉ«»­±Ê£¬²¢±£´æÒÔÇ°µÄ»­±Ê
+	// é€‰ä¸­å½“å‰çº¢è‰²ç”»ç¬”ï¼Œå¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 	CGdiObject* pOldPen = pDC->SelectObject(pPenRed);
 	
-	// »æÖÆ×ø±êÖá
+	// ç»˜åˆ¶åæ ‡è½´
 	pDC->MoveTo(10,10);
 	
-	// ´¹Ö±Öá
+	// åž‚ç›´è½´
 	pDC->LineTo(10,280);
 	
-	// Ë®Æ½Öá
+	// æ°´å¹³è½´
 	pDC->LineTo(320,280);
 	
-	// »æÖÆXÖá¼ýÍ·
+	// ç»˜åˆ¶Xè½´ç®­å¤´
 	pDC->MoveTo(315,275);
 	pDC->LineTo(320,280);
 	pDC->LineTo(315,285);
 	
-	// »æÖÆYÖá¼ýÍ·
+	// ç»˜åˆ¶Yè½´ç®­å¤´
 	pDC->MoveTo(10,10);
 	pDC->LineTo(5,15);
 	pDC->MoveTo(10,10);
 	pDC->LineTo(15,15);
 
-	// Ð´xÖá¿Ì¶ÈÖµ
+	// å†™xè½´åˆ»åº¦å€¼
 	str.Format("0");
 	pDC->TextOut(10, 283, str);
 	str.Format("50");
@@ -115,47 +115,47 @@ void CDlgZhiFangTu::OnPaint()
 	str.Format("255");
 	pDC->TextOut(265, 283, str);
 	
-	// »æÖÆXÖá¿Ì¶È
+	// ç»˜åˆ¶Xè½´åˆ»åº¦
 	for (i = 0; i < 256; i += 5)
 	{
 		if ((i & 1) == 0)
 		{
-			// 10µÄ±¶Êý
+			// 10çš„å€æ•°
 			pDC->MoveTo(i + 10, 280);
 			pDC->LineTo(i + 10, 284);
 		}
 		else
 		{
-			// 10µÄ±¶Êý
+			// 10çš„å€æ•°
 			pDC->MoveTo(i + 10, 280);
 			pDC->LineTo(i + 10, 282);
 		}
 	}
 	
-	// ¼ÆËã×î´ó¼ÆÊýÖµ
+	// è®¡ç®—æœ€å¤§è®¡æ•°å€¼
 	for (i = 0; i < 256; i ++)
 	{
-		// ÅÐ¶ÏÊÇ·ñ´óÓÚµ±Ç°×î´óÖµ
+		// åˆ¤æ–­æ˜¯å¦å¤§äºŽå½“å‰æœ€å¤§å€¼
 		if (m_fIntensity[i] > fMaxIntensity)
 		{
-			// ¸üÐÂ×î´óÖµ
+			// æ›´æ–°æœ€å¤§å€¼
 			fMaxIntensity = m_fIntensity[i];
 		}
 	}
 	
-	// Êä³ö×î´ó¼ÆÊýÖµ
+	// è¾“å‡ºæœ€å¤§è®¡æ•°å€¼
  	pDC->MoveTo(10, 25);
 	pDC->LineTo(14, 25);
 	str.Format("%f", fMaxIntensity);
 	pDC->TextOut(11, 26, str); 
 	
-	// ¸ü¸Ä³ÉÀ¶É«»­±Ê
+	// æ›´æ”¹æˆè“è‰²ç”»ç¬”
 	pDC->SelectObject(pPenBlue);	
 	
-	// ÅÐ¶ÏÊÇ·ñÓÐ¼ÆÊý
+	// åˆ¤æ–­æ˜¯å¦æœ‰è®¡æ•°
 	if (fMaxIntensity > 0)
 	{
-		// »æÖÆÖ±·½Í¼
+		// ç»˜åˆ¶ç›´æ–¹å›¾
 		for (i = 0; i < 256; i ++)
 		{
 			pDC->MoveTo(i + 10, 280);
@@ -163,10 +163,10 @@ void CDlgZhiFangTu::OnPaint()
 		}
 	}
 	
-	// »Ö¸´ÒÔÇ°µÄ»­±Ê
+	// æ¢å¤ä»¥å‰çš„ç”»ç¬”
 	pDC->SelectObject(pOldPen);	
 	
-	// É¾³ýÐÂµÄ»­±Ê
+	// åˆ é™¤æ–°çš„ç”»ç¬”
 	delete pPenRed;
 	delete pPenBlue;
 	

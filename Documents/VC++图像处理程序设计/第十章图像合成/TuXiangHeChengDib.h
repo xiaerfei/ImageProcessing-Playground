@@ -7,7 +7,7 @@ public:
 	 CBitmap m_bitmap;
 	 CString filename;
 	  
-	 BOOL f_Show;//刷新视图时的开关量
+	 BOOL f_Show;//鍒锋柊瑙嗗浘鏃剁殑寮�鍏抽噺
 public:
 	void Yihuo(LPBYTE p_data, LPBYTE p_dataBK, int wide, int height);
 	void Yufei(LPBYTE p_data, LPBYTE p_dataBK, int wide, int height);

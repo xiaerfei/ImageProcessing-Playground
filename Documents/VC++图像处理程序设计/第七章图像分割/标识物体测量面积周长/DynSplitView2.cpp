@@ -146,7 +146,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼þ(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -155,7 +155,7 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-//¼ÆËãÃæ»ýÏûÏ¢º¯Êý
+//è®¡ç®—é¢ç§¯æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnAreajisuan() 
 {
 	clearmem();
@@ -177,10 +177,10 @@ void CDynSplitView2::OnAreajisuan()
 		 CDibNew1->Baoliu(temp);
          CDibNew1->MakeGray();
 	}
-	CDibNew1->erzhihua(yuzhi_gray);///Í¼Ïñ¶þÖµ»¯
+	CDibNew1->erzhihua(yuzhi_gray);///å›¾åƒäºŒå€¼åŒ–
 
 	
-    CDibNew1->LianTong();//±ê¼Ç¡¢¼ÆËãÏñËØÇø
+    CDibNew1->LianTong();//æ ‡è®°ã€è®¡ç®—åƒç´ åŒº
     
 	if(CDibNew1->m_pBitmapInfoHeader->biBitCount==24)
 	{
@@ -251,7 +251,7 @@ void CDynSplitView2::OnAreajisuan()
 }
 
 
-//Ãæ»ýÏû³ýÏûÏ¢º¯Êý
+//é¢ç§¯æ¶ˆé™¤æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnXiaochusmall() 
 {
 	clearmem();
@@ -272,7 +272,7 @@ void CDynSplitView2::OnXiaochusmall()
 		 CDibNew1->Baoliu(temp);
          CDibNew1->MakeGray();
 	}
-	CDibNew1->erzhihua(yuzhi_gray); //Í¼Ïñ¶þÖµ»¯
+	CDibNew1->erzhihua(yuzhi_gray); //å›¾åƒäºŒå€¼åŒ–
 
 	if(CDibNew1->m_pBitmapInfoHeader->biBitCount==24)
 	{
@@ -295,12 +295,12 @@ void CDynSplitView2::OnXiaochusmall()
 	DELSMALL  Dlg1;
 	Dlg1.DoModal();
 	m_value=Dlg1.m_delsmall;
-	CDibNew1->ClearSMALL(m_value); //Ïû³ýÐ¡ÇøÓò	 
+	CDibNew1->ClearSMALL(m_value); //æ¶ˆé™¤å°åŒºåŸŸ	 
  	Invalidate();
 }
 
 
-//¼ÆËãÖÜ³¤ÏûÏ¢º¯Êý
+//è®¡ç®—å‘¨é•¿æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnFollowline() 
 {
 	clearmem();
@@ -322,9 +322,9 @@ void CDynSplitView2::OnFollowline()
 		 CDibNew1->MakeGray();
 	}
 
-	CDibNew1->erzhihua(yuzhi_gray);//Í¼Ïñ¶þÖµ»¯
-	CDibNew1->xiaochugulidianHEI();//Ïû³ý¹ÂÁ¢µãºÚÏñËØ
-	CDibNew1->Borderline();//±ß½ç¸ú×Ù
+	CDibNew1->erzhihua(yuzhi_gray);//å›¾åƒäºŒå€¼åŒ–
+	CDibNew1->xiaochugulidianHEI();//æ¶ˆé™¤å­¤ç«‹ç‚¹é»‘åƒç´ 
+	CDibNew1->Borderline();//è¾¹ç•Œè·Ÿè¸ª
 	CClientDC dc(this);   
 	CDSplitDoc* pDoc = GetDocument();
 	ASSERT_VALID(pDoc);
@@ -370,7 +370,7 @@ void CDynSplitView2::OnFollowline()
 }
 
 
-//ÏÔÊ¾±ê¼ÇÏûÏ¢º¯Êý
+//æ˜¾ç¤ºæ ‡è®°æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnA() 
 {
 	clearmem();
@@ -389,10 +389,10 @@ void CDynSplitView2::OnA()
 		 CDibNew1->Baoliu(temp);
 	     CDibNew1->MakeGray();
 	}
-	CDibNew1->erzhihua(yuzhi_gray);///Í¼Ïñ¶þÖµ»¯
+	CDibNew1->erzhihua(yuzhi_gray);///å›¾åƒäºŒå€¼åŒ–
 
 	
-    CDibNew1->LianTong();//±ê¼Ç¡¢¼ÆËãÏñËØÇø
+    CDibNew1->LianTong();//æ ‡è®°ã€è®¡ç®—åƒç´ åŒº
 
     if(CDibNew1->m_pBitmapInfoHeader->biBitCount==24)
 	{

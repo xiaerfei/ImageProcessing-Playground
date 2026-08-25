@@ -21,7 +21,7 @@ CDynSplitView2::CDynSplitView2()
 }
 
 
-//8Î»²ÊÉ«Í¼Ïñ³õÊ¼»¯
+//8ä½å½©è‰²å›¾åƒåˆå§‹åŒ–
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -106,9 +106,9 @@ void CDynSplitView2::OnDraw(CDC* pDC)
         LPBITMAPINFO pBitmapInfo = CDibNew1->GetInfo();
 	  RGBQUAD* m_pRGB=CDibNew1->GetRGB();
 	   BYTE* pBitmapData;
-		if(CDibNew1->byBitCount==8) //»Ò¶ÈÍ¼Ïñ
+		if(CDibNew1->byBitCount==8) //ç°åº¦å›¾åƒ
 		  pBitmapData = CDibNew1->GetData();
-        else//24Î»Õæ²ÊÉ«
+        else//24ä½çœŸå½©è‰²
 		{
 			pBitmapData = CDibNew1->GetData2();
 	      pBitmapInfo->bmiHeader.biBitCount=8;
@@ -187,7 +187,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 void CDynSplitView2::OnFilesave() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -197,7 +197,7 @@ void CDynSplitView2::OnFilesave()
 
 }
 
-void CDynSplitView2::OnQuickForuier() //¶ÔÍ¼Ïñ½øĞĞ¸µÁ¢Òµ±ä»»
+void CDynSplitView2::OnQuickForuier() //å¯¹å›¾åƒè¿›è¡Œå‚…ç«‹ä¸šå˜æ¢
 {
 	// TODO: Add your command handler code here
     clearmem();
@@ -207,19 +207,19 @@ void CDynSplitView2::OnQuickForuier() //¶ÔÍ¼Ïñ½øĞĞ¸µÁ¢Òµ±ä»»
 	Invalidate();	
 }
 
-void CDynSplitView2::OnLisanyuxuan() //¶ÔÍ¼Ïñ½øĞĞÀëÉ¢ÓàÏÒ±ä»»
+void CDynSplitView2::OnLisanyuxuan() //å¯¹å›¾åƒè¿›è¡Œç¦»æ•£ä½™å¼¦å˜æ¢
 {
 	// TODO: Add your command handler code here
     clearmem();
 		
-	// Í¼ÏñÀëÉ¢ÓàÏÒ±ä»»
+	// å›¾åƒç¦»æ•£ä½™å¼¦å˜æ¢
 	
-	// Ö¸ÏòDIBÏóËØÖ¸Õë
+	// æŒ‡å‘DIBè±¡ç´ æŒ‡é’ˆ
 	LPBYTE    lpDIBBits;
 	
 	lpDIBBits = CDibNew1->GetData();
-	// ÕÒµ½DIBÍ¼ÏñÏóËØÆğÊ¼Î»ÖÃ
-    if(CDibNew1->byBitCount==24) //24Î»Õæ²ÊÉ«
+	// æ‰¾åˆ°DIBå›¾åƒè±¡ç´ èµ·å§‹ä½ç½®
+    if(CDibNew1->byBitCount==24) //24ä½çœŸå½©è‰²
 	{
 		clearmem2();
 	lpDIBBits = CDibNew1->GetData2();
@@ -227,28 +227,28 @@ void CDynSplitView2::OnLisanyuxuan() //¶ÔÍ¼Ïñ½øĞĞÀëÉ¢ÓàÏÒ±ä»»
 	long width=CDibNew1->GetWidth();
 	long height=CDibNew1->GetHeight();
 	
-	// µ÷ÓÃDIBDct()º¯Êı½øĞĞÀëÉ¢ÓàÏÒ±ä»»
+	// è°ƒç”¨DIBDct()å‡½æ•°è¿›è¡Œç¦»æ•£ä½™å¼¦å˜æ¢
 	if (CDibNew1->DIBLiSanYuXuan(lpDIBBits, width, height))
 	{
-		// ¸üĞÂÊÓÍ¼
+		// æ›´æ–°è§†å›¾
 	    Invalidate();
 	}
 
 }
 
-void CDynSplitView2::OnWalsh() //¶ÔÍ¼Ïñ½øĞĞÎÖ¶ûÊ²±ä»»
+void CDynSplitView2::OnWalsh() //å¯¹å›¾åƒè¿›è¡Œæ²ƒå°”ä»€å˜æ¢
 {
 	// TODO: Add your command handler code here
     clearmem();
 		
-	// Í¼ÏñÀëÉ¢ÓàÏÒ±ä»»
+	// å›¾åƒç¦»æ•£ä½™å¼¦å˜æ¢
 	
-	// Ö¸ÏòDIBÏóËØÖ¸Õë
+	// æŒ‡å‘DIBè±¡ç´ æŒ‡é’ˆ
 	LPBYTE    lpDIBBits;
 	lpDIBBits = CDibNew1->GetData();
 	
-	// ÕÒµ½DIBÍ¼ÏñÏóËØÆğÊ¼Î»ÖÃ
-	if(CDibNew1->byBitCount==24) //24Î»Õæ²ÊÉ«
+	// æ‰¾åˆ°DIBå›¾åƒè±¡ç´ èµ·å§‹ä½ç½®
+	if(CDibNew1->byBitCount==24) //24ä½çœŸå½©è‰²
 	{	 clearmem2();
 
 	lpDIBBits = CDibNew1->GetData2();
@@ -256,17 +256,17 @@ void CDynSplitView2::OnWalsh() //¶ÔÍ¼Ïñ½øĞĞÎÖ¶ûÊ²±ä»»
 	long width=CDibNew1->GetWidth();
 	long height=CDibNew1->GetHeight();
 	
-	// µ÷ÓÃDIBDct()º¯Êı½øĞĞÀëÉ¢ÓàÏÒ±ä»»
+	// è°ƒç”¨DIBDct()å‡½æ•°è¿›è¡Œç¦»æ•£ä½™å¼¦å˜æ¢
 	if (CDibNew1->DIBWalsh(lpDIBBits, width, height))
 	{
-		// ¸üĞÂÊÓÍ¼
+		// æ›´æ–°è§†å›¾
 	    Invalidate();
 	}
 	
 }
 
 
-//24Î»²ÊÉ«Í¼Ïñ³õÊ¼»¯
+//24ä½å½©è‰²å›¾åƒåˆå§‹åŒ–
 void CDynSplitView2::clearmem2()
 {
 	CDSplitDoc* pDoc = GetDocument();

@@ -14,19 +14,19 @@ public:
 	void GreenZhiFangTu(float *tongji);
 	void BlueZhiFangTu(float *tongji);
 	void RedZhiFangTu(float *tongji);
-	void Fei0();//¶ÔÍ¼Ïñ½øĞĞ·ÇÁãÈ¡Ò»ÔËËã
-	void GuDing(int YuZhi);//¶ÔÍ¼Ïñ½øĞĞ¹Ì¶¨·§ÖµÔËËã
-	void ShuangYu(int YuZhi1,int YuZhi2,int mode);//Ë«¹Ì¶¨ÓòÖµ·¨
-	void Chuizhitouying();//¶ÔÍ¼Ïñ½øĞĞ´¹Ö±Í¶Ó°
-	void Shuipingtouying();//¶ÔÍ¼Ïñ½øĞĞË®Æ½Í¶Ó°
-	void Midufenbu(int* nNs_R);//¼ÆËãÍ¼ÏñµÄÃÜ¶È·Ö²¼
-	void Pipeibianhuan(BYTE bNum, int *npNu, float *fpPu);//½øĞĞ»Ò¶ÈÆ¥Åä±ä»»
+	void Fei0();//å¯¹å›¾åƒè¿›è¡Œéé›¶å–ä¸€è¿ç®—
+	void GuDing(int YuZhi);//å¯¹å›¾åƒè¿›è¡Œå›ºå®šé˜€å€¼è¿ç®—
+	void ShuangYu(int YuZhi1,int YuZhi2,int mode);//åŒå›ºå®šåŸŸå€¼æ³•
+	void Chuizhitouying();//å¯¹å›¾åƒè¿›è¡Œå‚ç›´æŠ•å½±
+	void Shuipingtouying();//å¯¹å›¾åƒè¿›è¡Œæ°´å¹³æŠ•å½±
+	void Midufenbu(int* nNs_R);//è®¡ç®—å›¾åƒçš„å¯†åº¦åˆ†å¸ƒ
+	void Pipeibianhuan(BYTE bNum, int *npNu, float *fpPu);//è¿›è¡Œç°åº¦åŒ¹é…å˜æ¢
 	int GetWidth();
-	void Fenbujunhenghua(  );//½øĞĞ·Ö²¼¾ùºâ±ä»»
-	void Chuangkoubianhuan(BYTE bLow, BYTE bUp);//»Ò¶È´°¿Ú±ä»»
-	void Zhexianbianhuan(BYTE bX1, BYTE bY1, BYTE bX2, BYTE bY2);//»Ò¶ÈÕÛÏß±ä»»
-	void ZhiFangTu(float* tongji);//»Ò¶ÈÖ±·½Í¼ÏÖÊµ
-	void FanSeBianHuan();//Í¼Ïñ·´É«Ğ§¹û
+	void Fenbujunhenghua(  );//è¿›è¡Œåˆ†å¸ƒå‡è¡¡å˜æ¢
+	void Chuangkoubianhuan(BYTE bLow, BYTE bUp);//ç°åº¦çª—å£å˜æ¢
+	void Zhexianbianhuan(BYTE bX1, BYTE bY1, BYTE bX2, BYTE bY2);//ç°åº¦æŠ˜çº¿å˜æ¢
+	void ZhiFangTu(float* tongji);//ç°åº¦ç›´æ–¹å›¾ç°å®
+	void FanSeBianHuan();//å›¾åƒåè‰²æ•ˆæœ
 
 
 protected:

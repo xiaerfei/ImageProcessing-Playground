@@ -44,24 +44,24 @@ CNumber ZhengJiaoBianHuanDib::Mul(CNumber c1,CNumber c2)
 	return c;
 }
 ///***************************************************************/           
-/*�������ƣ�QFC(CNumber* t,CNumber* f,int r)
-  ����:    t��f�ֱ���ָ��ʱ���Ƶ���ָ�룬r��2������                                   
-/*�������ͣ�void
-/*���ܣ��˺���ʵ�ֿ��ٸ���Ҷ�任         
-/***************************************************************///�˺�������ʵ��
+/*函数名称：QFC(CNumber* t,CNumber* f,int r)
+  参数:    t、f分别是指向时域和频域的指针，r是2的幂数                                   
+/*函数类型：void
+/*功能：此函数实现快速傅立叶变换         
+/***************************************************************///此函数用来实现
 
 void ZhengJiaoBianHuanDib::QFC(CNumber* t,CNumber* f,int r)
 {
-	long count;//����Ҷ�任����
+	long count;//傅立叶变换点数
 	int i,j,k,p,bfsize;
-	CNumber *w,*x,*a,*b;//�����ṹ���͵�ָ�����������wָ���Ȩϵ��
-	double angle;//�����Ȩϵ�����õĽǶ�ֵ
-	count=1<<r;//���㸵��Ҷ�任����
-	//������������ռ�
+	CNumber *w,*x,*a,*b;//复数结构类型的指针变量，其中w指向加权系数
+	double angle;//计算加权系数所用的角度值
+	count=1<<r;//计算傅立叶变换点数
+	//分配所需运算空间
 	w=new CNumber[count/2];
 	a=new CNumber[count];
 	b=new CNumber[count];
-	//�����Ȩϵ��
+	//计算加权系数
 	for(i=0;i<count/2;i++)
 	{
 		angle=-i*pi*2/count;
@@ -69,7 +69,7 @@ void ZhengJiaoBianHuanDib::QFC(CNumber* t,CNumber* f,int r)
 		w[i].im=sin(angle);
 	}
 	memcpy(a,t,sizeof(CNumber)*count);
-	//����Ƶ�ʷֽⷨ���е�������
+	//采用频率分解法进行蝶形运算
 	for(k=0;k<r;k++)
 	{
 		for(j=0;j<1<<k;j++)
@@ -86,7 +86,7 @@ void ZhengJiaoBianHuanDib::QFC(CNumber* t,CNumber* f,int r)
 		a=b;
 		b=x;
 	}
-	//������ı任������������
+	//将乱序的变换序列重新排序
 	for(j=0;j<count;j++)
 	{
 		p=0;
@@ -97,62 +97,62 @@ void ZhengJiaoBianHuanDib::QFC(CNumber* t,CNumber* f,int r)
 		}
 		f[j]=a[p];
 	}
-	//�ͷŴ洢���ռ�
+	//释放存储器空间
 	delete w;
 	delete a;
 	delete b;
 }
 
 ///////////////////////////////////////////////
-//�˺�������ʵ��ͼ��ĸ���Ҷ�任
-//���ε��ÿ��ٸ���Ҷ�任QFC()ʵ�ֶ�ά����Ҷ�任
+//此函数用来实现图象的傅立叶变换
+//两次调用快速傅立叶变换QFC()实现二维傅立叶变换
 ///////////////////////////////////////////////
 void ZhengJiaoBianHuanDib::QuickFourier()
 {
-	LPBYTE  p_data, p;//ָ��ԭͼ��������ָ��
-	int width,height;//ԭͼ��Ŀ��Ⱥ͸߶�       
-	long w=1,h=1;//���и���Ҷ�任�Ŀ��Ⱥ͸߶ȣ�2�������η���
-	int wp=0,hp=0;//��������
+	LPBYTE  p_data, p;//指向原图象数据区指针
+	int width,height;//原图象的宽度和高度       
+	long w=1,h=1;//进行傅立叶变换的宽度和高度（2的整数次方）
+	int wp=0,hp=0;//迭代次数
 	int i,j;
-	double temp;//�м����
+	double temp;//中间变量
 	CNumber *t,*f;
-	p_data=this->GetData();//ָ��ԭͼ��������
-	width=this->GetWidth();//�õ�ͼ�����
-	height=this->GetHeight();//�õ�ͼ��߶�
-    long lLineBytes=WIDTHBYTES(width*8);//����ͼ��ÿ�е��ֽ���
-	while(w*2<=width)//������и���Ҷ�任�Ŀ��ȣ�2�������η���
+	p_data=this->GetData();//指向原图象数据区
+	width=this->GetWidth();//得到图象宽度
+	height=this->GetHeight();//得到图象高度
+    long lLineBytes=WIDTHBYTES(width*8);//计算图象每行的字节数
+	while(w*2<=width)//计算进行傅立叶变换的宽度（2的整数次方）
 	{
 		w*=2;
 		wp++;
 	}
-	while(h*2<=height)//������и���Ҷ�任�ĸ߶ȣ�2�������η���
+	while(h*2<=height)//计算进行傅立叶变换的高度（2的整数次方）
 	{
 		h*=2;
 		hp++;
 	}
-	t=new CNumber[w*h];//����洢���ռ�
+	t=new CNumber[w*h];//分配存储器空间
 	f=new CNumber[w*h];
 	for(j=0;j<h;j++)
 	{
 		for(i=0;i<w;i++)
 		{
-			p=p_data+lLineBytes*(height-j-1)+i;//ָ���j�е�i������
-			t[i+w*j].re=*(p);//��ʱ��ֵ
+			p=p_data+lLineBytes*(height-j-1)+i;//指向第j行第i列象素
+			t[i+w*j].re=*(p);//给时域赋值
 			t[i+w*j].im=0;
 		}
 	}
-	for(j=0;j<h;j++)//�ڴ�ֱ�����Ͻ��п��ٸ���Ҷ�任
+	for(j=0;j<h;j++)//在垂直方向上进行快速傅立叶变换
 	{
 		QFC(&t[w*j],&f[w*j],wp);
 	}
-	for(j=0;j<h;j++)//ת���任���
+	for(j=0;j<h;j++)//转换变换结果
 	{
 		for(i=0;i<w;i++)
 		{
 			t[j+h*i]=f[i+w*j];
 		}
 	}
-	for(i=0;i<w;i++)//ˮƽ������п��ٸ���Ҷ�任
+	for(i=0;i<w;i++)//水平方向进行快速傅立叶变换
 	{
 		QFC(&t[i*h],&f[i*h],hp);
 	}
@@ -164,7 +164,7 @@ void ZhengJiaoBianHuanDib::QuickFourier()
 			if(temp>255)
 				temp=255;
 			p=p_data+lLineBytes*(height-(j<h/2?j+h/2:j-h/2)-1)+
-				(i<w/2?i+w/2:i-w/2);//���任���ԭ���Ƶ�����
+				(i<w/2?i+w/2:i-w/2);//将变换后的原点移到中心
 			*(p)=(BYTE)(temp);
 		}
 	}
@@ -175,93 +175,93 @@ void ZhengJiaoBianHuanDib::QuickFourier()
 
 /*************************************************************************
  *
- * �������ƣ�LiSan(double *t, double *f, int r)
+ * 函数名称：LiSan(double *t, double *f, int r)
  *
- * ����:
- *   double * t				- ָ��ʱ��ֵ��ָ��
- *   double * f				- ָ��Ƶ��ֵ��ָ��
- *   r						��2������
+ * 参数:
+ *   double * t				- 指向时域值的指针
+ *   double * f				- 指向频域值的指针
+ *   r						－2的幂数
  *
- * ����ֵ:
- *   �ޡ�
+ * 返回值:
+ *   无。
  *
- * ˵��:
- *   �ú�������ʵ�ֿ�����ɢ���ұ任���ú�������2N��Ŀ��ٸ���Ҷ�任
- * ��ʵ����ɢ���ұ任��
+ * 说明:
+ *   该函数用来实现快速离散余弦变换。该函数利用2N点的快速付立叶变换
+ * 来实现离散余弦变换。
  *
  ************************************************************************/
 void ZhengJiaoBianHuanDib::LiSan(double *t, double *f, int r)
 {
-	// ��ɢ���ұ任����
+	// 离散余弦变换点数
 	long	count;	
-	// ѭ������
+	// 循环变量
 	int		i;	
-	// �м����
+	// 中间变量
 	double	dTemp;
 	CNumber *X;	
-	// ������ɢ���ұ任����
+	// 计算离散余弦变换点数
 	count = 1<<r;
-	// �����ڴ�
+	// 分配内存
 	X=new CNumber[count*2];
-	// ����ֵΪ0
+	// 赋初值为0
 	memset(X, 0, sizeof(CNumber) * count * 2);
-	// ��ʱ���д������X
+	// 将时域点写入数组X
 	for(i=0;i<count;i++)
 	{
 		X[i].re=t[i];
 		X[i].im=0;
 	}
-	// ���ÿ��ٸ���Ҷ�任
+	// 调用快速付立叶变换
 	QFC(X,X,r+1);
-	// ����ϵ��
+	// 调整系数
 	dTemp = 1/sqrt(count);
-	// ��F[0]
+	// 求F[0]
 	f[0] = X[0].re * dTemp;
 	dTemp *= sqrt(2);
-	// ��F[u]	
+	// 求F[u]	
 	for(i = 1; i < count; i++)
 	{
 		f[i]=(X[i].re * cos(i*PI/(count*2)) + X[i].im * sin(i*PI/(count*2))) * dTemp;
 	}	
-	// �ͷ��ڴ�
+	// 释放内存
 	delete X;
 }
 
 /*************************************************************************
  *
- * �������ƣ�
+ * 函数名称：
  *   WALSH()
  *
- * ����:
- *   double * t				- ָ��ʱ��ֵ��ָ��
- *   double * f				- ָ��Ƶ��ֵ��ָ��
- *   r						��2������
+ * 参数:
+ *   double * t				- 指向时域值的指针
+ *   double * f				- 指向频域值的指针
+ *   r						－2的幂数
  *
- * ����ֵ:
- *   �ޡ�
+ * 返回值:
+ *   无。
  *
- * ˵��:
- *   �ú�������ʵ�ֿ����ֶ�ʲ-������任��
+ * 说明:
+ *   该函数用来实现快速沃尔什-哈达玛变换。
  *
  ************************************************************************/
 
 void ZhengJiaoBianHuanDib::WALSH(double *t, double *f, int r)
 {
-	// �ֶ�ʲ-������任����
+	// 沃尔什-哈达玛变换点数
 	long   count;	
-	// ѭ������
+	// 循环变量
 	int		i,j,k;	
-	// �м����
+	// 中间变量
 	int		bfsize,p;
 	double *X1,*X2,*X;	
-	// ��������ֶ�ʲ�任����
+	// 计算快速沃尔什变换点数
 	count = 1 << r;
-	// �����������������
+	// 分配运算所需的数组
 	X1 = new double[count];
 	X2 = new double[count];
-	// ��ʱ���д������X1
+	// 将时域点写入数组X1
 	memcpy(X1, t, sizeof(double) * count);
-	// ��������
+	// 蝶形运算
 	for(k = 0; k < r; k++)
 	{
 		for(j = 0; j < 1<<k; j++)
@@ -274,12 +274,12 @@ void ZhengJiaoBianHuanDib::WALSH(double *t, double *f, int r)
 				X2[i + p + bfsize / 2] = X1[i + p] - X1[i + p + bfsize / 2];
 			}
 		}
-		// ����X1��X2  
+		// 互换X1和X2  
 		X = X1;
 		X1 = X2;
 		X2 = X;
 	}
-	// ����ϵ��
+	// 调整系数
 	for(j = 0; j < count; j++)
 	{
 		p = 0;
@@ -292,7 +292,7 @@ void ZhengJiaoBianHuanDib::WALSH(double *t, double *f, int r)
 		}
 		f[j] = X1[p] / count;
 	}	
-	// �ͷ��ڴ�
+	// 释放内存
 	delete X1;
 	delete X2;
 }
@@ -300,44 +300,44 @@ void ZhengJiaoBianHuanDib::WALSH(double *t, double *f, int r)
 
 /*************************************************************************
  *
- * �������ƣ�DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight)
+ * 函数名称：DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight)
  *
- * ����:
- *   LPBYTE lpDIBBits    - ָ��ԴDIBͼ��ָ��
- *   LONG  lWidth       - Դͼ����ȣ���������
- *   LONG  lHeight      - Դͼ��߶ȣ���������
+ * 参数:
+ *   LPBYTE lpDIBBits    - 指向源DIB图像指针
+ *   LONG  lWidth       - 源图像宽度（象素数）
+ *   LONG  lHeight      - 源图像高度（象素数）
  *
- * ����ֵ:
- *  bool               - �ɹ�����TRUE�����򷵻�FALSE��
+ * 返回值:
+ *  bool               - 成功返回TRUE，否则返回FALSE。
  *
- * ˵��:
- *   �ú���������ͼ�������ɢ���ұ任��
+ * 说明:
+ *   该函数用来对图像进行离散余弦变换。
  *
  ************************************************************************/
 bool ZhengJiaoBianHuanDib::DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight)
 {
-	// ָ��Դͼ���ָ��
+	// 指向源图像的指针
 	LPBYTE	lpSrc;
-	// ѭ������
+	// 循环变量
 	LONG	i;
 	LONG	j;
-	// ���и���Ҷ�任�Ŀ��Ⱥ͸߶ȣ�2�������η���
+	// 进行付立叶变换的宽度和高度（2的整数次方）
 	LONG	w;
 	LONG	h;
-	// �м����
+	// 中间变量
 	double	dTemp;
 	int		wp;
 	int		hp;
-	// ͼ��ÿ�е��ֽ���
+	// 图像每行的字节数
 	LONG	lLineBytes;
-	// ����ͼ��ÿ�е��ֽ���
+	// 计算图像每行的字节数
 	lLineBytes = WIDTHBYTES(lWidth * 8);
-	// ����ֵ
+	// 赋初值
 	w = 1;
 	h = 1;
 	wp = 0;
 	hp = 0;
-	// ���������ɢ���ұ任�Ŀ��Ⱥ͸߶ȣ�2�������η���
+	// 计算进行离散余弦变换的宽度和高度（2的整数次方）
 	while(w * 2 <= lWidth)
 	{
 		w *= 2;
@@ -348,28 +348,28 @@ bool ZhengJiaoBianHuanDib::DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lH
 		h *= 2;
 		hp++;
 	}
-	// �����ڴ�
+	// 分配内存
 	double *f = new double[w * h];
 	double *F = new double[w * h];
-	// ��
+	// 行
 	for(j = 0; j < h; j++)
 	{
-		// ��
+		// 列
 		for(i = 0; i < w; i++)
 		{
-			// ָ��DIB��j�У���i�����ص�ָ��
+			// 指向DIB第j行，第i个象素的指针
 			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - j) + i;
-			// ��ʱ��ֵ
+			// 给时域赋值
 			f[i + j * w] = *(lpSrc);
 		}
 	}
 	
 	for(j = 0; j < h; j++)
 	{
-		// ��y���������ɢ���ұ任
+		// 对y方向进行离散余弦变换
 		LiSan(&f[w * j], &F[w * j], wp);
 	}
-	// ���������
+	// 保存计算结果
 	for(j = 0; j < h; j++)
 	{
 		for(i = 0; i < w; i++)
@@ -379,33 +379,33 @@ bool ZhengJiaoBianHuanDib::DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lH
 	}
 	for(i = 0; i < w; i++)
 	{
-		// ��x���������ɢ���ұ任
+		// 对x方向进行离散余弦变换
 		LiSan(&f[i * h], &F[i * h], hp);
 	}
-	// ��
+	// 行
 	for(j = 0; j < h; j++)
 	{
-		// ��
+		// 列
 		for(i = 0; i < w; i++)
 		{
-			// ����Ƶ��
+			// 计算频谱
 			dTemp = fabs(F[i*h+j]);
-			// �ж��Ƿ񳬹�255
+			// 判断是否超过255
 			if (dTemp > 255)
 			{
-				// ���ڳ����ģ�ֱ������Ϊ255
+				// 对于超过的，直接设置为255
 				dTemp = 255;
 			}
-			// ָ��DIB��y�У���x�����ص�ָ��
+			// 指向DIB第y行，第x个象素的指针
 			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - j) + i;
-			// ����Դͼ��
+			// 更新源图像
 			* (lpSrc) = (BYTE)(dTemp);
 		}
 	}	
-	// �ͷ��ڴ�
+	// 释放内存
 	delete f;
 	delete F;
-	//����
+	//返回
 	return true;
 }
 
@@ -413,47 +413,47 @@ bool ZhengJiaoBianHuanDib::DIBLiSanYuXuan(LPBYTE lpDIBBits, LONG lWidth, LONG lH
 
 /*************************************************************************
  *
- * �������ƣ�
+ * 函数名称：
  *   DIBWalsh()
  *
- * ����:
- *   LPBYTE lpDIBBits    - ָ��ԴDIBͼ��ָ��
- *   LONG  lWidth       - Դͼ����ȣ���������
- *   LONG  lHeight      - Դͼ��߶ȣ���������
+ * 参数:
+ *   LPBYTE lpDIBBits    - 指向源DIB图像指针
+ *   LONG  lWidth       - 源图像宽度（象素数）
+ *   LONG  lHeight      - 源图像高度（象素数）
  *
- * ����ֵ:
- *  bool               - �ɹ�����TRUE�����򷵻�FALSE��
+ * 返回值:
+ *  bool               - 成功返回TRUE，否则返回FALSE。
  *
- * ˵��:
- *   �ú���������ͼ������ֶ�ʲ-������任�������治ͬ���ǣ��˴��ǽ���ά
- * ����ת����һ����������Ȼ��Ը�����������һ��һά�ֶ�ʲ-������任��
+ * 说明:
+ *   该函数用来对图像进行沃尔什-哈达玛变换。于上面不同的是，此处是将二维
+ * 矩阵转换成一个列向量，然后对该列向量进行一次一维沃尔什-哈达玛变换。
  *
  ************************************************************************/
 
 bool ZhengJiaoBianHuanDib::DIBWalsh(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight)
 {	
-	// ָ��Դͼ���ָ��
+	// 指向源图像的指针
 	LPBYTE	lpSrc;
-	// ѭ������
+	// 循环变量
 	LONG	i;
 	LONG	j;
-	// ���и���Ҷ�任�Ŀ��Ⱥ͸߶ȣ�2�������η���
+	// 进行付立叶变换的宽度和高度（2的整数次方）
 	LONG	w;
 	LONG	h;
-	// �м����
+	// 中间变量
 	double	dTemp;
 	int		wp;
 	int		hp;
-	// ͼ��ÿ�е��ֽ���
+	// 图像每行的字节数
 	LONG	lLineBytes;
-	// ����ͼ��ÿ�е��ֽ���
+	// 计算图像每行的字节数
 	lLineBytes = WIDTHBYTES(lWidth * 8);
-	// ����ֵ
+	// 赋初值
 	w = 1;
 	h = 1;
 	wp = 0;
 	hp = 0;
-	// ���������ɢ���ұ任�Ŀ��Ⱥ͸߶ȣ�2�������η���
+	// 计算进行离散余弦变换的宽度和高度（2的整数次方）
 	while(w * 2 <= lWidth)
 	{
 		w *= 2;
@@ -464,46 +464,46 @@ bool ZhengJiaoBianHuanDib::DIBWalsh(LPBYTE lpDIBBits, LONG lWidth, LONG lHeight)
 		h *= 2;
 		hp++;
 	}
-	// �����ڴ�
+	// 分配内存
 	double *f = new double[w * h];
 	double *F = new double[w * h];
-	// ��
+	// 列
 	for(j = 0; j < w; j++)
 	{
-		// ��
+		// 行
 		for(i = 0; i < h; i++)
 		{
-			// ָ��DIB��j�У���i�����ص�ָ��
+			// 指向DIB第j行，第i个象素的指针
 			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - i) + j;
-			// ��ʱ��ֵ
+			// 给时域赋值
 			f[i + j * w] = *(lpSrc);
 		}
 	}	
-	// ���ÿ����ֶ�ʲ��������任
+	// 调用快速沃尔什－哈达玛变换
 	WALSH(f, F, wp + hp);
-	// ��
+	// 列
 	for(j = 0; j < w; j++)
 	{
-		// ��
+		// 行
 		for(i = 0; i < h; i++)
 		{
-			// ����Ƶ��
+			// 计算频谱
 			dTemp = fabs(F[j * w + i] * 1000);
-			// �ж��Ƿ񳬹�255
+			// 判断是否超过255
 			if (dTemp > 255)
 			{
-				// ���ڳ����ģ�ֱ������Ϊ255
+				// 对于超过的，直接设置为255
 				dTemp = 255;
 			}
-			// ָ��DIB��j�У���i�����ص�ָ��
+			// 指向DIB第j行，第i个象素的指针
 			lpSrc = (unsigned char*)lpDIBBits + lLineBytes * (lHeight - 1 - i) + j;
-			// ����Դͼ��
+			// 更新源图像
 			* (lpSrc) = (BYTE)(dTemp);
 		}
 	}	
-	//�ͷ��ڴ�
+	//释放内存
 	delete f;
 	delete F;
-	//����
+	//返回
 	return true;
 }

@@ -8,7 +8,7 @@
 #define PI 3.1415926535
 #define WIDTHBYTES(bits)    (((bits) + 31) / 32 * 4) 
 
-#define RADIAN(angle) ((angle)*PI/180.0) //½Ç¶Èµ½»¡¶È×ª»¯µÄºê
+#define RADIAN(angle) ((angle)*PI/180.0) //è§’åº¦åˆ°å¼§åº¦è½¬åŒ–çš„å®
 
 JiHeBianHuanDib::JiHeBianHuanDib()
 {
@@ -21,35 +21,35 @@ JiHeBianHuanDib::~JiHeBianHuanDib()
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºJingXiang(bool fangshi)                                        
-/*º¯ÊıÀàĞÍ£ºvoid
-/*²ÎÊıËµÃ÷£ºfangshi --ÅĞ¶Ï±êÖ¾Îª true Ë®Æ½¾µÏñ£¬Îª false ´¹Ö±¾µÏñ                                      
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ¾µÏñÏÔÊ¾¡£            
+/*å‡½æ•°åç§°ï¼šJingXiang(bool fangshi)                                        
+/*å‡½æ•°ç±»å‹ï¼švoid
+/*å‚æ•°è¯´æ˜ï¼šfangshi --åˆ¤æ–­æ ‡å¿—ä¸º true æ°´å¹³é•œåƒï¼Œä¸º false å‚ç›´é•œåƒ                                      
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œé•œåƒæ˜¾ç¤ºã€‚            
 /***************************************************************/ 
 void JiHeBianHuanDib::JingXiang(bool fangshi)
 {
-    // Ö¸ÏòÔ´Í¼ÏñµÄÖ¸Õë
+    // æŒ‡å‘æºå›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	lpSrc;
 	LPBYTE  p_data;
-	// Ö¸ÏòÒª¸´ÖÆÇøÓòµÄÖ¸Õë
+	// æŒ‡å‘è¦å¤åˆ¶åŒºåŸŸçš„æŒ‡é’ˆ
 	LPBYTE	lpDst;
-	// Ö¸Ïò¸´ÖÆÍ¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘å¤åˆ¶å›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	temp;
-	// Ñ­»·±äÁ¿
+	// å¾ªç¯å˜é‡
 	LONG	i;
 	LONG	j;
-	//Í¼ÏñµÄ¸ßÓë¿í
+	//å›¾åƒçš„é«˜ä¸å®½
 	long height=this->GetHeight();
 	long wide=this->GetWidth();
 	p_data=this->GetData();
-	// ÔİÊ±·ÖÅäÄÚ´æ£¬ÒÔ±£´æÒ»ĞĞÍ¼Ïñ
+	// æš‚æ—¶åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜ä¸€è¡Œå›¾åƒ
 	temp = new BYTE[wide*height];
-	// ÅĞ¶Ï¾µÏñ·½Ê½
-	if (fangshi)		// Ë®Æ½¾µÏñ
+	// åˆ¤æ–­é•œåƒæ–¹å¼
+	if (fangshi)		// æ°´å¹³é•œåƒ
 	{
-		if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+		if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 		{
-			// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 			for(j = 0; j < height; j++)
 			{
 				for(i = 0; i <  wide;i++)
@@ -61,11 +61,11 @@ void JiHeBianHuanDib::JingXiang(bool fangshi)
 			}
 			memcpy(p_data,temp, wide*height);
 		}
-		else	//24Î»²ÊÉ«
+		else	//24ä½å½©è‰²
 		{
 			wide=this->GetDibWidthBytes();
 			temp=new BYTE[height*wide];
-			// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 			for(j = 0; j < height; j++)
 			{
 				for(i = 0; i <  wide;i=i+3)
@@ -80,11 +80,11 @@ void JiHeBianHuanDib::JingXiang(bool fangshi)
 			memcpy(p_data,temp, wide*height);
 		}		
 	}
-	else		// ´¹Ö±¾µÏñ
+	else		// å‚ç›´é•œåƒ
 	{
-       	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+       	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 		{
-			// Õë¶ÔÉÏ°ëÍ¼Ïñ½øĞĞ²Ù×÷
+			// é’ˆå¯¹ä¸ŠåŠå›¾åƒè¿›è¡Œæ“ä½œ
 			for(i = 0; i <  wide;i++)
 			{
 				for(j = 0; j < height; j++)
@@ -96,11 +96,11 @@ void JiHeBianHuanDib::JingXiang(bool fangshi)
 			}
 			memcpy(p_data,temp, wide*height);	       
 		}
-		else	//24Î»²ÊÉ«		
+		else	//24ä½å½©è‰²		
 		{
 			wide=this->GetDibWidthBytes();
 			temp=new BYTE[height*wide];
-			// Õë¶ÔÉÏ°ëÍ¼Ïñ½øĞĞ²Ù×÷
+			// é’ˆå¯¹ä¸ŠåŠå›¾åƒè¿›è¡Œæ“ä½œ
 			for(i = 0; i <  wide;i++)
 			{
 				for(j = 0; j < height; j++)
@@ -111,81 +111,81 @@ void JiHeBianHuanDib::JingXiang(bool fangshi)
 				}
 			}
 			memcpy(p_data,temp, wide*height);
-			// ÊÍ·ÅÄÚ´æ
+			// é‡Šæ”¾å†…å­˜
 			delete temp;		
 		}	   
 	}
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºZhuanzhi()                                        
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ×ªÖÃ´¦Àí¡£            
+/*å‡½æ•°åç§°ï¼šZhuanzhi()                                        
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œè½¬ç½®å¤„ç†ã€‚            
 /***************************************************************/
 void JiHeBianHuanDib::Zhuanzhi()
 {
-	// Í¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+	// å›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	LONG	wide=this->GetWidth();
 	LONG	height=this->GetHeight();
-	//Í¼ÏñÃ¿ĞĞ×Ö½ÚÊı
+	//å›¾åƒæ¯è¡Œå­—èŠ‚æ•°
 	LONG lLineBytes=(((wide*8)+31)/32*4);
-	//ĞÂÍ¼ÏñÃ¿ĞĞ×Ö½ÚÊı
+	//æ–°å›¾åƒæ¯è¡Œå­—èŠ‚æ•°
     LONG lNewLineBytes=(((height*8)+31)/32*4);
-	// Ö¸ÏòÔ´Í¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘æºå›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	p_data=this->GetData();
-	// Ö¸ÏòÔ´ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘æºè±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpSrc;
-	// Ö¸Ïò×ªÖÃÍ¼Ïñ¶ÔÓ¦ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘è½¬ç½®å›¾åƒå¯¹åº”è±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpDst;
-	// Ö¸Ïò×ªÖÃÍ¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘è½¬ç½®å›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	temp;	
-	// Ñ­»·±äÁ¿
+	// å¾ªç¯å˜é‡
 	LONG	i;
 	LONG	j;
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{ 
-		//·ÖÅäÄÚ´æ
+		//åˆ†é…å†…å­˜
 		temp=new BYTE[wide*lNewLineBytes];
 		
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < height; j++)
 		{
-			// Õë¶ÔÃ¿ĞĞÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹æ¯è¡Œå›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < wide;i++)
 			{
-				// Ö¸ÏòÔ´DIBµÚjĞĞ£¬µÚi¸öÏóËØµÄÖ¸Õë
+				// æŒ‡å‘æºDIBç¬¬jè¡Œï¼Œç¬¬iä¸ªè±¡ç´ çš„æŒ‡é’ˆ
 				lpSrc = (LPBYTE)p_data+ lLineBytes * j + i;
-				// Ö¸Ïò×ªÖÃDIBµÚiĞĞ£¬µÚj¸öÏóËØµÄÖ¸Õë
-				// ×¢Òâ´Ë´¦wideºÍheightÊÇÔ´DIBµÄ¿í¶ÈºÍ¸ß¶È£¬Ó¦¸Ã»¥»»
+				// æŒ‡å‘è½¬ç½®DIBç¬¬iè¡Œï¼Œç¬¬jä¸ªè±¡ç´ çš„æŒ‡é’ˆ
+				// æ³¨æ„æ­¤å¤„wideå’Œheightæ˜¯æºDIBçš„å®½åº¦å’Œé«˜åº¦ï¼Œåº”è¯¥äº’æ¢
 				lpDst = (LPBYTE)temp + lNewLineBytes* i+ j;
-				// ¸´ÖÆÏóËØ
+				// å¤åˆ¶è±¡ç´ 
 				*lpDst = *lpSrc;
 			}
 		}
 		m_pBitmapInfoHeader->biHeight=wide;
 		m_pBitmapInfoHeader->biWidth=height;
-		// ¸´ÖÆ×ªÖÃºóµÄÍ¼Ïñ
+		// å¤åˆ¶è½¬ç½®åçš„å›¾åƒ
 		memcpy(p_data, temp, wide* height);
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		delete  temp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
 		lLineBytes=wide*3;
 		lNewLineBytes=height*3;
 		temp=new BYTE[wide*lNewLineBytes];
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < height; j++)
 		{
-			// Õë¶ÔÃ¿ĞĞÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹æ¯è¡Œå›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < wide;i++)
 			{
-				// Ö¸ÏòÔ´DIBµÚjĞĞ£¬µÚi¸öÏóËØµÄÖ¸Õë
+				// æŒ‡å‘æºDIBç¬¬jè¡Œï¼Œç¬¬iä¸ªè±¡ç´ çš„æŒ‡é’ˆ
 				lpSrc = (LPBYTE)p_data+ lLineBytes * j + i*3;
-				// Ö¸Ïò×ªÖÃDIBµÚiĞĞ£¬µÚj¸öÏóËØµÄÖ¸Õë
-				// ×¢Òâ´Ë´¦wideºÍheightÊÇÔ´DIBµÄ¿í¶ÈºÍ¸ß¶È£¬Ó¦¸Ã»¥»»
+				// æŒ‡å‘è½¬ç½®DIBç¬¬iè¡Œï¼Œç¬¬jä¸ªè±¡ç´ çš„æŒ‡é’ˆ
+				// æ³¨æ„æ­¤å¤„wideå’Œheightæ˜¯æºDIBçš„å®½åº¦å’Œé«˜åº¦ï¼Œåº”è¯¥äº’æ¢
 				lpDst = (LPBYTE)temp +lNewLineBytes* i+ j*3;
-				// ¸´ÖÆÏóËØ
+				// å¤åˆ¶è±¡ç´ 
 				*lpDst++ = *lpSrc++;
 				*lpDst++ = *lpSrc++;
 				*lpDst = *lpSrc;			
@@ -193,18 +193,18 @@ void JiHeBianHuanDib::Zhuanzhi()
 		}
 		m_pBitmapInfoHeader->biHeight=wide;
 		m_pBitmapInfoHeader->biWidth=height;
-		// ¸´ÖÆ×ªÖÃºóµÄÍ¼Ïñ
+		// å¤åˆ¶è½¬ç½®åçš„å›¾åƒ
 		memcpy(p_data, temp, wide* height*3);	
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		delete  temp;
 	}
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºXuanzhuan(int RotateAngle)                                        
-/*º¯ÊıÀàĞÍ£ºvoid
-/*²ÎÊıËµÃ÷£ºRotateAngle --Ğı×ª½Ç¶È                                     
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞĞı×ª´¦Àí¡£            
+/*å‡½æ•°åç§°ï¼šXuanzhuan(int RotateAngle)                                        
+/*å‡½æ•°ç±»å‹ï¼švoid
+/*å‚æ•°è¯´æ˜ï¼šRotateAngle --æ—‹è½¬è§’åº¦                                     
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œæ—‹è½¬å¤„ç†ã€‚            
 /*****************************************************************/
 void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 {
@@ -218,15 +218,15 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
     double       cosa,sina; 
     double       num1,num2;
     int          LineBytes;
-	//½Ç¶Èµ½»¡¶ÈµÄ×ª»¯
+	//è§’åº¦åˆ°å¼§åº¦çš„è½¬åŒ–
     RotateAngle=(double)RADIAN(RotateAngle);
     cosa=(double)cos((double)RotateAngle);
     sina=(double)sin((double)RotateAngle);
-    //Ô­Í¼µÄ¿í¶ÈºÍ¸ß¶È
+    //åŸå›¾çš„å®½åº¦å’Œé«˜åº¦
     lpSrc=this->GetData();
     int Wold=this->GetWidth();
     int Hold=this->GetHeight();
-    //Ô­Í¼µÄËÄ¸ö½ÇµÄ×ø±ê
+    //åŸå›¾çš„å››ä¸ªè§’çš„åæ ‡
 	SrcX1=(double)(-0.5*Wold);
 	SrcY1=(double)(0.5*Hold);
 	SrcX2=(double)(0.5*Wold);
@@ -235,7 +235,7 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 	SrcY3=(double)(-0.5*Hold);
 	SrcX4=(double)(0.5*Wold);
 	SrcY4=(double)(-0.5*Hold);
-	//ĞÂÍ¼ËÄ¸ö½ÇµÄ×ø±ê
+	//æ–°å›¾å››ä¸ªè§’çš„åæ ‡
 	DstX1=cosa*SrcX1+sina*SrcY1;
 	DstY1=-sina*SrcX1+cosa*SrcY1;
 	DstX2=cosa*SrcX2+sina*SrcY2;
@@ -244,15 +244,15 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 	DstY3=-sina*SrcX3+cosa*SrcY3;
 	DstX4=cosa*SrcX4+sina*SrcY4;
 	DstY4=-sina*SrcX4+cosa*SrcY4;
-	//¼ÆËãĞÂÍ¼µÄ¿í¶È£¬¸ß¶È
+	//è®¡ç®—æ–°å›¾çš„å®½åº¦ï¼Œé«˜åº¦
 	int Wnew = (DWORD)(max(fabs(DstX4-DstX1), fabs(DstX3-DstX2))+0.5);
 	int Hnew = (DWORD)(max(fabs(DstY4-DstY1), fabs(DstY3-DstY2))+0.5);
-	//¼ÆËã¾ØÕó(2.9)ÖĞµÄÁ½¸ö³£Êı£¬ÕâÑù²»ÓÃÒÔºóÃ¿´Î¶¼¼ÆËãÁË
+	//è®¡ç®—çŸ©é˜µ(2.9)ä¸­çš„ä¸¤ä¸ªå¸¸æ•°ï¼Œè¿™æ ·ä¸ç”¨ä»¥åæ¯æ¬¡éƒ½è®¡ç®—äº†
 	num1=(double)( -0.5*Wnew*cosa-0.5*Hnew*sina+0.5*Wold);
 	num2=(double)(0.5*Wnew*sina-0.5*Hnew*cosa+0.5*Hold);
-	if(m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
-		//½«ĞÂµÄ»º³åÇøÖĞµÄÃ¿¸ö×Ö½Ú¶¼Ìî³É255£¬ÕâÑùÒÔºóÎ´´¦ÀíµÄÏóËØ¾ÍÊÇ°×É«
+		//å°†æ–°çš„ç¼“å†²åŒºä¸­çš„æ¯ä¸ªå­—èŠ‚éƒ½å¡«æˆ255ï¼Œè¿™æ ·ä»¥åæœªå¤„ç†çš„è±¡ç´ å°±æ˜¯ç™½è‰²
 		DstBufSize=Wnew*Hnew;
 		lpTempPtr=new BYTE[Wnew*Hnew];
 		memset(lpTempPtr,(BYTE)255,Wnew*Hnew);
@@ -261,14 +261,14 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 		{
 			for(x1=0;x1<Wnew;x1++)
 			{
-				//x0,y0Îª¶ÔÓ¦µÄÔ­Í¼ÉÏµÄ×ø±ê
+				//x0,y0ä¸ºå¯¹åº”çš„åŸå›¾ä¸Šçš„åæ ‡
 				x0= (DWORD)(x1*cosa+y1*sina+num1);
 				y0= (DWORD)(-1.0f*x1*sina+y1*cosa+num2);
-				if( (x0>=0) && (x0<Wold) && (y0>=0) && (y0<Hold))   //ÔÚÔ­Í¼·¶Î§ÄÚ
+				if( (x0>=0) && (x0<Wold) && (y0>=0) && (y0<Hold))   //åœ¨åŸå›¾èŒƒå›´å†…
 				{
 					lpPtr=lpSrc+y0*Wold+x0;
 					lpTempPtr=lpTemp+y1*Wnew+x1;
-					*lpTempPtr=*lpPtr; //½øĞĞÏóËØµÄ¸´ÖÆ
+					*lpTempPtr=*lpPtr; //è¿›è¡Œè±¡ç´ çš„å¤åˆ¶
 					lpTempPtr=lpTemp;
 				}
 			}
@@ -277,9 +277,9 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 		this->SetHeight(Hnew);
 		this->m_pData=lpTemp;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
-		//½«ĞÂµÄ»º³åÇøÖĞµÄÃ¿¸ö×Ö½Ú¶¼Ìî³É255£¬ÕâÑùÒÔºóÎ´´¦ÀíµÄÏóËØ¾ÍÊÇ°×É«
+		//å°†æ–°çš„ç¼“å†²åŒºä¸­çš„æ¯ä¸ªå­—èŠ‚éƒ½å¡«æˆ255ï¼Œè¿™æ ·ä»¥åæœªå¤„ç†çš„è±¡ç´ å°±æ˜¯ç™½è‰²
 		DstBufSize=Wnew*Hnew*3;
 		lpTempPtr=new BYTE[Wnew*Hnew*3];
 		memset(lpTempPtr,(BYTE)255,Wnew*Hnew*3);
@@ -288,16 +288,16 @@ void JiHeBianHuanDib::Xuanzhuan(double RotateAngle)
 		{
 			for(x1=0;x1<Wnew;x1++)
 			{
-				//x0,y0Îª¶ÔÓ¦µÄÔ­Í¼ÉÏµÄ×ø±ê
+				//x0,y0ä¸ºå¯¹åº”çš„åŸå›¾ä¸Šçš„åæ ‡
 				x0= (DWORD)(x1*cosa+y1*sina+num1);
 				y0= (DWORD)(-1.0f*x1*sina+y1*cosa+num2);
-				if((x0>=0) && (x0<Wold) && (y0>=0) && (y0<Hold))   //ÔÚÔ­Í¼·¶Î§ÄÚ
+				if((x0>=0) && (x0<Wold) && (y0>=0) && (y0<Hold))   //åœ¨åŸå›¾èŒƒå›´å†…
 				{
 					lpPtr=lpSrc+y0*Wold*3+x0*3;
 					lpTempPtr=lpTemp+y1*Wnew*3+x1*3;					
-					*lpTempPtr++=*lpPtr++; //½øĞĞÏóËØµÄ¸´ÖÆ
-					*lpTempPtr++=*lpPtr++; //½øĞĞÏóËØµÄ¸´ÖÆ
-					*lpTempPtr=*lpPtr; //½øĞĞÏóËØµÄ¸´ÖÆ
+					*lpTempPtr++=*lpPtr++; //è¿›è¡Œè±¡ç´ çš„å¤åˆ¶
+					*lpTempPtr++=*lpPtr++; //è¿›è¡Œè±¡ç´ çš„å¤åˆ¶
+					*lpTempPtr=*lpPtr; //è¿›è¡Œè±¡ç´ çš„å¤åˆ¶
 					lpTempPtr=lpTemp;
 				}
 			}
@@ -317,81 +317,81 @@ void JiHeBianHuanDib::clearmem2()
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºSuofang(float xzoom, float yzoom)                                        
-/*º¯ÊıÀàĞÍ£ºvoid
-/*²ÎÊıËµÃ÷£ºxzoom --Ë®Æ½ËõĞ¡µÄ±ÈÂÊ
-/*          yzoom --´¹Ö±ËõĞ¡µÄ±ÈÂÊ                                     
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞËõ·Å´¦Àí¡£            
+/*å‡½æ•°åç§°ï¼šSuofang(float xzoom, float yzoom)                                        
+/*å‡½æ•°ç±»å‹ï¼švoid
+/*å‚æ•°è¯´æ˜ï¼šxzoom --æ°´å¹³ç¼©å°çš„æ¯”ç‡
+/*          yzoom --å‚ç›´ç¼©å°çš„æ¯”ç‡                                     
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œç¼©æ”¾å¤„ç†ã€‚            
 /*****************************************************************/
 void JiHeBianHuanDib::SuoXiao(float xzoom, float yzoom)
 {
-    // Ô´Í¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+    // æºå›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	LONG	wide;
 	LONG	height;
 	LONG    LineBytes;
-	// Ëõ·ÅºóÍ¼ÏñµÄ¿í¶ÈºÍ¸ß¶È
+	// ç¼©æ”¾åå›¾åƒçš„å®½åº¦å’Œé«˜åº¦
 	LONG	newwide;
 	LONG	newheight;
-	// Ö¸ÏòÔ´Í¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘æºå›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	p_data ;
 	LPBYTE  temp;
     temp=this->GetData();
     p_data= temp;
-	// Ö¸ÏòÔ´ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘æºè±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpSrc;
-	// Ö¸ÏòËõ·ÅÍ¼Ïñ¶ÔÓ¦ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘ç¼©æ”¾å›¾åƒå¯¹åº”è±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpDst;
-	// Ö¸ÏòËõ·ÅÍ¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘ç¼©æ”¾å›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	hDIB;
-	// Ñ­»·±äÁ¿£¨ÏóËØÔÚĞÂDIBÖĞµÄ×ø±ê£©
+	// å¾ªç¯å˜é‡ï¼ˆè±¡ç´ åœ¨æ–°DIBä¸­çš„åæ ‡ï¼‰
 	LONG	i;
 	LONG	j;
-	// ÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+	// è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 	LONG	i0;
 	LONG	j0;
-	if(m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
-		// »ñÈ¡Í¼ÏñµÄ¿í¶È
+		// è·å–å›¾åƒçš„å®½åº¦
 		wide = this->GetWidth();
 		LineBytes=(wide*8+31)/32*4;
-		// »ñÈ¡Í¼ÏñµÄ¸ß¶È
+		// è·å–å›¾åƒçš„é«˜åº¦
 		height = this->GetHeight();
-		// ¼ÆËãËõ·ÅºóµÄÍ¼ÏñÊµ¼Ê¿í¶ÈºÍ¸ß¶È
-		// ´Ë´¦Ö±½Ó¼Ó0.5ÊÇÓÉÓÚÇ¿ÖÆÀàĞÍ×ª»»Ê±²»ËÄÉáÎåÈë£¬¶øÊÇÖ±½Ó½ØÈ¥Ğ¡Êı²¿·Ö
+		// è®¡ç®—ç¼©æ”¾åçš„å›¾åƒå®é™…å®½åº¦å’Œé«˜åº¦
+		// æ­¤å¤„ç›´æ¥åŠ 0.5æ˜¯ç”±äºå¼ºåˆ¶ç±»å‹è½¬æ¢æ—¶ä¸å››èˆäº”å…¥ï¼Œè€Œæ˜¯ç›´æ¥æˆªå»å°æ•°éƒ¨åˆ†
 		newwide = (LONG) (wide * xzoom  + 0.5);
 		newheight = (LONG) (height * yzoom  + 0.5);
-		// ·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂDIB
+		// åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°DIB
 		hDIB = new BYTE[ newwide * newheight*3 ];
 		int k1 =yzoom+ 0.5;
 		int k2 =xzoom+ 0.5;
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < height-1; j=j+k1)
 		{
-			// Õë¶ÔÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < wide-1; i=i+k2)
 			{
-				// Ö¸ÏòĞÂDIBµÚiĞĞ£¬µÚj¸öÏóËØµÄÖ¸Õë
-				// ×¢Òâ´Ë´¦¿í¶ÈºÍ¸ß¶ÈÊÇĞÂDIBµÄ¿í¶ÈºÍ¸ß¶È
+				// æŒ‡å‘æ–°DIBç¬¬iè¡Œï¼Œç¬¬jä¸ªè±¡ç´ çš„æŒ‡é’ˆ
+				// æ³¨æ„æ­¤å¤„å®½åº¦å’Œé«˜åº¦æ˜¯æ–°DIBçš„å®½åº¦å’Œé«˜åº¦
 				lpDst = (LPBYTE)hDIB  + newwide * j + i;
-				// ¼ÆËã¸ÃÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 				j0 = (LONG) (j / yzoom  + 0.5);
 				i0 = (LONG) (i / xzoom  + 0.5);
-				// ÅĞ¶ÏÊÇ·ñÔÚÔ´Í¼·¶Î§ÄÚ
+				// åˆ¤æ–­æ˜¯å¦åœ¨æºå›¾èŒƒå›´å†…
 				if( (i0 >= 0) && (i0 < wide) && (j0 >= 0) && (j0 < height))
 				{
-					// Ö¸ÏòÔ´DIBµÚi0ĞĞ£¬µÚj0¸öÏóËØµÄÖ¸Õë
+					// æŒ‡å‘æºDIBç¬¬i0è¡Œï¼Œç¬¬j0ä¸ªè±¡ç´ çš„æŒ‡é’ˆ
 					lpSrc = (LPBYTE)p_data + wide * j0 + i0;
-					// ¸´ÖÆÏóËØ
+					// å¤åˆ¶è±¡ç´ 
 					*lpDst = *lpSrc;
 				}
 				else
 				{
-					// ¶ÔÓÚÔ´Í¼ÖĞÃ»ÓĞµÄÏóËØ£¬Ö±½Ó¸³ÖµÎª255
+					// å¯¹äºæºå›¾ä¸­æ²¡æœ‰çš„è±¡ç´ ï¼Œç›´æ¥èµ‹å€¼ä¸º255
 					*lpDst = 255;
 				}
 			}
 		}
-		// ¸´ÖÆËõĞ¡ºóµÄÍ¼Ïñ
+		// å¤åˆ¶ç¼©å°åçš„å›¾åƒ
 		for(j=0;j<height;j++)
 		{	
 			for(i=0;i<wide;i++)
@@ -407,52 +407,52 @@ void JiHeBianHuanDib::SuoXiao(float xzoom, float yzoom)
 		}	    
 		delete hDIB; 
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
-		// »ñÈ¡Í¼ÏñµÄ¿í¶È
+		// è·å–å›¾åƒçš„å®½åº¦
 		wide = this->GetDibWidthBytes();
 		LineBytes = (((wide * 8)+31)/32*4);
-		// »ñÈ¡Í¼ÏñµÄ¸ß¶È
+		// è·å–å›¾åƒçš„é«˜åº¦
 		height = this->GetHeight();
-		// ¼ÆËãËõ·ÅºóµÄÍ¼ÏñÊµ¼Ê¿í¶È
-		// ´Ë´¦Ö±½Ó¼Ó0.5ÊÇÓÉÓÚÇ¿ÖÆÀàĞÍ×ª»»Ê±²»ËÄÉáÎåÈë£¬¶øÊÇÖ±½Ó½ØÈ¥Ğ¡Êı²¿·Ö
+		// è®¡ç®—ç¼©æ”¾åçš„å›¾åƒå®é™…å®½åº¦
+		// æ­¤å¤„ç›´æ¥åŠ 0.5æ˜¯ç”±äºå¼ºåˆ¶ç±»å‹è½¬æ¢æ—¶ä¸å››èˆäº”å…¥ï¼Œè€Œæ˜¯ç›´æ¥æˆªå»å°æ•°éƒ¨åˆ†
 		newwide = (LONG) (LineBytes * xzoom  + 0.5);
-		// ¼ÆËãËõ·ÅºóµÄÍ¼Ïñ¸ß¶È
+		// è®¡ç®—ç¼©æ”¾åçš„å›¾åƒé«˜åº¦
 		newheight = (LONG) (height * yzoom  + 0.5);
-		// ·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂDIB
+		// åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°DIB
 		hDIB = new BYTE[ newwide * newheight*3 ];
 		int k1 =(int)(yzoom+ 0.5);
 		int k2 =(int)(xzoom+ 0.5);
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < height-1; j=j+k1)
 		{
-			// Õë¶ÔÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < LineBytes-1; i=i+k2*3)
 			{
-				// Ö¸ÏòĞÂDIBµÚiĞĞ£¬µÚj¸öÏóËØµÄÖ¸Õë
-				// ×¢Òâ´Ë´¦¿í¶ÈºÍ¸ß¶ÈÊÇĞÂDIBµÄ¿í¶ÈºÍ¸ß¶È
+				// æŒ‡å‘æ–°DIBç¬¬iè¡Œï¼Œç¬¬jä¸ªè±¡ç´ çš„æŒ‡é’ˆ
+				// æ³¨æ„æ­¤å¤„å®½åº¦å’Œé«˜åº¦æ˜¯æ–°DIBçš„å®½åº¦å’Œé«˜åº¦
 				lpDst = (LPBYTE)hDIB  + newwide * j + i;			
-				// ¼ÆËã¸ÃÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 				j0 = (LONG) (j / yzoom  + 0.5);
 				i0 = (LONG) (i / xzoom  + 0.5);
-				// ÅĞ¶ÏÊÇ·ñÔÚÔ´Í¼·¶Î§ÄÚ
+				// åˆ¤æ–­æ˜¯å¦åœ¨æºå›¾èŒƒå›´å†…
 				if( (i0 >= 0) && (i0 < LineBytes) && (j0 >= 0) && (j0 < height))
 				{				
-					// Ö¸ÏòÔ´DIBµÚi0ĞĞ£¬µÚj0¸öÏóËØµÄÖ¸Õë
+					// æŒ‡å‘æºDIBç¬¬i0è¡Œï¼Œç¬¬j0ä¸ªè±¡ç´ çš„æŒ‡é’ˆ
 					lpSrc = (LPBYTE)p_data + LineBytes * j0 + i0;
-					// ¸´ÖÆÏóËØ
+					// å¤åˆ¶è±¡ç´ 
 					*lpDst = *lpSrc;
 					*(lpDst+1)=*(lpSrc+1);
 					*(lpDst+2)=*(lpSrc+2);               
 				}
 				else
 				{
-					// ¶ÔÓÚÔ´Í¼ÖĞÃ»ÓĞµÄÏóËØ£¬Ö±½Ó¸³ÖµÎª255
+					// å¯¹äºæºå›¾ä¸­æ²¡æœ‰çš„è±¡ç´ ï¼Œç›´æ¥èµ‹å€¼ä¸º255
 					*lpDst = 255;
 				}
 			}
 		}
-		// ¸´ÖÆËõĞ¡ºóµÄÍ¼Ïñ
+		// å¤åˆ¶ç¼©å°åçš„å›¾åƒ
 		for(j=0;j<height;j++)
 		{	
 			for(i=0;i<LineBytes;i++)
@@ -472,147 +472,147 @@ void JiHeBianHuanDib::SuoXiao(float xzoom, float yzoom)
 }
 
 /***************************************************************/           
-/*º¯ÊıÃû³Æ£ºPingYi(int m_Xmove, int m_Ymove)                                       
-/*º¯ÊıÀàĞÍ£ºvoid
-/*²ÎÊıËµÃ÷£ºm_Xmove Í¼ÏñµÄË®Æ½Æ½ÒÆÁ¿£¬m_Ymove Í¼ÏñµÄ´¹Ö±Æ½ÒÆÁ¿                                    
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞÆ½ÒÆÏÔÊ¾¡£            
+/*å‡½æ•°åç§°ï¼šPingYi(int m_Xmove, int m_Ymove)                                       
+/*å‡½æ•°ç±»å‹ï¼švoid
+/*å‚æ•°è¯´æ˜ï¼šm_Xmove å›¾åƒçš„æ°´å¹³å¹³ç§»é‡ï¼Œm_Ymove å›¾åƒçš„å‚ç›´å¹³ç§»é‡                                    
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œå¹³ç§»æ˜¾ç¤ºã€‚            
 /***************************************************************/ 
 void JiHeBianHuanDib::PingYi(int m_Xmove, int m_Ymove)
 {
-	// Ö¸ÏòÔ´Í¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘æºå›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	lpSrc;
     LPBYTE   p_data;
-	// Ö¸ÏòÒª¸´ÖÆÇøÓòµÄÖ¸Õë
+	// æŒ‡å‘è¦å¤åˆ¶åŒºåŸŸçš„æŒ‡é’ˆ
 	LPBYTE	lpDst;
-	// Ö¸Ïò¸´ÖÆÍ¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘å¤åˆ¶å›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	temp;
-	// Ñ­»·±äÁ¿
+	// å¾ªç¯å˜é‡
 	int	i,j;
-	//Í¼ÏñµÄ¸ßºÍ¿í
+	//å›¾åƒçš„é«˜å’Œå®½
 	LONG wide,height;
-	// Í¼ÏñÃ¿ĞĞµÄ×Ö½ÚÊı
+	// å›¾åƒæ¯è¡Œçš„å­—èŠ‚æ•°
 	LONG lLineBytes;
 	p_data=GetData();
 	wide=GetWidth();
 	height=GetHeight();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{	
-		// ¼ÆËãÍ¼ÏñÃ¿ĞĞµÄ×Ö½ÚÊı
+		// è®¡ç®—å›¾åƒæ¯è¡Œçš„å­—èŠ‚æ•°
 		lLineBytes = (((wide * 8)+31)/32*4);	
-		// ÔİÊ±·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂÍ¼Ïñ
+		// æš‚æ—¶åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°å›¾åƒ
 		temp=new BYTE [lLineBytes*height];
-		// ³õÊ¼»¯ĞÂ·ÖÅäµÄÄÚ´æ£¬Éè¶¨³õÊ¼ÖµÎª255
+		// åˆå§‹åŒ–æ–°åˆ†é…çš„å†…å­˜ï¼Œè®¾å®šåˆå§‹å€¼ä¸º255
 		lpDst = (LPBYTE)temp;
 		memset(lpDst, (BYTE)255, lLineBytes * height);
-		// Ã¿ĞĞ
+		// æ¯è¡Œ
 		for( i = 0; i < wide; i++)
 		{
-			// Ã¿ÁĞ
+			// æ¯åˆ—
 			for( j = 0; j < height; j++)
 			{
-				// ¼ÆËã¸ÃÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 				lpSrc = (LPBYTE)p_data + lLineBytes * (height - 1 - j) + i;
 				int i0,j0;
-				// ¼ÆËã¸ÃÏóËØÔÚĞÂDIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æ–°DIBä¸­çš„åæ ‡
 				i0 = i+m_Xmove;
 				j0 = j + m_Ymove;
-				// ÅĞ¶ÏÊÇ·ñÔÚĞÂÍ¼·¶Î§ÄÚ
+				// åˆ¤æ–­æ˜¯å¦åœ¨æ–°å›¾èŒƒå›´å†…
 				if( (i0 >= 0) && (i0 < wide) && (j0 >= 0) && (j0 < height))
 				{
 					lpDst = (LPBYTE)temp + lLineBytes *(height - 1 - j0) + i0;
-					// ¸´ÖÆÏóËØ
+					// å¤åˆ¶è±¡ç´ 
 					*lpDst = *lpSrc;
 				}
 				else
 				{
-					// ¶ÔÓÚÔ´Í¼ÖĞÃ»ÓĞµÄÏóËØ£¬Ö±½Ó¸³ÖµÎª255
+					// å¯¹äºæºå›¾ä¸­æ²¡æœ‰çš„è±¡ç´ ï¼Œç›´æ¥èµ‹å€¼ä¸º255
 					* ((unsigned char*)lpDst) = 255;
 				}
 			}
 		}
-		// ¸´ÖÆÆ½ÒÆºóµÄÍ¼Ïñ
+		// å¤åˆ¶å¹³ç§»åçš„å›¾åƒ
 		memcpy(p_data, temp, lLineBytes * height);
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		delete temp;
 	}
-    else 	//24Î»²ÊÉ«
+    else 	//24ä½å½©è‰²
     { 	     
-		wide=this->GetDibWidthBytes() ;   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+		wide=this->GetDibWidthBytes() ;   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
 		BYTE *temp=new BYTE[height*wide];
-		// ³õÊ¼»¯ĞÂ·ÖÅäµÄÄÚ´æ£¬Éè¶¨³õÊ¼ÖµÎª255
+		// åˆå§‹åŒ–æ–°åˆ†é…çš„å†…å­˜ï¼Œè®¾å®šåˆå§‹å€¼ä¸º255
 		lpDst = (LPBYTE)temp;
 		memset(lpDst, (BYTE)255, wide * height);
-		// Ã¿ÁĞ
+		// æ¯åˆ—
 		for(int j = 0; j < height; j++)
 		{
-			// Ã¿ĞĞ
+			// æ¯è¡Œ
 			for( i = 0; i < wide; i++)
 			{			
-				// ¼ÆËã¸ÃÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 				lpSrc = (LPBYTE)p_data + wide * (height - 1 - j) + i;
 				int i0,j0;
-				// ¼ÆËã¸ÃÏóËØÔÚĞÂDIBÖĞµÄ×ø±ê
+				// è®¡ç®—è¯¥è±¡ç´ åœ¨æ–°DIBä¸­çš„åæ ‡
 				i0 = i+m_Xmove*3;
 				j0 = j + m_Ymove;
 				
-				// ÅĞ¶ÏÊÇ·ñÔÚĞÂÍ¼·¶Î§ÄÚ
+				// åˆ¤æ–­æ˜¯å¦åœ¨æ–°å›¾èŒƒå›´å†…
 				if( (i0 >= 0) && (i0 < wide) && (j0 >= 0) && (j0 < height))
 				{
 					lpDst = (LPBYTE)temp + wide*(height - 1 - j0) + i0;
-					// ¸´ÖÆÏóËØ
+					// å¤åˆ¶è±¡ç´ 
 					*lpDst = *lpSrc;
 				}
 				else
 				{
-					// ¶ÔÓÚÔ´Í¼ÖĞÃ»ÓĞµÄÏóËØ£¬Ö±½Ó¸³ÖµÎª255
+					// å¯¹äºæºå›¾ä¸­æ²¡æœ‰çš„è±¡ç´ ï¼Œç›´æ¥èµ‹å€¼ä¸º255
 					* ((unsigned char*)lpDst) = 255;
 				}			
 			}
 		}
-		// ¸´ÖÆÆ½ÒÆºóµÄÍ¼Ïñ
+		// å¤åˆ¶å¹³ç§»åçš„å›¾åƒ
 		memcpy(p_data, temp, wide * height);
 	}
 }
 
 ///*********************************************************************************/           
-/*º¯ÊıÃû³Æ£ºFangDa(LPBYTE temp,float xzoom ,float yzoom,LONG wide,LONG	height,LONG	newwide,LONG newheight)
-/*º¯ÊıÀàĞÍ£ºLPBYTE 
-/*²ÎÊıËµÃ÷£ºtemp  --ĞÂÍ¼ÏñµÄÊ×µØÖ·
-/*          xzoom --Ë®Æ½·Å´óµÄ±ÈÂÊ
-/*          yzoom --´¹Ö±·Å´óµÄ±ÈÂÊ  
-/*          wide  --Ô­Í¼ÏñµÄ¿í¶È
-/*			height--Ô­Í¼ÏñµÄ¸ß¶È
-/*			newwide--ĞÂÍ¼ÏñµÄ¿í¶È
-/*			newheight--ĞÂÍ¼ÏñµÄ¸ß¶È
-/*º¯ÊıÀàĞÍ£ºLPBYTE                         
-/*¹¦ÄÜ£º¶ÔÍ¼Ïñ½øĞĞ·Å´ó´¦Àí¡£            
+/*å‡½æ•°åç§°ï¼šFangDa(LPBYTE temp,float xzoom ,float yzoom,LONG wide,LONG	height,LONG	newwide,LONG newheight)
+/*å‡½æ•°ç±»å‹ï¼šLPBYTE 
+/*å‚æ•°è¯´æ˜ï¼štemp  --æ–°å›¾åƒçš„é¦–åœ°å€
+/*          xzoom --æ°´å¹³æ”¾å¤§çš„æ¯”ç‡
+/*          yzoom --å‚ç›´æ”¾å¤§çš„æ¯”ç‡  
+/*          wide  --åŸå›¾åƒçš„å®½åº¦
+/*			height--åŸå›¾åƒçš„é«˜åº¦
+/*			newwide--æ–°å›¾åƒçš„å®½åº¦
+/*			newheight--æ–°å›¾åƒçš„é«˜åº¦
+/*å‡½æ•°ç±»å‹ï¼šLPBYTE                         
+/*åŠŸèƒ½ï¼šå¯¹å›¾åƒè¿›è¡Œæ”¾å¤§å¤„ç†ã€‚            
 /************************************************************************************/
 LPBYTE JiHeBianHuanDib::FangDa(LPBYTE temp, float xzoom, float yzoom,LONG wide,LONG	height,LONG	newwide,LONG newheight)
 {
-	// Ö¸ÏòÔ´Í¼ÏñµÄÖ¸Õë
+	// æŒ‡å‘æºå›¾åƒçš„æŒ‡é’ˆ
 	LPBYTE	p_data ;
 	LPBYTE  temp1;
-	// Ö¸ÏòÔ´ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘æºè±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpSrc;
-	// Ö¸ÏòËõ·ÅÍ¼Ïñ¶ÔÓ¦ÏóËØµÄÖ¸Õë
+	// æŒ‡å‘ç¼©æ”¾å›¾åƒå¯¹åº”è±¡ç´ çš„æŒ‡é’ˆ
 	LPBYTE	lpDst;
 	int	i;
 	int	j;
-	// ÏóËØÔÚÔ´DIBÖĞµÄ×ø±ê
+	// è±¡ç´ åœ¨æºDIBä¸­çš„åæ ‡
 	int	i0;
 	int	j0;
 	p_data=this->GetData();
-	// »ñÈ¡Í¼ÏñµÄ¿í¶È
+	// è·å–å›¾åƒçš„å®½åº¦
 	int	k1=(int)yzoom ;
     int	k2= (int)xzoom ; 
-	if(m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if(m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
 		temp1 = new BYTE[newwide * newheight];
 		memset(temp1,(BYTE)255,newwide * newheight);		
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < newheight; j++)
 		{
-			// Õë¶ÔÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < newwide; i++)
 			{
 				lpDst = (LPBYTE)temp1+newwide*j+i;
@@ -628,27 +628,27 @@ LPBYTE JiHeBianHuanDib::FangDa(LPBYTE temp, float xzoom, float yzoom,LONG wide,L
 		temp=temp1;
 		return temp; 
 	}
-	else	//24Î»²ÊÉ«		
+	else	//24ä½å½©è‰²		
 	{
-		// ·ÖÅäÄÚ´æ£¬ÒÔ±£´æĞÂDIB
+		// åˆ†é…å†…å­˜ï¼Œä»¥ä¿å­˜æ–°DIB
 		temp1 = new BYTE[newwide * newheight*4];
 		memset(temp1,255,newwide * newheight*4);
 		int r,g,b;
-		// Õë¶ÔÍ¼ÏñÃ¿ĞĞ½øĞĞ²Ù×÷
+		// é’ˆå¯¹å›¾åƒæ¯è¡Œè¿›è¡Œæ“ä½œ
 		for(j = 0; j < height; j++)
 		{
-			// Õë¶ÔÍ¼ÏñÃ¿ÁĞ½øĞĞ²Ù×÷
+			// é’ˆå¯¹å›¾åƒæ¯åˆ—è¿›è¡Œæ“ä½œ
 			for(i = 0; i < wide; i++)
 			{
 				lpSrc = (LPBYTE)p_data + wide * j*3 + i*3;
 				r=*lpSrc++;
 				g=*lpSrc++;
 				b=*lpSrc;
-				// ¸´ÖÆÏóËØ
+				// å¤åˆ¶è±¡ç´ 
 				for(int n=0;n<k1;n++)
 				for(int m=0;m<k2;m++)
 				{
-					// Ö¸ÏòÔ´DIBµÚi0ĞĞ£¬µÚj0¸öÏóËØµÄÖ¸Õë	
+					// æŒ‡å‘æºDIBç¬¬i0è¡Œï¼Œç¬¬j0ä¸ªè±¡ç´ çš„æŒ‡é’ˆ	
 					lpDst = (LPBYTE)temp1  + newwide *(j*k1+n) + (i+m)*k2*3;
 					*lpDst++ = r;   
 					*lpDst++ = g;      
@@ -656,9 +656,9 @@ LPBYTE JiHeBianHuanDib::FangDa(LPBYTE temp, float xzoom, float yzoom,LONG wide,L
 				}
 			}
 		}
-		// ¸´ÖÆ×ªÖÃºóµÄÍ¼Ïñ	
+		// å¤åˆ¶è½¬ç½®åçš„å›¾åƒ	
 		temp=temp1;
-		// ÊÍ·ÅÄÚ´æ
+		// é‡Šæ”¾å†…å­˜
 		return temp;
 	}
 }

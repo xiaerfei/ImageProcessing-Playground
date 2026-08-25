@@ -46,8 +46,8 @@ void CDib::LoadFile(const char* dibFileName)
 			size=m_pBitmapInfoHeader->biHeight*m_pBitmapInfoHeader->biWidth;
 		   m_pData1 =(BYTE*)GlobalAllocPtr(GMEM_MOVEABLE,size );
 	      LPBYTE temp1,temp;
-           LPBYTE  R,G,B;   //色彩缓存
-           int r,g,b;      //中间变量
+           LPBYTE  R,G,B;   //鑹插僵缂撳瓨
+           int r,g,b;      //涓棿鍙橀噺
 		   temp1=m_pData1;
 		   temp=m_pData;
            for(int j=0;j<m_pBitmapInfoHeader->biHeight;j++)

@@ -14,180 +14,180 @@ BianYuanJianCeDib::~BianYuanJianCeDib()
 }
 
 /***************************************************************/
-/*º¯ÊıÃû³Æ£ºTemplat(BYTE *m_pdata, int wide, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)                                         */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºBYTE* m_pdata:Ö¸ÏòÔ­DIBÍ¼ÏñÖ¸Õë                        */
-/*      int wide:Ô­Í¼Ïñ¿í¶È                                    */
-/*      int height:Ô­Í¼Ïñ¸ß¶È                                  */
-/*      int tempH:Ä£°å¸ß¶È                                     */
-/*      int tempW:Ä£°å¿í¶È                                     */
-/*      int tempMX:Ä£°åµÄÖĞĞÄÔªËØX×ø±ê(<tempW-1)               */
-/*      int tempMY:Ä£°åµÄÖĞĞÄÔªËØY×ø±ê(<tempH-1)               */
-/*      float *fpArray:Ö¸ÏòÄ£°åÊı×éµÄÖ¸Õë                      */
-/*      float fCoef£ºÄ£°åÏµÊı                                  */
-/*·µ»ØÖµ£º´¦Àí³É¹¦·µ»ØTRUE;´¦ÀíÊ§°Ü·µ»ØFALSE¡£                 */
-/*¹¦ÄÜ£ºÓÃÖ¸¶¨Ä£°å¶Ô»Ò¶ÈÍ¼Ïñ½øĞĞ²Ù×÷¡£                         */
+/*å‡½æ•°åç§°ï¼šTemplat(BYTE *m_pdata, int wide, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)                                         */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šBYTE* m_pdata:æŒ‡å‘åŸDIBå›¾åƒæŒ‡é’ˆ                        */
+/*      int wide:åŸå›¾åƒå®½åº¦                                    */
+/*      int height:åŸå›¾åƒé«˜åº¦                                  */
+/*      int tempH:æ¨¡æ¿é«˜åº¦                                     */
+/*      int tempW:æ¨¡æ¿å®½åº¦                                     */
+/*      int tempMX:æ¨¡æ¿çš„ä¸­å¿ƒå…ƒç´ Xåæ ‡(<tempW-1)               */
+/*      int tempMY:æ¨¡æ¿çš„ä¸­å¿ƒå…ƒç´ Yåæ ‡(<tempH-1)               */
+/*      float *fpArray:æŒ‡å‘æ¨¡æ¿æ•°ç»„çš„æŒ‡é’ˆ                      */
+/*      float fCoefï¼šæ¨¡æ¿ç³»æ•°                                  */
+/*è¿”å›å€¼ï¼šå¤„ç†æˆåŠŸè¿”å›TRUE;å¤„ç†å¤±è´¥è¿”å›FALSEã€‚                 */
+/*åŠŸèƒ½ï¼šç”¨æŒ‡å®šæ¨¡æ¿å¯¹ç°åº¦å›¾åƒè¿›è¡Œæ“ä½œã€‚                         */
 /***************************************************************/
 void BianYuanJianCeDib::Templat(BYTE *m_pdata, int wide, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)
 {   
-	int i,j,k,l;  //Ñ­»·±äÁ¿
-    BYTE*  temp=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-	//³õÊ¼»¯ĞÂÍ¼ÏñÎªÔ­Ê¼Í¼Ïñ
+	int i,j,k,l;  //å¾ªç¯å˜é‡
+    BYTE*  temp=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+	//åˆå§‹åŒ–æ–°å›¾åƒä¸ºåŸå§‹å›¾åƒ
     memcpy( temp,m_pdata,wide*height);
-    float fResult;    //ÏñËØÖµ¼ÆËã½á¹û
+    float fResult;    //åƒç´ å€¼è®¡ç®—ç»“æœ
 	for(j=tempMY;j<height-tempH+tempMY+1;j++)
 		for(i=tempMX;i<wide-tempW+tempMX+1;i++)
 		{
-			//¼ÆËãÏñËØÖµ
+			//è®¡ç®—åƒç´ å€¼
 			fResult=0;
 			for(k=0;k<tempH;k++)
 				for(l=0;l<tempW;l++)
 					fResult=fResult+m_pdata[(j-tempMY+k)*wide+(i-tempMX+l)]*fpArray[k*tempW+l];
-			//³ËÉÏÏµÊı
+			//ä¹˜ä¸Šç³»æ•°
 			fResult*=fCoef;
-			//È¡¾ø¶ÔÖµ
+			//å–ç»å¯¹å€¼
 			fResult=(float)fabs(fResult);
-			//ÅĞ¶ÏÊÇ·ñ³¬¹ı255
+			//åˆ¤æ–­æ˜¯å¦è¶…è¿‡255
 			if(fResult>255)
-				//Èô³¬¹ı255£¬Ö±½Ó¸³ÖµÎª255
+				//è‹¥è¶…è¿‡255ï¼Œç›´æ¥èµ‹å€¼ä¸º255
                 temp[j*wide+i]=255;
 			else
-				//Î´³¬¹ı255£¬¸³ÖµÎª¼ÆËã½á¹û
+				//æœªè¶…è¿‡255ï¼Œèµ‹å€¼ä¸ºè®¡ç®—ç»“æœ
 				temp[j*wide+i]=(int)(fResult+0.5);
 		}
-    memcpy(m_pdata, temp,wide*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
+    memcpy(m_pdata, temp,wide*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
 	delete  temp;
 }
 
 /***************************************************************/
-/*º¯ÊıÃû³Æ£ºTemplat24bit(BYTE *m_pdata, int DibWidth, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)                                         */
-/*º¯ÊıÀàĞÍ£ºvoid                                               */
-/*²ÎÊı£ºBYTE* m_pdata:Ö¸ÏòÔ­DIBÍ¼ÏñÖ¸Õë                        */
-/*      int DibWidth:Ô­Í¼Ïñ¿í¶È                                */
-/*      int height:Ô­Í¼Ïñ¸ß¶È                                  */
-/*      int tempH:Ä£°å¸ß¶È                                     */
-/*      int tempW:Ä£°å¿í¶È                                     */
-/*      int tempMX:Ä£°åµÄÖĞĞÄÔªËØX×ø±ê(<tempW-1)               */
-/*      int tempMY:Ä£°åµÄÖĞĞÄÔªËØY×ø±ê(<tempH-1)               */
-/*      float *fpArray:Ö¸ÏòÄ£°åÊı×éµÄÖ¸Õë                      */
-/*      float fCoef£ºÄ£°åÏµÊı                                  */
-/*·µ»ØÖµ£º´¦Àí³É¹¦·µ»ØTRUE;´¦ÀíÊ§°Ü·µ»ØFALSE¡£                 */
-/*¹¦ÄÜ£ºÓÃÖ¸¶¨Ä£°å¶Ô24Î»²ÊÉ«Í¼Ïñ½øĞĞ²Ù×÷¡£                     */
+/*å‡½æ•°åç§°ï¼šTemplat24bit(BYTE *m_pdata, int DibWidth, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)                                         */
+/*å‡½æ•°ç±»å‹ï¼švoid                                               */
+/*å‚æ•°ï¼šBYTE* m_pdata:æŒ‡å‘åŸDIBå›¾åƒæŒ‡é’ˆ                        */
+/*      int DibWidth:åŸå›¾åƒå®½åº¦                                */
+/*      int height:åŸå›¾åƒé«˜åº¦                                  */
+/*      int tempH:æ¨¡æ¿é«˜åº¦                                     */
+/*      int tempW:æ¨¡æ¿å®½åº¦                                     */
+/*      int tempMX:æ¨¡æ¿çš„ä¸­å¿ƒå…ƒç´ Xåæ ‡(<tempW-1)               */
+/*      int tempMY:æ¨¡æ¿çš„ä¸­å¿ƒå…ƒç´ Yåæ ‡(<tempH-1)               */
+/*      float *fpArray:æŒ‡å‘æ¨¡æ¿æ•°ç»„çš„æŒ‡é’ˆ                      */
+/*      float fCoefï¼šæ¨¡æ¿ç³»æ•°                                  */
+/*è¿”å›å€¼ï¼šå¤„ç†æˆåŠŸè¿”å›TRUE;å¤„ç†å¤±è´¥è¿”å›FALSEã€‚                 */
+/*åŠŸèƒ½ï¼šç”¨æŒ‡å®šæ¨¡æ¿å¯¹24ä½å½©è‰²å›¾åƒè¿›è¡Œæ“ä½œã€‚                     */
 /***************************************************************/
 void BianYuanJianCeDib::Templat24bit(BYTE *m_pdata, int DibWidth, int height, int tempH, int tempW, int tempMX, int tempMY, float *fpArray, float fCoef)
 {
-    int i,j,k,l;  //Ñ­»·±äÁ¿
-    BYTE*  p_temp=new BYTE[DibWidth*height];    //ĞÂÍ¼Ïñ»º³åÇø
-	//³õÊ¼»¯ĞÂÍ¼ÏñÎªÔ­Ê¼Í¼Ïñ
+    int i,j,k,l;  //å¾ªç¯å˜é‡
+    BYTE*  p_temp=new BYTE[DibWidth*height];    //æ–°å›¾åƒç¼“å†²åŒº
+	//åˆå§‹åŒ–æ–°å›¾åƒä¸ºåŸå§‹å›¾åƒ
     memcpy( p_temp,m_pdata,DibWidth*height);
-    float fResult;    //ÏñËØÖµ¼ÆËã½á¹û
+    float fResult;    //åƒç´ å€¼è®¡ç®—ç»“æœ
 	for(j=tempMY;j<height-tempH+tempMY+1;j++)
 		for(i=3*tempMX;i<DibWidth-3*tempW+3*tempMX+1;i++)
 		{
-			//¼ÆËãÏñËØÖµ
+			//è®¡ç®—åƒç´ å€¼
 			fResult=0;
 			for(k=0;k<tempH;k++)
 				for(l=0;l<tempW;l++)
 					fResult=fResult+m_pdata[(j-tempMY+k)*DibWidth+(i-3*tempMX+l*3)]*fpArray[k*tempW+l];
-			//³ËÉÏÏµÊı
+			//ä¹˜ä¸Šç³»æ•°
 			fResult*=fCoef;
-			//È¡¾ø¶ÔÖµ
+			//å–ç»å¯¹å€¼
 			fResult=(float)fabs(fResult);
-			//ÅĞ¶ÏÊÇ·ñ³¬¹ı255
+			//åˆ¤æ–­æ˜¯å¦è¶…è¿‡255
 			if(fResult>255)
-				//Èô³¬¹ı255£¬Ö±½Ó¸³ÖµÎª255
+				//è‹¥è¶…è¿‡255ï¼Œç›´æ¥èµ‹å€¼ä¸º255
                 p_temp[j*DibWidth+i]=255;
 			else
-				//Î´³¬¹ı255£¬¸³ÖµÎª¼ÆËã½á¹û
+				//æœªè¶…è¿‡255ï¼Œèµ‹å€¼ä¸ºè®¡ç®—ç»“æœ
 				p_temp[j*DibWidth+i]=(int)(fResult+0.5);
 		}
-    memcpy(m_pdata, p_temp,DibWidth*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
+    memcpy(m_pdata, p_temp,DibWidth*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
 	delete  []p_temp;
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºRobert()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£ºÓÃÂŞ²®ÌØËã×Ó¶ÔÍ¼Ïñ½øĞĞ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šRobert()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šç”¨ç½—ä¼¯ç‰¹ç®—å­å¯¹å›¾åƒè¿›è¡Œè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/ 
 void BianYuanJianCeDib::Robert()
 {    
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height,DibWidth;    //Ô­Í¼³¤¡¢¿í
-	p_data=this->GetData ();   //È¡µÃÔ­Í¼µÄÊı¾İÇøÖ¸Õë
-    wide=this->GetWidth ();  //È¡µÃÔ­Í¼µÄÊı¾İÇø¿í¶È
-    height=this->GetHeight ();   //È¡µÃÔ­Í¼µÄÊı¾İÇø¸ß¶È
-	DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
-	int i,j;  //Ñ­»·±äÁ¿
-    if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height,DibWidth;    //åŸå›¾é•¿ã€å®½
+	p_data=this->GetData ();   //å–å¾—åŸå›¾çš„æ•°æ®åŒºæŒ‡é’ˆ
+    wide=this->GetWidth ();  //å–å¾—åŸå›¾çš„æ•°æ®åŒºå®½åº¦
+    height=this->GetHeight ();   //å–å¾—åŸå›¾çš„æ•°æ®åŒºé«˜åº¦
+	DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
+	int i,j;  //å¾ªç¯å˜é‡
+    if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{
-	    int pixel[4];   //RobertËã×Ó
-		LPBYTE   temp=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
- 	    memset(temp,255,wide*height);  //Éè¶¨ĞÂÍ¼Ïñ³õÖµÎª255
-	    //ÓÉÓÚÊ¹ÓÃ2*2µÄÄ£°å£¬Îª·ÀÖ¹Ô½½ç£¬ËùÒÔ²»´¦Àí×îÏÂ±ßºÍ×îÓÒ±ßµÄÁ½ÁĞÏñËØ
+	    int pixel[4];   //Robertç®—å­
+		LPBYTE   temp=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+ 	    memset(temp,255,wide*height);  //è®¾å®šæ–°å›¾åƒåˆå€¼ä¸º255
+	    //ç”±äºä½¿ç”¨2*2çš„æ¨¡æ¿ï¼Œä¸ºé˜²æ­¢è¶Šç•Œï¼Œæ‰€ä»¥ä¸å¤„ç†æœ€ä¸‹è¾¹å’Œæœ€å³è¾¹çš„ä¸¤åˆ—åƒç´ 
 	    for(j=0;j<height-1;j++)
 		    for(i=0;i<wide-1;i++)
 			{
-		        //Éú³ÉRobertËã×Ó
+		        //ç”ŸæˆRobertç®—å­
 				pixel[0]=p_data[j*wide+i];
                 pixel[1]=p_data[j*wide+i+1];
 				pixel[2]=p_data[(j+1)*wide+i];
 				pixel[3]=p_data[(j+1)*wide+i+1];
-				//´¦Àíµ±Ç°ÏñËØ
+				//å¤„ç†å½“å‰åƒç´ 
 				 temp[j*wide+i]=(int)sqrt((pixel[0]-pixel[3])*(pixel[0]-pixel[3])+(pixel[1]-pixel[2])*(pixel[1]-pixel[2]));
 			}
-		//½«»º³åÇøÖĞµÄÊı¾İ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		//å°†ç¼“å†²åŒºä¸­çš„æ•°æ®å¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_data, temp,wide*height);
-		//É¾³ı»º³åÇø
+		//åˆ é™¤ç¼“å†²åŒº
 		delete  temp;
 	}
-  else		//24Î»²ÊÉ«
+  else		//24ä½å½©è‰²
   {
-	 int pixel[4];   //RobertËã×Ó
+	 int pixel[4];   //Robertç®—å­
      BYTE *p_temp=new BYTE[height*DibWidth];
 
 	 for(j=0;j<height-1;j++)
 		for(i=0;i<DibWidth-3;i++)
 		{
-			//Éú³ÉRobertËã×Ó
+			//ç”ŸæˆRobertç®—å­
 			pixel[0]=p_data[j*DibWidth+i];
             pixel[1]=p_data[j*DibWidth+i+3];
 			pixel[2]=p_data[(j+1)*DibWidth+i];
 			pixel[3]=p_data[(j+1)*DibWidth+i+3];
-			//´¦Àíµ±Ç°ÏñËØ
+			//å¤„ç†å½“å‰åƒç´ 
 			p_temp[j*DibWidth+i]=(int)sqrt((pixel[0]-pixel[3])*(pixel[0]-pixel[3])+(pixel[1]-pixel[2])*(pixel[1]-pixel[2]));
 		}
-     memcpy(p_data,p_temp,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-     delete []p_temp;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ  
+     memcpy(p_data,p_temp,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+     delete []p_temp;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜  
   }
 }
  
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºPreWitt()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£ºÓÃÆÕÈğÎ¬ÌØËã×Ó¶ÔÍ¼Ïñ½øĞĞ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šPreWitt()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šç”¨æ™®ç‘ç»´ç‰¹ç®—å­å¯¹å›¾åƒè¿›è¡Œè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/
 void BianYuanJianCeDib::PreWitt()
 {
-	int tempH;  //Ä£°å¸ß¶È
-	int tempW;  //Ä£°å¿í¶È
-	float tempC;  //Ä£°åÏµÊı
-	int tempMY;   //Ä£°åÖĞĞÄÔªËØY×ø±ê
-	int tempMX;   //Ä£°åÖĞĞÄÔªËØX×ø±ê
-	float Template[9];   //Ä£°åÊı×é	
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
+	int tempH;  //æ¨¡æ¿é«˜åº¦
+	int tempW;  //æ¨¡æ¿å®½åº¦
+	float tempC;  //æ¨¡æ¿ç³»æ•°
+	int tempMY;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Yåæ ‡
+	int tempMX;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Xåæ ‡
+	float Template[9];   //æ¨¡æ¿æ•°ç»„	
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
 	p_data=this->GetData ();
     wide=this->GetWidth ();
     height=this->GetHeight ();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{	
-		LPBYTE   temp1=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        LPBYTE   temp2=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ
+		LPBYTE   temp1=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        LPBYTE   temp2=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ
 		memcpy( temp1,p_data,wide*height);
         memcpy( temp2,p_data,wide*height);
-	 	//ÉèÖÃPrewittÄ£°å1²ÎÊı
+	 	//è®¾ç½®Prewittæ¨¡æ¿1å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -202,9 +202,9 @@ void BianYuanJianCeDib::PreWitt()
 		Template[6]=1.0;
 		Template[7]=1.0;
 		Template[8]=1.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp1,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÉèÖÃPrewittÄ£°å2²ÎÊı
+        //è®¾ç½®Prewittæ¨¡æ¿2å‚æ•°
         Template[0]=1.0;
         Template[1]=0.0;
 		Template[2]=-1.0;
@@ -214,27 +214,27 @@ void BianYuanJianCeDib::PreWitt()
 		Template[6]=1.0;
 		Template[7]=0.0;
 		Template[8]=-1.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-		//ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+		//æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-        memcpy(p_data, temp1,wide*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
+        memcpy(p_data, temp1,wide*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
 		delete  temp1;
 		delete  temp2;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{	    
-	    int DibWidth;    //Ô­Í¼³¤¡¢¿í    	
-	    DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+	    int DibWidth;    //åŸå›¾é•¿ã€å®½    	
+	    DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
         BYTE *p_temp1=new BYTE[height*DibWidth];
 		BYTE *p_temp2=new BYTE[height*DibWidth];
-		//½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		//å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_temp1,p_data,DibWidth*height);
 		memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃPrewittÄ£°å1²ÎÊı
+		//è®¾ç½®Prewittæ¨¡æ¿1å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -250,7 +250,7 @@ void BianYuanJianCeDib::PreWitt()
 		Template[7]=1.0;
 		Template[8]=1.0;
 		Templat24bit( p_temp1,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÉèÖÃPrewittÄ£°å2²ÎÊı
+        //è®¾ç½®Prewittæ¨¡æ¿2å‚æ•°
         Template[0]=1.0;
         Template[1]=0.0;
 		Template[2]=-1.0;
@@ -261,43 +261,43 @@ void BianYuanJianCeDib::PreWitt()
 		Template[7]=0.0;
 		Template[8]=-1.0;
 		Templat24bit( p_temp2,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-		//ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+		//æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-	   memcpy(p_data,p_temp1,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-	   delete []p_temp1;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
-	   delete []p_temp2;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
+	   memcpy(p_data,p_temp1,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+	   delete []p_temp1;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
+	   delete []p_temp2;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
 	}	
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºSobel()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£ºÓÃË÷²®¶ûËã×Ó¶ÔÍ¼Ïñ½øĞĞ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šSobel()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šç”¨ç´¢ä¼¯å°”ç®—å­å¯¹å›¾åƒè¿›è¡Œè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/
 void BianYuanJianCeDib::Sobel()
 {
-	int tempH;  //Ä£°å¸ß¶È
-	int tempW;  //Ä£°å¿í¶È
-	float tempC;  //Ä£°åÏµÊı
-	int tempMY;   //Ä£°åÖĞĞÄÔªËØY×ø±ê
-	int tempMX;   //Ä£°åÖĞĞÄÔªËØX×ø±ê
-	float Template[9];   //Ä£°åÊı×é
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-    int wide,height;    //Ô­Í¼³¤¡¢¿í
+	int tempH;  //æ¨¡æ¿é«˜åº¦
+	int tempW;  //æ¨¡æ¿å®½åº¦
+	float tempC;  //æ¨¡æ¿ç³»æ•°
+	int tempMY;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Yåæ ‡
+	int tempMX;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Xåæ ‡
+	float Template[9];   //æ¨¡æ¿æ•°ç»„
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+    int wide,height;    //åŸå›¾é•¿ã€å®½
 	p_data=this->GetData ();
     wide=this->GetWidth ();
     height=this->GetHeight ();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{        
-		LPBYTE   temp1=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        LPBYTE   temp2=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ
+		LPBYTE   temp1=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        LPBYTE   temp2=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ
 		memcpy( temp1,p_data,wide*height);
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃSobelÄ£°å²ÎÊı
+		//è®¾ç½®Sobelæ¨¡æ¿å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -312,9 +312,9 @@ void BianYuanJianCeDib::Sobel()
 		Template[6]=1.0;
 		Template[7]=2.0;
 		Template[8]=1.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp1,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC); 
-        //ÉèÖÃSobelÄ£°å²ÎÊı
+        //è®¾ç½®Sobelæ¨¡æ¿å‚æ•°
         Template[0]=-1.0;
         Template[1]=0.0;
 		Template[2]=1.0;
@@ -324,29 +324,29 @@ void BianYuanJianCeDib::Sobel()
 		Template[6]=-1.0;
 		Template[7]=0.0;
 		Template[8]=1.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC); 
-		//ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+		//æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-        //½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+        //å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_data, temp1,wide*height);
-		//É¾³ı»º³åÇø
+		//åˆ é™¤ç¼“å†²åŒº
 		delete  temp1;
 		delete  temp2;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{	    
-	    int DibWidth;    //Ô­Í¼³¤¡¢¿í    	
-	    DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+	    int DibWidth;    //åŸå›¾é•¿ã€å®½    	
+	    DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
         BYTE *p_temp1=new BYTE[height*DibWidth];
 		BYTE *p_temp2=new BYTE[height*DibWidth];
-		//½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		//å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_temp1,p_data,DibWidth*height);
 		memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃSobelÄ£°å²ÎÊı
+		//è®¾ç½®Sobelæ¨¡æ¿å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -362,7 +362,7 @@ void BianYuanJianCeDib::Sobel()
 		Template[7]=2.0;
 		Template[8]=1.0;
 		Templat24bit( p_temp1,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC); 
-        //ÉèÖÃSobelÄ£°å²ÎÊı
+        //è®¾ç½®Sobelæ¨¡æ¿å‚æ•°
         Template[0]=-1.0;
         Template[1]=0.0;
 		Template[2]=1.0;
@@ -373,41 +373,41 @@ void BianYuanJianCeDib::Sobel()
 		Template[7]=0.0;
 		Template[8]=1.0;
 		Templat24bit( p_temp2,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC); 
-		//ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+		//æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-	   memcpy(p_data,p_temp1,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-	   delete []p_temp1;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
-	   delete []p_temp2;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
+	   memcpy(p_data,p_temp1,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+	   delete []p_temp1;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
+	   delete []p_temp2;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
 	}
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºLaplacian()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£ºÓÃÀ­ÆÕÀ­Ë¹Ëã×Ó¶ÔÍ¼Ïñ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šLaplacian()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šç”¨æ‹‰æ™®æ‹‰æ–¯ç®—å­å¯¹å›¾åƒè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/ 
 void BianYuanJianCeDib::Laplacian()
 {
-	int tempH;  //Ä£°å¸ß¶È
-	int tempW;  //Ä£°å¿í¶È
-	float tempC;  //Ä£°åÏµÊı
-	int tempMY;   //Ä£°åÖĞĞÄÔªËØY×ø±ê
-	int tempMX;   //Ä£°åÖĞĞÄÔªËØX×ø±ê
-	float Template[9];   //Ä£°åÊı×é
-	LPBYTE p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
+	int tempH;  //æ¨¡æ¿é«˜åº¦
+	int tempW;  //æ¨¡æ¿å®½åº¦
+	float tempC;  //æ¨¡æ¿ç³»æ•°
+	int tempMY;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Yåæ ‡
+	int tempMX;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Xåæ ‡
+	float Template[9];   //æ¨¡æ¿æ•°ç»„
+	LPBYTE p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
 	p_data=this->GetData ();
     wide=this->GetWidth ();
     height=this->GetHeight ();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{    
-		LPBYTE   temp1=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ
+		LPBYTE   temp1=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ
 		memcpy( temp1,p_data,wide*height);
-		//ÉèÖÃLaplacianÄ£°å ²ÎÊı
+		//è®¾ç½®Laplacianæ¨¡æ¿ å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -422,19 +422,19 @@ void BianYuanJianCeDib::Laplacian()
 		Template[6]=-1.0;
 		Template[7]=-1.0;
 		Template[8]=-1.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp1,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        memcpy(p_data, temp1,wide*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
+        memcpy(p_data, temp1,wide*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
 		delete  temp1;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{    
-	    int DibWidth;    //Ô­Í¼³¤¡¢¿í    	
-	    DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+	    int DibWidth;    //åŸå›¾é•¿ã€å®½    	
+	    DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
         BYTE *p_temp1=new BYTE[height*DibWidth];
-		//½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		//å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_temp1,p_data,DibWidth*height);
-		//ÉèÖÃLaplacianÄ£°å ²ÎÊı
+		//è®¾ç½®Laplacianæ¨¡æ¿ å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=1.0;
@@ -450,37 +450,37 @@ void BianYuanJianCeDib::Laplacian()
 		Template[7]=-1.0;
 		Template[8]=-1.0;
 		Templat24bit( p_temp1,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-		memcpy(p_data,p_temp1,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-	    delete []p_temp1;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
+		memcpy(p_data,p_temp1,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+	    delete []p_temp1;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
 	}
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºGuasslaplacian()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                    
-/*¹¦ÄÜ£ºÓÃ¸ßË¹À­ÆÕÀ­Ë¹Ëã×Ó¶ÔÍ¼Ïñ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šGuasslaplacian()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                    
+/*åŠŸèƒ½ï¼šç”¨é«˜æ–¯æ‹‰æ™®æ‹‰æ–¯ç®—å­å¯¹å›¾åƒè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/ 
 void BianYuanJianCeDib::Guasslaplacian()
 {
-	int tempH;  //Ä£°å¸ß¶È
-	int tempW;  //Ä£°å¿í¶È
-	float tempC;  //Ä£°åÏµÊı
-	int tempMY;   //Ä£°åÖĞĞÄÔªËØY×ø±ê
-	int tempMX;   //Ä£°åÖĞĞÄÔªËØX×ø±ê
-	float Template[25];   //Ä£°åÊı×é
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í
+	int tempH;  //æ¨¡æ¿é«˜åº¦
+	int tempW;  //æ¨¡æ¿å®½åº¦
+	float tempC;  //æ¨¡æ¿ç³»æ•°
+	int tempMY;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Yåæ ‡
+	int tempMX;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Xåæ ‡
+	float Template[25];   //æ¨¡æ¿æ•°ç»„
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½
 	p_data=this->GetData ();
     wide=this->GetWidth ();
     height=this->GetHeight ();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{        
-		LPBYTE   temp1=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        LPBYTE   temp2=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ
+		LPBYTE   temp1=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        LPBYTE   temp2=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ
 		memcpy( temp1,p_data,wide*height);
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃGuasslaplacianÄ£°å²ÎÊı
+		//è®¾ç½®Guasslaplacianæ¨¡æ¿å‚æ•°
 		tempW=5;
 		tempH=5;
 		tempC=0.25;
@@ -511,20 +511,20 @@ void BianYuanJianCeDib::Guasslaplacian()
 		Template[22]=-4.0;
 		Template[23]=-4.0;
 		Template[24]=-2.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp1,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        memcpy(p_data, temp1,wide*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-		delete  temp1;         //ÊÍ·ÅÄÚ´æ
+        memcpy(p_data, temp1,wide*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+		delete  temp1;         //é‡Šæ”¾å†…å­˜
 		delete  temp2;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{
 	    int DibWidth;
-	    DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+	    DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
         BYTE *p_temp1=new BYTE[height*DibWidth];
-		//½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		//å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_temp1,p_data,DibWidth*height);
-		//ÉèÖÃGuasslaplacianÄ£°å²ÎÊı
+		//è®¾ç½®Guasslaplacianæ¨¡æ¿å‚æ•°
 		tempW=5;
 		tempH=5;
 		tempC=0.25;
@@ -555,39 +555,39 @@ void BianYuanJianCeDib::Guasslaplacian()
 		Template[22]=-4.0;
 		Template[23]=-4.0;
 		Template[24]=-2.0;
-		//µ÷ÓÃTemplat24bit()º¯Êı
+		//è°ƒç”¨Templat24bit()å‡½æ•°
 		Templat24bit( p_temp1,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        memcpy(p_data,p_temp1,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-	    delete []p_temp1;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
+        memcpy(p_data,p_temp1,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+	    delete []p_temp1;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
 	}
 }
 
 ///***************************************************************/           
-/*º¯ÊıÃû³Æ£ºKrisch()                                      
-/*º¯ÊıÀàĞÍ£ºvoid                                     
-/*¹¦ÄÜ£ºÓÃ¿ËÈğË¹Ëã×Ó¶ÔÍ¼Ïñ±ßÔµ¼ì²â¡£            
+/*å‡½æ•°åç§°ï¼šKrisch()                                      
+/*å‡½æ•°ç±»å‹ï¼švoid                                     
+/*åŠŸèƒ½ï¼šç”¨å…‹ç‘æ–¯ç®—å­å¯¹å›¾åƒè¾¹ç¼˜æ£€æµ‹ã€‚            
 /***************************************************************/ 
 void BianYuanJianCeDib::Krisch()
 {
-	int tempH;  //Ä£°å¸ß¶È
-	int tempW;  //Ä£°å¿í¶È
-	float tempC;  //Ä£°åÏµÊı
-	int tempMY;   //Ä£°åÖĞĞÄÔªËØY×ø±ê
-	int tempMX;   //Ä£°åÖĞĞÄÔªËØX×ø±ê
-	float Template[9];   //Ä£°åÊı×é
-	LPBYTE  p_data;     //Ô­Í¼Êı¾İÇøÖ¸Õë
-	int wide,height;    //Ô­Í¼³¤¡¢¿í 	 
+	int tempH;  //æ¨¡æ¿é«˜åº¦
+	int tempW;  //æ¨¡æ¿å®½åº¦
+	float tempC;  //æ¨¡æ¿ç³»æ•°
+	int tempMY;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Yåæ ‡
+	int tempMX;   //æ¨¡æ¿ä¸­å¿ƒå…ƒç´ Xåæ ‡
+	float Template[9];   //æ¨¡æ¿æ•°ç»„
+	LPBYTE  p_data;     //åŸå›¾æ•°æ®åŒºæŒ‡é’ˆ
+	int wide,height;    //åŸå›¾é•¿ã€å®½ 	 
 	p_data=this->GetData ();
     wide=this->GetWidth ();
     height=this->GetHeight ();
-	if (m_pBitmapInfoHeader->biBitCount<9)		//»Ò¶ÈÍ¼Ïñ
+	if (m_pBitmapInfoHeader->biBitCount<9)		//ç°åº¦å›¾åƒ
 	{    
-		LPBYTE   temp1=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        LPBYTE   temp2=new BYTE[wide*height];    //ĞÂÍ¼Ïñ»º³åÇø
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ
+		LPBYTE   temp1=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        LPBYTE   temp2=new BYTE[wide*height];    //æ–°å›¾åƒç¼“å†²åŒº
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ
 		memcpy( temp1,p_data,wide*height);
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃKirschÄ£°å1²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿1å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=0.5;
@@ -602,9 +602,9 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-        //µ÷ÓÃTemplat()º¯Êı
+        //è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp1,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÉèÖÃKirschÄ£°å2²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿2å‚æ•°
         Template[0]=-3.0;
         Template[1]=5.0;
 		Template[2]=5.0;
@@ -614,16 +614,16 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-        //ÉèÖÃKirschÄ£°å3²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿3å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=5.0;
@@ -633,16 +633,16 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=-3.0;
 		Template[8]=5.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 	    Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-        //¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+        //æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-        //ÉèÖÃKirschÄ£°å4²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿4å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -652,16 +652,16 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=5.0;
 		Template[8]=5.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃKirschÄ£°å5²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿5å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -671,18 +671,18 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=5.0;
 		Template[8]=5.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃKirschÄ£°å6²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿6å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -692,16 +692,16 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=5.0;
 		Template[8]=-3.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃKirschÄ£°å7²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿7å‚æ•°
         Template[0]=5.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -711,16 +711,16 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 		Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy( temp2,p_data,wide*height);
-		//ÉèÖÃKirschÄ£°å8²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿8å‚æ•°
         Template[0]=5.0;
         Template[1]=5.0;
 		Template[2]=-3.0;
@@ -730,27 +730,27 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-		//µ÷ÓÃTemplat()º¯Êı
+		//è°ƒç”¨Templat()å‡½æ•°
 	    Templat( temp2,wide,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<wide;i++)
 				if( temp2[j*wide+i]> temp1[j*wide+i])
 					 temp1[j*wide+i]= temp2[j*wide+i];
-		memcpy(p_data, temp1,wide*height);   //¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
+		memcpy(p_data, temp1,wide*height);   //å¤åˆ¶å¤„ç†åçš„å›¾åƒ
 		delete  temp1;
 		delete  temp2;
 	}
-	else	//24Î»²ÊÉ«
+	else	//24ä½å½©è‰²
 	{	    
-	    int DibWidth;    //Ô­Í¼³¤¡¢¿í    	
-	    DibWidth=this->GetDibWidthBytes();   //È¡µÃÔ­Í¼µÄÃ¿ĞĞ×Ö½ÚÊı
+	    int DibWidth;    //åŸå›¾é•¿ã€å®½    	
+	    DibWidth=this->GetDibWidthBytes();   //å–å¾—åŸå›¾çš„æ¯è¡Œå­—èŠ‚æ•°
         BYTE *p_temp1=new BYTE[height*DibWidth];
 		BYTE *p_temp2=new BYTE[height*DibWidth];
-		 //½«»º´æÖĞµÄÍ¼Ïñ¸´ÖÆµ½Ô­Í¼Êı¾İÇø
+		 //å°†ç¼“å­˜ä¸­çš„å›¾åƒå¤åˆ¶åˆ°åŸå›¾æ•°æ®åŒº
 		memcpy(p_temp1,p_data,DibWidth*height);
 		memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃKirschÄ£°å1²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿1å‚æ•°
 		tempW=3;
 		tempH=3;
 		tempC=0.5;
@@ -766,7 +766,7 @@ void BianYuanJianCeDib::Krisch()
 		Template[7]=-3.0;
 		Template[8]=-3.0;
 		Templat24bit(p_temp1,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÉèÖÃKirschÄ£°å2²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿2å‚æ•°
         Template[0]=-3.0;
         Template[1]=5.0;
 		Template[2]=5.0;
@@ -777,14 +777,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[7]=-3.0;
 		Template[8]=-3.0;
 		Templat24bit(p_temp2,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(int j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-        //ÉèÖÃKirschÄ£°å3²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿3å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=5.0;
@@ -795,14 +795,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[7]=-3.0;
 		Template[8]=5.0;
 		Templat24bit(p_temp2,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-        //ÉèÖÃKirschÄ£°å4²ÎÊı
+        //è®¾ç½®Kirschæ¨¡æ¿4å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -813,14 +813,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[7]=5.0;
 		Template[8]=5.0;
 		Templat24bit(p_temp2,DibWidth,height,tempH,tempW,tempMX,tempMY,Template,tempC);
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃKirschÄ£°å5²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿5å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -830,14 +830,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=5.0;
 		Template[8]=5.0;
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃKirschÄ£°å6²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿6å‚æ•°
         Template[0]=-3.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -847,14 +847,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=5.0;
 		Template[8]=-3.0;
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃKirschÄ£°å7²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿7å‚æ•°
         Template[0]=5.0;
         Template[1]=-3.0;
 		Template[2]=-3.0;
@@ -864,14 +864,14 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=5.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-       //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+       //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-		//¿½±´Ô­Í¼Ïñµ½»º´æÍ¼Ïñ2ÖĞ
+		//æ‹·è´åŸå›¾åƒåˆ°ç¼“å­˜å›¾åƒ2ä¸­
         memcpy(p_temp2,p_data,DibWidth*height);
-		//ÉèÖÃKirschÄ£°å8²ÎÊı
+		//è®¾ç½®Kirschæ¨¡æ¿8å‚æ•°
         Template[0]=5.0;
         Template[1]=5.0;
 		Template[2]=-3.0;
@@ -881,13 +881,13 @@ void BianYuanJianCeDib::Krisch()
 		Template[6]=-3.0;
 		Template[7]=-3.0;
 		Template[8]=-3.0;
-        //ÇóÁ½·ù»º´æÍ¼ÏñµÄ×î´óÖµ
+        //æ±‚ä¸¤å¹…ç¼“å­˜å›¾åƒçš„æœ€å¤§å€¼
 		for(j=0;j<height;j++)
 			for(int i=0;i<DibWidth;i++)
 				if( p_temp2[j*DibWidth+i]> p_temp1[j*DibWidth+i])
 					 p_temp1[j*DibWidth+i]= p_temp2[j*DibWidth+i];
-	    memcpy(p_data,p_temp1,height*DibWidth);  // ¸´ÖÆ´¦ÀíºóµÄÍ¼Ïñ
-	    delete []p_temp1;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
-	    delete []p_temp2;  //É¾³ıÔİÊ±·ÖÅäÄÚ´æ
+	    memcpy(p_data,p_temp1,height*DibWidth);  // å¤åˆ¶å¤„ç†åçš„å›¾åƒ
+	    delete []p_temp1;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
+	    delete []p_temp2;  //åˆ é™¤æš‚æ—¶åˆ†é…å†…å­˜
 	}
 }

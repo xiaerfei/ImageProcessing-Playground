@@ -47,11 +47,11 @@ void CWvltTransDib::Hangbianhuan()
 	height=this->GetHeight();
 	int nWidth=width/2;
 	LONG lLineBytes = (width*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -68,11 +68,11 @@ void CWvltTransDib::Hangbianhuan()
 		for(i = 0; i < nWidth; i ++)           
 		{
 			int w = i *2;
-			temp2[j*width+i] = temp1[j*width+w];		//Å¼
-			temp2[j*width+nWidth+i] = temp1[j*width+w+1];	//Ææ
+			temp2[j*width+i] = temp1[j*width+w];		//å¶
+			temp2[j*width+nWidth+i] = temp1[j*width+w+1];	//å¥‡
 		}
 	}
-	//Í¨¹ıÍ¼ÏñµÄ²î·Ö£¬Íê³ÉĞ¡²¨±ä»»
+	//é€šè¿‡å›¾åƒçš„å·®åˆ†ï¼Œå®Œæˆå°æ³¢å˜æ¢
 	for(j=0; j<height; j++)
 	{
 		for(i=0; i<nWidth-1; i++)
@@ -83,7 +83,7 @@ void CWvltTransDib::Hangbianhuan()
 
 	maxVal=temp2[0*width+0];
 	minVal=temp2[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -94,15 +94,15 @@ void CWvltTransDib::Hangbianhuan()
 				minVal=temp2[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp2[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -112,7 +112,7 @@ void CWvltTransDib::Hangbianhuan()
 			m_pData[j*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;	
 
@@ -131,11 +131,11 @@ void CWvltTransDib::Liebianhuan()
 	height=this->GetHeight();
 	int nHeight=height/2;
 	LONG lLineBytes = (width*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -157,7 +157,7 @@ void CWvltTransDib::Liebianhuan()
 		}
 	}
 	
-	//Í¨¹ıÍ¼ÏñµÄ²î·Ö£¬Íê³ÉĞ¡²¨±ä»»
+	//é€šè¿‡å›¾åƒçš„å·®åˆ†ï¼Œå®Œæˆå°æ³¢å˜æ¢
 	for(i=0; i<width; i++)
 	{
 		for(j=0; j<nHeight-1; j++)
@@ -168,7 +168,7 @@ void CWvltTransDib::Liebianhuan()
 
 	maxVal=temp2[0*width+0];
 	minVal=temp2[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -179,15 +179,15 @@ void CWvltTransDib::Liebianhuan()
 				minVal=temp2[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp2[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -197,7 +197,7 @@ void CWvltTransDib::Liebianhuan()
 			m_pData[j*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;	
 }
@@ -218,12 +218,12 @@ void CWvltTransDib::Once()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (width*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -240,11 +240,11 @@ void CWvltTransDib::Once()
 		for(i = 0; i < nWidth; i ++)           
 		{
 			int w = i *2;
-			temp2[j*width+i] = temp1[j*width+w];		//Å¼
-			temp2[j*width+nWidth+i] = temp1[j*width+w+1];	//Ææ
+			temp2[j*width+i] = temp1[j*width+w];		//å¶
+			temp2[j*width+nWidth+i] = temp1[j*width+w+1];	//å¥‡
 		}
 	}
-	//Í¨¹ıÍ¼ÏñµÄ²î·Ö£¬Íê³ÉĞ¡²¨±ä»»
+	//é€šè¿‡å›¾åƒçš„å·®åˆ†ï¼Œå®Œæˆå°æ³¢å˜æ¢
 	for(j=0; j<height; j++)
 	{
 		for(i=0; i<nWidth-1; i++)
@@ -258,10 +258,10 @@ void CWvltTransDib::Once()
 		for(j=0;j<nHeight;j++)
 		{
 			int h=j*2;
-			temp3[j*width+i]=temp2[h*width+i];//×óÉÏ
-			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//×óÏÂ
-			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//ÓÒÉÏ
-			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//ÓÒÏÂ
+			temp3[j*width+i]=temp2[h*width+i];//å·¦ä¸Š
+			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//å·¦ä¸‹
+			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//å³ä¸Š
+			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//å³ä¸‹
 		}
 		for(j=0;j<nHeight;j++)
 		{
@@ -272,7 +272,7 @@ void CWvltTransDib::Once()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -283,15 +283,15 @@ void CWvltTransDib::Once()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -301,7 +301,7 @@ void CWvltTransDib::Once()
 			m_pData[j*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;
@@ -323,12 +323,12 @@ void CWvltTransDib::Twice()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (this->GetWidth()*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -345,11 +345,11 @@ void CWvltTransDib::Twice()
 		for(i = 0; i < nWidth; i ++)           
 		{
 			int w = i *2;
-			temp2[j*width+i] = (temp1[j*width+w]);		//Å¼
-			temp2[j*width+nWidth+i] = (temp1[j*width+w+1]);	//Ææ
+			temp2[j*width+i] = (temp1[j*width+w]);		//å¶
+			temp2[j*width+nWidth+i] = (temp1[j*width+w+1]);	//å¥‡
 		}
 	}
-	//Í¨¹ıÍ¼ÏñµÄ²î·Ö£¬Íê³ÉĞ¡²¨±ä»»
+	//é€šè¿‡å›¾åƒçš„å·®åˆ†ï¼Œå®Œæˆå°æ³¢å˜æ¢
 	for(j=0; j<height; j++)
 	{
 		for(i=0; i<nWidth-1; i++)
@@ -363,10 +363,10 @@ void CWvltTransDib::Twice()
 		for(j=0;j<nHeight;j++)
 		{
 			int h=j*2;
-			temp3[j*width+i]=temp2[h*width+i];//×óÉÏ
-			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//×óÏÂ
-			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//ÓÒÉÏ
-			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//ÓÒÏÂ
+			temp3[j*width+i]=temp2[h*width+i];//å·¦ä¸Š
+			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//å·¦ä¸‹
+			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//å³ä¸Š
+			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//å³ä¸‹
 		}
 		for(j=0;j<nHeight;j++)
 		{
@@ -377,7 +377,7 @@ void CWvltTransDib::Twice()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -388,15 +388,15 @@ void CWvltTransDib::Twice()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -406,7 +406,7 @@ void CWvltTransDib::Twice()
 			m_pData[(j+height)*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;	
@@ -428,12 +428,12 @@ void CWvltTransDib::Thrice()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (this->GetWidth()*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -450,11 +450,11 @@ void CWvltTransDib::Thrice()
 		for(i = 0; i < nWidth; i ++)           
 		{
 			int w = i *2;
-			temp2[j*width+i] = (temp1[j*width+w]);		//Å¼
-			temp2[j*width+nWidth+i] = (temp1[j*width+w+1]);	//Ææ
+			temp2[j*width+i] = (temp1[j*width+w]);		//å¶
+			temp2[j*width+nWidth+i] = (temp1[j*width+w+1]);	//å¥‡
 		}
 	}
-	//Í¨¹ıÍ¼ÏñµÄ²î·Ö£¬Íê³ÉĞ¡²¨±ä»»
+	//é€šè¿‡å›¾åƒçš„å·®åˆ†ï¼Œå®Œæˆå°æ³¢å˜æ¢
 	for(j=0; j<height; j++)
 	{
 		for(i=0; i<nWidth-1; i++)
@@ -468,10 +468,10 @@ void CWvltTransDib::Thrice()
 		for(j=0;j<nHeight;j++)
 		{
 			int h=j*2;
-			temp3[j*width+i]=temp2[h*width+i];//×óÉÏ
-			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//×óÏÂ
-			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//ÓÒÉÏ
-			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//ÓÒÏÂ
+			temp3[j*width+i]=temp2[h*width+i];//å·¦ä¸Š
+			temp3[(j+nHeight)*width+i]=temp2[(h+1)*width+i];//å·¦ä¸‹
+			temp3[j*width+nWidth+i]=temp2[h*width+nWidth+i];//å³ä¸Š
+			temp3[(j+nWidth)*width+nWidth+i]=temp2[(h+1)*width+nWidth+i];//å³ä¸‹
 		}
 		for(j=0;j<nHeight;j++)
 		{
@@ -482,7 +482,7 @@ void CWvltTransDib::Thrice()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -493,15 +493,15 @@ void CWvltTransDib::Thrice()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -511,7 +511,7 @@ void CWvltTransDib::Thrice()
 			m_pData[(j+height*3)*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;	
@@ -530,7 +530,7 @@ void CWvltTransDib::IDWT()
 			IDWT_Once();
 	}
 	else
-		AfxMessageBox("ÇëÏÈ×öĞ¡²¨±ä»»¡£",MB_OK,NULL);
+		AfxMessageBox("è¯·å…ˆåšå°æ³¢å˜æ¢ã€‚",MB_OK,NULL);
 }
 
 void CWvltTransDib::IDWT_Once()
@@ -547,7 +547,7 @@ void CWvltTransDib::IDWT_Once()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (width*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
@@ -556,7 +556,7 @@ void CWvltTransDib::IDWT_Once()
 	memset(temp2,0,height*width);
 	memset(temp3,0,height*width);
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -590,7 +590,7 @@ void CWvltTransDib::IDWT_Once()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -601,15 +601,15 @@ void CWvltTransDib::IDWT_Once()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -619,7 +619,7 @@ void CWvltTransDib::IDWT_Once()
 			m_pData[j*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;
@@ -640,7 +640,7 @@ void CWvltTransDib::IDWT_Twice()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (this->GetWidth()*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
@@ -649,7 +649,7 @@ void CWvltTransDib::IDWT_Twice()
 	memset(temp2,0,height*width);
 	memset(temp3,0,height*width);
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -683,7 +683,7 @@ void CWvltTransDib::IDWT_Twice()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -694,15 +694,15 @@ void CWvltTransDib::IDWT_Twice()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -712,7 +712,7 @@ void CWvltTransDib::IDWT_Twice()
 			m_pData[(j+height)*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;
@@ -733,7 +733,7 @@ void CWvltTransDib::IDWT_Thrice()
 	nWidth=width/2;
 	nHeight=height/2;
 	LONG lLineBytes = (this->GetWidth()*3+3)/4 *4;
-	//·ÖÅäÁÙÊ±Êı¾İ¿Õ¼ä
+	//åˆ†é…ä¸´æ—¶æ•°æ®ç©ºé—´
 	temp1 = new BYTE[height*width];
 	temp2 = new BYTE[height*width];
 	temp3 = new BYTE[height*width];
@@ -742,7 +742,7 @@ void CWvltTransDib::IDWT_Thrice()
 	memset(temp2,0,height*width);
 	memset(temp3,0,height*width);
 
-	//´ÓÉè±¸»º´æÖĞ»ñµÃÔ­Ê¼Í¼ÏñÊı¾İ
+	//ä»è®¾å¤‡ç¼“å­˜ä¸­è·å¾—åŸå§‹å›¾åƒæ•°æ®
 	for(j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -776,7 +776,7 @@ void CWvltTransDib::IDWT_Thrice()
 
 	maxVal=temp3[0*width+0];
 	minVal=temp3[0*width+0];
-	//µÃµ½Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«´óÖµÓë¼«Ğ¡Öµ
+	//å¾—åˆ°å›¾åƒå°æ³¢ç³»æ•°çš„æå¤§å€¼ä¸æå°å€¼
 	for( j=0; j<(int)height; j++)
 	{
 		for( i=0; i<(int)width; i++)
@@ -787,15 +787,15 @@ void CWvltTransDib::IDWT_Thrice()
 				minVal=temp3[j*width+i];
 		}
 	}
-	//¼ÆËã»ñÈ¡Í¼ÏñĞ¡²¨ÏµÊıµÄ¼«Öµ²î
+	//è®¡ç®—è·å–å›¾åƒå°æ³¢ç³»æ•°çš„æå€¼å·®
 	difVal=maxVal-minVal;
-	//Ğ¡²¨¾­¹ı´¦Àíºó£¬·ÅÈëÏÔÊ¾»º´æÖĞ
+	//å°æ³¢ç»è¿‡å¤„ç†åï¼Œæ”¾å…¥æ˜¾ç¤ºç¼“å­˜ä¸­
     for(j=0; j<(int)height; j++)
 	{
 		for(i=0; i<(int)width; i++)
 		{
-		//ÒòÎªĞ¡²¨±ä»»ºóµÄĞ¡²¨ÏµÊıÓĞ¿ÉÄÜ³¬¹ı255ÉõÖÁ¸ü¶à£¬ÄÇÃ´¾Í½«
-		//Ğ¡²¨ÏµÊıµÄ·¶Î§Ó³Éäµ½0~255Çø¼äÄÚ£¬ÒÔºó³öÏÖÀàËÆµÄ´¦Àí£¬Ä¿µÄ¶¼ÊÇÒ»ÑùµÄ
+		//å› ä¸ºå°æ³¢å˜æ¢åçš„å°æ³¢ç³»æ•°æœ‰å¯èƒ½è¶…è¿‡255ç”šè‡³æ›´å¤šï¼Œé‚£ä¹ˆå°±å°†
+		//å°æ³¢ç³»æ•°çš„èŒƒå›´æ˜ å°„åˆ°0~255åŒºé—´å†…ï¼Œä»¥åå‡ºç°ç±»ä¼¼çš„å¤„ç†ï¼Œç›®çš„éƒ½æ˜¯ä¸€æ ·çš„
 			tpBuffer=temp3[(height-1-j)*width+i];
 			tpBuffer-=minVal;
 			tpBuffer*=255;
@@ -805,7 +805,7 @@ void CWvltTransDib::IDWT_Thrice()
 			m_pData[(j+height*3)*lLineBytes+3*i+2]= (BYTE)tpBuffer;
 		}
 	}
-	//É¾³ıÁÙÊ±µÄÊı¾İ¿Õ¼ä
+	//åˆ é™¤ä¸´æ—¶çš„æ•°æ®ç©ºé—´
 	delete temp1;
 	delete temp2;
 	delete temp3;

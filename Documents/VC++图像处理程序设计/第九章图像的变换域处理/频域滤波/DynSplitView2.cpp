@@ -23,7 +23,7 @@ CDynSplitView2::CDynSplitView2()
 {state2=0;
 }
 
-//8Î»Í¼Ïñ³õÊ¼»¯
+//8ä½å›¾åƒåˆå§‹åŒ–
 void CDynSplitView2::clearmem()
 {
 	CDSplitDoc* pDoc = GetDocument();
@@ -200,7 +200,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 void CDynSplitView2::OnFilesave() 
 {
 	// TODO: Add your command handler code here
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -210,7 +210,7 @@ void CDynSplitView2::OnFilesave()
 
 }
 
-//µÍÍ¨²¼ÌØ²¨Ë¹ÂË²¨ÏûÏ¢º¯Êı
+//ä½é€šå¸ƒç‰¹æ³¢æ–¯æ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnButterworthL() 
 {
 	// TODO: Add your command handler code here
@@ -226,7 +226,7 @@ void CDynSplitView2::OnButterworthL()
 }
 
 
-//¸ßÍ¨²¼ÌØ²¨Ë¹ÂË²¨ÏûÏ¢º¯Êı
+//é«˜é€šå¸ƒç‰¹æ³¢æ–¯æ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnButterworthH() 
 {
 	// TODO: Add your command handler code here
@@ -241,7 +241,7 @@ void CDynSplitView2::OnButterworthH()
 }
 
 
-//¿ìËÙ¸µÁ¢Ò¶ÏûÏ¢º¯Êı
+//å¿«é€Ÿå‚…ç«‹å¶æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnQuickForuier() 
 {
 	// TODO: Add your command handler code here
@@ -257,11 +257,11 @@ void CDynSplitView2::OnQuickForuier()
 void CDynSplitView2::OnBox() 
 {
 	// TODO: Add your command handler code here
-  AfxMessageBox("´ò¿ªµÄÍ¼Ïñ¿í¸ß³ß´çÒª·ûºÏÈçÏÂÊı¾İ2¡¢4¡¢8¡¢16¡¢32¡¢64¡¢128¡¢256");
+  AfxMessageBox("æ‰“å¼€çš„å›¾åƒå®½é«˜å°ºå¯¸è¦ç¬¦åˆå¦‚ä¸‹æ•°æ®2ã€4ã€8ã€16ã€32ã€64ã€128ã€256");
 }
 
 
-//ÀíÏëµÍÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//ç†æƒ³ä½é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnPerfectl() 
 {
 	// TODO: Add your command handler code here
@@ -276,7 +276,7 @@ void CDynSplitView2::OnPerfectl()
 }
 
 
-//ÀíÏë¸ßÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//ç†æƒ³é«˜é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnPerfecth() 
 {
 	// TODO: Add your command handler code here
@@ -290,7 +290,7 @@ void CDynSplitView2::OnPerfecth()
 	}
 }
 
-//ÌİĞÎµÍÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//æ¢¯å½¢ä½é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnTl() 
 {
 	// TODO: Add your command handler code here
@@ -305,7 +305,7 @@ void CDynSplitView2::OnTl()
 }
 
 
-//ÌİĞÎ¸ßÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//æ¢¯å½¢é«˜é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnTh() 
 {
 	// TODO: Add your command handler code here
@@ -319,7 +319,7 @@ void CDynSplitView2::OnTh()
 	}	
 }
 
-//Ö¸ÊıµÍÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//æŒ‡æ•°ä½é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnZl() 
 {
 	// TODO: Add your command handler code here
@@ -333,7 +333,7 @@ void CDynSplitView2::OnZl()
 	}
 }
 
-//Ö¸Êı¸ßÍ¨ÂË²¨ÏûÏ¢º¯Êı
+//æŒ‡æ•°é«˜é€šæ»¤æ³¢æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnZh() 
 {
 	// TODO: Add your command handler code here
@@ -348,7 +348,7 @@ void CDynSplitView2::OnZh()
 }
 
 
-//Î´Æ½ÒÆµÄ¸µÁ¢Ò¶ÏûÏ¢º¯Êı
+//æœªå¹³ç§»çš„å‚…ç«‹å¶æ¶ˆæ¯å‡½æ•°
 void CDynSplitView2::OnFirstQuickForuier() 
 {
 	// TODO: Add your command handler code here
@@ -361,7 +361,7 @@ void CDynSplitView2::OnFirstQuickForuier()
 	Invalidate();
 }
 
-//24Î»²ÊÉ«Í¼Ïñ³õÊ¼»¯
+//24ä½å½©è‰²å›¾åƒåˆå§‹åŒ–
 void CDynSplitView2::clearmem2()
 {
     CDSplitDoc* pDoc = GetDocument();

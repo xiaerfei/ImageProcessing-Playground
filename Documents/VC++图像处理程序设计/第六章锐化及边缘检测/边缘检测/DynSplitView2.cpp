@@ -149,7 +149,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -158,52 +158,52 @@ void CDynSplitView2::OnFilesave()
 	Invalidate();
 }
 
-/*ÂŞ²®ÌØËã×ÓÏûÏ¢Ó³Éä*/
+/*ç½—ä¼¯ç‰¹ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnRobert() 
 {
 	clearmem();
-	CDibNew1->Robert();             //µ÷ÓÃRobertËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->Robert();             //è°ƒç”¨Robertç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
 
 
-/*¸ßË¹À­ÆÕÀ­Ë¹Ëã×ÓÏûÏ¢Ó³Éä*/
+/*é«˜æ–¯æ‹‰æ™®æ‹‰æ–¯ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnGuasslaplacian() 
 {
 	clearmem();
-	CDibNew1->Guasslaplacian();             //µ÷ÓÃGuasslaplacianËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->Guasslaplacian();             //è°ƒç”¨Guasslaplacianç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate(); 
 }
 
-/*¿ËÈğË¹Ëã×ÓÏûÏ¢Ó³Éä*/
+/*å…‹ç‘æ–¯ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnKrisch() 
 {
 	clearmem();
-	CDibNew1->Krisch();             //µ÷ÓÃKrischËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->Krisch();             //è°ƒç”¨Krischç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
-/*À­ÆÕÀ­Ë¹Ëã×ÓÏûÏ¢Ó³Éä*/
+/*æ‹‰æ™®æ‹‰æ–¯ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnLaplacian() 
 {
 	clearmem();
-	CDibNew1->Laplacian();             //µ÷ÓÃLaplacianËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->Laplacian();             //è°ƒç”¨Laplacianç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
-/*ÆÕÈğÎ¬ÌØËã×ÓÏûÏ¢Ó³Éä*/
+/*æ™®ç‘ç»´ç‰¹ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnPrewitt() 
 {
 	clearmem();
-	CDibNew1->PreWitt();             //µ÷ÓÃPrewittËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->PreWitt();             //è°ƒç”¨Prewittç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate();
 }
 
-/*Ë÷²®¶ûËã×ÓÏûÏ¢Ó³Éä*/
+/*ç´¢ä¼¯å°”ç®—å­æ¶ˆæ¯æ˜ å°„*/
 void CDynSplitView2::OnSobel() 
 {
 	clearmem();
-	CDibNew1->Sobel();             //µ÷ÓÃSobelËã×Ó¼ì²â´¦Àíº¯Êı
+	CDibNew1->Sobel();             //è°ƒç”¨Sobelç®—å­æ£€æµ‹å¤„ç†å‡½æ•°
  	Invalidate();
 }

@@ -54,10 +54,10 @@ END_MESSAGE_MAP()
 
 BOOL CDlgZhexianbianhuan::OnInitDialog() 
 {
-	// µ÷ÓÃÄ¬ÈÏOnInitDialogº¯Êý
+	// è°ƒç”¨é»˜è®¤OnInitDialogå‡½æ•°
 	CDialog::OnInitDialog();
 	
-	// »ñÈ¡»æÖÆÖ±·½Í¼µÄ±êÇ©
+	// èŽ·å–ç»˜åˆ¶ç›´æ–¹å›¾çš„æ ‡ç­¾
 	CWnd* pWnd = GetDlgItem(IDC_COORD);
 	return TRUE;  // return TRUE unless you set the focus to a control
 	// EXCEPTION: OCX Property Pages should return FALSE
@@ -65,10 +65,10 @@ BOOL CDlgZhexianbianhuan::OnInitDialog()
 
 void CDlgZhexianbianhuan::OnOK() 
 {
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bX1 > m_bX2)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bX1;
 		m_bX1 = m_bX2;
 		m_bX2 = bTemp;
@@ -76,7 +76,7 @@ void CDlgZhexianbianhuan::OnOK()
 		m_bY1 = m_bY2;
 		m_bY2 = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	CDialog::OnOK();
@@ -84,43 +84,43 @@ void CDlgZhexianbianhuan::OnOK()
 
 void CDlgZhexianbianhuan::OnKillfocusEditX1() 
 {
-	// ¸üÐÂ
+	// æ›´æ–°
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bX1 > m_bX2)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bX1;
 		m_bX1 = m_bX2;
 		m_bX2 = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
 void CDlgZhexianbianhuan::OnKillfocusEditX2() 
 {
-	// ¸üÐÂ
+	// æ›´æ–°
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bX1 > m_bX2)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bX1;
 		m_bX1 = m_bX2;
 		m_bX2 = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
@@ -128,86 +128,86 @@ void CDlgZhexianbianhuan::OnKillfocusEditY1()
 {
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bY1 > m_bY2)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE	bTemp = m_bY1;
 		m_bY1 = m_bY2;
 		m_bY2 = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
 void CDlgZhexianbianhuan::OnKillfocusEditY2() 
 {
-	// ¸üÐÂ
+	// æ›´æ–°
 	UpdateData(TRUE);
 	
-	// ÅÐ¶ÏÊÇ·ñÏÂÏÞ³¬¹ýÉÏÏÞ
+	// åˆ¤æ–­æ˜¯å¦ä¸‹é™è¶…è¿‡ä¸Šé™
 	if (m_bY1 > m_bY2)
 	{
-		// »¥»»
+		// äº’æ¢
 		BYTE bTemp = m_bY1;
 		m_bY1 = m_bY2;
 		m_bY2 = bTemp;
 		
-		// ¸üÐÂ
+		// æ›´æ–°
 		UpdateData(FALSE);
 	}
 	
-	// ÖØ»æ
+	// é‡ç»˜
 	Invalidate();
 }
 
 void CDlgZhexianbianhuan::OnPaint() 
 {
-	// ×Ö·û´®
+	// å­—ç¬¦ä¸²
 	CString str;
 	
-	// Éè±¸ÉÏÏÂÎÄ
+	// è®¾å¤‡ä¸Šä¸‹æ–‡
 	CPaintDC dc(this);
 	
-	// »ñÈ¡»æÖÆ×ø±êµÄÎÄ±¾¿ò
+	// èŽ·å–ç»˜åˆ¶åæ ‡çš„æ–‡æœ¬æ¡†
 	CWnd* pWnd = GetDlgItem(IDC_COORD);
 	
-	// Ö¸Õë
+	// æŒ‡é’ˆ
 	CDC* pDC = pWnd->GetDC();
 	pWnd->Invalidate();
 	pWnd->UpdateWindow();
 	
 	pDC->Rectangle(0,0,330,300);
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenRed = new CPen;
 	
-	// ºìÉ«»­±Ê
+	// çº¢è‰²ç”»ç¬”
 	pPenRed->CreatePen(PS_SOLID, 2, RGB(255,0,0));
 	
-	// ´´½¨»­±Ê¶ÔÏó
+	// åˆ›å»ºç”»ç¬”å¯¹è±¡
 	CPen* pPenBlue = new CPen;
 	
-	// À¶É«»­±Ê
+	// è“è‰²ç”»ç¬”
 	pPenBlue->CreatePen(PS_SOLID, 1, RGB(0,0, 255));
 	
-	// Ñ¡ÖÐµ±Ç°ºìÉ«»­±Ê£¬²¢±£´æÒÔÇ°µÄ»­±Ê
+	// é€‰ä¸­å½“å‰çº¢è‰²ç”»ç¬”ï¼Œå¹¶ä¿å­˜ä»¥å‰çš„ç”»ç¬”
 	CGdiObject* pOldPen = pDC->SelectObject(pPenRed);
 	
-	// »æÖÆ×ø±êÖá
+	// ç»˜åˆ¶åæ ‡è½´
 	pDC->MoveTo(10,10);
 	
-	// ´¹Ö±Öá
+	// åž‚ç›´è½´
 	pDC->LineTo(10,280);
 	
-	// Ë®Æ½Öá
+	// æ°´å¹³è½´
 	pDC->LineTo(320,280);
 	
-	// Ð´×ø±ê
+	// å†™åæ ‡
 	str.Format("0");
 	pDC->TextOut(10, 281, str);
 	
@@ -215,52 +215,52 @@ void CDlgZhexianbianhuan::OnPaint()
 	pDC->TextOut(265, 281, str);
 	pDC->TextOut(11, 25, str);
 	
-	// »æÖÆXÖá¼ýÍ·
+	// ç»˜åˆ¶Xè½´ç®­å¤´
 	pDC->LineTo(315,275);
 	pDC->MoveTo(320,280);
 	pDC->LineTo(315,285);
 	
-	// »æÖÆXÖá¼ýÍ·
+	// ç»˜åˆ¶Xè½´ç®­å¤´
 	pDC->MoveTo(10,10);
 	pDC->LineTo(5,15);
 	pDC->MoveTo(10,10);
 	pDC->LineTo(15,15);
 	
-	// ¸ü¸Ä³ÉÀ¶É«»­±Ê
+	// æ›´æ”¹æˆè“è‰²ç”»ç¬”
 	pDC->SelectObject(pPenBlue);	
 	
-	// »æÖÆ×ø±êÖµ
+	// ç»˜åˆ¶åæ ‡å€¼
 	str.Format("(%d, %d)", m_bX1, m_bY1);
 	pDC->TextOut(m_bX1 + 10, 281 - m_bY1, str);
 	str.Format("(%d, %d)", m_bX2, m_bY2);
 	pDC->TextOut(m_bX2 + 10, 281 - m_bY2, str);
 	
-	// »æÖÆÓÃ»§Ö¸¶¨µÄ±ä»»Ö±Ïß
+	// ç»˜åˆ¶ç”¨æˆ·æŒ‡å®šçš„å˜æ¢ç›´çº¿
 	pDC->MoveTo(10, 280);
 	pDC->LineTo(m_bX1 + 10, 280 - m_bY1);
 	pDC->LineTo(m_bX2 + 10, 280 - m_bY2);
 	pDC->LineTo(265, 25);
 	
-	// »æÖÆµã±ßÔµµÄÐ¡¾ØÐÎ
+	// ç»˜åˆ¶ç‚¹è¾¹ç¼˜çš„å°çŸ©å½¢
 	CBrush  brush;
 	brush.CreateSolidBrush(RGB(0,255,0));
 	
-	// Ñ¡ÖÐË¢×Ó
+	// é€‰ä¸­åˆ·å­
 	CGdiObject* pOldBrush = pDC->SelectObject(&brush);
 	
-	// »æÖÆÐ¡¾ØÐÎ
+	// ç»˜åˆ¶å°çŸ©å½¢
 	pDC->Rectangle(m_bX1 + 10 - 2, 280 - m_bY1 - 2, m_bX1 + 12, 280 - m_bY1 + 2);
 	pDC->Rectangle(m_bX2 + 10 - 2, 280 - m_bY2 - 2, m_bX2 + 12, 280 - m_bY2 + 2);
 	
-	// »Ö¸´ÒÔÇ°µÄ»­±Ê
+	// æ¢å¤ä»¥å‰çš„ç”»ç¬”
 	pDC->SelectObject(pOldPen);	
 	
-	// »æÖÆ±ßÔµ
+	// ç»˜åˆ¶è¾¹ç¼˜
 	pDC->MoveTo(10,25);
 	pDC->LineTo(265,25);
 	pDC->LineTo(265,280);
 	
-	// É¾³ýÐÂµÄ»­±Ê
+	// åˆ é™¤æ–°çš„ç”»ç¬”
 	delete pPenRed;
 	delete pPenBlue;
 	

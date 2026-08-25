@@ -163,7 +163,7 @@ BOOL CDynSplitView2::OnEraseBkgnd(CDC* pDC)
 
 void CDynSplitView2::OnFilesave() 
 {
-	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("Î»Í¼ÎÄ¼ş(*.BMP)|*.BMP|"));	
+	CFileDialog dlg(FALSE,_T("BMP"),_T("*.BMP"),OFN_HIDEREADONLY|OFN_OVERWRITEPROMPT,_T("ä½å›¾æ–‡ä»¶(*.BMP)|*.BMP|"));	
     if(IDOK==dlg.DoModal())
 	CString  filename;
     filename.Format ("%s",dlg.GetPathName() );    
@@ -173,10 +173,10 @@ void CDynSplitView2::OnFilesave()
 
 }
 
-void CDynSplitView2::OnFanzhuan() //¶şÖµÍ¼ÏñµÄºÚ°×µãÔë
+void CDynSplitView2::OnFanzhuan() //äºŒå€¼å›¾åƒçš„é»‘ç™½ç‚¹å™ª
 {
 	clearmem();
- 	CDibNew1->HeiBaiFanZhuan();//¶şÖµÍ¼ÏñµÄºÚ°×µãÔë
+ 	CDibNew1->HeiBaiFanZhuan();//äºŒå€¼å›¾åƒçš„é»‘ç™½ç‚¹å™ª
 	Invalidate();	
 }
 void CDynSplitView2::OnXiaochuheidian() 
@@ -186,14 +186,14 @@ void CDynSplitView2::OnXiaochuheidian()
     if(IDOK==dlg.DoModal())
 	{
 		int connec=dlg.n;
-	    CDibNew1->black(connec);//Ïû³ıÍ¼ÏñµÄ¹ÂÁ¢ºÚµã
+	    CDibNew1->black(connec);//æ¶ˆé™¤å›¾åƒçš„å­¤ç«‹é»‘ç‚¹
 		Invalidate();	
 	}
 }
 void CDynSplitView2::On33junzhi() 
 {
 	clearmem();
- 	CDibNew1->threethree();//¶ÔÍ¼Ïñ½øĞĞ3*3¾ùÖµÂË²¨
+ 	CDibNew1->threethree();//å¯¹å›¾åƒè¿›è¡Œ3*3å‡å€¼æ»¤æ³¢
 	Invalidate();	
 
 }
@@ -205,7 +205,7 @@ void CDynSplitView2::OnChaoxian()
     if(IDOK==dlg.DoModal())
 	{
 		int t=dlg.m_T;
-	    CDibNew1->Chaoxian(t);//³¬ÏŞÁÚÓòÆ½¾ù·¨
+	    CDibNew1->Chaoxian(t);//è¶…é™é‚»åŸŸå¹³å‡æ³•
 		Invalidate();	
 	}	
 }
@@ -216,7 +216,7 @@ void CDynSplitView2::OnNnjunzhi()
     NNJUNZHI dlg;
     if(IDOK==dlg.DoModal())
     {
-		CDibNew1->nn(dlg.m_n);//¶ÔÍ¼Ïñ½øĞĞn*n¾ùÖµÂË²¨
+		CDibNew1->nn(dlg.m_n);//å¯¹å›¾åƒè¿›è¡Œn*nå‡å€¼æ»¤æ³¢
 		Invalidate();	
 	}
 }
@@ -224,7 +224,7 @@ void CDynSplitView2::OnNnjunzhi()
 void CDynSplitView2::OnJubupingjun() 
 {
 	clearmem();
-    CDibNew1->jubupingjun();//¶ÔÍ¼Ïñ½øĞĞÓĞÑ¡Ôñ¾Ö²¿Æ½¾ù»¯
+    CDibNew1->jubupingjun();//å¯¹å›¾åƒè¿›è¡Œæœ‰é€‰æ‹©å±€éƒ¨å¹³å‡åŒ–
 	Invalidate();	
 }
 
@@ -234,7 +234,7 @@ void CDynSplitView2::OnNnzhongzhi()
     NNJUNZHI dlg;
     if(IDOK==dlg.DoModal())
     {
-		CDibNew1->nnzhong(dlg.m_n);//¶ÔÍ¼Ïñ½øĞĞN*NÖĞÖµÂË²¨
+		CDibNew1->nnzhong(dlg.m_n);//å¯¹å›¾åƒè¿›è¡ŒN*Nä¸­å€¼æ»¤æ³¢
 		Invalidate();	
 	}
 }
@@ -245,7 +245,7 @@ void CDynSplitView2::OnShizi()
     NNJUNZHI dlg;
     if(IDOK==dlg.DoModal())
     {
-		CDibNew1->shizi(dlg.m_n);//¶ÔÍ¼Ïñ½øĞĞÊ®×ÖĞÍÖĞÖµÂË²¨
+		CDibNew1->shizi(dlg.m_n);//å¯¹å›¾åƒè¿›è¡Œåå­—å‹ä¸­å€¼æ»¤æ³¢
 		Invalidate();	
 	}
 }
@@ -256,7 +256,7 @@ void CDynSplitView2::OnNnzuida()
     NNJUNZHI dlg;
     if(IDOK==dlg.DoModal())
     {
-		CDibNew1->nnzuida(dlg.m_n);//¶ÔÍ¼Ïñ½øĞĞN*N×î´óÂË²¨
+		CDibNew1->nnzuida(dlg.m_n);//å¯¹å›¾åƒè¿›è¡ŒN*Næœ€å¤§æ»¤æ³¢
 		Invalidate();	
 	}
 }
@@ -264,14 +264,14 @@ void CDynSplitView2::OnNnzuida()
 void CDynSplitView2::OnSuijizaosheng() 
 {
 	clearmem();
-    CDibNew1->suijizaosheng();//¶ÔÍ¼Ïñ²úÉúËæ»úÔëÉù
+    CDibNew1->suijizaosheng();//å¯¹å›¾åƒäº§ç”Ÿéšæœºå™ªå£°
 	Invalidate();	
 }
 
 void CDynSplitView2::OnJiaoyanzaosheng() 
 {
 	clearmem();
-    CDibNew1->jiaoyanzaosheng();//¶ÔÍ¼Ïñ²úÉú½·ÑÎÔëÉù
+    CDibNew1->jiaoyanzaosheng();//å¯¹å›¾åƒäº§ç”Ÿæ¤’ç›å™ªå£°
 	Invalidate();	
 }
 
