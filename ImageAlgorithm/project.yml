@@ -30,6 +30,9 @@ targets:
     platform: macOS
     sources:
       - path: ImageAlgorithm
+      - path: ../Assets/test-images/coffee.png
+        buildPhase: resources
+        group: TestImages
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: Image-processing-algorithm.ImageAlgorithm
