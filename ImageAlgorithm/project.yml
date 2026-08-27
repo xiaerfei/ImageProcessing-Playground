@@ -1,0 +1,43 @@
+name: ImageAlgorithm
+
+options:
+  bundleIdPrefix: Image-processing-algorithm
+  createIntermediateGroups: true
+  deploymentTarget:
+    macOS: "15.0"
+
+settings:
+  base:
+    # 本地学习工程:ad-hoc 签名,不依赖开发者证书(原工程的证书已失效)。
+    # 需要分发时改回 CODE_SIGN_STYLE: Automatic 并填 DEVELOPMENT_TEAM。
+    CODE_SIGN_STYLE: Manual
+    CODE_SIGN_IDENTITY: "-"
+    ENABLE_HARDENED_RUNTIME: true
+    ENABLE_USER_SCRIPT_SANDBOXING: true
+    # 关沙盒:方便直接按绝对路径读仓库里的测试图,免去 NSOpenPanel 授权
+    ENABLE_APP_SANDBOX: false
+    # xcodegen 的 preset 默认是 gnu11/gnu++14,这里对齐 Xcode 26 模板
+    GCC_C_LANGUAGE_STANDARD: gnu17
+    CLANG_CXX_LANGUAGE_STANDARD: "gnu++20"
+  configs:
+    # Xcode 模板未给 Release 设优化等级,不补这行等于 -O0
+    Release:
+      GCC_OPTIMIZATION_LEVEL: "s"
+
+targets:
+  ImageAlgorithm:
+    type: application
+    platform: macOS
+    sources:
+      - path: ImageAlgorithm
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: Image-processing-algorithm.ImageAlgorithm
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        GENERATE_INFOPLIST_FILE: true
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        INFOPLIST_KEY_NSMainStoryboardFile: Main
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
+        COMBINE_HIDPI_IMAGES: true
