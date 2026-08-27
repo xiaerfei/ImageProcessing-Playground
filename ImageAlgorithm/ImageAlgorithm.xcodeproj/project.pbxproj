@@ -7,25 +7,59 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		099EFEC9765307E57B45B654 /* IAModuleRegistry.m in Sources */ = {isa = PBXBuildFile; fileRef = 696FB93E989272E7E2E08911 /* IAModuleRegistry.m */; };
 		0FE478734987A8C3E85A3534 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 9FBEB663964520DD7257C445 /* Assets.xcassets */; };
 		1C51C3D04B48EB74E31D13B9 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 3325EAC279374FDEEDED8154 /* ViewController.m */; };
 		2FCE1B5FCDA0003DF0AAB743 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = E631CC35BE88C4BEA4DC3292 /* main.m */; };
+		322F6C40B519195B9459FACA /* IAGeometryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6451D00147FECA33976B6061 /* IAGeometryModule.m */; };
 		423A5EB7D4F4CEF0FA8FA70A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8933DD4D5B4767BEB09F8983 /* Main.storyboard */; };
+		4E81B227C4A925A401334580 /* IAAffineTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = CA2BE07495310EE77151DFC2 /* IAAffineTransform.m */; };
+		7CC85AA2D5343E95D2E43615 /* IAParameterStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 15FCB9239655D67AFFD55500 /* IAParameterStore.m */; };
+		9F99ADBA7C8C231743DDB1E8 /* coffee.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FC47826EAC1053666B226E2 /* coffee.png */; };
+		A7455303BF01C308FDF3FBBB /* IAImageBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CE7BADCB0D760291267A060 /* IAImageBuffer.m */; };
+		AC94DAC2339CD7BD9F27CC66 /* IAAlgorithmModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 717504319A4E63D1A0002694 /* IAAlgorithmModule.m */; };
 		B3E909F204490649124D4B53 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 05EA2521F8AC9B0B9DBEDC1B /* AppDelegate.m */; };
+		DBA0414294206F58CFD21995 /* IAParameterBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 815DE70E914077413FECCAD8 /* IAParameterBuilder.m */; };
+		FB03B1C901F78BF62D2C6065 /* IAIntensityModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2678A66F7357BA345111B8C7 /* IAIntensityModule.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0344D2A4BFE2644CEDD96476 /* IAIntensityModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAIntensityModule.h; sourceTree = "<group>"; };
 		05EA2521F8AC9B0B9DBEDC1B /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		09F375AF140CAB7A79005699 /* ImageAlgorithm.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageAlgorithm.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		15FCB9239655D67AFFD55500 /* IAParameterStore.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAParameterStore.m; sourceTree = "<group>"; };
+		1C81DE48BB2D749123C35D39 /* IAAlgorithmModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAlgorithmModule.h; sourceTree = "<group>"; };
+		2678A66F7357BA345111B8C7 /* IAIntensityModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAIntensityModule.m; sourceTree = "<group>"; };
+		2FC47826EAC1053666B226E2 /* coffee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = coffee.png; path = "../Assets/test-images/coffee.png"; sourceTree = "<group>"; };
 		3325EAC279374FDEEDED8154 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		5485AF152FCCE8FB43797BD8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5C4FEC8F7A774800FE777168 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		5FB26EBC2E8DE0651850F728 /* IAParameterBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAParameterBuilder.h; sourceTree = "<group>"; };
+		6451D00147FECA33976B6061 /* IAGeometryModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAGeometryModule.m; sourceTree = "<group>"; };
+		64B93FF183A9154A330042F6 /* IAModuleRegistry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAModuleRegistry.h; sourceTree = "<group>"; };
+		696FB93E989272E7E2E08911 /* IAModuleRegistry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAModuleRegistry.m; sourceTree = "<group>"; };
+		6CE7BADCB0D760291267A060 /* IAImageBuffer.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAImageBuffer.m; sourceTree = "<group>"; };
+		717504319A4E63D1A0002694 /* IAAlgorithmModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAAlgorithmModule.m; sourceTree = "<group>"; };
+		815DE70E914077413FECCAD8 /* IAParameterBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAParameterBuilder.m; sourceTree = "<group>"; };
 		9FBEB663964520DD7257C445 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		BC86907962A5D55702649CDB /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		CA2BE07495310EE77151DFC2 /* IAAffineTransform.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAAffineTransform.m; sourceTree = "<group>"; };
+		CB790CC35840073E5F4FCAE8 /* IAImageBuffer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAImageBuffer.h; sourceTree = "<group>"; };
+		DA11A4AE42EBB16E81843347 /* IAGeometryModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAGeometryModule.h; sourceTree = "<group>"; };
+		E079DACC125EBD21383C1C86 /* IAAffineTransform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAffineTransform.h; sourceTree = "<group>"; };
 		E631CC35BE88C4BEA4DC3292 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		F4BD238AE2DB5023025DBF0B /* IAParameterStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAParameterStore.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
+		148DAF02CC0C96A934545392 /* TestImages */ = {
+			isa = PBXGroup;
+			children = (
+				2FC47826EAC1053666B226E2 /* coffee.png */,
+			);
+			name = TestImages;
+			sourceTree = "<group>";
+		};
 		65944D0B0C14EEE6A08C50A6 /* ImageAlgorithm */ = {
 			isa = PBXGroup;
 			children = (
@@ -35,7 +69,10 @@
 				E631CC35BE88C4BEA4DC3292 /* main.m */,
 				BC86907962A5D55702649CDB /* ViewController.h */,
 				3325EAC279374FDEEDED8154 /* ViewController.m */,
+				D2EB912CA37A6A7D65443855 /* Algorithm */,
+				BAF1E5EA9D59923096F4CBFA /* Core */,
 				8933DD4D5B4767BEB09F8983 /* Main.storyboard */,
+				D987177B584C27063D934E57 /* Modules */,
 			);
 			path = ImageAlgorithm;
 			sourceTree = "<group>";
@@ -44,8 +81,46 @@
 			isa = PBXGroup;
 			children = (
 				65944D0B0C14EEE6A08C50A6 /* ImageAlgorithm */,
+				148DAF02CC0C96A934545392 /* TestImages */,
 				E06805523FD18307EBCCF50B /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		BAF1E5EA9D59923096F4CBFA /* Core */ = {
+			isa = PBXGroup;
+			children = (
+				1C81DE48BB2D749123C35D39 /* IAAlgorithmModule.h */,
+				717504319A4E63D1A0002694 /* IAAlgorithmModule.m */,
+				64B93FF183A9154A330042F6 /* IAModuleRegistry.h */,
+				696FB93E989272E7E2E08911 /* IAModuleRegistry.m */,
+				5FB26EBC2E8DE0651850F728 /* IAParameterBuilder.h */,
+				815DE70E914077413FECCAD8 /* IAParameterBuilder.m */,
+				F4BD238AE2DB5023025DBF0B /* IAParameterStore.h */,
+				15FCB9239655D67AFFD55500 /* IAParameterStore.m */,
+			);
+			path = Core;
+			sourceTree = "<group>";
+		};
+		D2EB912CA37A6A7D65443855 /* Algorithm */ = {
+			isa = PBXGroup;
+			children = (
+				E079DACC125EBD21383C1C86 /* IAAffineTransform.h */,
+				CA2BE07495310EE77151DFC2 /* IAAffineTransform.m */,
+				CB790CC35840073E5F4FCAE8 /* IAImageBuffer.h */,
+				6CE7BADCB0D760291267A060 /* IAImageBuffer.m */,
+			);
+			path = Algorithm;
+			sourceTree = "<group>";
+		};
+		D987177B584C27063D934E57 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				DA11A4AE42EBB16E81843347 /* IAGeometryModule.h */,
+				6451D00147FECA33976B6061 /* IAGeometryModule.m */,
+				0344D2A4BFE2644CEDD96476 /* IAIntensityModule.h */,
+				2678A66F7357BA345111B8C7 /* IAIntensityModule.m */,
+			);
+			path = Modules;
 			sourceTree = "<group>";
 		};
 		E06805523FD18307EBCCF50B /* Products */ = {
@@ -117,6 +192,7 @@
 			files = (
 				0FE478734987A8C3E85A3534 /* Assets.xcassets in Resources */,
 				423A5EB7D4F4CEF0FA8FA70A /* Main.storyboard in Resources */,
+				9F99ADBA7C8C231743DDB1E8 /* coffee.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -128,6 +204,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3E909F204490649124D4B53 /* AppDelegate.m in Sources */,
+				4E81B227C4A925A401334580 /* IAAffineTransform.m in Sources */,
+				AC94DAC2339CD7BD9F27CC66 /* IAAlgorithmModule.m in Sources */,
+				322F6C40B519195B9459FACA /* IAGeometryModule.m in Sources */,
+				A7455303BF01C308FDF3FBBB /* IAImageBuffer.m in Sources */,
+				FB03B1C901F78BF62D2C6065 /* IAIntensityModule.m in Sources */,
+				099EFEC9765307E57B45B654 /* IAModuleRegistry.m in Sources */,
+				DBA0414294206F58CFD21995 /* IAParameterBuilder.m in Sources */,
+				7CC85AA2D5343E95D2E43615 /* IAParameterStore.m in Sources */,
 				1C51C3D04B48EB74E31D13B9 /* ViewController.m in Sources */,
 				2FCE1B5FCDA0003DF0AAB743 /* main.m in Sources */,
 			);
