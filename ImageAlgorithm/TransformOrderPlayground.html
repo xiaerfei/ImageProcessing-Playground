@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>仿射变换 · 矩阵相乘顺序实验台</title>
+<style>
+  :root{
+    --bg:#0f1117; --panel:#171a23; --panel2:#1d212c; --line:#2a2f3d;
+    --fg:#e6e9f0; --dim:#8b93a7; --accent:#5b9cff; --warn:#f5a524; --ok:#3ecf8e;
+    --t:#5b9cff; --r:#f5a524; --s:#3ecf8e; --f:#c678dd;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.6 -apple-system,BlinkMacSystemFont,"PingFang SC","Helvetica Neue",Arial,sans-serif;}
+  .app{max-width:1560px;margin:0 auto;padding:20px 20px 60px}
+  header h1{font-size:20px;margin:0 0 6px}
+  header p{margin:0;color:var(--dim);font-size:13px}
+  code{background:var(--panel2);padding:1px 5px;border-radius:4px;font-size:12px}
+  .layout{display:grid;grid-template-columns:330px minmax(420px,1fr) 330px;gap:16px;margin-top:18px}
+  @media(max-width:1180px){.layout{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px}
+  .card h2{font-size:13px;margin:0 0 10px;color:var(--dim);font-weight:600;letter-spacing:.04em}
+  .hint{color:var(--dim);font-size:12px}
+
+  /* 变换链 */
+  .chain{display:flex;flex-direction:column;gap:8px}
+  .item{background:var(--panel2);border:1px solid var(--line);border-left:4px solid var(--dim);
+        border-radius:9px;padding:8px 10px}
+  .item.T{border-left-color:var(--t)} .item.R{border-left-color:var(--r)}
+  .item.S{border-left-color:var(--s)} .item.F{border-left-color:var(--f)}
+  .item.dragging{opacity:.3}
+  .item.ghost{opacity:.96;box-shadow:0 14px 34px rgba(0,0,0,.55);pointer-events:none;
+              background:var(--panel2);will-change:transform}
+  .item .row{display:flex;align-items:center;gap:8px;cursor:grab;touch-action:none}
+  .item .row:active{cursor:grabbing}
+  .item .grip{color:#4a5266;font-size:14px;letter-spacing:-2px;user-select:none}
+  .item.drop-target{outline:2px solid var(--accent);outline-offset:-2px}
+  .item .name{font-weight:600;font-size:13px;min-width:22px}
+  .item .desc{color:var(--dim);font-size:11.5px;flex:1}
+  .iconbtn{background:#252b38;border:1px solid var(--line);color:var(--fg);border-radius:6px;
+           width:24px;height:24px;cursor:pointer;line-height:1;font-size:12px;padding:0}
+  .iconbtn:hover{background:#313a4d}
+  .iconbtn:disabled{opacity:.3;cursor:default}
+  .params{display:grid;grid-template-columns:42px 1fr 60px 22px;gap:6px;align-items:center;margin-top:8px}
+  .params label{color:var(--dim);font-size:11.5px}
+  .params output{font-size:11.5px;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg)}
+  .params input[type=number]{background:#12151d;border:1px solid var(--line);color:var(--fg);
+      border-radius:6px;padding:2px 4px;font-size:11.5px;width:100%;font-variant-numeric:tabular-nums}
+  .params input[type=number]:focus{outline:none;border-color:var(--accent)}
+  .params input[type=number]::-webkit-inner-spin-button{opacity:.4}
+  button.mini{background:#252b38;border:1px solid var(--line);color:var(--dim);border-radius:6px;
+      width:22px;height:22px;cursor:pointer;font-size:11px;padding:0;line-height:1}
+  button.mini:hover{color:var(--fg);border-color:var(--accent)}
+  input[type=range]{width:100%;accent-color:var(--accent)}
+  select{background:#252b38;color:var(--fg);border:1px solid var(--line);border-radius:6px;
+         padding:3px 6px;font-size:12px;width:100%;margin-top:8px}
+  .swapbar{text-align:center;font-size:11px;color:var(--dim);margin:-2px 0}
+  .swapbar.no{color:var(--warn)} .swapbar.yes{color:var(--ok)}
+  .add{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .add button{flex:1;background:#252b38;border:1px solid var(--line);color:var(--fg);
+              border-radius:7px;padding:6px;cursor:pointer;font-size:12px}
+  .add button:hover{background:#313a4d}
+  .add button:disabled{opacity:.3;cursor:default}
+  .presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+  .presets button{background:#222836;border:1px solid var(--line);color:var(--dim);
+                  border-radius:20px;padding:4px 10px;cursor:pointer;font-size:11.5px}
+  .presets button:hover{color:var(--fg);border-color:var(--accent)}
+
+  /* 画布 */
+  .stage{display:flex;flex-direction:column;gap:12px}
+  canvas{display:block;width:100%;height:auto;border-radius:10px;background:#0b0d13}
+  .tools{display:flex;gap:14px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--dim)}
+  .steps{display:flex;gap:10px;overflow-x:auto;padding-bottom:4px}
+  .step{flex:0 0 auto;text-align:center}
+  .step canvas{width:150px;border:1px solid var(--line)}
+  .step .cap{font-size:11px;color:var(--dim);margin-top:4px}
+
+  /* 矩阵 */
+  .mx{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;font-variant-numeric:tabular-nums;
+      font-size:12px;margin:6px 0}
+  .mx span{background:var(--panel2);border:1px solid var(--line);border-radius:5px;
+           padding:3px 4px;text-align:right;overflow:hidden}
+  .mxwrap{background:#12151d;border:1px solid var(--line);border-radius:9px;padding:8px;margin-bottom:8px}
+  .mxwrap .t{font-size:11.5px;color:var(--dim);display:flex;justify-content:space-between}
+  .expr{font-size:12px;word-break:break-all;color:var(--fg);background:#12151d;
+        border:1px solid var(--line);border-radius:8px;padding:8px;line-height:1.8}
+  .expr b{color:var(--accent);font-weight:600}
+
+  /* 画廊 */
+  #gallery{margin-top:20px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:12px}
+  .cell{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px;cursor:pointer}
+  .cell:hover{border-color:var(--accent)}
+  .cell.active{border-color:var(--accent);box-shadow:0 0 0 2px rgba(91,156,255,.25)}
+  .cell canvas{width:100%;border-radius:6px}
+  .cell .cap{font-size:12px;margin-top:6px;display:flex;justify-content:space-between;align-items:center}
+  .cell .ord{font-weight:600;letter-spacing:.06em}
+  .tag{font-size:10.5px;padding:1px 6px;border-radius:10px;background:#252b38;color:var(--dim)}
+  .tag.same{background:rgba(62,207,142,.16);color:var(--ok)}
+  footer{margin-top:26px;color:var(--dim);font-size:12.5px;line-height:1.9}
+  footer h3{color:var(--fg);font-size:13px;margin:16px 0 6px}
+  .k{color:var(--accent)}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <h1>仿射变换 · 矩阵相乘顺序实验台</h1>
+    <p>与 <code>IAAffineTransform.m</code> 完全同构：3×3 齐次矩阵、列向量约定 <code>v' = M·v</code>、反向映射 + 最近邻/双线性采样。
+       矩阵乘法<b>不满足交换律</b>，改变相乘顺序，最终图像往往完全不同。</p>
+  </header>
+
+  <div class="layout">
+    <!-- 左：变换链 -->
+    <aside class="card">
+      <h2>变换链（从上到下 = 从左到右相乘，最上面最先作用于图像）</h2>
+      <div class="chain" id="chain"></div>
+      <div class="add">
+        <button data-add="T">+ 平移 T</button>
+        <button data-add="R">+ 旋转 R</button>
+        <button data-add="S">+ 缩放 S</button>
+        <button data-add="F">+ 倒置 F</button>
+      </div>
+      <h2 style="margin-top:16px">全局设置</h2>
+      <select id="anchor">
+        <option value="origin">锚点：图像原点 (0,0)</option>
+        <option value="center">锚点：图像中心（每个变换各自绕中心）</option>
+      </select>
+      <select id="interp">
+        <option value="bilinear">双线性插值</option>
+        <option value="nearest">最近邻插值</option>
+      </select>
+      <h2 style="margin-top:16px">预设</h2>
+      <div class="presets" id="presets"></div>
+      <p class="hint" style="margin-top:10px">源图默认 128×96；可上传自己的图片（等比 contain 到该尺寸）。</p>
+      <input type="file" id="file" accept="image/*" style="margin-top:6px;font-size:12px">
+    </aside>
+
+    <!-- 中：画布 -->
+    <main class="stage">
+      <div class="card" style="padding:10px">
+        <canvas id="main" width="720" height="540"></canvas>
+      </div>
+      <div class="card">
+        <h2>逐步累积（前缀复合：Mₖ···M₂·M₁）</h2>
+        <div class="steps" id="steps"></div>
+      </div>
+    </main>
+
+    <!-- 右：矩阵 -->
+    <aside class="card">
+      <h2>矩阵分解</h2>
+      <div id="mxlist"></div>
+      <h2 style="margin-top:14px">复合矩阵 M</h2>
+      <div class="mxwrap">
+        <div class="t"><span>det = <b id="det">1</b></span><span id="mtype">仿射</span></div>
+        <div class="mx" id="mxM"></div>
+      </div>
+      <h2>相乘式</h2>
+      <div class="expr" id="expr"></div>
+      <h2 style="margin-top:14px">逆矩阵 M⁻¹（反向映射实际用它）</h2>
+      <div class="mx" id="mxInv"></div>
+    </aside>
+  </div>
+
+  <!-- 全排列画廊 -->
+  <section id="gallery" class="card">
+    <h2>全排列对比：同一组变换，不同相乘顺序（点击缩略图可设为当前顺序）</h2>
+    <p class="hint" id="galhint"></p>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <footer>
+    <h3>怎么看</h3>
+    所有缩略图共用<b>同一个世界视口</b>（由全部排列的包围盒并集决定），所以位置差异是真实的，不是因为自动缩放。
+    虚线框 = 图像原始位置，十字 = 图像中心。
+    <h3>规律</h3>
+    · <span class="k">平移 T 与旋转 R 不可交换</span>：T 后 R，平移方向被一起转走；R 后 T，平移方向保持水平/垂直。<br>
+    · <span class="k">平移 T 与缩放 S 不可交换</span>：S 后 T，平移量是屏幕像素；T 后 S，平移量被放大/缩小 s 倍。<br>
+    · <span class="k">旋转 R 与<b>均匀</b>缩放 S 可交换</span>：R·S ≡ S·R，两种顺序图像完全重合（非均匀缩放 sx≠sy 则不成立）。<br>
+    · <span class="k">倒置 F 与平移不可交换</span>：F 后 T 和 T 后 F 的平移方向相反（镜像把位移也镜像了）。<br>
+    · <span class="k">倒置 F 与旋转不可交换</span>：除非是 180° 旋转这种特殊情况。<br>
+    · 交换相邻两块后图像若不变，页面会在两块之间标注 <span style="color:var(--ok)">⇄ 可交换</span>；画廊里等价的结果会标上相同的 <span style="color:var(--ok)">≡ 组号</span>。
+    <h3>与 Objective-C 实现的对应</h3>
+    <code>IAMatrixTranslation</code> / <code>IAMatrixScale</code> / <code>IAMatrixRotation</code> / <code>IAMatrixTranspose2D</code>
+    四个构造器和这里逐行一致；旋转矩阵 <code>[[c,-s],[s,c]]</code> 在位图 y 轴向下的坐标系里表现为屏幕上的顺时针旋转。
+    <code>matrixWithParams</code> 里写死的顺序是 <b>缩放 → 转置 → 镜像 → 旋转 → 平移</b>，并用
+    <code>T(-cx,-cy)</code> / <code>T(cx+tx, cy+ty)</code> 把旋转缩放夹在图像中心上；本页「锚点：图像中心」就是复现这种做法。
+  </footer>
+</div>
+
+<script>
+/* ============ 3x3 行主序矩阵 ============ */
+const I3 = [1,0,0, 0,1,0, 0,0,1];
+function mul(A,B){
+  const C = new Array(9);
+  for(let r=0;r<3;r++) for(let c=0;c<3;c++)
+    C[r*3+c] = A[r*3]*B[c] + A[r*3+1]*B[3+c] + A[r*3+2]*B[6+c];
+  return C;
+}
+function apply(M,x,y){
+  return [M[0]*x+M[1]*y+M[2], M[3]*x+M[4]*y+M[5], M[6]*x+M[7]*y+M[8]];
+}
+function det3(M){
+  return M[0]*(M[4]*M[8]-M[5]*M[7]) - M[1]*(M[3]*M[8]-M[5]*M[6]) + M[2]*(M[3]*M[7]-M[4]*M[6]);
+}
+function inv3(M){
+  const d = det3(M);
+  if(Math.abs(d) < 1e-12) return null;
+  const a=M[0],b=M[1],c=M[2],e=M[3],f=M[4],g=M[5],h=M[6],i=M[7],j=M[8];
+  return [
+    (f*j-g*i)/d, (c*i-b*j)/d, (b*g-c*f)/d,
+    (g*h-e*j)/d, (a*j-c*h)/d, (c*e-a*g)/d,
+    (e*i-f*h)/d, (b*h-a*i)/d, (a*f-b*e)/d
+  ];
+}
+const T = (tx,ty)=>[1,0,tx, 0,1,ty, 0,0,1];
+const S = (sx,sy)=>[sx,0,0, 0,sy,0, 0,0,1];
+function R(deg){ const r=deg*Math.PI/180, c=Math.cos(r), s=Math.sin(r);
+  return [c,-s,0, s,c,0, 0,0,1]; }                       // y 轴向下 → 视觉顺时针
+const FLIP_H = ()=>S(-1,1), FLIP_V = ()=>S(1,-1),
+      TRANSPOSE = ()=>[0,1,0, 1,0,0, 0,0,1];
+
+/* ============ 源图 ============ */
+const SW = 128, SH = 96;
+const srcCanvas = document.createElement('canvas');
+srcCanvas.width = SW; srcCanvas.height = SH;
+const srcCtx = srcCanvas.getContext('2d', {willReadFrequently:true});
+let srcData = null;
+
+function buildDefaultSource(){
+  const g = srcCtx;
+  g.clearRect(0,0,SW,SH);
+  const quad = ['#2563eb','#dc2626','#059669','#d97706'];   // TL TR BL BR
+  for(let i=0;i<4;i++){
+    g.fillStyle = quad[i];
+    g.globalAlpha = .30;
+    g.fillRect(i%2?SW/2:0, i<2?0:SH/2, SW/2, SH/2);
+  }
+  g.globalAlpha = 1;
+  g.fillStyle = 'rgba(255,255,255,.92)';
+  g.fillRect(0,0,SW,SH);
+  for(let i=0;i<4;i++){
+    g.fillStyle = quad[i]; g.globalAlpha = .55;
+    g.fillRect(i%2?SW/2:0, i<2?0:SH/2, SW/2, SH/2);
+  }
+  g.globalAlpha = 1;
+  // 指向右侧的大箭头（判断旋转 / 水平镜像）
+  g.fillStyle = '#0f172a';
+  g.beginPath();
+  g.moveTo(38,40); g.lineTo(38,26); g.lineTo(62,13); g.lineTo(86,26);
+  g.lineTo(86,22); g.lineTo(118,22); g.lineTo(118,52); g.lineTo(86,52);
+  g.lineTo(86,48); g.lineTo(62,60); g.lineTo(38,48); g.closePath(); g.fill();
+  // 字母 F（判断旋转 / 垂直镜像 / 转置）
+  g.fillStyle = '#ffffff';
+  g.font = 'bold 22px -apple-system,Arial'; g.textBaseline = 'top';
+  g.fillText('F', 10, 68);
+  // 边框
+  g.strokeStyle = '#0f172a'; g.lineWidth = 2; g.strokeRect(1,1,SW-2,SH-2);
+  readSource();
+}
+function readSource(){
+  const d = srcCtx.getImageData(0,0,SW,SH);
+  srcData = new Uint8Array(d.data.length);
+  for(let i=0;i<d.data.length;i++) srcData[i] = d.data[i];
+}
+document.getElementById('file').addEventListener('change', e=>{
+  const f = e.target.files[0]; if(!f) return;
+  const img = new Image();
+  img.onload = ()=>{
+    const g = srcCtx;
+    g.clearRect(0,0,SW,SH);
+    const k = Math.min(SW/img.width, SH/img.height);
+    const w = img.width*k, h = img.height*k;
+    g.drawImage(img,(SW-w)/2,(SH-h)/2,w,h);
+    readSource(); requestRender(true);
+  };
+  img.src = URL.createObjectURL(f);
+});
+
+/* ============ 采样（与 IAAffineTransform.m 同逻辑） ============ */
+function sampleNearest(x,y,out,o){
+  const sx = Math.round(x), sy = Math.round(y);
+  if(sx<0||sx>=SW||sy<0||sy>=SH){ out[o]=out[o+1]=out[o+2]=out[o+3]=0; return; }
+  const p = (sy*SW+sx)*4;
+  out[o]=srcData[p]; out[o+1]=srcData[p+1]; out[o+2]=srcData[p+2]; out[o+3]=srcData[p+3];
+}
+function sampleBilinear(x,y,out,o){
+  if(x<-0.5||x>SW-0.5||y<-0.5||y>SH-0.5){ out[o]=out[o+1]=out[o+2]=out[o+3]=0; return; }
+  let x0=Math.floor(x), y0=Math.floor(y);
+  const dx=x-x0, dy=y-y0;
+  let x1=x0+1, y1=y0+1;
+  x0=Math.min(Math.max(x0,0),SW-1); x1=Math.min(Math.max(x1,0),SW-1);
+  y0=Math.min(Math.max(y0,0),SH-1); y1=Math.min(Math.max(y1,0),SH-1);
+  const p00=(y0*SW+x0)*4, p10=(y0*SW+x1)*4, p01=(y1*SW+x0)*4, p11=(y1*SW+x1)*4;
+  const w00=(1-dx)*(1-dy), w10=dx*(1-dy), w01=(1-dx)*dy, w11=dx*dy;
+  for(let c=0;c<4;c++){
+    const v = w00*srcData[p00+c] + w10*srcData[p10+c] + w01*srcData[p01+c] + w11*srcData[p11+c];
+    out[o+c] = v<0?0:(v>255?255:v);
+  }
+}
+
+/* ============ 渲染 ============ */
+const tmp = document.createElement('canvas');
+function fitWorld(world, W, H){
+  const aspect = W/H;
+  let {x,y,w,h} = world;
+  if(w/h < aspect){ const nw = h*aspect; x -= (nw-w)/2; w = nw; }
+  else { const nh = w/aspect; y -= (nh-h)/2; h = nh; }
+  return {x,y,w,h};
+}
+function drawGrid(ctx,W,H,world){
+  ctx.fillStyle = '#0b0d13'; ctx.fillRect(0,0,W,H);
+  const s = W/world.w, k = Math.max(0.8, W/720);   // k: 高分画布下线宽/字号补偿
+  let step = 40; while(step*s < 34) step *= 2;     // 刻度间距自适应：像素上不小于约 34px
+  const ox = -world.x*s, oy = -world.y*s;          // 坐标轴的屏幕位置
+  const gpx = step*s;
+  if(gpx > 6){
+    ctx.strokeStyle = 'rgba(255,255,255,.045)'; ctx.lineWidth = k;
+    ctx.beginPath();
+    for(let x=ox%gpx; x<W; x+=gpx){ ctx.moveTo(x,0); ctx.lineTo(x,H); }
+    for(let y=oy%gpx; y<H; y+=gpx){ ctx.moveTo(0,y); ctx.lineTo(W,y); }
+    ctx.stroke();
+  }
+  // 坐标轴
+  ctx.strokeStyle = 'rgba(255,255,255,.16)'; ctx.lineWidth = k;
+  ctx.beginPath();
+  if(oy>=0 && oy<=H){ ctx.moveTo(0,oy); ctx.lineTo(W,oy); }
+  if(ox>=0 && ox<=W){ ctx.moveTo(ox,0); ctx.lineTo(ox,H); }
+  ctx.stroke();
+  // 刻度线 + 数字（标在轴旁；轴不在视口内则不标）
+  if((oy>=0&&oy<=H) || (ox>=0&&ox<=W)){
+    ctx.strokeStyle = 'rgba(255,255,255,.3)'; ctx.lineWidth = k;
+    ctx.fillStyle = 'rgba(255,255,255,.4)';
+    ctx.font = `${Math.round(10*k)}px -apple-system,Arial`;
+    ctx.textAlign = 'left';
+    ctx.beginPath();
+    for(let wx=Math.ceil(world.x/step)*step; wx<=world.x+world.w; wx+=step){
+      if(wx===0) continue;
+      const px = (wx-world.x)*s;
+      if(oy>=0 && oy<=H){
+        ctx.moveTo(px, oy-4*k); ctx.lineTo(px, oy+4*k);
+        ctx.fillText(String(wx), px+3*k, oy-5*k);
+      }
+    }
+    for(let wy=Math.ceil(world.y/step)*step; wy<=world.y+world.h; wy+=step){
+      if(wy===0) continue;
+      const py = (wy-world.y)*s;
+      if(ox>=0 && ox<=W){
+        ctx.moveTo(ox-4*k, py); ctx.lineTo(ox+4*k, py);
+        ctx.fillText(String(wy), ox+5*k, py-4*k);
+      }
+    }
+    ctx.stroke();
+  }
+}
+function worldToScreen(world,W,H,x,y){
+  const s = W/world.w;
+  return [(x-world.x)*s, (y-world.y)*s, s];
+}
+function drawOverlay(ctx,W,H,world){
+  const s = W/world.w, k = Math.max(0.8, W/720);
+  // 原始位置虚线框
+  const [x0,y0] = worldToScreen(world,W,H,0,0);
+  ctx.save();
+  ctx.setLineDash([5*k,4*k]); ctx.strokeStyle = 'rgba(255,255,255,.42)'; ctx.lineWidth = k;
+  ctx.strokeRect(x0,y0,SW*s,SH*s);
+  ctx.restore();
+  // 图像中心十字
+  const [cx,cy] = worldToScreen(world,W,H,(SW-1)/2,(SH-1)/2);
+  ctx.strokeStyle = 'rgba(255,255,255,.55)'; ctx.lineWidth = k;
+  ctx.beginPath();
+  ctx.moveTo(cx-6*k,cy); ctx.lineTo(cx+6*k,cy); ctx.moveTo(cx,cy-6*k); ctx.lineTo(cx,cy+6*k);
+  ctx.stroke();
+}
+function renderTo(ctx, M, world, interp){
+  const W = ctx.canvas.width, H = ctx.canvas.height;
+  world = fitWorld(world, W, H);
+  drawGrid(ctx,W,H,world);
+  const inv = inv3(M);
+  if(!inv){ drawOverlay(ctx,W,H,world); return; }
+  const s = W/world.w, sample = interp==='nearest'?sampleNearest:sampleBilinear;
+  tmp.width = W; tmp.height = H;
+  const tctx = tmp.getContext('2d');
+  const img = tctx.createImageData(W,H);
+  const d = img.data;
+  for(let py=0;py<H;py++){
+    const wy = world.y + (py+0.5)/s;
+    let o = py*W*4;
+    for(let px=0;px<W;px++,o+=4){
+      const wx = world.x + (px+0.5)/s;
+      const p = apply(inv, wx, wy);
+      const wgt = Math.abs(p[2])<1e-12 ? 1 : p[2];
+      sample(p[0]/wgt, p[1]/wgt, d, o);
+    }
+  }
+  tctx.putImageData(img,0,0);
+  ctx.drawImage(tmp,0,0);
+  drawOverlay(ctx,W,H,world);
+}
+
+/* ============ 变换链 ============ */
+let chain = [
+  {type:'T', tx:70, ty:26},
+  {type:'R', deg:35},
+  {type:'S', sx:1.25, sy:1.25},
+];
+const NAMES = {T:'平移', R:'旋转', S:'缩放', F:'倒置'};
+const CX = (SW-1)/2, CY = (SH-1)/2;
+let anchor = 'origin', interp = 'bilinear';
+
+function baseMatrix(t){
+  let M;
+  switch(t.type){
+    case 'T': M = T(t.tx, t.ty); break;
+    case 'R': M = R(t.deg); break;
+    case 'S': M = S(t.sx, t.sy); break;
+    case 'F': M = t.mode==='h'?FLIP_H():t.mode==='v'?FLIP_V():TRANSPOSE(); break;
+  }
+  if(anchor === 'center') M = mul(mul(T(CX,CY), M), T(-CX,-CY));   // C·Mi·C⁻¹
+  return M;
+}
+function compose(list){
+  let M = I3.slice();
+  for(const t of list) M = mul(baseMatrix(t), M);   // 左侧的新矩阵 = 更晚施加
+  return M;
+}
+function describe(t){
+  if(t.type==='T') return `平移 (${t.tx}, ${t.ty})`;
+  if(t.type==='R') return `旋转 ${t.deg}°`;
+  if(t.type==='S') return `缩放 (${t.sx}, ${t.sy})`;
+  return t.mode==='h' ? '水平镜像' : t.mode==='v' ? '垂直倒置' : '转置(主对角线)';
+}
+function tag(t){ return t.type==='F' ? (t.mode==='h'?'Fh':t.mode==='v'?'Fv':'Ft') : t.type; }
+
+/* ============ 世界视口 ============ */
+function cornersOf(M){
+  const pts = [[0,0],[SW,0],[0,SH],[SW,SH]], out = [];
+  for(const [x,y] of pts){ const p = apply(M,x,y); const w = Math.abs(p[2])<1e-12?1:p[2];
+    out.push([p[0]/w, p[1]/w]); }
+  return out;
+}
+function worldFor(mats){
+  let minX=0,minY=0,maxX=SW,maxY=SH;
+  for(const M of mats) for(const [x,y] of cornersOf(M)){
+    minX=Math.min(minX,x); maxX=Math.max(maxX,x);
+    minY=Math.min(minY,y); maxY=Math.max(maxY,y);
+  }
+  const mx = Math.max((maxX-minX)*0.08, 18), my = Math.max((maxY-minY)*0.08, 18);
+  return {x:minX-mx, y:minY-my, w:(maxX-minX)+2*mx, h:(maxY-minY)+2*my};
+}
+
+/* ============ 排列 ============ */
+function permutations(arr){
+  if(arr.length <= 1) return [arr.slice()];
+  const res = [];
+  for(let i=0;i<arr.length;i++){
+    const rest = arr.slice(0,i).concat(arr.slice(i+1));
+    for(const p of permutations(rest)) res.push([arr[i]].concat(p));
+  }
+  return res;
+}
+function keyOf(M){ return M.map(v=>v.toFixed(6)).join(','); }
+
+/* ============ UI ============ */
+const $ = s=>document.querySelector(s);
+const mainCv = $('#main'), mainCtx = mainCv.getContext('2d');
+const MAIN_W = 720, MAIN_H = 540;
+const RS = Math.min(window.devicePixelRatio||1, 2);   // 高分屏渲染倍率，解决模糊
+mainCv.style.aspectRatio = MAIN_W + '/' + MAIN_H;
+function renderMain(M, world, fast){
+  const q = fast ? RS*0.5 : RS;   // 拖滑块时用半分辨率保证流畅，松手(change)后全分辨率重绘
+  const w = Math.round(MAIN_W*q), h = Math.round(MAIN_H*q);
+  if(mainCv.width !== w || mainCv.height !== h){ mainCv.width = w; mainCv.height = h; }
+  renderTo(mainCtx, M, world, interp);
+}
+
+let lastPerms = [], lastWorld = null, activeKey = null, rafId = 0, fullPending = true;
+let structDirty = true;   // 只有链的结构/数值稳定后才重建 DOM，避免拖动滑块时控件被替换
+
+function renderChainUI(){
+  const box = $('#chain');
+  box.innerHTML = '';
+  chain.forEach((t,i)=>{
+    const el = document.createElement('div');
+    el.className = 'item ' + t.type;
+    // 卡片整体不可拖拽，只有标题行是拖拽手柄——滑块区域永远不会触发卡片拖拽
+    el.dataset.i = i;
+    el.__t = t;   // 拖拽重排时按 DOM 顺序反查变换对象
+    let params = '';
+    if(t.type==='T'){
+      params = slider('tx','tx',t.tx,-160,160,1,0) + slider('ty','ty',t.ty,-120,120,1,0);
+    } else if(t.type==='R'){
+      params = slider('角度','deg',t.deg,-180,180,1,0,'°');
+    } else if(t.type==='S'){
+      params = slider('sx','sx',t.sx,0.2,2.5,0.05,1) + slider('sy','sy',t.sy,0.2,2.5,0.05,1);
+    } else {
+      params = `<select data-f="mode" style="grid-column:1/5">
+        <option value="h"${t.mode==='h'?' selected':''}>水平镜像（左右翻转）</option>
+        <option value="v"${t.mode==='v'?' selected':''}>垂直倒置（上下翻转）</option>
+        <option value="t"${t.mode==='t'?' selected':''}>转置（沿主对角线翻转）</option>
+      </select>`;
+    }
+    el.innerHTML = `
+      <div class="row">
+        <span class="grip" title="按住拖动排序">⠿</span>
+        <span class="name" style="color:var(--${t.type.toLowerCase()})">${tag(t)}</span>
+        <span class="desc">第 ${i+1} 步 · ${describe(t)}</span>
+        <button class="iconbtn" data-up="${i}" ${i===0?'disabled':''}>↑</button>
+        <button class="iconbtn" data-down="${i}" ${i===chain.length-1?'disabled':''}>↓</button>
+        <button class="iconbtn" data-reset="${i}" title="参数重置为默认值">↺</button>
+        <button class="iconbtn" data-del="${i}" title="删除">×</button>
+      </div>
+      <div class="params">${params}</div>`;
+    box.appendChild(el);
+
+    if(i < chain.length-1){
+      const a = compose(chain);                                        // 原顺序
+      const swapped = chain.slice(); [swapped[i],swapped[i+1]] = [swapped[i+1],swapped[i]];
+      const bFull = compose(swapped);                                  // 只交换相邻两块
+      const same = keyOf(a) === keyOf(bFull);
+      const bar = document.createElement('div');
+      bar.className = 'swapbar ' + (same?'yes':'no');
+      bar.innerHTML = same
+        ? `⇄ 与下一步可交换（顺序不影响结果）`
+        : `⇄ 与下一步<b>不可</b>交换`;
+      box.appendChild(bar);
+    }
+  });
+
+  // 滑块 / 数字输入框 / 行内重置，三者联动
+  box.querySelectorAll('.params input[type=range]').forEach(inp=>{
+    const syncNum = v=>{
+      const num = inp.closest('.params').querySelector(`input.num[data-f="${inp.dataset.f}"]`);
+      if(document.activeElement !== num) num.value = v;   // 正在手动输入时不覆盖
+    };
+    inp.addEventListener('input', e=>{
+      const i = +e.target.closest('.item').dataset.i;
+      const v = +e.target.value;
+      chain[i][e.target.dataset.f] = v;
+      syncNum(v);
+      requestRender(false);
+    });
+    inp.addEventListener('change', ()=>requestRender(true));
+    // 双击滑块 = 精确回到默认值
+    inp.addEventListener('dblclick', e=>{
+      const i = +e.target.closest('.item').dataset.i;
+      chain[i][e.target.dataset.f] = +e.target.dataset.def;
+      syncNum(+e.target.dataset.def);
+      requestRender(true);
+    });
+  });
+  box.querySelectorAll('.params input[type=number]').forEach(num=>{
+    num.addEventListener('input', e=>{
+      const v = parseFloat(e.target.value);
+      if(isNaN(v)) return;                        // 输入中途（如 "-"）先不生效
+      const i = +e.target.closest('.item').dataset.i;
+      chain[i][e.target.dataset.f] = v;
+      const r = e.target.closest('.params').querySelector(`input[type=range][data-f="${e.target.dataset.f}"]`);
+      r.value = Math.min(Math.max(v, +r.min), +r.max);   // 滑块范围外时停在端点
+      requestRender(false);
+    });
+    num.addEventListener('change', ()=>requestRender(true));   // 松手后全分辨率重绘
+  });
+  box.querySelectorAll('button.mini').forEach(b=>{
+    b.onclick = ()=>{
+      const i = +b.closest('.item').dataset.i;
+      chain[i][b.dataset.f] = +b.dataset.def;
+      requestRender(true);
+    };
+  });
+  box.querySelectorAll('select').forEach(sel=>{
+    sel.addEventListener('change', e=>{
+      const i = +e.target.closest('.item').dataset.i;
+      chain[i].mode = e.target.value;
+      requestRender(true);
+    });
+  });
+  box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.up; [chain[i-1],chain[i]]=[chain[i],chain[i-1]]; requestRender(true);
+  });
+  box.querySelectorAll('[data-down]').forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.down; [chain[i+1],chain[i]]=[chain[i],chain[i+1]]; requestRender(true);
+  });
+  box.querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{
+    if(chain.length<=1) return;
+    chain.splice(+b.dataset.del,1); requestRender(true);
+  });
+  // 每个变换的重置按钮：恢复默认参数（与 IATransformParamsDefault 精神一致）
+  const RESETS = {
+    T:t=>{t.tx=0; t.ty=0;},
+    R:t=>{t.deg=0;},
+    S:t=>{t.sx=1; t.sy=1;},
+    F:t=>{t.mode='h';},
+  };
+  box.querySelectorAll('[data-reset]').forEach(b=>b.onclick=()=>{
+    const t = chain[+b.dataset.reset];
+    RESETS[t.type](t);
+    requestRender(true);
+  });
+  // 拖拽排序：ghost 跟随鼠标 + 原位实时让位；手柄 = header 行（含 ⠿）
+  // 注意：监听挂在 document 上——让位的 insertBefore 会使 setPointerCapture 失效
+  let ghost = null, grabDX = 0, grabDY = 0;
+  const clearFx = ()=>box.querySelectorAll('.item').forEach(it=>it.classList.remove('dragging','drop-target'));
+  box.querySelectorAll('.item .row').forEach(row=>{
+    const item = row.closest('.item');
+    row.addEventListener('pointerdown', e=>{
+      if(e.target.closest('button,input,select')) return;   // 按钮正常点击，不启动拖拽
+      e.preventDefault();                                    // 防止拖动时选中文字
+      const r = item.getBoundingClientRect();
+      grabDX = e.clientX - r.left; grabDY = e.clientY - r.top;
+      item.classList.add('dragging');                        // 原位半透明占位
+      box.querySelectorAll('.swapbar').forEach(s=>s.style.display='none');
+      ghost = item.cloneNode(true);                          // 跟随鼠标的浮层
+      ghost.classList.remove('dragging','drop-target');
+      ghost.classList.add('ghost');
+      ghost.style.position = 'fixed'; ghost.style.left = '0'; ghost.style.top = '0';
+      ghost.style.width = r.width + 'px'; ghost.style.zIndex = '100';
+      ghost.style.transform = `translate(${e.clientX-grabDX}px, ${e.clientY-grabDY}px)`;
+      document.body.appendChild(ghost);
+
+      const onMove = ev=>{
+        if(!ghost) return;
+        ghost.style.transform = `translate(${ev.clientX-grabDX}px, ${ev.clientY-grabDY}px)`;
+        const over = document.elementFromPoint(ev.clientX, ev.clientY)?.closest('.item');
+        box.querySelectorAll('.item').forEach(it=>
+          it.classList.toggle('drop-target', !!over && it===over && it!==item));
+        if(over && over!==item){                             // 原位卡片实时让位
+          const r2 = over.getBoundingClientRect();
+          const next = ev.clientY < r2.top + r2.height/2 ? over : over.nextSibling;
+          // 等效位置不做 DOM 操作：对已插入节点 insertBefore 也会断开事件路由
+          if(next !== item && item.nextElementSibling !== next) box.insertBefore(item, next);
+        }
+      };
+      const onUp = ()=>{
+        document.removeEventListener('pointermove', onMove);
+        document.removeEventListener('pointerup', onUp);
+        document.removeEventListener('pointercancel', onUp);
+        if(!ghost) return;
+        ghost.remove(); ghost = null;
+        clearFx();
+        chain = [...box.querySelectorAll('.item')].map(el=>el.__t);  // 按最终 DOM 顺序重建链
+        requestRender(true);                                 // 同步 dataset.i / 交换提示
+      };
+      document.addEventListener('pointermove', onMove);
+      document.addEventListener('pointerup', onUp);
+      document.addEventListener('pointercancel', onUp);
+    });
+  });
+  // 达到数量上限时禁用“添加”按钮
+  document.querySelectorAll('[data-add]').forEach(b=> b.disabled = chain.length >= MAX_CHAIN);
+}
+function slider(label,field,val,min,max,step,def,unit=''){
+  // 每行四个元素：标签 | 滑块 | 数字输入框 | 行内重置（数值直接显示在输入框里）
+  return `<label>${label}</label>
+    <input type="range" data-f="${field}" data-def="${def}" data-unit="${unit}" min="${min}" max="${max}" step="${step}" value="${val}" title="双击回到默认值 ${fmt(def)}${unit}">
+    <input type="number" class="num" data-f="${field}" data-def="${def}" step="${step}" value="${val}" title="可直接输入数值">
+    <button class="mini" data-f="${field}" data-def="${def}" title="重置 ${label} 为 ${fmt(def)}${unit}">↺</button>`;
+}
+function fmt(v){ return (Math.round(v*100)/100).toString(); }
+
+function renderMatrices(){
+  const M = compose(chain);
+  const list = $('#mxlist');
+  list.innerHTML = '';
+  chain.forEach((t,i)=>{
+    const w = document.createElement('div');
+    w.className = 'mxwrap';
+    w.innerHTML = `<div class="t"><span style="color:var(--${t.type.toLowerCase()})">${tag(t)} · ${describe(t)}</span><span>M${i+1}</span></div>
+                   <div class="mx">${cells(baseMatrix(t))}</div>`;
+    list.appendChild(w);
+  });
+  $('#mxM').innerHTML = cells(M);
+  const d = det3(M);
+  $('#det').textContent = (Math.abs(d)<1e-4?d.toExponential(2):d.toFixed(3));
+  $('#mtype').textContent = Math.abs(d)<1e-9 ? '奇异（信息丢失）' : '仿射';
+  const inv = inv3(M);
+  $('#mxInv').innerHTML = inv ? cells(inv) : '<span style="grid-column:1/4">不可逆</span>';
+  const ord = chain.map((t,i)=>`<b>${tag(t)}</b>`).join(' · ');
+  $('#expr').innerHTML =
+    `M = ${ord}<br><span class="hint">最右边的 ${tag(chain[chain.length-1])} 最先作用在图像上，最左边的 ${tag(chain[0])} 最后作用。
+     逐点计算：v' = M·v = ${chain.map((t,i)=>tag(t)).join('·')}·v</span>`;
+  return M;
+}
+function cells(M){
+  return M.map(v=>{
+    const n = Math.abs(v) < 1e-10 ? 0 : v;
+    return `<span>${n.toFixed(3)}</span>`;
+  }).join('');
+}
+
+function renderGallery(perms, world){
+  const grid = $('#grid');
+  grid.innerHTML = '';
+  if(!perms){ $('#galhint').textContent = '变换数量超过 4 个时排列数太多，已省略全排列对比。';
+    return; }
+  const groups = new Map();
+  const keys = perms.map(p=>{
+    const k = keyOf(compose(p));
+    if(!groups.has(k)) groups.set(k, groups.size+1);
+    return k;
+  });
+  const dup = new Set(); const counts = {};
+  keys.forEach(k=>counts[k]=(counts[k]||0)+1);
+  keys.forEach(k=>{ if(counts[k]>1) dup.add(k); });
+  $('#galhint').innerHTML =
+    `共 ${perms.length} 种顺序，归为 <b style="color:var(--ok)">${groups.size}</b> 个等价结果` +
+    (groups.size < perms.length ? '（带 ≡ 标记的顺序图像完全重合）' : '（顺序两两不同）') + '。';
+  perms.forEach((p,i)=>{
+    const k = keys[i];
+    const cell = document.createElement('div');
+    cell.className = 'cell' + (k===activeKey?' active':'');
+    const cv = document.createElement('canvas');
+    cv.width = 240; cv.height = 180;
+    renderTo(cv.getContext('2d'), compose(p), world, interp);
+    const ord = p.map(tag).join('→');
+    cell.innerHTML = `<canvas></canvas><div class="cap">
+        <span class="ord">${ord}</span>
+        <span class="tag${dup.has(k)?' same':''}">${dup.has(k)?'≡ 组 '+groups.get(k):'唯一'}</span></div>`;
+    cell.replaceChild(cv, cell.querySelector('canvas'));
+    cell.onclick = ()=>{ chain = p.map(t=>({...t})); activeKey = k; requestRender(true); };
+    grid.appendChild(cell);
+  });
+}
+
+function renderSteps(world){
+  const box = $('#steps');
+  box.innerHTML = '';
+  for(let k=1;k<=chain.length;k++){
+    const sub = chain.slice(0,k);
+    const M = compose(sub);
+    const d = document.createElement('div');
+    d.className = 'step';
+    const cv = document.createElement('canvas');
+    cv.width = 220; cv.height = 165;
+    renderTo(cv.getContext('2d'), M, world, interp);
+    d.innerHTML = `<canvas></canvas><div class="cap">${sub.map((t,i)=>tag(t)).join('→')}</div>`;
+    d.replaceChild(cv, d.querySelector('canvas'));
+    box.appendChild(d);
+  }
+}
+
+function requestRender(full){
+  if(full){ fullPending = true; structDirty = true; }
+  if(rafId) return;
+  rafId = requestAnimationFrame(()=>{
+    rafId = 0;
+    if(structDirty){ renderChainUI(); structDirty = false; }
+    const perms = chain.length<=4 ? permutations(chain) : null;
+    const mats = [compose(chain), I3];
+    if(perms) for(const p of perms) mats.push(compose(p));
+    const world = worldFor(mats);
+    lastWorld = world; lastPerms = perms;
+    const M = renderMatrices();
+    activeKey = keyOf(M);
+    renderMain(M, world, !fullPending);
+    renderSteps(world);
+    if(fullPending){ renderGallery(perms, world); fullPending = false; }
+  });
+}
+
+/* 预设 */
+const PRESETS = [
+  ['T 后 R ／ R 后 T', [{type:'T',tx:80,ty:0},{type:'R',deg:40}]],
+  ['S 后 T ／ T 后 S', [{type:'S',sx:1.6,sy:1.6},{type:'T',tx:60,ty:20}]],
+  ['R 后 S（可交换例子）', [{type:'R',deg:35},{type:'S',sx:1.4,sy:1.4}]],
+  ['非均匀缩放 + 旋转', [{type:'S',sx:1.8,sy:0.7},{type:'R',deg:30}]],
+  ['倒置 + 平移', [{type:'F',mode:'h'},{type:'T',tx:60,ty:0}]],
+  ['倒置 + 旋转', [{type:'F',mode:'v'},{type:'R',deg:45}]],
+  ['中心锚点：S→R→T', [{type:'S',sx:1.3,sy:1.3},{type:'R',deg:30},{type:'T',tx:50,ty:20}]],
+];
+const pbox = $('#presets');
+PRESETS.forEach(([name,list])=>{
+  const b = document.createElement('button');
+  b.textContent = name;
+  b.onclick = ()=>{ chain = list.map(t=>({...t})); requestRender(true); };
+  pbox.appendChild(b);
+});
+
+/* 添加变换：可重复添加同类，上限 6 个（排列画廊最多展示 4! = 24 种） */
+const DEFAULT_PARAMS = {
+  T: ()=>({type:'T', tx:0, ty:0}),          // 中性：不平移
+  R: ()=>({type:'R', deg:0}),               // 中性：不旋转
+  S: ()=>({type:'S', sx:1, sy:1}),          // 中性：不缩放
+  F: ()=>({type:'F', mode:'h'}),            // 镜像无中性态，默认水平
+};
+const MAX_CHAIN = 6;
+document.querySelectorAll('[data-add]').forEach(b=>{
+  b.title = '追加到链末尾（最多 ' + MAX_CHAIN + ' 个）';
+  b.onclick = ()=>{
+    if(chain.length >= MAX_CHAIN) return;
+    chain.push(DEFAULT_PARAMS[b.dataset.add]());
+    requestRender(true);
+  };
+});
+
+$('#anchor').onchange = e=>{ anchor = e.target.value; requestRender(true); };
+$('#interp').onchange = e=>{ interp = e.target.value; requestRender(true); };
+
+buildDefaultSource();
+requestRender(true);
+</script>
+</body>
+</html>
