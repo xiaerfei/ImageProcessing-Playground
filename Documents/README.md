@@ -10,7 +10,7 @@
 | :--- | :--- |
 | [book-outline.md](book-outline.md) | 全书 12 章知识点地图 + 每章在路线中的定位 |
 | [week01-image-memory-layout.md](week01-image-memory-layout.md) | 图像内存布局、BGR/RGB、YUV 三种排布、cv2 的 I420 标准实测 |
-| [intensity-and-grayscale.md](intensity-and-grayscale.md) | 灰度变换(LUT/曲线)、RGB→灰度加权、各图像类型取亮度、六种亮度定义辨析 |
+| [intensity-and-grayscale.md](intensity-and-grayscale.md) | 线性/对数/幂律三种灰度变换(大白话+实测对比)、RGB→灰度加权、各图像类型取亮度、六种亮度定义辨析 |
 
 ## 数学"回血"资源
 
