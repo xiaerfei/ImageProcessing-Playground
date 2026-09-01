@@ -103,6 +103,7 @@
 ### ▸ 第 4 周(阶段 2):基本灰度变换
 
 **读**:3.1 精读(空域处理框架:点运算 vs 邻域运算);3.2 精读
+**速查**:[Documents/intensity-and-grayscale.md](Documents/intensity-and-grayscale.md) —— 四种变换的曲线与 LUT 要点
 
 **知识点**:
 - 反色:`s = 255 - r`(X 光片增强类场景)
@@ -191,6 +192,7 @@
 ### ▸ 第 8 周(阶段 3):颜色模型与视频色彩工程
 
 **读**:6.1~6.2 精读;6.3 泛读
+**速查**:[Documents/intensity-and-grayscale.md](Documents/intensity-and-grayscale.md) 第三、四节 —— 各图像类型取亮度、Y/V/L*/L 的区别
 
 **知识点**:
 - 三原色/三补色、色度图;RGB 立方体、CMY(K) 印刷
