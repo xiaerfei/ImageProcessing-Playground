@@ -14,16 +14,13 @@ static NSString * const kMode      = @"mode";
 static NSString * const kGamma     = @"gamma";
 static NSString * const kLowIn     = @"lowIn";
 static NSString * const kHighIn    = @"highIn";
+static NSString * const kSlope     = @"slope";
+static NSString * const kIntercept = @"intercept";
 
-typedef NS_ENUM(NSInteger, IAIntensityMode) {
-    IAIntensityModeIdentity = 0,
-    IAIntensityModeInvert   = 1,
-    IAIntensityModeLog      = 2,
-    IAIntensityModeGamma    = 3,
-    IAIntensityModeStretch  = 4,
-};
-
-@implementation IAIntensityModule
+@implementation IAIntensityModule {
+    double _clipLowRatio;    // 被压到 0 的像素占比
+    double _clipHighRatio;   // 被压到 255 的像素占比
+}
 
 + (NSString *)title { return @"灰度变换"; }
 + (NSString *)subtitle { return @"第 3 章 · 第 4 周"; }
@@ -35,7 +32,15 @@ typedef NS_ENUM(NSInteger, IAIntensityMode) {
 
     [builder addSeparator];
     [builder addSection:@"变换类型"];
-    [builder addSegmented:kMode items:@[@"原图", @"反色", @"对数", @"幂律", @"拉伸"] value:3];
+    [builder addPopUp:kMode
+                items:@[@"原图", @"线性 s=a·r+b", @"反色", @"对数", @"幂律", @"分段拉伸"]
+                value:IAIntensityModeLinear];
+
+    [builder addSeparator];
+    [builder addSection:@"线性 s = a·r + b"];
+    [builder addSlider:kSlope     label:@"a" min:-2.0 max:3.0   value:1.0 format:@"%.2f"];
+    [builder addSlider:kIntercept label:@"b" min:-255 max:255   value:0   format:@"%.0f"];
+    [builder addNote:@"a 管对比度(斜率),b 管亮度(截距)。超出 0~255 的部分被截断,不可逆。"];
 
     [builder addSeparator];
     [builder addSection:@"幂律 (Gamma)"];
@@ -63,7 +68,18 @@ typedef NS_ENUM(NSInteger, IAIntensityMode) {
 }
 
 - (nullable NSString *)extraStatus {
+    NSString *formula = [self formulaText];
+    if (_clipLowRatio < 0.05 && _clipHighRatio < 0.05) { return formula; }
+    return [NSString stringWithFormat:@"%@\n截断: %.1f%% → 0,%.1f%% → 255",
+            formula, _clipLowRatio, _clipHighRatio];
+}
+
+- (NSString *)formulaText {
     switch ((IAIntensityMode)[self.parameters integerForKey:kMode]) {
+        case IAIntensityModeLinear:
+            return [NSString stringWithFormat:@"s = %.2f·r %+.0f",
+                    [self.parameters doubleForKey:kSlope],
+                    [self.parameters doubleForKey:kIntercept]];
         case IAIntensityModeInvert:  return @"s = 255 − r";
         case IAIntensityModeLog:     return @"s = c·log(1+r), c = 255/log(256)";
         case IAIntensityModeGamma:
@@ -75,17 +91,21 @@ typedef NS_ENUM(NSInteger, IAIntensityMode) {
     }
 }
 
-/// 按当前参数生成 256 项查找表
-- (void)buildLUT:(uint8_t[256])lut {
+/// 按当前参数生成 256 项查找表,同时标记哪些输入值会被截断
+- (void)buildLUT:(uint8_t[256])lut clipLow:(BOOL[256])clipLow clipHigh:(BOOL[256])clipHigh {
     IAIntensityMode mode = (IAIntensityMode)[self.parameters integerForKey:kMode];
     double gamma = [self.parameters doubleForKey:kGamma];
     double low = [self.parameters doubleForKey:kLowIn];
     double high = [self.parameters doubleForKey:kHighIn];
     double logC = 255.0 / log(256.0);
 
+    double a = [self.parameters doubleForKey:kSlope];
+    double b = [self.parameters doubleForKey:kIntercept];
+
     for (int r = 0; r < 256; r++) {
         double s;
         switch (mode) {
+            case IAIntensityModeLinear:  s = a * r + b; break;
             case IAIntensityModeInvert:  s = 255.0 - r; break;
             case IAIntensityModeLog:     s = logC * log(1.0 + r); break;
             case IAIntensityModeGamma:   s = 255.0 * pow(r / 255.0, gamma); break;
@@ -93,14 +113,18 @@ typedef NS_ENUM(NSInteger, IAIntensityMode) {
             case IAIntensityModeIdentity:
             default:                     s = r; break;
         }
+        clipLow[r]  = (s < 0.0);
+        clipHigh[r] = (s > 255.0);
         lut[r] = (uint8_t)lround(fmin(fmax(s, 0.0), 255.0));
     }
 }
 
 - (nullable IAImageBuffer *)processImage:(IAImageBuffer *)source {
     uint8_t lut[256];
-    [self buildLUT:lut];
+    BOOL clipLow[256], clipHigh[256];
+    [self buildLUT:lut clipLow:clipLow clipHigh:clipHigh];
     BOOL toGray = [self.parameters boolForKey:kToGray];
+    long nLow = 0, nHigh = 0, nTotal = 0;
 
     IAImageBuffer *dst = [IAImageBuffer bufferWithWidth:source.width height:source.height];
     if (!dst) { return nil; }
@@ -117,13 +141,18 @@ typedef NS_ENUM(NSInteger, IAIntensityMode) {
         if (toGray) {
             uint8_t y = (uint8_t)lround(0.299 * s[0] + 0.587 * s[1] + 0.114 * s[2]);
             d[0] = d[1] = d[2] = lut[y];
+            nLow += clipLow[y]; nHigh += clipHigh[y]; nTotal += 1;
         } else {
             d[0] = lut[s[0]];
             d[1] = lut[s[1]];
             d[2] = lut[s[2]];
+            for (int c = 0; c < 3; c++) { nLow += clipLow[s[c]]; nHigh += clipHigh[s[c]]; }
+            nTotal += 3;
         }
         d[3] = s[3];
     }
+    _clipLowRatio  = nTotal ? (double)nLow  / nTotal * 100.0 : 0.0;
+    _clipHighRatio = nTotal ? (double)nHigh / nTotal * 100.0 : 0.0;
     return dst;
 }
 

@@ -229,6 +229,10 @@
         self.moduleCache[cacheKey] = module;
     }
     self.currentModule = module;
+    // 程序化切换时下拉框不会自己动,这里同步一下(用户手动选时是幂等的)
+    if (self.modulePopUp.indexOfSelectedItem != index) {
+        [self.modulePopUp selectItemAtIndex:index];
+    }
 
     NSString *subtitle = [moduleClass subtitle];
     self.subtitleLabel.stringValue = subtitle ?: @"";

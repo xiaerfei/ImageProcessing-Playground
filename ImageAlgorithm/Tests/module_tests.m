@@ -75,12 +75,12 @@ int main(void) { @autoreleasepool {
     IAIntensityModule *im = [[IAIntensityModule alloc] init];
     (void)im.parameterView;
 
-    [im.parameters setDouble:1 forKey:@"mode"];              // 反色
+    [im.parameters setDouble:IAIntensityModeInvert forKey:@"mode"];
     IAImageBuffer *inv = [im processImage:ramp];
     check(px(inv, 0, 0) == 255 && px(inv, 255, 0) == 0 && px(inv, 100, 0) == 155,
           @"反色 s = 255 − r");
 
-    [im.parameters setDouble:3 forKey:@"mode"];              // 幂律
+    [im.parameters setDouble:IAIntensityModeGamma forKey:@"mode"];
     [im.parameters setDouble:1.0 forKey:@"gamma"];
     IAImageBuffer *g1 = [im processImage:ramp];
     check(px(g1, 77, 0) == 77, @"γ=1 时幂律等于恒等变换");
@@ -89,7 +89,31 @@ int main(void) { @autoreleasepool {
     IAImageBuffer *g05 = [im processImage:ramp];
     check(px(g05, 64, 0) > 64, @"γ<1 提亮暗部 (r=64 → 更大)");
 
-    [im.parameters setDouble:4 forKey:@"mode"];              // 分段线性拉伸
+    // 线性 s = a·r + b
+    [im.parameters setDouble:IAIntensityModeLinear forKey:@"mode"];
+    [im.parameters setDouble:1.0 forKey:@"slope"];
+    [im.parameters setDouble:0.0 forKey:@"intercept"];
+    check(px([im processImage:ramp], 137, 0) == 137, @"线性 a=1,b=0 等于恒等");
+
+    [im.parameters setDouble:1.0 forKey:@"slope"];
+    [im.parameters setDouble:60.0 forKey:@"intercept"];
+    IAImageBuffer *lin = [im processImage:ramp];
+    check(px(lin, 100, 0) == 160 && px(lin, 250, 0) == 255,
+          @"线性 b=+60 整体提亮,超出部分截断到 255");
+
+    [im.parameters setDouble:-1.0 forKey:@"slope"];
+    [im.parameters setDouble:255.0 forKey:@"intercept"];
+    IAImageBuffer *negLin = [im processImage:ramp];
+    check(px(negLin, 40, 0) == 215 && px(negLin, 200, 0) == 55,
+          @"线性 a=-1,b=255 等价于反色");
+
+    // 截断统计
+    [im.parameters setDouble:2.0 forKey:@"slope"];
+    [im.parameters setDouble:0.0 forKey:@"intercept"];
+    (void)[im processImage:ramp];
+    check([im.extraStatus containsString:@"截断"], @"a=2 时状态栏报告截断比例");
+
+    [im.parameters setDouble:IAIntensityModeStretch forKey:@"mode"];
     [im.parameters setDouble:50 forKey:@"lowIn"];
     [im.parameters setDouble:200 forKey:@"highIn"];
     IAImageBuffer *st = [im processImage:ramp];
