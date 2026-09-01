@@ -43,6 +43,10 @@
     if ([control isKindOfClass:NSSegmentedControl.class]) {
         return (double)((NSSegmentedControl *)control).selectedSegment;
     }
+    // NSPopUpButton 继承自 NSButton,必须先判断它,否则会被当成勾选框读 state
+    if ([control isKindOfClass:NSPopUpButton.class]) {
+        return (double)((NSPopUpButton *)control).indexOfSelectedItem;
+    }
     if ([control isKindOfClass:NSButton.class]) {
         return ((NSButton *)control).state == NSControlStateValueOn ? 1.0 : 0.0;
     }
@@ -63,6 +67,8 @@
     NSControl *control = _controls[key];
     if ([control isKindOfClass:NSSegmentedControl.class]) {
         ((NSSegmentedControl *)control).selectedSegment = (NSInteger)lround(value);
+    } else if ([control isKindOfClass:NSPopUpButton.class]) {
+        [(NSPopUpButton *)control selectItemAtIndex:(NSInteger)lround(value)];
     } else if ([control isKindOfClass:NSButton.class]) {
         ((NSButton *)control).state = (value != 0.0) ? NSControlStateValueOn : NSControlStateValueOff;
     } else {

@@ -142,6 +142,15 @@
     [self.stack addArrangedSubview:control];
 }
 
+- (void)addPopUp:(NSString *)key items:(NSArray<NSString *> *)items value:(NSInteger)value {
+    NSPopUpButton *control = [NSPopUpButton buttonWithTitle:@""
+                                                     target:self action:@selector(controlChanged:)];
+    [control addItemsWithTitles:items];
+    [control selectItemAtIndex:value];
+    [self.store registerControl:control forKey:key defaultValue:(double)value];
+    [self.stack addArrangedSubview:control];
+}
+
 - (void)addButton:(NSString *)title action:(void (^)(void))action {
     IABlockAction *wrapper = [[IABlockAction alloc] init];
     wrapper.block = action;

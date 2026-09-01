@@ -40,6 +40,11 @@ NS_ASSUME_NONNULL_BEGIN
                items:(NSArray<NSString *> *)items
                value:(NSInteger)value;
 
+/// 选项多于 4 个时用下拉,分段控件在窄面板里会挤
+- (void)addPopUp:(NSString *)key
+           items:(NSArray<NSString *> *)items
+           value:(NSInteger)value;
+
 - (void)addButton:(NSString *)title action:(void (^)(void))action;
 
 /// 参数联动后调用,把滑杆右侧的数值文字刷新一遍
