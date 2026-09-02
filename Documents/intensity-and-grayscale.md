@@ -3,6 +3,9 @@
 > 覆盖第 3 章 3.2(灰度变换)与"从彩色图取亮度"这一跨章节话题。
 >
 > **零~四节讲"怎么改亮度"(线性/对数/幂律),五~八节讲"怎么拿到亮度"(从 RGB/YUV/HSV…)。**
+>
+> 想看**方法大全 + 效果图 + OpenCV 代码**(还包括反转、对比度拉伸、灰度级分层、比特平面、阈值化),
+> 见 [gray-transform-tutorial.md](gray-transform-tutorial.md)。
 > 相关代码:[IAIntensityModule.m](../ImageAlgorithm/ImageAlgorithm/Modules/IAIntensityModule.m)、
 > [00_yuv_warmup.py](../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
 
