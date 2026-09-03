@@ -126,6 +126,9 @@
 
 **读**:3.3 精读
 
+**速查**:[Documents/histogram-transform.md](Documents/histogram-transform.md) —— 直方图/均衡化/CLAHE/规定化的大白话入门
+**摄影视角**:[Documents/histogram-reading.md](Documents/histogram-reading.md) —— 读懂直方图形态、影调分类、ETTR;第九节给出「形态 → 该用什么变换」对照表
+
 **知识点**:
 - 直方图 = 灰度分布统计;亮图/暗图/低对比度图的直方图形态
 - **均衡化**:用 CDF 作映射函数 `s = (L-1)·CDF(r)`,把分布"摊平"以拉开对比度
