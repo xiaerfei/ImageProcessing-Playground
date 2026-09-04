@@ -104,6 +104,7 @@
 
 **读**:3.1 精读(空域处理框架:点运算 vs 邻域运算);3.2 精读
 **速查**:[Documents/intensity-and-grayscale.md](Documents/intensity-and-grayscale.md) —— 四种变换的曲线与 LUT 要点
+**速查**:[Documents/contrast.md](Documents/contrast.md) —— 对比度到底是什么、怎么统计、为什么不能用 max−min
 
 **知识点**:
 - 反色:`s = 255 - r`(X 光片增强类场景)
