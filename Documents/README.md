@@ -12,7 +12,7 @@
 | [week01-image-memory-layout.md](week01-image-memory-layout.md) | 图像内存布局、BGR/RGB、YUV 三种排布、cv2 的 I420 标准实测 |
 | [intensity-and-grayscale.md](intensity-and-grayscale.md) | **原理篇**:线性/对数/幂律为什么这么设计、彼此区别与坑;RGB→灰度加权、各图像类型取亮度、六种亮度定义辨析 |
 | [gray-transform-tutorial.md](gray-transform-tutorial.md) | **图解篇**:七种灰度变换方法的效果图与 OpenCV 代码(反转/对数/幂律/对比度拉伸/灰度级分层/比特平面/阈值化)。改写自知乎文章并修正了几处错误 |
-| [histogram-transform.md](histogram-transform.md) | **算法篇**:直方图是什么、均衡化的 CDF 原理与手算实例、为什么柱子不会真的变平、CLAHE、规定化。**深入部分**:概率积分变换证明、空间信息丢失实证、gamma 域 vs 线性域、clip 削顶数字、分通道均衡的色相偏移实测 |
+| [histogram-transform.md](histogram-transform.md) | **算法篇**:直方图是什么、均衡化的 CDF 原理与手算实例、为什么柱子不会真的变平、CLAHE、规定化。**深入部分**(七节):直方图/PDF/CDF 三者关系、概率积分变换证明、空间信息丢失实证、gamma 域 vs 线性域、**CLAHE 从零拆解**(全局→AHE→插值→限幅,四种做法并排图)、规定化手算、分通道均衡的色相偏移实测 |
 | [histogram-reading.md](histogram-reading.md) | **摄影篇**:如何用眼睛读直方图。四种直方图辨析(RGB叠加 vs 明度)、分量图/Waveform、曝光诊断、宽容度与包围曝光、向右曝光 ETTR、影调三维分类(低中高/长中短/软硬)。整理自三篇知乎文章并修正 8 处 |
 | [contrast.md](contrast.md) | **对比度**:和亮度的区别(加法改亮度/乘法改对比度)、直方图宽度、为什么不能用 max−min 统计、标准差与百分位跨度、自动色阶为何扔掉 1%、显示器上三个不同的「对比度」 |
 
