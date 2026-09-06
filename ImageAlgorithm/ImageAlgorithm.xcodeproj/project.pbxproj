@@ -14,6 +14,7 @@
 		322F6C40B519195B9459FACA /* IAGeometryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 6451D00147FECA33976B6061 /* IAGeometryModule.m */; };
 		423A5EB7D4F4CEF0FA8FA70A /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 8933DD4D5B4767BEB09F8983 /* Main.storyboard */; };
 		4E81B227C4A925A401334580 /* IAAffineTransform.m in Sources */ = {isa = PBXBuildFile; fileRef = CA2BE07495310EE77151DFC2 /* IAAffineTransform.m */; };
+		78C2F505E56C3264C59BFD5B /* IAZoomImageView.m in Sources */ = {isa = PBXBuildFile; fileRef = F5AF20C58DF02CB32BF6F9F8 /* IAZoomImageView.m */; };
 		7CC85AA2D5343E95D2E43615 /* IAParameterStore.m in Sources */ = {isa = PBXBuildFile; fileRef = 15FCB9239655D67AFFD55500 /* IAParameterStore.m */; };
 		9F99ADBA7C8C231743DDB1E8 /* coffee.png in Resources */ = {isa = PBXBuildFile; fileRef = 2FC47826EAC1053666B226E2 /* coffee.png */; };
 		A7455303BF01C308FDF3FBBB /* IAImageBuffer.m in Sources */ = {isa = PBXBuildFile; fileRef = 6CE7BADCB0D760291267A060 /* IAImageBuffer.m */; };
@@ -32,6 +33,7 @@
 		2678A66F7357BA345111B8C7 /* IAIntensityModule.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAIntensityModule.m; sourceTree = "<group>"; };
 		2FC47826EAC1053666B226E2 /* coffee.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = coffee.png; path = "../Assets/test-images/coffee.png"; sourceTree = "<group>"; };
 		3325EAC279374FDEEDED8154 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		474E896C5485D74137071E8D /* IAZoomImageView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAZoomImageView.h; sourceTree = "<group>"; };
 		5485AF152FCCE8FB43797BD8 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		5C4FEC8F7A774800FE777168 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		5FB26EBC2E8DE0651850F728 /* IAParameterBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAParameterBuilder.h; sourceTree = "<group>"; };
@@ -49,6 +51,7 @@
 		E079DACC125EBD21383C1C86 /* IAAffineTransform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAAffineTransform.h; sourceTree = "<group>"; };
 		E631CC35BE88C4BEA4DC3292 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		F4BD238AE2DB5023025DBF0B /* IAParameterStore.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = IAParameterStore.h; sourceTree = "<group>"; };
+		F5AF20C58DF02CB32BF6F9F8 /* IAZoomImageView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = IAZoomImageView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -97,6 +100,8 @@
 				815DE70E914077413FECCAD8 /* IAParameterBuilder.m */,
 				F4BD238AE2DB5023025DBF0B /* IAParameterStore.h */,
 				15FCB9239655D67AFFD55500 /* IAParameterStore.m */,
+				474E896C5485D74137071E8D /* IAZoomImageView.h */,
+				F5AF20C58DF02CB32BF6F9F8 /* IAZoomImageView.m */,
 			);
 			path = Core;
 			sourceTree = "<group>";
@@ -212,6 +217,7 @@
 				099EFEC9765307E57B45B654 /* IAModuleRegistry.m in Sources */,
 				DBA0414294206F58CFD21995 /* IAParameterBuilder.m in Sources */,
 				7CC85AA2D5343E95D2E43615 /* IAParameterStore.m in Sources */,
+				78C2F505E56C3264C59BFD5B /* IAZoomImageView.m in Sources */,
 				1C51C3D04B48EB74E31D13B9 /* ViewController.m in Sources */,
 				2FCE1B5FCDA0003DF0AAB743 /* main.m in Sources */,
 			);
