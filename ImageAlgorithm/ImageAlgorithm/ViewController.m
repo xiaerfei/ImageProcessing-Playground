@@ -14,6 +14,7 @@
 #import "ViewController.h"
 #import "IAAlgorithmModule.h"
 #import "IAModuleRegistry.h"
+#import "IAZoomImageView.h"
 
 @interface ViewController ()
 @property (nonatomic, strong) NSPopUpButton *modulePopUp;
@@ -21,8 +22,11 @@
 @property (nonatomic, strong) NSScrollView *parameterScroll;
 @property (nonatomic, strong) NSTextField *statusLabel;
 @property (nonatomic, strong) NSTextField *resultTitleLabel;
-@property (nonatomic, strong) NSImageView *sourceImageView;
-@property (nonatomic, strong) NSImageView *resultImageView;
+@property (nonatomic, strong) IAZoomImageView *sourceImageView;
+@property (nonatomic, strong) IAZoomImageView *resultImageView;
+@property (nonatomic, strong) NSTextField *sourceZoomLabel;
+@property (nonatomic, strong) NSTextField *resultZoomLabel;
+@property (nonatomic, strong) NSButton *syncZoomCheckbox;
 
 @property (nonatomic, strong) IAImageBuffer *sourceBuffer;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, IAAlgorithmModule *> *moduleCache;
@@ -110,11 +114,14 @@
 
     NSButton *resetButton = [NSButton buttonWithTitle:@"重置参数"
                                                target:self action:@selector(resetClicked:)];
+    self.syncZoomCheckbox = [NSButton checkboxWithTitle:@"同步两图缩放" target:self action:@selector(syncZoomToggled:)];
+    self.syncZoomCheckbox.state = NSControlStateValueOff;
+    self.syncZoomCheckbox.toolTip = @"开启后,原图与结果图共用同一缩放比例(各自居中),便于对比大小关系";
     self.statusLabel = [NSTextField wrappingLabelWithString:@""];
     self.statusLabel.font = [NSFont monospacedDigitSystemFontOfSize:10 weight:NSFontWeightRegular];
     self.statusLabel.textColor = NSColor.secondaryLabelColor;
 
-    NSStackView *footer = [NSStackView stackViewWithViews:@[resetButton, self.statusLabel]];
+    NSStackView *footer = [NSStackView stackViewWithViews:@[resetButton, self.syncZoomCheckbox, self.statusLabel]];
     footer.orientation = NSUserInterfaceLayoutOrientationVertical;
     footer.alignment = NSLayoutAttributeLeading;
     footer.spacing = 6.0;
@@ -159,14 +166,25 @@
     split.dividerStyle = NSSplitViewDividerStyleThin;
     split.translatesAutoresizingMaskIntoConstraints = NO;
 
-    self.sourceImageView = [self makeImageView];
-    self.resultImageView = [self makeImageView];
+    self.sourceImageView = [self makeZoomViewWithTag:0];
+    self.resultImageView = [self makeZoomViewWithTag:1];
+    // 注意:不在这里设 syncPartner —— 同步只由左下角 checkbox 控制,
+    // 默认关闭,避免两个视图在启动/换图阶段相互干扰(曾经的错位 bug 根源)
+
+    self.sourceZoomLabel = [self zoomPercentLabel];
+    self.resultZoomLabel = [self zoomPercentLabel];
 
     NSTextField *sourceTitle = [self paneTitleLabel:@"原图"];
     self.resultTitleLabel = [self paneTitleLabel:@"处理结果"];
 
-    [split addArrangedSubview:[self paneWithTitleLabel:sourceTitle imageView:self.sourceImageView]];
-    [split addArrangedSubview:[self paneWithTitleLabel:self.resultTitleLabel imageView:self.resultImageView]];
+    [split addArrangedSubview:[self paneWithTitleLabel:sourceTitle
+                                             zoomView:self.sourceImageView
+                                            zoomLabel:self.sourceZoomLabel
+                                                  tag:0]];
+    [split addArrangedSubview:[self paneWithTitleLabel:self.resultTitleLabel
+                                             zoomView:self.resultImageView
+                                            zoomLabel:self.resultZoomLabel
+                                                  tag:1]];
     return split;
 }
 
@@ -185,30 +203,106 @@
     return label;
 }
 
-- (NSImageView *)makeImageView {
-    NSImageView *imageView = [[NSImageView alloc] init];
-    imageView.imageScaling = NSImageScaleProportionallyDown;   // 只缩不放,免得误以为是算法放大
-    imageView.imageAlignment = NSImageAlignCenter;
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    imageView.wantsLayer = YES;
-    imageView.layer.backgroundColor = [NSColor colorWithWhite:0.12 alpha:1.0].CGColor;
-    return imageView;
+- (IAZoomImageView *)makeZoomViewWithTag:(NSInteger)tag {
+    IAZoomImageView *view = [[IAZoomImageView alloc] init];
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    __weak typeof(self) weakSelf = self;
+    view.onViewDidChange = ^(double scale, NSPoint origin) {
+        __strong typeof(weakSelf) self = weakSelf;
+        if (!self) { return; }
+        NSTextField *label = (tag == 0) ? self.sourceZoomLabel : self.resultZoomLabel;
+        label.stringValue = [NSString stringWithFormat:@"%.0f%%", scale * 100.0];
+    };
+    return view;
 }
 
-- (NSView *)paneWithTitleLabel:(NSTextField *)label imageView:(NSImageView *)imageView {
+- (NSTextField *)zoomPercentLabel {
+    NSTextField *label = [NSTextField labelWithString:@"100%"];
+    label.font = [NSFont monospacedDigitSystemFontOfSize:10 weight:NSFontWeightRegular];
+    label.textColor = NSColor.tertiaryLabelColor;
+    label.translatesAutoresizingMaskIntoConstraints = NO;
+    return label;
+}
+
+- (NSView *)paneWithTitleLabel:(NSTextField *)label
+                      zoomView:(IAZoomImageView *)zoomView
+                     zoomLabel:(NSTextField *)zoomLabel
+                           tag:(NSInteger)tag {
+    // ── 布局思路 ────────────────────────────────────────────────────────
+    // header 高度固定为 26pt,zoomView 用显式 top/bottom 填满剩余空间。
+    // 不用 NSStackView:IAZoomImageView 没有实现 intrinsicContentSize,
+    // stack 对其高度分配在两个 pane 上可能不一致,这是"修好下面坏上面"的根源。
+    // 全部锚点都是 pane 的固定几何,任意 pane 高度下都无歧义:头必在上。
     NSView *pane = [[NSView alloc] init];
-    [pane addSubview:label];
-    [pane addSubview:imageView];
+
+    NSSegmentedControl *zoomSeg =
+        [NSSegmentedControl segmentedControlWithLabels:@[@"−", @"+", @"1:1", @"适应"]
+                                         trackingMode:NSSegmentSwitchTrackingMomentary
+                                               target:self
+                                               action:@selector(zoomAction:)];
+    zoomSeg.tag = tag;
+    zoomSeg.font = [NSFont systemFontOfSize:10];
+    zoomSeg.toolTip = @"缩放;快捷键 ⌘+滚轮 / 捏合 / 双击切换 1:1";
+
+    NSStackView *tools = [NSStackView stackViewWithViews:@[zoomLabel, zoomSeg]];
+    tools.orientation = NSUserInterfaceLayoutOrientationHorizontal;
+    tools.spacing = 6.0;
+    tools.translatesAutoresizingMaskIntoConstraints = NO;
+
+    NSView *header = [[NSView alloc] init];
+    header.wantsLayer = YES;
+    // 比图片底色稍亮一点的半透明深色,让控件文字永远有对比度
+    header.layer.backgroundColor = [NSColor colorWithCalibratedWhite:0.08 alpha:0.92].CGColor;
+    header.layer.cornerRadius = 4.0;
+    header.translatesAutoresizingMaskIntoConstraints = NO;
+    [header addSubview:label];
+    [header addSubview:tools];
+
+    [pane addSubview:header];
+    [pane addSubview:zoomView];
+
     [NSLayoutConstraint activateConstraints:@[
-        [label.topAnchor constraintEqualToAnchor:pane.topAnchor constant:6],
-        [label.leadingAnchor constraintEqualToAnchor:pane.leadingAnchor constant:10],
-        [imageView.topAnchor constraintEqualToAnchor:label.bottomAnchor constant:4],
-        [imageView.leadingAnchor constraintEqualToAnchor:pane.leadingAnchor],
-        [imageView.trailingAnchor constraintEqualToAnchor:pane.trailingAnchor],
-        [imageView.bottomAnchor constraintEqualToAnchor:pane.bottomAnchor],
+        // header:顶部贴 pane(留 4pt),高度固定 26,不再随内容浮动
+        [header.topAnchor      constraintEqualToAnchor:pane.topAnchor      constant:4],
+        [header.leadingAnchor  constraintEqualToAnchor:pane.leadingAnchor  constant:6],
+        [header.trailingAnchor constraintEqualToAnchor:pane.trailingAnchor constant:-6],
+        [header.heightAnchor   constraintEqualToConstant:26],
+
+        // header 内部:标题左对齐,工具右对齐,纵向居中
+        [label.leadingAnchor   constraintEqualToAnchor:header.leadingAnchor  constant:8],
+        [label.centerYAnchor   constraintEqualToAnchor:header.centerYAnchor],
+        [tools.trailingAnchor  constraintEqualToAnchor:header.trailingAnchor constant:-8],
+        [tools.centerYAnchor   constraintEqualToAnchor:header.centerYAnchor],
+
+        // zoomView:从 header 底部下方 6pt 起,一直延伸到 pane 底部 → 头/底顺序固定
+        [zoomView.topAnchor      constraintEqualToAnchor:header.bottomAnchor constant:6],
+        [zoomView.leadingAnchor  constraintEqualToAnchor:pane.leadingAnchor],
+        [zoomView.trailingAnchor constraintEqualToAnchor:pane.trailingAnchor],
+        [zoomView.bottomAnchor   constraintEqualToAnchor:pane.bottomAnchor],
+
         [pane.heightAnchor constraintGreaterThanOrEqualToConstant:140],
     ]];
     return pane;
+}
+
+#pragma mark - 缩放
+
+- (void)zoomAction:(NSSegmentedControl *)sender {
+    IAZoomImageView *view = (sender.tag == 0) ? self.sourceImageView : self.resultImageView;
+    switch (sender.selectedSegment) {
+        case 0: [view zoomBy:1.0 / 1.25]; break;
+        case 1: [view zoomBy:1.25];       break;
+        case 2: [view zoomToActualSize];  break;
+        case 3: [view zoomToFit];         break;
+        default: break;
+    }
+}
+
+- (void)syncZoomToggled:(NSButton *)sender {
+    BOOL on = (sender.state == NSControlStateValueOn);
+    self.sourceImageView.syncPartner = on ? self.resultImageView : nil;
+    self.resultImageView.syncPartner = on ? self.sourceImageView : nil;
+    if (on) { [self.sourceImageView syncToPartner]; }
 }
 
 #pragma mark - 模块切换

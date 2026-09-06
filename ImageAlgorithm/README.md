@@ -14,7 +14,8 @@ ImageAlgorithm/
 │   ├── IAAlgorithmModule     模块基类:子类只管参数声明与算法本体
 │   ├── IAParameterStore      参数读写(控件即数据源,不维护镜像变量)
 │   ├── IAParameterBuilder    声明式参数面板,模块不碰 Auto Layout
-│   └── IAModuleRegistry      模块清单
+│   ├── IAModuleRegistry      模块清单
+│   └── IAZoomImageView       可缩放/可平移画布(放大看像素)
 ├── Algorithm/                可复用的算法原语
 │   ├── IAImageBuffer         RGBA8 像素缓冲(预乘 alpha)
 │   └── IAAffineTransform     3×3 齐次矩阵 + 反向映射(矩阵运算用 simd)
@@ -71,6 +72,25 @@ IAYourModule.class,   // 第 6 周
 
 `addSection:` `addSeparator` `addNote:` `addSlider:label:min:max:value:format:`
 `addCheckbox:title:value:` `addSegmented:items:value:` `addButton:action:`
+
+## 查看与缩放
+
+两个画布(原图 / 结果)都是 `IAZoomImageView`:
+
+| 操作 | 效果 |
+| :--- | :--- |
+| 捏合 / ⌘+滚轮 | 以光标为锚点缩放 |
+| 滚轮 / 拖拽 | 平移 |
+| 双击 | 1:1 ↔ 适应窗口 |
+| 面板 `−` `+` `1:1` `适应` | 按钮缩放 |
+| 键盘 `0` / `1` / `+` `−` | 同上(需先点过该画布) |
+
+- 放大到 ≥100% 时**关闭插值**,看到的是真实像素;≥600% 再叠一层像素网格(与 Photoshop 的阈值一致) ——
+  最近邻的锯齿与双线性的过渡,只有这时才分得出来
+- 画布外(几何变换空出来的区域)画棋盘底,透明与纯黑一眼可分
+- 「同步两图缩放」默认关闭,按需开启后两图共用同一缩放比例(各自居中),
+  便于观察处理前后的大小关系;图像尺寸不同时仍各自居中显示
+- 调参数时只要输出尺寸没变,视角保持不变,不会跳回"适应"
 
 ## 测试
 
