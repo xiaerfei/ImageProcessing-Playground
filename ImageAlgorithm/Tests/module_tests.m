@@ -16,6 +16,8 @@
 #import "IAAlgorithmModule.h"
 #import "IAModuleRegistry.h"
 #import "IAIntensityModule.h"
+#import "IAHistogramModule.h"
+#import "IAHistogram.h"   // IAHistogramTarget 枚举
 
 static int gFail = 0;
 static void check(BOOL cond, NSString *msg) {
@@ -125,6 +127,91 @@ int main(void) { @autoreleasepool {
     [im parameterDidChange:@"lowIn"];
     check([im.parameters doubleForKey:@"highIn"] > [im.parameters doubleForKey:@"lowIn"],
           @"低值超过高值时自动顶开,避免除零");
+
+    // --- 直方图模块的算法正确性 ---
+    IAHistogramModule *hm = [[IAHistogramModule alloc] init];
+    (void)hm.parameterView;
+
+    // 挤在 100~140 的窄区间:均衡化应当把它摊开
+    IAImageBuffer *narrow = [IAImageBuffer bufferWithWidth:200 height:20];
+    for (NSInteger i = 0; i < 200 * 20; i++) {
+        uint8_t *p = narrow.data + i * 4;
+        p[0] = p[1] = p[2] = (uint8_t)(100 + (i % 41)); p[3] = 255;
+    }
+    double (^stdev)(IAImageBuffer *) = ^double(IAImageBuffer *b) {
+        NSInteger n = b.width * b.height;
+        double mean = 0, var = 0;
+        for (NSInteger i = 0; i < n; i++) { mean += b.data[i * 4]; }
+        mean /= n;
+        for (NSInteger i = 0; i < n; i++) { double d = b.data[i * 4] - mean; var += d * d; }
+        return sqrt(var / n);
+    };
+
+    [hm.parameters setDouble:IAHistogramModeIdentity forKey:@"mode"];
+    IAImageBuffer *same = [hm processImage:narrow];
+    check(fabs(stdev(same) - stdev(narrow)) < 0.01, @"原图模式不改动像素");
+
+    [hm.parameters setDouble:IAHistogramModeEqualize forKey:@"mode"];
+    IAImageBuffer *eq = [hm processImage:narrow];
+    check(stdev(eq) > stdev(narrow) * 4.0,
+          ([NSString stringWithFormat:@"均衡化摊开窄区间:σ %.1f → %.1f", stdev(narrow), stdev(eq)]));
+
+    // 规定化到"均匀"应当与均衡化一致 —— 两者同源
+    [hm.parameters setDouble:IAHistogramModeSpecify forKey:@"mode"];
+    [hm.parameters setDouble:IAHistogramTargetUniform forKey:@"target"];
+    IAImageBuffer *spec = [hm processImage:narrow];
+    int maxDiff = 0;
+    for (NSInteger i = 0; i < 200 * 20; i++) {
+        maxDiff = MAX(maxDiff, abs(spec.data[i * 4] - eq.data[i * 4]));
+    }
+    check(maxDiff <= 1,
+          ([NSString stringWithFormat:@"规定化到均匀 == 全局均衡化(最大偏差 %d)", maxDiff]));
+
+    // 彩色图:只动亮度不该偏色,分通道必然偏色
+    IAImageBuffer *color = [IAImageBuffer bufferWithWidth:64 height:8];
+    for (NSInteger i = 0; i < 64 * 8; i++) {
+        uint8_t *p = color.data + i * 4;
+        // 偏暖的一片:R 始终大于 B,三个通道的分布宽度各不相同
+        p[0] = (uint8_t)(90 + (i % 60));
+        p[1] = (uint8_t)(70 + (i % 40));
+        p[2] = (uint8_t)(50 + (i % 20));
+        p[3] = 255;
+    }
+    double (^warmth)(IAImageBuffer *) = ^double(IAImageBuffer *b) {
+        NSInteger n = b.width * b.height;
+        double sum = 0;
+        for (NSInteger i = 0; i < n; i++) { sum += (double)b.data[i * 4] - b.data[i * 4 + 2]; }
+        return sum / n;   // 平均 R−B,衡量色偏
+    };
+
+    [hm.parameters setDouble:IAHistogramModeEqualize forKey:@"mode"];
+    [hm.parameters setDouble:IAHistogramColorModeLuma forKey:@"colorMode"];
+    IAImageBuffer *lumaEq = [hm processImage:color];
+    [hm.parameters setDouble:IAHistogramColorModePerChannel forKey:@"colorMode"];
+    IAImageBuffer *chEq = [hm processImage:color];
+    check(warmth(chEq) < warmth(color) * 0.5,
+          ([NSString stringWithFormat:@"分通道均衡化把暖色洗掉:R−B %.1f → %.1f",
+            warmth(color), warmth(chEq)]));
+    check(fabs(warmth(lumaEq) - warmth(color)) < fabs(warmth(chEq) - warmth(color)),
+          ([NSString stringWithFormat:@"只动亮度更好地保住色偏:R−B %.1f(原图 %.1f)",
+            warmth(lumaEq), warmth(color)]));
+
+    // CLAHE 走得通,且和全局均衡化的结果不同
+    [hm.parameters setDouble:IAHistogramModeCLAHE forKey:@"mode"];
+    [hm.parameters setDouble:IAHistogramColorModeGray forKey:@"colorMode"];
+    [hm.parameters setDouble:4 forKey:@"tiles"];
+    [hm.parameters setDouble:2.0 forKey:@"clipLimit"];
+    IAImageBuffer *clahe = [hm processImage:narrow];
+    check(clahe != nil && clahe.width == narrow.width, @"CLAHE 能产出结果");
+    int diffFromGlobal = 0;
+    for (NSInteger i = 0; i < 200 * 20; i++) {
+        diffFromGlobal = MAX(diffFromGlobal, abs(clahe.data[i * 4] - eq.data[i * 4]));
+    }
+    check(diffFromGlobal > 5,
+          ([NSString stringWithFormat:@"CLAHE 与全局均衡化结果不同(最大差 %d)", diffFromGlobal]));
+
+    // 状态栏有话说
+    check(hm.extraStatus.length > 0, @"模块向状态栏报告了当前用的方式");
 
     printf("\n%s\n", gFail == 0 ? "全部通过 ✅" : "存在失败 ❌");
     return gFail;
