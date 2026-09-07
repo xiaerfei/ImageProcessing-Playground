@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 /// 灰色小字说明,用来写公式或提示
 - (void)addNote:(NSString *)text;
 
+/// format 只能含**一个**占位符(值只传一个 double);
+/// 多写一个 %f 会去读栈上的垃圾
 - (void)addSlider:(NSString *)key
             label:(NSString *)label
               min:(double)min
