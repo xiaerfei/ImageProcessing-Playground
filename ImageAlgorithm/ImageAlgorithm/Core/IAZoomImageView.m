@@ -15,8 +15,16 @@
 
 static const double kMinScale = 0.05;
 static const double kMaxScale = 64.0;
-// 与 Photoshop 对齐:放大到 600% 以上画出像素网格(PS 也是这个量级开始显示)
+// 与 Photoshop 对齐:放大到 600% 以上画出像素网格
 static const double kGridMinScale = 6.0;
+
+// +/- 按钮与 ⌘± 走这套档位,和 PS 一样落在整数百分比上,
+// 而不是 1.25 连乘出来的 87%、109% 这种零头。
+static const double kZoomStops[] = {
+    0.0625, 0.0833, 0.125, 0.1667, 0.25, 0.3333, 0.5, 0.6667,
+    1.0, 2.0, 3.0, 4.0, 5.0, 6.0, 8.0, 12.0, 16.0, 24.0, 32.0, 48.0, 64.0
+};
+static const size_t kZoomStopCount = sizeof(kZoomStops) / sizeof(kZoomStops[0]);
 
 @implementation IAZoomImageView {
     double  _scale;
@@ -24,6 +32,9 @@ static const double kGridMinScale = 6.0;
     BOOL    _didUserZoom;        // 用户手动缩放过 → 不再自动 fit
     BOOL    _applyingSync;       // 正在接收同步,防 A→B→A 递归
     BOOL    _dragging;
+    BOOL    _didDrag;            // 本次按下是否真的挪动过 → 挪过就不算双击
+    BOOL    _spaceHeld;          // 空格临时抓手(PS 手感)
+    BOOL    _didPushCursor;      // mouseDown 压过握拳光标 → mouseUp 才该 pop
     NSPoint _dragStartWindow;    // 拖拽起点:window 坐标 y 向上,与视图相反
     NSPoint _dragStartOrigin;
 }
@@ -34,7 +45,7 @@ static const double kGridMinScale = 6.0;
         _scale = 1.0;
         _autoFitsOnResize = YES;
         self.wantsLayer = YES;
-        self.layer.backgroundColor = [NSColor colorWithWhite:0.12 alpha:1.0].CGColor;
+        // 背景由 drawRect 的棋盘底负责,并跟随明暗主题 —— 不在这里钉死颜色
         // 关键:图片放大后 _origin 会变成负值(图片画到 view 上方),
         // 不裁剪的话 drawInRect 会越界画到 superview 上,盖住上面的标题栏
         self.clipsToBounds = YES;
@@ -44,6 +55,68 @@ static const double kGridMinScale = 6.0;
 
 - (BOOL)isFlipped { return YES; }
 - (BOOL)acceptsFirstResponder { return YES; }
+
+#pragma mark - 空格抓手(全局)
+
+// PS 里空格是全局临时抓手,不管键盘焦点在哪都生效。
+// 所以状态放在类级别、monitor 只装一份:每个实例各装一个的话,
+// 先执行的那个吞掉事件,另一个画布就永远收不到空格。
+static NSHashTable<IAZoomImageView *> *gLiveViews = nil;
+static id gSpaceMonitor = nil;
+
++ (void)registerView:(IAZoomImageView *)view {
+    if (!gLiveViews) { gLiveViews = [NSHashTable weakObjectsHashTable]; }
+    [gLiveViews addObject:view];
+    if (gSpaceMonitor) { return; }
+    gSpaceMonitor = [NSEvent addLocalMonitorForEventsMatchingMask:(NSEventMaskKeyDown | NSEventMaskKeyUp)
+                                                          handler:^NSEvent *(NSEvent *e) {
+        if (![e.charactersIgnoringModifiers isEqualToString:@" "]) { return e; }
+        // 正在文本框里打字时,空格就是空格
+        if ([e.window.firstResponder isKindOfClass:NSTextView.class]) { return e; }
+        BOOL held = (e.type == NSEventTypeKeyDown);
+        BOOL consumed = NO;
+        for (IAZoomImageView *v in gLiveViews.allObjects) {
+            if (v.window == e.window) { [v setSpaceHeld:held]; consumed = YES; }
+        }
+        // 吞掉:否则走完 responder chain 没人处理会 beep,
+        // 或者误触到当前有焦点的按钮(空格 = 点击)
+        return consumed ? nil : e;
+    }];
+}
+
++ (void)unregisterView:(IAZoomImageView *)view {
+    [gLiveViews removeObject:view];
+    if (gLiveViews.allObjects.count == 0 && gSpaceMonitor) {
+        [NSEvent removeMonitor:gSpaceMonitor];
+        gSpaceMonitor = nil;
+    }
+}
+
+- (void)viewDidMoveToWindow {
+    [super viewDidMoveToWindow];
+    if (self.window) { [IAZoomImageView registerView:self]; }
+    else             { [IAZoomImageView unregisterView:self]; [self setSpaceHeld:NO]; }
+}
+
+- (void)dealloc {
+    [IAZoomImageView unregisterView:self];
+}
+
+#pragma mark - 主题
+
+/// 画布是自绘的,拿不到系统控件的自动适配,只能自己问当前外观是明还是暗。
+/// 之前颜色全部钉死成近黑,在 light 主题下整块画布突兀,叠在上面的
+/// secondaryLabelColor 文字(light 下解析成深灰)更是黑压黑,几乎看不见。
+- (BOOL)isDarkAppearance {
+    NSAppearanceName name = [self.effectiveAppearance
+        bestMatchFromAppearancesWithNames:@[NSAppearanceNameAqua, NSAppearanceNameDarkAqua]];
+    return [name isEqualToString:NSAppearanceNameDarkAqua];
+}
+
+- (void)viewDidChangeEffectiveAppearance {
+    [super viewDidChangeEffectiveAppearance];
+    self.needsDisplay = YES;   // 棋盘底与网格线都要按新主题重画
+}
 
 #pragma mark - 几何
 
@@ -58,24 +131,52 @@ static const double kGridMinScale = 6.0;
     NSSize view = self.bounds.size;
     if (!image || image.size.width <= 0 || image.size.height <= 0) { return 1.0; }
     if (view.width <= 0 || view.height <= 0) { return 1.0; }
-    // 沿用原 NSImageView 的"只缩不放":小图不撑大,免得误以为是算法放大
-    return fmin(1.0, fmin(view.width / image.size.width, view.height / image.size.height));
+    // 按 Photoshop 的"适应屏幕":小图也撑大填满窗口。
+    // 原来卡在 1.0("只缩不放"),代价是小图的 fit 和 100% 是同一个值 → 双击变死键。
+    // 会不会误以为是算法放大?头部的百分比标签已经写着 340%,不至于。
+    double fit = fmin(view.width / image.size.width, view.height / image.size.height);
+    return fmin(fmax(fit, kMinScale), kMaxScale);
 }
 
-/// 限制拖动范围:图片至少要有一部分留在视口内,不会被拖到完全看不见
+/// 与 Photoshop 一致的边界策略:
+///   图片某一维比视口小 → 该维强制居中,拖不走(否则画面会莫名其妙地"漂")
+///   图片某一维比视口大 → 该维只能在"不露出空边"的范围内拖,到边即停
 - (void)clampOrigin {
     NSSize view = self.bounds.size;
     NSSize disp = [self displaySize];
-    CGFloat marginX = fmin(view.width  * 0.5, disp.width  * 0.25);
-    CGFloat marginY = fmin(view.height * 0.5, disp.height * 0.25);
-    _origin.x = fmin(fmax(_origin.x, -disp.width  + marginX), view.width  - marginX);
-    _origin.y = fmin(fmax(_origin.y, -disp.height + marginY), view.height - marginY);
+    if (disp.width <= 0 || disp.height <= 0) { return; }
+
+    if (disp.width <= view.width) {
+        _origin.x = (view.width - disp.width) * 0.5;
+    } else {
+        _origin.x = fmin(fmax(_origin.x, view.width - disp.width), 0.0);
+    }
+    if (disp.height <= view.height) {
+        _origin.y = (view.height - disp.height) * 0.5;
+    } else {
+        _origin.y = fmin(fmax(_origin.y, view.height - disp.height), 0.0);
+    }
 }
 
 - (void)centerOrigin {
     NSSize view = self.bounds.size;
     NSSize disp = [self displaySize];
     _origin = NSMakePoint((view.width - disp.width) * 0.5, (view.height - disp.height) * 0.5);
+}
+
+/// 视口中心此刻落在图像的哪个位置(0~1 归一化)。
+/// 同步用它而不是 origin:两边图像尺寸不同也不会错位。
+- (NSPoint)normalizedCenter {
+    NSSize image = self.image.size;
+    if (image.width <= 0 || image.height <= 0) { return NSMakePoint(0.5, 0.5); }
+    return NSMakePoint((NSMidX(self.bounds) - _origin.x) / (image.width  * _scale),
+                       (NSMidY(self.bounds) - _origin.y) / (image.height * _scale));
+}
+
+- (void)setNormalizedCenter:(NSPoint)c {
+    NSSize disp = [self displaySize];
+    _origin = NSMakePoint(NSMidX(self.bounds) - c.x * disp.width,
+                          NSMidY(self.bounds) - c.y * disp.height);
 }
 
 - (void)setScale:(double)scale anchoredAt:(NSPoint)anchor {
@@ -89,6 +190,20 @@ static const double kGridMinScale = 6.0;
                           anchor.y - imagePoint.y * _scale);
     [self clampOrigin];
     [self viewDidChange];
+}
+
+/// 找相邻档位。up = YES 取比当前大的第一档。
+- (double)nextStopUp:(BOOL)up {
+    if (up) {
+        for (size_t i = 0; i < kZoomStopCount; i++) {
+            if (kZoomStops[i] > _scale * 1.001) { return kZoomStops[i]; }
+        }
+        return kMaxScale;
+    }
+    for (size_t i = kZoomStopCount; i > 0; i--) {
+        if (kZoomStops[i - 1] < _scale * 0.999) { return kZoomStops[i - 1]; }
+    }
+    return kMinScale;
 }
 
 #pragma mark - 对外操作
@@ -122,15 +237,13 @@ static const double kGridMinScale = 6.0;
 }
 
 - (void)zoomBy:(double)factor {
+    // 参数只用来判方向,实际落到标准档位上
     NSPoint center = NSMakePoint(NSMidX(self.bounds), NSMidY(self.bounds));
     _didUserZoom = YES;
-    [self setScale:_scale * factor anchoredAt:center];
+    [self setScale:[self nextStopUp:(factor > 1.0)] anchoredAt:center];
 }
 
 - (void)applyScale:(double)scale {
-    // 同步只传 scale,不传 origin:让接收方按自己的图像尺寸与视图尺寸重新居中,
-    // 避免两边图片尺寸不同(例如几何变换 Fit 模式下输出尺寸变化)时 origin 错位
-    // 导致图片被 clipsToBounds 裁光。
     _applyingSync = YES;
     _didUserZoom = YES;
     _scale = fmin(fmax(scale, kMinScale), kMaxScale);
@@ -139,15 +252,30 @@ static const double kGridMinScale = 6.0;
     _applyingSync = NO;
 }
 
+/// 同步的完整形态:缩放 + 视口中心对应的图像归一化坐标。
+/// 用归一化坐标而不是 origin,两边图像尺寸不同(几何变换 Fit 模式)也不会错位;
+/// 传位置而不是一律居中,才能做到"A 拖到左眼,B 也在左眼"。
+- (void)applyScale:(double)scale center:(NSPoint)center {
+    _applyingSync = YES;
+    _didUserZoom = YES;
+    _scale = fmin(fmax(scale, kMinScale), kMaxScale);
+    [self setNormalizedCenter:center];
+    [self clampOrigin];
+    [self viewDidChange];
+    _applyingSync = NO;
+}
+
 - (void)syncToPartner {
-    if (self.syncPartner) { [self.syncPartner applyScale:_scale]; }
+    if (self.syncPartner) {
+        [self.syncPartner applyScale:_scale center:[self normalizedCenter]];
+    }
 }
 
 - (void)viewDidChange {
     self.needsDisplay = YES;
     if (self.onViewDidChange) { self.onViewDidChange(_scale, _origin); }
     if (self.syncPartner && !_applyingSync) {
-        [self.syncPartner applyScale:_scale];
+        [self.syncPartner applyScale:_scale center:[self normalizedCenter]];
     }
 }
 
@@ -163,14 +291,17 @@ static const double kGridMinScale = 6.0;
     _origin.x += (newSize.width  - old.width)  * 0.5;
     _origin.y += (newSize.height - old.height) * 0.5;
     [self clampOrigin];
-    [self viewDidChange];
+    self.needsDisplay = YES;
+    if (self.onViewDidChange) { self.onViewDidChange(_scale, _origin); }
+    // 注意:这里不走 viewDidChange —— 拖分隔条时两个 pane 会一起 resize,
+    // 互相同步会打架(A 改完推给 B,B 还没 resize 完又推回 A)
 }
 
 #pragma mark - 绘制
 
 - (void)drawRect:(NSRect)dirtyRect {
     [super drawRect:dirtyRect];
-    [self drawBackdrop];
+    [self drawBackdropInRect:dirtyRect];
 
     NSImage *image = self.image;
     if (!image) { return; }
@@ -191,26 +322,46 @@ static const double kGridMinScale = 6.0;
     if (_scale >= kGridMinScale) { [self drawPixelGridInRect:dest]; }
 }
 
-/// 棋盘底:几何变换后画布外是透明,深色底分不清"透明"和"黑"
-- (void)drawBackdrop {
-    const CGFloat kTile = 8.0;
-    NSColor *dark  = [NSColor colorWithWhite:0.12 alpha:1.0];
-    NSColor *light = [NSColor colorWithWhite:0.16 alpha:1.0];
-    NSRect bounds = self.bounds;
-    for (CGFloat y = 0; y < bounds.size.height; y += kTile) {
-        for (CGFloat x = 0; x < bounds.size.width; x += kTile) {
-            BOOL odd = (((NSInteger)(x / kTile) + (NSInteger)(y / kTile)) & 1);
-            [(odd ? light : dark) setFill];
-            NSRectFill(NSMakeRect(x, y, kTile, kTile));
-        }
+/// 棋盘底:几何变换后画布外是透明,深色底分不清"透明"和"黑"。
+/// 用缓存好的 pattern 一次填充 —— 之前是每帧几千次 NSRectFill,捏合缩放明显掉帧。
+- (void)drawBackdropInRect:(NSRect)dirtyRect {
+    // 明暗两套各缓存一份:pattern image 是位图,主题切换时得换整张图,不能只改颜色
+    static NSColor *darkPattern = nil, *lightPattern = nil;
+    BOOL dark = [self isDarkAppearance];
+    NSColor *pattern = dark ? darkPattern : lightPattern;
+    if (!pattern) {
+        const CGFloat kTile = 8.0;
+        CGFloat a = dark ? 0.12 : 0.86;   // 深色主题压暗,浅色主题用浅灰,和窗口底色接得上
+        CGFloat b = dark ? 0.16 : 0.92;
+        NSImage *tile = [NSImage imageWithSize:NSMakeSize(kTile * 2, kTile * 2)
+                                       flipped:NO
+                                drawingHandler:^BOOL(NSRect rect) {
+            [[NSColor colorWithWhite:a alpha:1.0] setFill];
+            NSRectFill(rect);
+            [[NSColor colorWithWhite:b alpha:1.0] setFill];
+            NSRectFill(NSMakeRect(kTile, 0, kTile, kTile));
+            NSRectFill(NSMakeRect(0, kTile, kTile, kTile));
+            return YES;
+        }];
+        pattern = [NSColor colorWithPatternImage:tile];
+        if (dark) { darkPattern = pattern; } else { lightPattern = pattern; }
     }
+
+    NSGraphicsContext *ctx = NSGraphicsContext.currentContext;
+    [ctx saveGraphicsState];
+    // pattern 相位是相对 window 的:锁到本视图原点,窗口移动时棋盘才不会跟着滑
+    ctx.patternPhase = [self convertPoint:NSZeroPoint toView:nil];
+    [pattern setFill];
+    NSRectFill(dirtyRect);
+    [ctx restoreGraphicsState];
 }
 
 - (void)drawPixelGridInRect:(NSRect)rect {
     NSRect vis = NSIntersectionRect(rect, self.bounds);
     if (NSIsEmptyRect(vis)) { return; }
 
-    [[NSColor colorWithWhite:1.0 alpha:0.07] setStroke];
+    // 网格线压在图像上,浅色主题下白线等于没画,得换成黑线
+    [[NSColor colorWithWhite:([self isDarkAppearance] ? 1.0 : 0.0) alpha:0.10] setStroke];
     NSBezierPath *path = [NSBezierPath bezierPath];
     // 只画可见范围内的网格线,大图放大时不会去画几千条看不见的线
     double startX = rect.origin.x + floor((NSMinX(vis) - rect.origin.x) / _scale) * _scale;
@@ -235,42 +386,67 @@ static const double kGridMinScale = 6.0;
     [self setScale:_scale * (1.0 + event.magnification) anchoredAt:p];
 }
 
-- (void)scrollWheelWithEvent:(NSEvent *)event {
+/// 注意方法名:NSResponder 是 scrollWheel:,不是 scrollWheelWithEvent:。
+/// 之前写成后者,滚轮的两条路径(⌘缩放 / 平移)从来没被调用过。
+- (void)scrollWheel:(NSEvent *)event {
+    // 触控板与妙控鼠标给的是像素级增量(一次滑动累计几百),
+    // 传统滚轮给的是"行数"(每格 ±1)。同一套系数会让一边飞、一边推不动。
+    BOOL precise = event.hasPreciseScrollingDeltas;
+    CGFloat dx = event.scrollingDeltaX;
+    CGFloat dy = event.scrollingDeltaY;
+
     if ((event.modifierFlags & NSEventModifierFlagCommand) != 0) {
         NSPoint p = [self convertPoint:event.locationInWindow fromView:nil];
-        // 上滚 → deltaY 为正 → 放大;指数映射保证每次滚轮的缩放步长一致
-        [self setScale:_scale * exp(event.scrollingDeltaY * 0.01) anchoredAt:p];
+        // 指数映射:同样的滚动量,在任何缩放级别下的"倍率"都一致
+        double k = precise ? 0.004 : 0.20;   // 滚轮一格 ≈ exp(0.2) = 1.22 倍
         _didUserZoom = YES;
+        [self setScale:_scale * exp(dy * k) anchoredAt:p];
         return;
     }
-    // 普通滚轮平移:图片跟着内容走,方向与系统滚动一致(视图已翻转,y 取反)
-    _origin.x -= event.scrollingDeltaX;
-    _origin.y += event.scrollingDeltaY;
+
+    if (!precise) { dx *= 16.0; dy *= 16.0; }   // 行 → 像素
+    // 内容跟手:视图已翻转(y 向下),自然滚动方向下两个分量都是直接相加
+    _origin.x += dx;
+    _origin.y += dy;
     [self clampOrigin];
     [self viewDidChange];
 }
 
 - (void)mouseDown:(NSEvent *)event {
-    _dragging = YES;
+    // 不 makeFirstResponder 的话,键盘 0/1/+/- 点了也拿不到焦点,等于失效
+    [self.window makeFirstResponder:self];
+    _didDrag = NO;
+    // 按 Photoshop:左键归当前工具,平移要按住空格切临时抓手。
+    // 不按空格时左键只用来取焦点和双击。
+    _dragging = _spaceHeld;
+    if (!_dragging) { return; }
     _dragStartWindow = event.locationInWindow;
     _dragStartOrigin = _origin;
+    [NSCursor.closedHandCursor push];
+    _didPushCursor = YES;
 }
 
 - (void)mouseDragged:(NSEvent *)event {
     if (!_dragging) { return; }
     NSPoint p = event.locationInWindow;
+    CGFloat dx = p.x - _dragStartWindow.x;
+    CGFloat dy = p.y - _dragStartWindow.y;
+    if (!_didDrag && (fabs(dx) > 2.0 || fabs(dy) > 2.0)) { _didDrag = YES; }
     // window 坐标 y 向上,视图 y 向下,所以纵向位移取反
-    _origin = NSMakePoint(_dragStartOrigin.x + (p.x - _dragStartWindow.x),
-                          _dragStartOrigin.y - (p.y - _dragStartWindow.y));
+    _origin = NSMakePoint(_dragStartOrigin.x + dx, _dragStartOrigin.y - dy);
     [self clampOrigin];
     [self viewDidChange];
 }
 
 - (void)mouseUp:(NSEvent *)event {
     _dragging = NO;
-    if (event.clickCount == 2) {
-        if (_scale > [self fitScale] + 1e-6) { [self zoomToFit]; }
-        else { [self zoomToActualSize]; }
+    if (_didPushCursor) { [NSCursor pop]; _didPushCursor = NO; }
+    // 拖动过就不算双击 —— 否则"平移完松手"会被误判,画面先移再跳
+    if (event.clickCount == 2 && !_didDrag) {
+        // 用"是否正停在 fit 上"判断,而不是比大小 —— 小图的 fit 大于 100%,
+        // 比大小会让它一直落到 100% 上,双击卡死
+        if (fabs(_scale - [self fitScale]) < 1e-6) { [self zoomToActualSize]; }
+        else { [self zoomToFit]; }
     }
 }
 
@@ -278,13 +454,34 @@ static const double kGridMinScale = 6.0;
     NSString *key = event.charactersIgnoringModifiers;
     if ([key isEqualToString:@"0"])                                        { [self zoomToFit]; }
     else if ([key isEqualToString:@"1"])                                   { [self zoomToActualSize]; }
-    else if ([key isEqualToString:@"+"] || [key isEqualToString:@"="])     { [self zoomBy:1.25]; }
-    else if ([key isEqualToString:@"-"])                                   { [self zoomBy:1.0 / 1.25]; }
+    else if ([key isEqualToString:@"+"] || [key isEqualToString:@"="])     { [self zoomBy:2.0]; }
+    else if ([key isEqualToString:@"-"] || [key isEqualToString:@"_"])     { [self zoomBy:0.5]; }
     else { [super keyDown:event]; }
 }
 
+/// ⌘0 / ⌘1 / ⌘+ / ⌘- 走 performKeyEquivalent:带修饰键的按键不会进 keyDown
+- (BOOL)performKeyEquivalent:(NSEvent *)event {
+    if ((event.modifierFlags & NSEventModifierFlagCommand) == 0) { return NO; }
+    if (self.window.firstResponder != self) { return NO; }
+    NSString *key = event.charactersIgnoringModifiers;
+    if ([key isEqualToString:@"0"])                                    { [self zoomToFit];        return YES; }
+    if ([key isEqualToString:@"1"])                                    { [self zoomToActualSize]; return YES; }
+    if ([key isEqualToString:@"+"] || [key isEqualToString:@"="])      { [self zoomBy:2.0];       return YES; }
+    if ([key isEqualToString:@"-"] || [key isEqualToString:@"_"])      { [self zoomBy:0.5];       return YES; }
+    return NO;
+}
+
+- (void)setSpaceHeld:(BOOL)held {
+    if (_spaceHeld == held) { return; }
+    _spaceHeld = held;
+    [self.window invalidateCursorRectsForView:self];
+}
+
 - (void)resetCursorRects {
-    if (self.image) { [self addCursorRect:self.bounds cursor:NSCursor.openHandCursor]; }
+    if (!self.image) { return; }
+    // 不按空格 → 箭头(左键此刻不平移,光标不该骗人);按住 → 张开手;
+    // 真按下去拖的时候由 mouseDown 里 push 的握拳光标接管
+    [self addCursorRect:self.bounds cursor:(_spaceHeld ? NSCursor.openHandCursor : NSCursor.arrowCursor)];
 }
 
 @end

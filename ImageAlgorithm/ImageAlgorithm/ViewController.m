@@ -27,6 +27,8 @@
 @property (nonatomic, strong) NSTextField *sourceZoomLabel;
 @property (nonatomic, strong) NSTextField *resultZoomLabel;
 @property (nonatomic, strong) NSButton *syncZoomCheckbox;
+@property (nonatomic, strong) NSSplitView *previewSplit;
+@property (nonatomic) BOOL didBalancePanes;
 
 @property (nonatomic, strong) IAImageBuffer *sourceBuffer;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, IAAlgorithmModule *> *moduleCache;
@@ -165,6 +167,7 @@
     split.vertical = NO;
     split.dividerStyle = NSSplitViewDividerStyleThin;
     split.translatesAutoresizingMaskIntoConstraints = NO;
+    self.previewSplit = split;
 
     self.sourceImageView = [self makeZoomViewWithTag:0];
     self.resultImageView = [self makeZoomViewWithTag:1];
@@ -186,6 +189,19 @@
                                             zoomLabel:self.resultZoomLabel
                                                   tag:1]];
     return split;
+}
+
+/// 两个 pane 只有"最小高度 140"这一个约束,没有任何等高倾向,
+/// AppKit 会把多余空间全塞给第一个(原图占满、结果被压成一条)。
+/// 首次布局时把分隔条摆到正中间;之后用户怎么拖都不再干预。
+- (void)viewDidLayout {
+    [super viewDidLayout];
+    if (self.didBalancePanes) { return; }
+    CGFloat h = self.previewSplit.bounds.size.height;
+    if (h < 2 * 140) { return; }   // 还没排完版,或者窗口太矮,等下一轮
+    self.didBalancePanes = YES;
+    [self.previewSplit setPosition:(h - self.previewSplit.dividerThickness) * 0.5
+                  ofDividerAtIndex:0];
 }
 
 - (NSBox *)horizontalLine {
@@ -219,7 +235,7 @@
 - (NSTextField *)zoomPercentLabel {
     NSTextField *label = [NSTextField labelWithString:@"100%"];
     label.font = [NSFont monospacedDigitSystemFontOfSize:10 weight:NSFontWeightRegular];
-    label.textColor = NSColor.tertiaryLabelColor;
+    label.textColor = NSColor.secondaryLabelColor;
     label.translatesAutoresizingMaskIntoConstraints = NO;
     return label;
 }
@@ -242,17 +258,21 @@
                                                action:@selector(zoomAction:)];
     zoomSeg.tag = tag;
     zoomSeg.font = [NSFont systemFontOfSize:10];
-    zoomSeg.toolTip = @"缩放;快捷键 ⌘+滚轮 / 捏合 / 双击切换 1:1";
+    zoomSeg.toolTip = @"缩放;⌘+滚轮 / 捏合 缩放,空格+拖拽 平移,双击 切换适应/1:1";
 
     NSStackView *tools = [NSStackView stackViewWithViews:@[zoomLabel, zoomSeg]];
     tools.orientation = NSUserInterfaceLayoutOrientationHorizontal;
     tools.spacing = 6.0;
     tools.translatesAutoresizingMaskIntoConstraints = NO;
 
-    NSView *header = [[NSView alloc] init];
+    // 用系统材质而不是自画深色底:标题与百分比用的是 secondaryLabelColor 这类
+    // 语义色,它们在 light 外观下解析成深灰 —— 压在钉死的近黑底上就是黑压黑,
+    // 缩放百分比几乎读不出来。交给 NSVisualEffectView,明暗两套自动对得上。
+    NSVisualEffectView *header = [[NSVisualEffectView alloc] init];
+    header.material = NSVisualEffectMaterialHeaderView;
+    header.blendingMode = NSVisualEffectBlendingModeWithinWindow;
+    header.state = NSVisualEffectStateActive;
     header.wantsLayer = YES;
-    // 比图片底色稍亮一点的半透明深色,让控件文字永远有对比度
-    header.layer.backgroundColor = [NSColor colorWithCalibratedWhite:0.08 alpha:0.92].CGColor;
     header.layer.cornerRadius = 4.0;
     header.translatesAutoresizingMaskIntoConstraints = NO;
     [header addSubview:label];
