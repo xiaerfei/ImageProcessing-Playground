@@ -89,6 +89,16 @@
     [label.widthAnchor constraintEqualToAnchor:self.stack.widthAnchor constant:-32].active = YES;
 }
 
+- (void)addCustomView:(NSView *)view height:(CGFloat)height {
+    view.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.stack addArrangedSubview:view];
+    [NSLayoutConstraint activateConstraints:@[
+        // -32 与 addNote/addSeparator 对齐,让自定义视图和其他控件同宽
+        [view.widthAnchor constraintEqualToAnchor:self.stack.widthAnchor constant:-32],
+        [view.heightAnchor constraintEqualToConstant:height],
+    ]];
+}
+
 - (void)addSeparator {
     NSBox *box = [[NSBox alloc] init];
     box.boxType = NSBoxSeparator;

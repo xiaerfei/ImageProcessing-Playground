@@ -47,6 +47,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addButton:(NSString *)title action:(void (^)(void))action;
 
+/// 塞一个模块自备的视图(直方图、曲线之类)。宽度自动撑满面板,高度由调用方定。
+/// 模块持有这个视图的引用,算完之后自己往里灌数据。
+- (void)addCustomView:(NSView *)view height:(CGFloat)height;
+
 /// 参数联动后调用,把滑杆右侧的数值文字刷新一遍
 - (void)refreshValueLabels;
 

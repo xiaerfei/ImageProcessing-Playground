@@ -6,6 +6,7 @@
 #import "IAModuleRegistry.h"
 #import "IAGeometryModule.h"
 #import "IAIntensityModule.h"
+#import "IAHistogramModule.h"
 
 @implementation IAModuleRegistry
 
@@ -14,6 +15,7 @@
     return @[
         IAGeometryModule.class,    // 第 3 周
         IAIntensityModule.class,   // 第 4 周
+        IAHistogramModule.class,   // 第 5 周
     ];
 }
 

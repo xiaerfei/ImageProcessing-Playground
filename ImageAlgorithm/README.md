@@ -15,13 +15,16 @@ ImageAlgorithm/
 │   ├── IAParameterStore      参数读写(控件即数据源,不维护镜像变量)
 │   ├── IAParameterBuilder    声明式参数面板,模块不碰 Auto Layout
 │   ├── IAModuleRegistry      模块清单
-│   └── IAZoomImageView       可缩放/可平移画布(放大看像素)
+│   ├── IAZoomImageView       可缩放/可平移画布(放大看像素)
+│   └── IAHistogramView       直方图控件(PDF 柱 + CDF 线 + 映射曲线)
 ├── Algorithm/                可复用的算法原语
 │   ├── IAImageBuffer         RGBA8 像素缓冲(预乘 alpha)
-│   └── IAAffineTransform     3×3 齐次矩阵 + 反向映射(矩阵运算用 simd)
+│   ├── IAAffineTransform     3×3 齐次矩阵 + 反向映射(矩阵运算用 simd)
+│   └── IAHistogram           统计/CDF/均衡化/规定化/CLAHE(纯函数)
 ├── Modules/                  每章一个模块
 │   ├── IAGeometryModule      几何变换(第 3 周)
-│   └── IAIntensityModule     灰度变换(第 4 周)
+│   ├── IAIntensityModule     灰度变换(第 4 周)
+│   └── IAHistogramModule     直方图变换(第 5 周)
 └── ViewController            宿主:模块切换、图片载入、计时、双图对比
 ```
 
@@ -72,6 +75,38 @@ IAYourModule.class,   // 第 6 周
 
 `addSection:` `addSeparator` `addNote:` `addSlider:label:min:max:value:format:`
 `addCheckbox:title:value:` `addSegmented:items:value:` `addButton:action:`
+`addCustomView:height:`(塞模块自备的视图,直方图面板就是这么挂上去的)
+
+## 直方图变换
+
+面板顶部并排两张直方图(原图 / 结果),一张图上叠三层 ——
+这正是"直方图 / PDF / CDF 是同一条数据的三种形态"最直观的样子:
+
+| 图层 | 含义 |
+| :--- | :--- |
+| 灰柱 | PDF,每一级亮度占了多少像素 |
+| 蓝线 | CDF,从左往右累加,末端必到顶 |
+| 黄虚线 | 这次用的映射表 |
+
+选「全局均衡化」时**黄线与蓝线完全重合** —— 均衡化的映射表就是 CDF 本身。
+
+五种方式可切换对比:
+
+| 方式 | 映射表从哪来 |
+| :--- | :--- |
+| 原图 | 恒等,只看直方图 |
+| 全局均衡化 | 图像自己的 CDF |
+| CLAHE | 分块各算一张,削顶限制斜率,块间双线性插值 |
+| 规定化 | 对每个 r 找使目标 CDF 最接近的 s(目标为合成分布,非参考图) |
+| 百分位拉伸 | 只挪两个端点的直线 —— 线性对照组 |
+
+和「灰度变换」那一章的根本区别:那边的曲线是你手工调参调出来的,
+这边的曲线是**从图像自己的统计量算出来的**,换一张图就完全不同。
+
+彩色图有三种处理方式,其中「分通道」是**故意保留的错误示范**:
+R/G/B 各算一条映射曲线,三条形状不同,颜色必然跑掉。
+测试里量到的偏色幅度 —— 平均 R−B 从 59.2 洗到 −4.4,暖色直接变微冷;
+只动亮度则是 56.1,基本守住。
 
 ## 查看与缩放
 
@@ -112,7 +147,15 @@ clang -fobjc-arc -framework Cocoa -I ImageAlgorithm/Algorithm \
 ```
 
 - `Tests/transform_tests.m` — 几何变换正确性(单位变换/平移/镜像/转置/旋转 360°/奇异矩阵)
-- `Tests/module_tests.m` — 模块架构端到端 + 灰度变换 LUT 正确性
+- `Tests/module_tests.m` — 模块架构端到端 + 灰度变换 LUT + 直方图模块(均衡化/规定化/偏色/CLAHE)
+- `Tests/histogram_tests.m` — 直方图算法层 31 项:统计→PDF→CDF、均衡化、规定化、拉伸、CLAHE
+
+其中两条是"用测试把书上的结论量出来":
+
+```
+tile=1 且不限幅 == 全局均衡化(最大偏差 0)
+clipLimit 越大对比度越强(也越放大噪声):11.4 → 28.0 → 73.4
+```
 
 ## 矩阵运算
 
