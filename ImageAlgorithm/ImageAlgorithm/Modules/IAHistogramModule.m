@@ -68,7 +68,9 @@ static NSString * const kLogScale  = @"logScale";
 
     [builder addSeparator];
     [builder addSection:@"CLAHE"];
-    [builder addSlider:kTiles     label:@"分块" min:1  max:16 value:8   format:@"%.0f×%.0f"];
+    // format 只能含一个占位符 —— builder 只往 stringWithFormat 传一个 double,
+    // 写成 "%.0f×%.0f" 时第二个会去读栈上的垃圾(曾经显示成 "8×0")
+    [builder addSlider:kTiles     label:@"分块 N×N" min:1  max:16 value:8   format:@"%.0f"];
     [builder addSlider:kClipLimit label:@"削顶" min:1  max:40 value:2.0 format:@"%.1f"];
     [builder addNote:@"削顶以“摊平后的平均柱高”为单位:1.0 = 削到全平,40 ≈ 不限制(退化成 AHE,"
                       "平坦区的噪声会被放大几十倍)。分块越多越局部,块间用双线性插值消接缝。"];

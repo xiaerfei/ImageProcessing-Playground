@@ -130,7 +130,9 @@ static const CGFloat kTopInset = 15.0;   // 给标题让出的高度
         if (i == 0) { [path moveToPoint:p]; } else { [path lineToPoint:p]; }
     }
     [[color colorWithAlphaComponent:0.9] setStroke];
-    path.lineWidth = 1.4;
+    // 比映射曲线粗:两者重合时(均衡化),蓝线会从黄虚线的缝隙里露出来,
+    // 一眼看出"这是两条完全叠在一起的线",而不是"只有一条黄线"
+    path.lineWidth = 2.2;
     [path stroke];
 }
 
@@ -143,7 +145,7 @@ static const CGFloat kTopInset = 15.0;   // 给标题让出的高度
         if (i == 0) { [path moveToPoint:p]; } else { [path lineToPoint:p]; }
     }
     [[NSColor systemYellowColor] setStroke];
-    path.lineWidth = 1.4;
+    path.lineWidth = 1.2;
     // 虚线:均衡化时它会和蓝色 CDF 完全重合,画实线就看不出是两条了
     CGFloat dash[2] = {3.0, 2.0};
     [path setLineDash:dash count:2 phase:0];

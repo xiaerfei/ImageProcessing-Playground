@@ -28,7 +28,8 @@
 @property (nonatomic, strong) NSTextField *resultZoomLabel;
 @property (nonatomic, strong) NSButton *syncZoomCheckbox;
 @property (nonatomic, strong) NSSplitView *previewSplit;
-@property (nonatomic) BOOL didBalancePanes;
+@property (nonatomic) CGFloat lastSplitHeight;
+@property (nonatomic) CGFloat splitRatio;
 
 @property (nonatomic, strong) IAImageBuffer *sourceBuffer;
 @property (nonatomic, strong) NSMutableDictionary<NSString *, IAAlgorithmModule *> *moduleCache;
@@ -192,16 +193,26 @@
 }
 
 /// 两个 pane 只有"最小高度 140"这一个约束,没有任何等高倾向,
-/// AppKit 会把多余空间全塞给第一个(原图占满、结果被压成一条)。
-/// 首次布局时把分隔条摆到正中间;之后用户怎么拖都不再干预。
+/// AppKit 会把多余空间全塞给其中一个(一边占满、另一边被压成一条)。
+///
+/// 光在首次布局摆正一次不够 —— 窗口之后每 resize 一次,增量又会被全塞给一边。
+/// 所以这里维护一个比例:高度变了就按比例重设分隔条,高度没变(说明是用户
+/// 拖了分隔条)就把新比例记下来。用户的手动调整因此能在缩放窗口后保持。
 - (void)viewDidLayout {
     [super viewDidLayout];
-    if (self.didBalancePanes) { return; }
-    CGFloat h = self.previewSplit.bounds.size.height;
+    NSSplitView *split = self.previewSplit;
+    CGFloat h = split.bounds.size.height;
     if (h < 2 * 140) { return; }   // 还没排完版,或者窗口太矮,等下一轮
-    self.didBalancePanes = YES;
-    [self.previewSplit setPosition:(h - self.previewSplit.dividerThickness) * 0.5
-                  ofDividerAtIndex:0];
+
+    if (fabs(h - self.lastSplitHeight) < 0.5) {
+        NSView *top = split.arrangedSubviews.firstObject;
+        CGFloat topH = top.frame.size.height;
+        if (topH > 0) { self.splitRatio = topH / h; }
+        return;
+    }
+    self.lastSplitHeight = h;
+    if (self.splitRatio <= 0.01 || self.splitRatio >= 0.99) { self.splitRatio = 0.5; }
+    [split setPosition:(h - split.dividerThickness) * self.splitRatio ofDividerAtIndex:0];
 }
 
 - (NSBox *)horizontalLine {
