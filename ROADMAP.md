@@ -201,6 +201,7 @@
 
 **读**:6.1~6.2 精读;6.3 泛读
 **速查**:[Documents/intensity-and-grayscale.md](Documents/intensity-and-grayscale.md) 第三、四节 —— 各图像类型取亮度、Y/V/L*/L 的区别
+**速查**:[Documents/luma-and-linear-light.md](Documents/luma-and-linear-light.md) —— Luma 与真实亮度差在哪(分贝类比)、为什么 8bit 装不下线性光、YUV 的 limited range 陷阱(ffmpeg 实测 235/16)
 
 **知识点**:
 - 三原色/三补色、色度图;RGB 立方体、CMY(K) 印刷
