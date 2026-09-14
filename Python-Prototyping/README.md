@@ -23,6 +23,13 @@ pip install -r requirements.txt
 | `Ch05_Restoration_Denoising/` | 选修 A | 第 5 章:图像复原与去噪 |
 | `Ch08_Compression/` | 选修 B | 第 8 章:图像压缩 |
 
+## 操作手册
+
+[GUIDE.md](GUIDE.md) —— 写给「算法想得明白,但 Python 样板不熟」的情况:
+图像即数组的心智模型(附 `IAImageBuffer` 对照表)、索引切片、uint8 溢出、
+为什么别写 for 循环(实测 165ms → 0.31ms)、常用函数速查、
+滑块与图表的可复制模板、一张「症状 → 病因」排查表。
+
 ## 通用约定
 
 - 所有像素运算先 `astype(np.float64)`,输出前 `np.clip(x, 0, 255).astype(np.uint8)`
