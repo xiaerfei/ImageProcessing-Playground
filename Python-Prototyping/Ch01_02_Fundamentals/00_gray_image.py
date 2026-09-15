@@ -20,13 +20,17 @@ if "--show" not in sys.argv:
     matplotlib.use("Agg")  # 无窗口环境只保存文件
 import matplotlib.pyplot as plt
 import numpy as np
+import numpy.typing as npt
 
 REPO = Path(__file__).resolve().parents[2]
 matplotlib.rcParams["font.family"] = ["Heiti TC", "Arial Unicode MS", "sans-serif"]
 
 
-def to_luma(bgr: np.ndarray) -> np.ndarray:
+def to_luma(bgr: cv2.typing.MatLike) -> npt.NDArray[np.uint8]:
     """手写 Rec.601 亮度:Y = 0.299R + 0.587G + 0.114B。
+
+    入参用 MatLike(OpenCV 图像的统一类型,cv2.imread 的返回就是它);
+    返回值精确标成 uint8 灰度图,方便调用方继续参与 numpy 运算。
 
     两个坑:OpenCV 读进来是 BGR(拆通道别拿反);
     先 astype(np.float64) 再乘,否则 uint8 直接算会回绕。
