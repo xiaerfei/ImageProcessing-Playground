@@ -1,6 +1,6 @@
 """亮度的三种含义、Luma 的近似误差、以及为什么不直接存线性光。
 
-配合 Documents/luma-and-linear-light.md,文档里的每个数字都由这里算出。
+配合 Documents/02-intensity/luma-and-linear-light.md,文档里的每个数字都由这里算出。
 
   1. Luma Y′ 与真实 Luminance 差多少 —— 高饱和色差 70+,灰和肤色几乎为 0
   2. 同样 8 bit,线性存储与 sRGB 存储的台阶大小(按同一光强水平比)

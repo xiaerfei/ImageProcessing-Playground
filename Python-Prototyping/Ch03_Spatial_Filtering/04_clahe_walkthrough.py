@@ -1,4 +1,4 @@
-"""CLAHE 分步拆解 —— 配合 Documents/histogram-transform.md 的 CLAHE 一节。
+"""CLAHE 分步拆解 —— 配合 Documents/03-histogram/histogram-transform.md 的 CLAHE 一节。
 
   1. 全局均衡化为什么搞不定光照不均
   2. AHE(只分块、不限幅)为什么会把噪声放大
@@ -7,7 +7,7 @@
 
 用法:
     .venv/bin/python Ch03_Spatial_Filtering/04_clahe_walkthrough.py [--save]
-    --save 会把四联对比图写到 Documents/histogram-images/
+    --save 会把四联对比图写到 Documents/03-histogram/histogram-images/
 """
 
 import sys
@@ -18,7 +18,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 PAGE = REPO / "Assets" / "test-images" / "page.png"
-OUT = REPO / "Documents" / "histogram-images"
+OUT = REPO / "Documents" / "03-histogram" / "histogram-images"
 SAVE = "--save" in sys.argv
 
 

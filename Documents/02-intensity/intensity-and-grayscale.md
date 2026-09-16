@@ -6,8 +6,8 @@
 >
 > 想看**方法大全 + 效果图 + OpenCV 代码**(还包括反转、对比度拉伸、灰度级分层、比特平面、阈值化),
 > 见 [gray-transform-tutorial.md](gray-transform-tutorial.md)。
-> 相关代码:[IAIntensityModule.m](../ImageAlgorithm/ImageAlgorithm/Modules/IAIntensityModule.m)、
-> [00_yuv_warmup.py](../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
+> 相关代码:[IAIntensityModule.m](../../ImageAlgorithm/ImageAlgorithm/Modules/IAIntensityModule.m)、
+> [00_yuv_warmup.py](../../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
 
 ## 零、三句话看懂
 
@@ -32,14 +32,14 @@
         幂律(弯曲线) ——  弯多少你说了算(γ 旋钮),还能反向弯
 ```
 
-![灰度变换曲线](../Assets/results/intensity-transform-curves.png)
+![灰度变换曲线](../../Assets/results/intensity-transform-curves.png)
 
 上图第一行就是"兑换表"画成的曲线:横轴是原来举几,纵轴是要换成几,灰虚线代表原样不变。
 **曲线往上弯 = 提亮,往下弯 = 压暗,倒过来 = 反色,变陡 = 增对比。**
 
 ## 一、线性变换 s = a·r + b
 
-![线性变换](../Assets/results/linear-transform.png)
+![线性变换](../../Assets/results/linear-transform.png)
 
 ### 两个旋钮,做的事完全不同
 
@@ -98,7 +98,7 @@ App 的灰度模块会实时显示截断比例,拖 a 就能看见它涨起来。
 
 ## 二、对数变换 s = c·log(1+r)
 
-![对数变换](../Assets/results/log-transform.png)
+![对数变换](../../Assets/results/log-transform.png)
 
 ### 它在干什么:把暗处掰开
 
@@ -119,7 +119,7 @@ App 的灰度模块会实时显示截断比例,拖 a 就能看见它涨起来。
 
 ### 与线性的关键区别:挤扁 vs 剪掉
 
-![线性 vs 对数](../Assets/results/linear-vs-log.png)
+![线性 vs 对数](../../Assets/results/linear-vs-log.png)
 
 同样想看清暗部,两者的代价完全不同:
 
@@ -249,7 +249,7 @@ d[0] = lut[s[0]];  d[1] = lut[s[1]];  d[2] = lut[s[2]];
 
 ## 五、从 RGB 拿灰度:加权,不是平均
 
-![平均 vs 加权](../Assets/results/rgb-to-gray-weighting.png)
+![平均 vs 加权](../../Assets/results/rgb-to-gray-weighting.png)
 
 **简单平均 `(R+G+B)/3` 是错的**:纯红/纯绿/纯蓝都会变成同一个灰 (85),
 但人眼明显觉得绿比蓝亮得多。
@@ -322,7 +322,7 @@ NV12 / I420 里 Y 是**独立连续的一块内存,就在缓冲区最前面**:
 
 ## 七、六种"亮度"定义的区别
 
-![六种亮度定义](../Assets/results/brightness-definitions.png)
+![六种亮度定义](../../Assets/results/brightness-definitions.png)
 
 同一张图,不同定义结果差别不小(下表的"差异"是与 Y601 的平均绝对差):
 

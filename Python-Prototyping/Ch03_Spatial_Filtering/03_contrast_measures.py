@@ -1,4 +1,4 @@
-"""对比度的三种度量方式对照 —— 配合 Documents/contrast.md。
+"""对比度的三种度量方式对照 —— 配合 Documents/03-histogram/contrast.md。
 
   1. 亮度和对比度是两件独立的事:加法改亮度,乘法改对比度
   2. max-min 的致命弱点:两个极端像素就能骗过它
