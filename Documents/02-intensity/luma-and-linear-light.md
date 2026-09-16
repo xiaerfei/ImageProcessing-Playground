@@ -409,6 +409,7 @@ Y = 0.2126*lin[...,0] + 0.7152*lin[...,1] + 0.0722*lin[...,2]   # 真 luminance
 | 症状 | 十有八九是 |
 | :--- | :--- |
 | 和别人的灰度图差几个到十几 | 权重标准不同(601 / 709) |
+| 和别人的灰度图差 1,且约一半像素都差 | 落回 uint8 时用了截断,忘了四舍五入 |
 | 全黑画面的亮度不是 0 而是 16 | limited range 没转换 |
 | 红蓝颠倒 | OpenCV 是 BGR |
 | 灰度图偏色/偏暗 | 用了 `(R+G+B)/3` |
@@ -421,6 +422,8 @@ Y = 0.2126*lin[...,0] + 0.7152*lin[...,1] + 0.0722*lin[...,2]   # 真 luminance
 
 ## 相关文档
 
+- [rounding-and-float.md](../01-fundamentals/rounding-and-float.md) —— 算出来的 Y
+  怎么落回 uint8:四舍五入 vs 截断、clip 的位置、为什么别指望和 OpenCV 逐像素相同
 - [contrast.md](../03-histogram/contrast.md) —— 对比度、gamma 编码与 256 个码值的分配
 - [histogram-transform.md](../03-histogram/histogram-transform.md) —— 第十三节讲「直方图在哪个域」,
   和本文第四节是同一件事的两个侧面;第十六节讲彩色图为什么不能分通道处理

@@ -26,7 +26,7 @@ ImageProcessing-Playground/
 │   └── Shaders/               # .metal 文件
 ├── Documents/                 # 读书笔记、公式推导图解(按主题分目录,见其 README)
 │   ├── 00-roadmap/           # 学习路线、全书知识地图、参考资料
-│   ├── 01-fundamentals/      # 图像内存布局、通道顺序
+│   ├── 01-fundamentals/      # 图像内存布局、通道顺序、取整与浮点
 │   ├── 02-intensity/         # 亮度与灰度、Luma 与线性光
 │   ├── 03-histogram/         # 直方图与对比度
 │   ├── 04-geometry/          # 几何变换
