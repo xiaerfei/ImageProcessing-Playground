@@ -36,7 +36,8 @@ def to_luma(bgr: cv2.typing.MatLike) -> npt.NDArray[np.uint8]:
     先 astype(np.float64) 再乘,否则 uint8 直接算会回绕;
     最后必须 np.rint 四舍五入 —— astype(np.uint8) 是向下取整,
     129.9 会变成 129,而 cv2 给的是 130,平均每两个像素就差 1 个灰阶,
-    对照实验会误以为「两种算法本来就有差」。加上 rint 后逐像素完全一致。
+    而且永远偏同一个方向(累积起来整张图会发暗)。加上 rint 后误差降到
+    ±1 以内且正负抵消。取整规矩详见 Documents/01-fundamentals/rounding-and-float.md。
     """
     b = bgr[:, :, 0].astype(np.float64)
     g = bgr[:, :, 1].astype(np.float64)
@@ -58,9 +59,12 @@ def main() -> None:
     y_hand = to_luma(bgr)                          # 手写:同一个公式
 
     diff = np.abs(y_hand.astype(np.int16) - y_cv.astype(np.int16))
+    n_diff = int(np.count_nonzero(diff))
     print(f"原图   shape={bgr.shape}  dtype={bgr.dtype}   每像素 3 个数 (B, G, R)")
     print(f"亮度图 shape={y_cv.shape}  dtype={y_cv.dtype}   每像素 1 个数")
-    print(f"\n手写 vs cv2.BGR2GRAY:最大差 {diff.max()}  (逐像素一致 → 同一个 Y)")
+    # cv2 内部走的是整数定点 + SIMD,取整细节和 numpy 浮点不完全同步,
+    # 所以只保证 ±1 以内,不保证逐像素相同(这张照片碰巧是 0)。
+    print(f"\n手写 vs cv2.BGR2GRAY:最大差 {diff.max()},不一致 {n_diff} 个像素 → 同一个 Y")
     print(f"亮度图统计:均值 {y_cv.mean():.1f}  范围 [{y_cv.min()}, {y_cv.max()}]")
 
     # --- 2. 出对比图板 ---
