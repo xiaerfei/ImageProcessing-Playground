@@ -117,7 +117,10 @@ def main() -> None:
         (cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB), "原图 (BGR → RGB)"),
         (y_cv, "亮度 Y′ = 0.299R + 0.587G + 0.114B"),
     ]
-    for ax, (img, title) in zip(axes[:2], panels, strict=True):
+    # 这里想用 zip(..., strict=True) 保证两个列表等长,但本仓库的 venv 是
+    # Python 3.9,strict 参数 3.10 才有,3.9 下会直接 TypeError。
+    # panels 就在上面几行写死,长度一目了然,直接 zip 即可。
+    for ax, (img, title) in zip(axes[:2], panels):
         if img.ndim == 2:
             ax.imshow(img, cmap="gray", vmin=0, vmax=255)   # 灰度图必须给 vmin/vmax
         else:
