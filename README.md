@@ -5,7 +5,7 @@
 **路线**:代码先行、理论跟进、按需补数学。Python/OpenCV 为主线验证概念,Swift/Metal 挑有实时价值的算法落地。
 
 📍 **详细计划见 [ROADMAP.md](ROADMAP.md)**(18 周逐周计划:阅读小节、代码任务、验收问题)。
-🗺️ **全书章节知识点地图见 [Documents/book-outline.md](Documents/book-outline.md)**(12 章知识版图 + 每章在路线中的定位)。
+🗺️ **全书章节知识点地图见 [Documents/book-outline.md](Documents/00-roadmap/book-outline.md)**(12 章知识版图 + 每章在路线中的定位)。
 
 ## 仓库结构
 
@@ -24,7 +24,13 @@ ImageProcessing-Playground/
 ├── Metal-Implementation/      # iOS/macOS 原生 Metal Shader 实现
 │   ├── DIPMetalEngine/        # Swift 封装的 Demo App
 │   └── Shaders/               # .metal 文件
-├── Documents/                 # 读书笔记、公式推导图解
+├── Documents/                 # 读书笔记、公式推导图解(按主题分目录,见其 README)
+│   ├── 00-roadmap/           # 学习路线、全书知识地图、参考资料
+│   ├── 01-fundamentals/      # 图像内存布局、通道顺序
+│   ├── 02-intensity/         # 亮度与灰度、Luma 与线性光
+│   ├── 03-histogram/         # 直方图与对比度
+│   ├── 04-geometry/          # 几何变换
+│   └── reference-code/       # 外部参考代码(VC++ 图像处理程序设计)
 └── Assets/                    # 测试图片与处理效果对比(GIF/截图)
 ```
 

@@ -1,4 +1,4 @@
-"""直方图的六个深入验证 —— 配合 Documents/histogram-transform.md「深入部分」。
+"""直方图的六个深入验证 —— 配合 Documents/03-histogram/histogram-transform.md「深入部分」。
 
 每一节对应文档的一节,打印的数字就是文档里引用的数字:
 
@@ -11,7 +11,7 @@
 
 用法:
     .venv/bin/python Ch03_Spatial_Filtering/01_histogram_deep_dive.py [--save]
-    --save 会把配图写到 Documents/histogram-images/
+    --save 会把配图写到 Documents/03-histogram/histogram-images/
 """
 
 import sys
@@ -22,7 +22,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 SRC = REPO / "Assets" / "test-images" / "astronaut.png"
-OUT = REPO / "Documents" / "histogram-images"
+OUT = REPO / "Documents" / "03-histogram" / "histogram-images"
 SAVE = "--save" in sys.argv
 
 

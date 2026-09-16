@@ -1,7 +1,7 @@
 # 直方图变换 —— 大白话入门
 
 > 面向零基础。对应 Gonzalez《数字图像处理》第 3 章 3.3 节。
-> 前置阅读:[intensity-and-grayscale.md](intensity-and-grayscale.md)(灰度变换原理篇)
+> 前置阅读:[intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md)(灰度变换原理篇)
 
 ## 零、先定位:它是第几类操作
 
@@ -559,7 +559,7 @@ gamma 编码把暗部那一大坨"撑开"了,这正是它的设计目的。
 > 只要你是在"迎合人眼"(增强、均衡化、调曲线),就留在 gamma 域。**
 
 > 最后一行见 [histogram-reading.md](histogram-reading.md) 第六节。
-> gamma 的完整原理和公式见 [intensity-and-grayscale.md](intensity-and-grayscale.md)。
+> gamma 的完整原理和公式见 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md)。
 >
 > **一个你能亲眼验证的后果**:把一张图缩小到一半,大部分软件会直接在 gamma 域做平均 —— 数学上是错的,结果是**缩小后的图会偏暗一点点**。这是个真实存在、但被行业普遍容忍的误差。有些软件(如 Photoshop 的"以线性方式混合颜色")提供了开关。
 ---
@@ -869,7 +869,7 @@ ycc[:, :, 0] = cv2.equalizeHist(ycc[:, :, 0])   # 或 clahe.apply(...)
 out = cv2.cvtColor(ycc, cv2.COLOR_YCrCb2BGR)
 ```
 
-用 Lab 的 L 通道或 HSV 的 V 通道也可以,区别见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 的六种亮度定义。
+用 Lab 的 L 通道或 HSV 的 V 通道也可以,区别见 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 的六种亮度定义。
 
 > **对你是零成本的**:推流管线里图像本来就是 YUV,`Y` 平面直接拿来处理,连颜色空间转换都省了。
 > 这也是为什么视频里的亮度增强几乎都在 Y 平面上做 —— 不只是为了正确,更是因为**便宜**。
@@ -895,5 +895,5 @@ out = cv2.cvtColor(ycc, cv2.COLOR_YCrCb2BGR)
 
 ## 相关文档
 
-- [intensity-and-grayscale.md](intensity-and-grayscale.md) —— 灰度变换原理篇(第一类操作)
-- [gray-transform-tutorial.md](gray-transform-tutorial.md) —— 灰度变换图解篇
+- [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换原理篇(第一类操作)
+- [gray-transform-tutorial.md](../02-intensity/gray-transform-tutorial.md) —— 灰度变换图解篇

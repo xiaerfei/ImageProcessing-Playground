@@ -1,4 +1,4 @@
-"""核对摄影文章里的两个技术说法 —— 配合 Documents/histogram-reading.md。
+"""核对摄影文章里的两个技术说法 —— 配合 Documents/03-histogram/histogram-reading.md。
 
   1. RGB 叠加直方图 vs 明度直方图,到底差在哪
      (对应文档第二节,以及纠错清单第 1 条:"叠加后除以 3" 这个说法为什么误导)

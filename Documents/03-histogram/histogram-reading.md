@@ -337,7 +337,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 2. **⚠️ 相机屏幕上的直方图,不是 RAW 的直方图。** 相机显示的是 JPEG 预览图的直方图,已经过了 gamma 编码和色调曲线;而 ETTR 的推理成立在**线性 RAW 域**。两者对不上,这也是为什么很多相机提供"高光警告"(闪烁提示)作为补充 —— 直接标出溢出的像素,比读 gamma 域的直方图可靠。
 
 > 这个坑非常值得记住:**摄影文章里说的"亮度"几乎都是 gamma 编码后的显示亮度,算法书里说的常常是线性光强。**
-> 相关讨论见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 的伽马一节。
+> 相关讨论见 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 的伽马一节。
 
 ---
 
@@ -412,7 +412,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 
 > **这一步在算法上就是对比度拉伸**(contrast stretching),也就是线性变换 `s = a·r + b` 里 `a > 1` 的情况。
 > 摄影上叫"提白色降黑色",算法上叫"把直方图两端拉到 0 和 255"。**同一件事的两种叫法。**
-> 见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 的线性变换一节。
+> 见 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 的线性变换一节。
 
 ### 7.3 软调 / 硬调 —— 分布形态
 
@@ -549,7 +549,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 
 后果很直观:同样满值的纯绿 (0,255,0) 算出来亮度是 150,纯蓝 (0,0,255) 只有 29 —— 在明度直方图里,**纯蓝会被归到很暗的位置**,尽管它在屏幕上一样刺眼。
 
-这一点很重要:等权平均和加权平均算出的"亮度"差别可以很大。详见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 第五~八节。
+这一点很重要:等权平均和加权平均算出的"亮度"差别可以很大。详见 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 第五~八节。
 
 ### 4. "任意两种原色相加得到另一种原色的补色"(文章 2)
 
@@ -599,12 +599,12 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 
 三篇的分工:**#2 讲清了原理(四种直方图 + 分量图),#3 讲清了应用(曝光诊断 + 影调分类),#1 讲清了态度(直方图只是参考,死黑死白不是罪)。**
 
-配图存于 [histogram-images/](histogram-images/),已按主题重命名(`basics-` / `types-` / `waveform-` / `exposure-` / `dr-` / `ettr-` / `tone-` / `span-` / `contrast-` / `clip-` / `read-`)。
+配图存于 [histogram-images/](histogram-images),已按主题重命名(`basics-` / `types-` / `waveform-` / `exposure-` / `dr-` / `ettr-` / `tone-` / `span-` / `contrast-` / `clip-` / `read-`)。
 
 ---
 
 ## 相关文档
 
 - [histogram-transform.md](histogram-transform.md) —— 直方图变换的算法篇:均衡化、CLAHE、规定化
-- [intensity-and-grayscale.md](intensity-and-grayscale.md) —— 灰度变换原理篇:线性/对数/伽马、亮度的六种定义
-- [gray-transform-tutorial.md](gray-transform-tutorial.md) —— 灰度变换图解篇
+- [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换原理篇:线性/对数/伽马、亮度的六种定义
+- [gray-transform-tutorial.md](../02-intensity/gray-transform-tutorial.md) —— 灰度变换图解篇

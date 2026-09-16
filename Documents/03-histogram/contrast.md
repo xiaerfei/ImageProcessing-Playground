@@ -1,6 +1,6 @@
 # 对比度 —— 到底在说什么
 
-> 面向零基础。配合 [histogram-transform.md](histogram-transform.md) 和 [intensity-and-grayscale.md](intensity-and-grayscale.md) 读。
+> 面向零基础。配合 [histogram-transform.md](histogram-transform.md) 和 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 读。
 > 文中数字可复现:`Python-Prototyping/Ch03_Spatial_Filtering/03_contrast_measures.py`
 
 ## 一句话
@@ -249,6 +249,6 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 
 ## 相关文档
 
-- [intensity-and-grayscale.md](intensity-and-grayscale.md) —— 线性变换 `s = a·r + b` 的完整讨论
+- [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 线性变换 `s = a·r + b` 的完整讨论
 - [histogram-transform.md](histogram-transform.md) —— 直方图均衡化:自动的、分段的对比度拉伸
 - [histogram-reading.md](histogram-reading.md) —— 摄影视角:软调/硬调就是对比度的美学分类
