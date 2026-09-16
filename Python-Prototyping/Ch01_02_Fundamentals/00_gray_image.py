@@ -32,19 +32,26 @@ def to_luma(bgr: cv2.typing.MatLike) -> npt.NDArray[np.uint8]:
     入参用 MatLike(OpenCV 图像的统一类型,cv2.imread 的返回就是它);
     返回值精确标成 uint8 灰度图,方便调用方继续参与 numpy 运算。
 
-    两个坑:OpenCV 读进来是 BGR(拆通道别拿反);
-    先 astype(np.float64) 再乘,否则 uint8 直接算会回绕。
+    三个坑:OpenCV 读进来是 BGR(拆通道别拿反);
+    先 astype(np.float64) 再乘,否则 uint8 直接算会回绕;
+    最后必须 np.rint 四舍五入 —— astype(np.uint8) 是向下取整,
+    129.9 会变成 129,而 cv2 给的是 130,平均每两个像素就差 1 个灰阶,
+    对照实验会误以为「两种算法本来就有差」。加上 rint 后逐像素完全一致。
     """
     b = bgr[:, :, 0].astype(np.float64)
     g = bgr[:, :, 1].astype(np.float64)
     r = bgr[:, :, 2].astype(np.float64)
-    return np.clip(0.299 * r + 0.587 * g + 0.114 * b, 0, 255).astype(np.uint8)
+    y = np.rint(0.299 * r + 0.587 * g + 0.114 * b)
+    return np.clip(y, 0, 255).astype(np.uint8)
 
 
 def main() -> None:
     path = REPO / "Assets" / "test-images" / "lenna_s.jpg"
     bgr = cv2.imread(str(path))
-    assert bgr is not None, f"读图失败: {path}"
+    # 用 raise 不用 assert:assert 在 python -O 下会被整条剥掉,
+    # 读图失败就会带着 None 一路跑到 cvtColor 里炸出看不懂的报错。
+    if bgr is None:
+        raise SystemExit(f"读图失败: {path}")
 
     # --- 1. 同一个 Y,两种算法的对照 ---
     y_cv = cv2.cvtColor(bgr, cv2.COLOR_BGR2GRAY)   # OpenCV:Rec.601 + 全范围
@@ -53,7 +60,7 @@ def main() -> None:
     diff = np.abs(y_hand.astype(np.int16) - y_cv.astype(np.int16))
     print(f"原图   shape={bgr.shape}  dtype={bgr.dtype}   每像素 3 个数 (B, G, R)")
     print(f"亮度图 shape={y_cv.shape}  dtype={y_cv.dtype}   每像素 1 个数")
-    print(f"\n手写 vs cv2.BGR2GRAY:最大差 {diff.max()}  (只差四舍五入 → 同一个 Y)")
+    print(f"\n手写 vs cv2.BGR2GRAY:最大差 {diff.max()}  (逐像素一致 → 同一个 Y)")
     print(f"亮度图统计:均值 {y_cv.mean():.1f}  范围 [{y_cv.min()}, {y_cv.max()}]")
 
     # --- 2. 出对比图板 ---
@@ -62,7 +69,7 @@ def main() -> None:
         (cv2.cvtColor(bgr, cv2.COLOR_BGR2RGB), "原图 (BGR → RGB)"),
         (y_cv, "亮度 Y′ = 0.299R + 0.587G + 0.114B"),
     ]
-    for ax, (img, title) in zip(axes, panels):
+    for ax, (img, title) in zip(axes, panels, strict=True):
         if img.ndim == 2:
             ax.imshow(img, cmap="gray", vmin=0, vmax=255)   # 灰度图必须给 vmin/vmax
         else:
