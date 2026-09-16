@@ -11,7 +11,7 @@
 
 `rint` 防单向偏置,`clip` 防回绕,顺序不能换。下面逐条说为什么。
 
-文中所有数字由 `Python-Prototyping/Ch01_02_Fundamentals/01_rounding_rules.py` 实测算出,
+文中所有数字由 `Python-Prototyping/Ch01_02_Fundamentals/02_rounding_rules.py` 实测算出,
 跑一遍就能复现。
 
 ---
@@ -194,5 +194,5 @@ cv2 内部走的是整数定点 + SIMD,取整细节和 numpy 的浮点路径不�
   以及 Y 怎么显示回屏幕
 - [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换里的
   LUT 写法(查表法天然只取整一次)
-- `Python-Prototyping/Ch01_02_Fundamentals/01_rounding_rules.py` —— 本文所有数字的出处
+- `Python-Prototyping/Ch01_02_Fundamentals/02_rounding_rules.py` —— 本文所有数字的出处
 - `Python-Prototyping/Ch01_02_Fundamentals/00_gray_image.py` —— 规矩一、三的实际应用

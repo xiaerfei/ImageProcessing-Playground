@@ -9,7 +9,7 @@ Documents/01-fundamentals/rounding-and-float.md 里的每个数字都由这里�
 4. cv2.BGR2GRAY 内部的整数定点写法,以及它和浮点实现差多少
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/01_rounding_rules.py
+    .venv/bin/python Ch01_02_Fundamentals/02_rounding_rules.py
 """
 
 from pathlib import Path
