@@ -39,7 +39,7 @@
 **工作日晚**:
 - 搭 Python 环境:`python3 -m venv .venv` + `pip install -r Python-Prototyping/requirements.txt`
 - 从 imageprocessingplace.com 下载标准测试图,放入 `Assets/test-images/`
-- 写 `Ch01_02_Fundamentals/00_hello_image.py`:
+- 写 `Ch01_02_Fundamentals/01_hello_image.py`:
   - 读图并打印 `shape` / `dtype`(注意 `cv2.imread` 返回的是 **BGR** 不是 RGB)
   - 分离通道、把某通道置零、matplotlib 显示、保存结果
 

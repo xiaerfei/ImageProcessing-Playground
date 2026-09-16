@@ -15,7 +15,7 @@
 三个通道用的是同一条映射,所以彩色反转不会偏色。
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/gray-transform.py [--show]
+    .venv/bin/python Ch01_02_Fundamentals/03_gray-transform.py [--show]
     结果图保存到 Assets/results/gray-inversion.png(主图板)
                      Assets/results/color-negative-cast.png(彩色反转偏色对照)
 """

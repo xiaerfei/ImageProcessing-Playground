@@ -1,6 +1,6 @@
 # 第 1 周笔记:图像的内存布局
 
-> 配套代码:[00_hello_image.py](../../Python-Prototyping/Ch01_02_Fundamentals/00_hello_image.py)、
+> 配套代码:[01_hello_image.py](../../Python-Prototyping/Ch01_02_Fundamentals/01_hello_image.py)、
 > [00_yuv_warmup.py](../../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
 > 结果图:`Assets/results/week01_*.png`
 

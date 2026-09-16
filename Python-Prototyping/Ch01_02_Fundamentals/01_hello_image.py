@@ -6,7 +6,7 @@
 3. 点操作 = 直接改数组(把某个通道置零)
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/00_hello_image.py [--show]
+    .venv/bin/python Ch01_02_Fundamentals/01_hello_image.py [--show]
     结果图保存到 Assets/results/week01_hello_image.png
 """
 
