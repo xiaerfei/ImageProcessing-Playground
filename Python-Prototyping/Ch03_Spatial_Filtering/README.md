@@ -19,6 +19,7 @@
 
 | 脚本 | 内容 |
 | :--- | :--- |
+| `00_intensity_doc_figures.py` | 重新生成 intensity-and-grayscale.md 的 4 张配图(非课程内容,是配图的出处) |
 | `01_linear_transform.py` | 3.2 线性变换 s = a·r + b:两个旋钮、截断不可逆、代价曲线 |
 | `02_negative_transform.py` | 3.2 图像反转:LUT 三种写法对齐、自逆、直方图镜像、彩色反转偏色 |
 | `03_log_transform.py` | 3.2 对数变换:+1 与 ×c 的作用、归一化的坑、暗图提亮与反例 |
