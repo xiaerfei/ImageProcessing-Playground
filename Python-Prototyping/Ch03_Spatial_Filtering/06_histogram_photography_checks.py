@@ -6,7 +6,7 @@
      (对应文档第六节)
 
 用法:
-    .venv/bin/python Ch03_Spatial_Filtering/05_histogram_photography_checks.py
+    .venv/bin/python Ch03_Spatial_Filtering/06_histogram_photography_checks.py
 """
 
 from pathlib import Path

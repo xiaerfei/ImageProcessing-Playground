@@ -205,7 +205,7 @@ out = clahe.apply(gray)
 # 深入部分
 
 > 前面九节是"够用"。这部分回答几个再往下追一层的问题,以及三个初学阶段最容易踩的坑。
-> 全部数字都可复现:`Python-Prototyping/Ch03_Spatial_Filtering/04_histogram_deep_dive.py`
+> 全部数字都可复现:`Python-Prototyping/Ch03_Spatial_Filtering/05_histogram_deep_dive.py`
 
 ## 术语小抄
 

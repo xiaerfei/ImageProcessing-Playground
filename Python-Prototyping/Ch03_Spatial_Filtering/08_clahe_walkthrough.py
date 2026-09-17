@@ -6,7 +6,7 @@
   4. 两个参数的极端值分别退化成什么
 
 用法:
-    .venv/bin/python Ch03_Spatial_Filtering/07_clahe_walkthrough.py [--save]
+    .venv/bin/python Ch03_Spatial_Filtering/08_clahe_walkthrough.py [--save]
     --save 会把四联对比图写到 Documents/03-histogram/histogram-images/
 """
 

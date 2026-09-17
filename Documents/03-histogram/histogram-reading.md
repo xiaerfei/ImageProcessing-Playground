@@ -4,7 +4,7 @@
 > **和 [histogram-transform.md](histogram-transform.md) 的关系**:那篇讲"怎么用算法改直方图",这篇讲"怎么用眼睛读直方图"。
 > 先读这篇建立直觉,再读那篇理解算法,顺序更顺。
 >
-> 文中所有实测数字均可复现:`Python-Prototyping/Ch03_Spatial_Filtering/05_histogram_photography_checks.py`
+> 文中所有实测数字均可复现:`Python-Prototyping/Ch03_Spatial_Filtering/06_histogram_photography_checks.py`
 
 ## 导读:为什么算法工程师该看摄影文章
 
@@ -129,7 +129,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 
 **同一张图,两个完全相反的结论。** 后者才是人眼看到的事实 —— 纯红看起来就是个中等偏暗的颜色。
 
-> 复现:`05_histogram_photography_checks.py` 第 1a 节。
+> 复现:`06_histogram_photography_checks.py` 第 1a 节。
 
 在真实照片上差别没这么夸张。我用一张 262,144 像素的实拍图测过:
 
@@ -137,7 +137,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
   (相关系数 = 两条曲线形状像不像,1 = 完全一样、0 = 毫无关系,0.98 已经非常像了)
 - 但端点上差别明显:**至少一个通道为 0** 的像素占 11.49%,而**三通道全为 0** 的只有 10.67%
 
-> 复现:`05_histogram_photography_checks.py` 第 1b 节。
+> 复现:`06_histogram_photography_checks.py` 第 1b 节。
 
 也就是说:**判断整体明暗趋势,两个都能用;判断"有没有死黑死白、溢出了多少",必须看明度直方图**,否则会把"某个通道溢出"误判成"整个像素溢出"。
 
@@ -324,7 +324,7 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 打个比方:这 4096 个格子不是平均分给 12 个档的(那样每档 341 个)。
 而是**第一档拿走一半,第二档拿走剩下的一半,以此类推** —— 越往暗处,能分到的格子越少,少到最后只剩 1 个。
 
-> 复现:`05_histogram_photography_checks.py` 第 2 节(可改 `bits` 试 14 位)。
+> 复现:`06_histogram_photography_checks.py` 第 2 节(可改 `bits` 试 14 位)。
 
 所以向右曝光的本质是:**把场景推到码值密集的那几档去记录**。同一个景物,记在第 1 档有 2048 级可用,记在第 8 档只有 16 级。后期压暗只是做一次映射,量化精度已经拿到手了。
 

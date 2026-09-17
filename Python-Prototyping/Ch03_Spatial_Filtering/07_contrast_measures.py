@@ -5,7 +5,7 @@
   3. 三种度量在真实照片上的表现
 
 用法:
-    .venv/bin/python Ch03_Spatial_Filtering/06_contrast_measures.py
+    .venv/bin/python Ch03_Spatial_Filtering/07_contrast_measures.py
 """
 
 from pathlib import Path
