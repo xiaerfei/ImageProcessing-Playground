@@ -98,7 +98,7 @@ App 的灰度模块会实时显示截断比例,拖 a 就能看见它涨起来。
 
 ### 动手验证
 
-脚本 [`Ch01_02_Fundamentals/05_linear-transform.py`](../../Python-Prototyping/Ch01_02_Fundamentals/05_linear-transform.py)
+脚本 [`Ch03_Spatial_Filtering/01_linear_transform.py`](../../Python-Prototyping/Ch03_Spatial_Filtering/01_linear_transform.py)
 把本节的每条结论都实测了一遍(lenna 灰度图):
 
 | 结论 | 实测 |

@@ -1,7 +1,7 @@
 # 对比度 —— 到底在说什么
 
 > 面向零基础。配合 [histogram-transform.md](histogram-transform.md) 和 [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) 读。
-> 文中数字可复现:`Python-Prototyping/Ch03_Spatial_Filtering/03_contrast_measures.py`
+> 文中数字可复现:`Python-Prototyping/Ch03_Spatial_Filtering/06_contrast_measures.py`
 
 ## 一句话
 

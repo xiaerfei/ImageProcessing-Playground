@@ -1,4 +1,4 @@
-"""第 4 周(3.2 节):灰度变换 —— 02 对数变换:把暗部掰开。
+"""第 4 周(3.2 节):灰度变换 —— 03 对数变换:把暗部掰开。
 
 对应文档 Documents/02-intensity/gray-transform-tutorial.md 第二节。
 
@@ -28,7 +28,7 @@
 > 脚本里只用手写公式 + `cv2.LUT`;`cv2.normalize` 只出现在"坑"的对照里,不用来出结果。
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/04_log-transform.py [--show]
+    .venv/bin/python Ch03_Spatial_Filtering/03_log_transform.py [--show]
     结果图保存到 Assets/results/log-transform-demo.png
     (Assets/results/log-transform.png 是另一张图,属于 intensity-and-grayscale.md,不要混)
 """

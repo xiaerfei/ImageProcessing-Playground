@@ -467,7 +467,7 @@ out  = np.clip(inv * gain, 0, 255)      # ③ 把三通道均值拉平
 2. **量**:自己算反转后三通道均值,哪一路冒头一目了然(偏差 50 以上就肉眼可见)
 3. **修**:用上面 5 行把均值拉平,对比前后 —— 顺带体会"点运算做不到这件事"
 
-对应脚本:[Python-Prototyping/Ch01_02_Fundamentals/03_gray-transform.py](../../Python-Prototyping/Ch01_02_Fundamentals/03_gray-transform.py),
+对应脚本:[Python-Prototyping/Ch03_Spatial_Filtering/02_negative_transform.py](../../Python-Prototyping/Ch03_Spatial_Filtering/02_negative_transform.py),
 跑一次会出两张图板:
 
 - `Assets/results/gray-inversion.png` —— 反转本身(灰度反转、直方图镜像、映射曲线)

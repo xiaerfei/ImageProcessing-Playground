@@ -1,4 +1,4 @@
-"""第 4 周(3.2 节):灰度变换 —— 03 线性变换 s = a·r + b。
+"""第 4 周(3.2 节):灰度变换 —— 01 线性变换 s = a·r + b(最基础的一条)。
 
 对应文档 Documents/02-intensity/intensity-and-grayscale.md 第一节。
 
@@ -24,7 +24,7 @@
    不能凭空造出新的,拉开之后中间必然空出一格格
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/05_linear-transform.py [--show]
+    .venv/bin/python Ch03_Spatial_Filtering/01_linear_transform.py [--show]
     结果图保存到 Assets/results/linear-transform-demo.png
     (Assets/results/linear-transform.png 是文档里那张示意图,另一回事,不要混)
 """

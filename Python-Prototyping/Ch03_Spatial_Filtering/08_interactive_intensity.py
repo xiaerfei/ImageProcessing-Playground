@@ -15,9 +15,9 @@ LUT 的算法和 ImageAlgorithm/Modules/IAIntensityModule.m 是同一套公式,
 两边结果应当一致 —— 可以拿这个当那边的对照。
 
 用法:
-    .venv/bin/python Ch03_Spatial_Filtering/05_interactive_intensity.py
-    .venv/bin/python Ch03_Spatial_Filtering/05_interactive_intensity.py --image ../Assets/test-images/page.png
-    .venv/bin/python Ch03_Spatial_Filtering/05_interactive_intensity.py --save   # 只存一张静态图,不开窗口
+    .venv/bin/python Ch03_Spatial_Filtering/08_interactive_intensity.py
+    .venv/bin/python Ch03_Spatial_Filtering/08_interactive_intensity.py --image ../Assets/test-images/page.png
+    .venv/bin/python Ch03_Spatial_Filtering/08_interactive_intensity.py --save   # 只存一张静态图,不开窗口
 """
 
 import argparse
