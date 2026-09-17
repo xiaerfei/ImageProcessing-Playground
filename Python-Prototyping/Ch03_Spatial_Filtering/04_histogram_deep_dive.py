@@ -10,7 +10,7 @@
   6. 彩色图分通道均衡 vs 只均衡亮度 —— 色相偏移实测
 
 用法:
-    .venv/bin/python Ch03_Spatial_Filtering/01_histogram_deep_dive.py [--save]
+    .venv/bin/python Ch03_Spatial_Filtering/04_histogram_deep_dive.py [--save]
     --save 会把配图写到 Documents/03-histogram/histogram-images/
 """
 

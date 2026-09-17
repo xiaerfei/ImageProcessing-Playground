@@ -1,9 +1,10 @@
-"""第 4 周(3.2 节):灰度变换 —— 01 图像反转(底片效果)。
+"""第 4 周(3.2 节):灰度变换 —— 02 图像反转(底片效果)。
 
 灰度变换是「点运算」:新值 s 只取决于当前像素值 r,和邻居无关。
 既然输入只有 256 种可能,就犯不着对几十万个像素逐个算 ——
 先按公式建一张 256 项的查找表(LUT),再让全图去查表。
-反转、对数、伽马、分段拉伸全都是这一套,本文只是开头第一站。
+反转、对数、伽马、分段拉伸全都是这一套。
+反转其实是线性变换 s = a·r + b 的特例(a = -1,b = 255),见 01 篇。
 
 本篇只做 s = 255 - r,验证四件事:
 1. LUT 查表 == 直接向量化 == cv2.bitwise_not,三者逐像素完全相同
@@ -15,7 +16,7 @@
 三个通道用的是同一条映射,所以彩色反转不会偏色。
 
 用法:
-    .venv/bin/python Ch01_02_Fundamentals/03_gray-transform.py [--show]
+    .venv/bin/python Ch03_Spatial_Filtering/02_negative_transform.py [--show]
     结果图保存到 Assets/results/gray-inversion.png(主图板)
                      Assets/results/color-negative-cast.png(彩色反转偏色对照)
 """
