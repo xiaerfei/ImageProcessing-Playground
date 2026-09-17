@@ -8,6 +8,12 @@
 > 见 [gray-transform-tutorial.md](gray-transform-tutorial.md)。
 > 相关代码:[IAIntensityModule.m](../../ImageAlgorithm/ImageAlgorithm/Modules/IAIntensityModule.m)、
 > [00_yuv_warmup.py](../../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
+>
+> **本文配图的出处**(改参数或换测试图后重跑即可,不要手工替换图片):
+> 前四张(变换曲线、线性、对数、线性 vs 对数)由
+> [`Ch03_Spatial_Filtering/00_intensity_doc_figures.py`](../../Python-Prototyping/Ch03_Spatial_Filtering/00_intensity_doc_figures.py) 生成;
+> 后两张(平均 vs 加权、六种亮度定义)由
+> [`Ch06_Color_Processing/02_brightness_doc_figures.py`](../../Python-Prototyping/Ch06_Color_Processing/02_brightness_doc_figures.py) 生成。
 
 ## 零、三句话看懂
 
