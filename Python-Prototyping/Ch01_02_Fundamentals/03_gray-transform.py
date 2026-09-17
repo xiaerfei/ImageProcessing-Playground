@@ -165,8 +165,8 @@ def main() -> None:
         (cv2.cvtColor(negative(bgr), cv2.COLOR_BGR2RGB),
          "彩色反转(同一张 LUT 扫过 B/G/R 三个通道)", False),
     ]
-    # 这里本该用 zip(..., strict=True) 保证两个列表等长,但本仓库的 venv 是
-    # Python 3.9,strict 参数 3.10 才有。panels 就在上面几行,长度一目了然。
+    # 同样不用 zip(..., strict=True):它是 Python 3.10 才有的参数,
+    # 另一台机器的 Python 更低,用了会 TypeError。panels 就在上面几行。
     for ax, (img, title, is_gray) in zip(axes.flat[:4], panels):
         if is_gray:
             ax.imshow(img, cmap="gray", vmin=0, vmax=255)  # 灰度图必须给死 vmin/vmax
