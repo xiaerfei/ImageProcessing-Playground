@@ -21,10 +21,14 @@
 5. 必须先归一化再求幂:(r/255)^γ 不是 r^γ —— 漏了除以 255 会得到一片黑
 6. 伽马校正是一来一回:存图时 1/2.2、显示时 2.2,串起来等于恒等
 7. ⚠️ sRGB 不是纯幂律:最暗处接了一小段直线,与纯 γ=2.2 最大差约 2 个灰阶
+8. γ>1 的正经身份是**解码**,不是「调暗」效果:对已经 gamma 编码的图做 γ=2.2,
+   等于把它解回线性光;屏幕拿到后还会再解码一次,所以看着「黑了两遍」
+9. 域搞错的代价:黑白条纹缩小,编码域算出 128,线性域算出 188,差 60 个灰阶
 
 用法:
     .venv/bin/python Ch03_Spatial_Filtering/04_gamma_transform.py [--show]
-    结果图保存到 Assets/results/gamma-transform-demo.png
+    结果图保存到 Assets/results/gamma-transform-demo.png(主图板)
+                     Assets/results/gamma-domain-demo.png(编码域 vs 线性域)
 """
 
 import sys
@@ -74,9 +78,76 @@ def srgb_decode(c: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     return np.where(c <= 0.04045, c / 12.92, ((c + 0.055) / 1.055) ** 2.4)
 
 
+def srgb_encode(lin: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
+    """sRGB 的标准编码曲线(线性光进,0~1 编码值出)。srgb_decode 的逆。
+
+    线性光算完必须走这一步再送显示,否则屏幕会把它当编码值再解码一次,
+    画面明显偏暗。参见 Documents/02-intensity/luma-and-linear-light.md 第六节。
+    """
+    return np.where(lin <= 0.0031308, lin * 12.92, 1.055 * lin ** (1 / 2.4) - 0.055)
+
+
 def histogram(y: npt.NDArray[np.uint8]) -> npt.NDArray[np.int64]:
     """0~255 每个灰阶的像素个数。用 bincount 避免分 bin 时的边界错位。"""
     return np.bincount(y.ravel(), minlength=256)
+
+
+def save_domain_demo(out_path: Path, gray: npt.NDArray[np.uint8]) -> None:
+    """第二张图板:γ>1 是解码,以及「在哪个域做运算」的实际代价。
+
+    左半边回答「为什么 γ=2.2 那张图黑得没法看」;
+    右半边用黑白条纹缩小这个最经典的例子,说明域搞错会差多少。
+    """
+    fig, axes = plt.subplots(2, 3, figsize=(15.5, 8.6))
+
+    # 上排:同一张图的三种身份
+    dark = cv2.LUT(gray, gamma_lut(2.2))
+    reencoded = np.clip(np.rint(srgb_encode(srgb_decode(gray / 255.0)) * 255), 0, 255
+                        ).astype(np.uint8)
+    for ax, (img, title) in zip(axes[0], (
+            (gray, "原图(sRGB 编码值)\n屏幕会解码一次 → 正常"),
+            (dark, "做了 γ=2.2 = 解码成线性光\n屏幕再解一次 → 黑了两遍"),
+            (reencoded, "解码后重新编码送显示\n与原图逐像素相同"))):
+        ax.imshow(img, cmap="gray", vmin=0, vmax=255)
+        ax.set_title(title, fontsize=10)
+        ax.axis("off")
+
+    # 左下:编码值 ↔ 线性光的对照曲线
+    ax = axes[1, 0]
+    c = LEVELS / 255.0
+    ax.plot(LEVELS, srgb_decode(c) * 255, color="tab:blue", lw=1.8, label="解码:编码值 → 线性光")
+    ax.plot([0, 255], [0, 255], color="0.7", lw=1.0, ls="--", label="如果两者相等")
+    ax.plot(128, srgb_decode(np.array(128 / 255.0)) * 255, "o", color="tab:red", ms=6)
+    ax.annotate("中灰 128 的线性光只有 55\n(满格的 21.6%)", xy=(128, 55),
+                xytext=(150, 175), fontsize=9, color="tab:red",
+                arrowprops={"arrowstyle": "->", "color": "tab:red", "lw": 1.0})
+    ax.set_xlim(0, 255); ax.set_ylim(0, 255); ax.set_aspect("equal")
+    ax.set_title("编码值不是光量:中间的 128 只有两成光", fontsize=10)
+    ax.set_xlabel("sRGB 编码值"); ax.set_ylabel("线性光 ×255")
+    ax.legend(fontsize=8, loc="upper left")
+
+    # 中下:黑白条纹
+    stripes = np.zeros((120, 120), dtype=np.uint8)
+    stripes[:, ::2] = 255            # 一列黑一列白,黑白各占一半
+    axes[1, 1].imshow(stripes, cmap="gray", vmin=0, vmax=255, interpolation="nearest")
+    axes[1, 1].set_title("黑白各半的细条纹\n把它缩成一个像素,该是多亮?", fontsize=10)
+    axes[1, 1].axis("off")
+
+    # 右下:两种做法的结果并排
+    ax = axes[1, 2]
+    naive = 128
+    correct = int(round(float(srgb_encode(
+        (srgb_decode(np.array(0.0)) + srgb_decode(np.array(1.0))) / 2)) * 255))
+    ax.imshow(np.block([[np.full((120, 120), naive, np.uint8),
+                         np.full((120, 120), correct, np.uint8)]]),
+              cmap="gray", vmin=0, vmax=255)
+    ax.set_title(f"编码域平均 = {naive}     线性域平均 = {correct}\n"
+                 f"差 {correct - naive} 个灰阶,右边才是物理正确的", fontsize=10)
+    ax.axis("off")
+
+    fig.suptitle("γ>1 的正经身份是解码 —— 以及「在哪个域做运算」的代价", fontsize=13)
+    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.94))
+    fig.savefig(out_path, dpi=110)
 
 
 def main() -> None:
@@ -161,6 +232,31 @@ def main() -> None:
     print("  避开纯幂律在 0 点斜率无穷、对噪声极敏感的问题。")
     print("  日常用 pow(x, 2.2) 近似够了,精确色彩管理不能这么糊")
 
+    # --- ⑧ γ>1 的正经身份:解码,不是「调暗」效果 ---
+    print("\n--- ⑧ 对已编码的图做 γ>1,做的其实是「解码」 ---")
+    probe = np.array([10, 30, 60, 128, 200, 255], dtype=np.float64)
+    lin = srgb_decode(probe / 255.0)
+    print(f"  输入(sRGB 编码值)     {probe.astype(int).tolist()}")
+    print(f"  解码后的线性光 ×255    {np.rint(lin * 255).astype(int).tolist()}")
+    print(f"  再编码回去(往返)      "
+          f"{np.rint(srgb_encode(lin) * 255).astype(int).tolist()}   ← 回到原值")
+    print(f"  中灰 128 的线性光只有 {lin[3] * 100:.1f}% —— 看着在黑白正中间,"
+          f"物理上只有五分之一的光")
+    print("  所以脚本里 γ=2.2 那张图黑得没法看,不是变换有问题:")
+    print("  lenna 是 JPEG,本来就是编码值;你解了一次,屏幕还会再解一次 = 黑了两遍。")
+    print("  γ>1 当效果用时档位在 1.1~1.5(去雾感、压背景);2.2 是色彩管理的档位")
+
+    # --- ⑨ 域搞错的代价:黑白条纹缩小 ---
+    print("\n--- ⑨ 同一次缩小,在哪个域做差 60 个灰阶 ---")
+    naive = (0 + 255) / 2
+    correct = srgb_encode((srgb_decode(np.array(0.0)) + srgb_decode(np.array(1.0))) / 2)
+    print(f"  黑白各半的细条纹,缩到一个像素:")
+    print(f"    编码域直接平均            {naive:.0f}")
+    print(f"    解码→平均→再编码(正确)  {float(correct) * 255:.0f}")
+    print("  一半时间全亮、一半时间全黑,眼睛收到的光就是满格的一半 ——")
+    print("  物理正确答案是 188,编码域算出的 128 偏暗了 60 个灰阶。")
+    print("  缩放、模糊、多帧平均、Alpha 混合,严格说都该在线性域做")
+
     # --- 出图板 ---
     fig, axes = plt.subplots(2, 4, figsize=(17, 9))
 
@@ -233,6 +329,9 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(out, dpi=110)
     print(f"\n结果已保存: {out.relative_to(REPO)}")
+
+    save_domain_demo(out.with_name("gamma-domain-demo.png"), gray)
+    print(f"结果已保存: {out.with_name('gamma-domain-demo.png').relative_to(REPO)}")
 
     if "--show" in sys.argv:
         plt.show()
