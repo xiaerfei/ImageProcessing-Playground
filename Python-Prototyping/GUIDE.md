@@ -225,7 +225,7 @@ np.count_nonzero(gray > 200)              # 有多少个亮像素
 ## 七、UI:滑块模板
 
 拿去改,把 `apply()` 换成你自己的算法即可。完整的例子见
-`Ch03_Spatial_Filtering/09_interactive_intensity.py`。
+`Ch03_Spatial_Filtering/14_interactive_intensity.py`。
 
 ```python
 import cv2, numpy as np
@@ -372,7 +372,7 @@ def info(name, a):
 
 ```bash
 cd Python-Prototyping
-.venv/bin/python Ch03_Spatial_Filtering/09_interactive_intensity.py
+.venv/bin/python Ch03_Spatial_Filtering/14_interactive_intensity.py
 ```
 
 不用每次 `source activate` —— 直接用 `.venv/bin/python` 这个路径就行。
