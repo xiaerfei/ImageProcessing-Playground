@@ -10,6 +10,18 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+> ⚠️ **本目录的脚本需兼容 Python 3.9.6,不要使用 3.10+ 才有的语法。**
+> 这些脚本要在两台机器上跑,其中一台是 macOS 自带的 Python 3.9.6。
+> 已知会踩的坑:`zip(..., strict=True)`(3.10 才有的参数)、`match` 语句、
+> 以及**写在函数签名里**的 `X | Y` 注解(3.10 才能在运行时求值 ——
+> 写在函数内的局部变量上则不求值,是安全的)。
+>
+> 改完可以用系统 Python 快速自查语法:
+>
+> ```bash
+> /usr/bin/python3 -m py_compile $(find . -name '*.py' -not -path './.venv/*')
+> ```
+
 ## 目录(按学习顺序排列)
 
 | 目录 | 阶段 | 对应章节 |
