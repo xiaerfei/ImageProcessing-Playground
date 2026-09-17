@@ -23,11 +23,12 @@
 | `01_linear_transform.py` | 3.2 线性变换 s = a·r + b:两个旋钮、截断不可逆、代价曲线 |
 | `02_negative_transform.py` | 3.2 图像反转:LUT 三种写法对齐、自逆、直方图镜像、彩色反转偏色 |
 | `03_log_transform.py` | 3.2 对数变换:+1 与 ×c 的作用、归一化的坑、暗图提亮与反例 |
-| `04_histogram_deep_dive.py` | 3.3 直方图/PDF/CDF、均衡化原理、空间信息丢失、gamma 域 vs 线性域 |
-| `05_histogram_photography_checks.py` | 3.3 摄影视角:曝光诊断、ETTR、影调分类 |
-| `06_contrast_measures.py` | 3.3 对比度怎么统计:标准差、百分位跨度、自动色阶 |
-| `07_clahe_walkthrough.py` | 3.3 CLAHE 从零拆解:全局 → AHE → 插值 → 限幅 |
-| `08_interactive_intensity.py` | 可拖滑块的灰度变换实验台(图像/直方图/曲线三联动) |
+| `04_gamma_transform.py` | 3.2 幂律(伽马):γ 旋钮、与对数的关系、不截断但会合并灰阶、伽马校正、sRGB 的直线段 |
+| `05_histogram_deep_dive.py` | 3.3 直方图/PDF/CDF、均衡化原理、空间信息丢失、gamma 域 vs 线性域 |
+| `06_histogram_photography_checks.py` | 3.3 摄影视角:曝光诊断、ETTR、影调分类 |
+| `07_contrast_measures.py` | 3.3 对比度怎么统计:标准差、百分位跨度、自动色阶 |
+| `08_clahe_walkthrough.py` | 3.3 CLAHE 从零拆解:全局 → AHE → 插值 → 限幅 |
+| `09_interactive_intensity.py` | 可拖滑块的灰度变换实验台(图像/直方图/曲线三联动) |
 
 > 编号即阅读顺序,对应书里 3.2(灰度变换)→ 3.3(直方图)的推进。
 
