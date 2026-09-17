@@ -23,7 +23,7 @@
 | `01_linear_transform.py` | 3.2 线性变换 s = a·r + b:两个旋钮、截断不可逆、代价曲线 |
 | `02_negative_transform.py` | 3.2 图像反转:LUT 三种写法对齐、自逆、直方图镜像、彩色反转偏色 |
 | `03_log_transform.py` | 3.2 对数变换:+1 与 ×c 的作用、归一化的坑、暗图提亮与反例 |
-| `04_gamma_transform.py` | 3.2 幂律(伽马):γ 旋钮、与对数的关系、不截断但会合并灰阶、伽马校正、sRGB 的直线段 |
+| `04_gamma_transform.py` | 3.2 幂律(伽马):γ 旋钮、与对数的关系、不截断但会合并灰阶、伽马校正、sRGB 的直线段;**γ>1 的正经身份是解码**,以及在哪个域做运算的代价(条纹缩小 128 vs 188) |
 | `05_histogram_deep_dive.py` | 3.3 直方图/PDF/CDF、均衡化原理、空间信息丢失、gamma 域 vs 线性域 |
 | `06_histogram_photography_checks.py` | 3.3 摄影视角:曝光诊断、ETTR、影调分类 |
 | `07_contrast_measures.py` | 3.3 对比度怎么统计:标准差、百分位跨度、自动色阶 |
