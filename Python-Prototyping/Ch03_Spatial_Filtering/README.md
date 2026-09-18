@@ -34,6 +34,7 @@
 | `15_histogram_deep_dive.py` | 3.3 深入验证六则:直方图/PDF/CDF、CDF 为什么能摊平、空间信息丢失、gamma 域 vs 线性域、规定化、彩色分通道均衡 |
 | `16_equalize_vs_clahe.py` | 3.3 全局均衡化 vs CLAHE:1 张表 vs 64 张表、局部对比度才是「细节」的指标、噪声放大 12.4× vs 2.7×、clipLimit 是均衡化没有的力度旋钮 |
 | `17_clahe_from_scratch.py` | 3.3 手写 CLAHE,**与 `cv2.createCLAHE` 逐像素相同**;重点讲块间双线性插值:LUT 属于块中心、边界 clamp 自动退化、台阶 vs 折线、OpenCV 的补边怪癖 |
+| `20_convolution_basics.py` | 3.4 空间滤波基础:塌缩不成 LUT、**`filter2D` 做的是相关不是卷积**(冲激响应一试便知)、只有卷积有交换律、五种补边实测、可分离(秩=1,15×15 快约 24 倍;⚠️ k≥9 时 `filter2D` 改用 DFT)、`ddepth=-1` 吃掉 45.3% 的像素 |
 
 > **编号规则**(号段留了空位,以后插脚本不用推别人):
 >
@@ -42,7 +43,7 @@
 > | `00` | 文档配图生成,不是课程内容 |
 > | `01`~`09` | 3.2 灰度变换 |
 > | `10`~`19` | 3.3 直方图与对比度 |
-> | `20`~ | 3.4~3.6 空间滤波(卷积引擎、高斯、中值、Sobel、拉普拉斯),尚未开始 |
+> | `20`~ | 3.4~3.6 空间滤波(卷积引擎、高斯、中值、Sobel、拉普拉斯),原理篇见 [spatial-filtering-basics.md](../../Documents/05-spatial-filtering/spatial-filtering-basics.md),脚本未开始 |
 >
 > 段内编号即阅读顺序。3.2 还差阈值化一篇,已留好 `07`;3.3 的 `18`~`19` 还空着(规定化、局部统计增强),备忘见 [`Documents/03-histogram/further-topics.md`](../../Documents/03-histogram/further-topics.md)。
 
