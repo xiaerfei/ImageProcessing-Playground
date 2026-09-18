@@ -43,7 +43,7 @@ $$ s = G^{-1}\big(F(r)\big) $$
 **回头查**:`np.interp` + 两条 `np.cumsum`;OpenCV 没有现成函数,
 skimage 有 `skimage.exposure.match_histograms`。文档里的手算在
 [histogram-transform.md 第十五节](histogram-transform.md);
-`15_histogram_deep_dive.py` 有个 demo。**从零实现留给脚本 `17`。**
+`15_histogram_deep_dive.py` 有个 demo。**从零实现留给脚本 `18`。**
 
 ---
 
@@ -65,7 +65,7 @@ skimage 有 `skimage.exposure.match_histograms`。文档里的手算在
 
 **回头查**:关键词「局部增强」「statistical enhancement」;
 用 `cv2.boxFilter` 同时算 E[x] 和 E[x²],`σ² = E[x²] − E[x]²`,一次卷积搞定整幅图的局部统计。
-**留给脚本 `18`。**
+**留给脚本 `19`。**
 
 ---
 
