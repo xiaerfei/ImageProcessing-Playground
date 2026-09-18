@@ -158,6 +158,40 @@ s = np.round(cdf * (L - 1)).astype(int)
 
 ---
 
+**动手验证**:[`Ch03_Spatial_Filtering/10_histogram_equalization.py`](../../Python-Prototyping/Ch03_Spatial_Filtering/10_histogram_equalization.py)
+把三~六节从零跑了一遍(主图 `moon.png`,均值 112.2、标准差 13.3 的典型灰蒙蒙):
+
+| 结论 | 实测 |
+| :--- | :--- |
+| 第四节那张手算表 | 脚本原样复现:3、4、5 三档 → 2、5、7;均衡后计数 `[5, 0, 30, 0, 0, 40, 0, 25]` |
+| **柱子不会真的变平** | 上表结果里仍有 4 个空档;真图上「CDF 离理想直线」只从 22.8 降到 2.5 个百分点,到不了 0 |
+| 摊开确实有效 | 标准差 13.3 → **74.0**,CDF 从「中间一个陡坎」变成接近对角线 |
+| **代价是灰阶被合并** | 用到的灰阶 178 → **49**;LUT 把 256 个输入只映射到 49 个输出,直方图长出梳齿 |
+| 保序 | LUT 单调非降 —— 这就是「摊开但不能乱摊」的数学保证 |
+| **幂等** | 均衡两次 vs 一次最大差 1 —— 第二次几乎什么都没做,这正是「没有力度旋钮」的另一种说法 |
+| 毛病 2:放大噪声 | 加 σ=3 的高斯噪声,均衡后噪声标准差变成 39.9,**放大 13.3 倍** |
+| 毛病 3:只看全局 | `page.png` 左右平均亮度差 73.4,全局均衡后不降反升到 107.4;CLAHE 压到 52.9 |
+
+⚠️ **一个教材不会讲、但不知道就对不上 `cv2.equalizeHist` 的细节**:
+
+直接照公式写 `s = round(255 × cdf(r))`,在 `camera.png` 上和 OpenCV 逐像素相同,
+但在 `astronaut.png` 上最大差到 **29 个灰阶**。原因是最暗那一档的累计比例不是 0
+—— 它自己也被算进去了,于是整张图的黑场被抬起来。OpenCV 先把这一档的计数减掉:
+
+```python
+first = np.nonzero(hist)[0][0]          # 最暗的、真的有像素的那一档
+s = (cdf - hist[first]) * (255.0 / (N - hist[first]))
+```
+
+`astronaut.png` 有 11.2% 的画面是纯黑太空背景,教材式把这一大坨直接抬到 29,背景整片发灰。
+图里纯黑/纯白占比越大,两种写法差得越远。
+
+![均衡化:原理、效果与代价](../../Assets/results/histogram-equalization-demo.png)
+
+![均衡化的两个坑:减不减 cdf_min、全局管不了局部](../../Assets/results/equalization-pitfalls-demo.png)
+
+---
+
 ## 七、实际工程用的版本:CLAHE
 
 CLAHE = Contrast Limited Adaptive Histogram Equalization(限制对比度的自适应直方图均衡)。
@@ -205,7 +239,7 @@ out = clahe.apply(gray)
 # 深入部分
 
 > 前面九节是"够用"。这部分回答几个再往下追一层的问题,以及三个初学阶段最容易踩的坑。
-> 全部数字都可复现:`Python-Prototyping/Ch03_Spatial_Filtering/10_histogram_deep_dive.py`
+> 全部数字都可复现:`Python-Prototyping/Ch03_Spatial_Filtering/15_histogram_deep_dive.py`
 
 ## 术语小抄
 
