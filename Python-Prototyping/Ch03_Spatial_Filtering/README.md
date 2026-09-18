@@ -36,6 +36,7 @@
 | `17_clahe_from_scratch.py` | 3.3 手写 CLAHE,**与 `cv2.createCLAHE` 逐像素相同**;重点讲块间双线性插值:LUT 属于块中心、边界 clamp 自动退化、台阶 vs 折线、OpenCV 的补边怪癖 |
 | `20_convolution_basics.py` | 3.4 空间滤波基础:塌缩不成 LUT、**`filter2D` 做的是相关不是卷积**(冲激响应一试便知)、只有卷积有交换律、五种补边实测、可分离(秩=1,15×15 快约 24 倍;⚠️ k≥9 时 `filter2D` 改用 DFT)、`ddepth=-1` 吃掉 45.3% 的像素 |
 | `21_conv_engine.py` | 3.4 **不调库自己写卷积引擎**:补边=换一套下标(三种模式与 `copyMakeBorder` 逐像素相同)、四重循环版与 `filter2D` **0 差别**、「让图挪而不是让印章挪」的移位累加版快 **114 倍**、手写可分离(横一遍+竖一遍);两张图解 |
+| `22_smoothing.py` | 3.5 平滑四件套:盒式的点响应是**方块**、高斯是**圆**;⚠️ **σ 按勾股定理叠加**(3 再 4 = 5,当成 7 差 37 级);盒式连做 2 次≈高斯;核取 `6σ+1`(σ=3 配 3×3 切掉 61.5%);椒盐→中值(29.5 vs 23.2 dB)、高斯噪声→高斯/双边;代价表 |
 
 > **编号规则**(号段留了空位,以后插脚本不用推别人):
 >
@@ -44,9 +45,9 @@
 > | `00` | 文档配图生成,不是课程内容 |
 > | `01`~`09` | 3.2 灰度变换 |
 > | `10`~`19` | 3.3 直方图与对比度 |
-> | `20`~ | 3.4~3.6 空间滤波(卷积引擎、高斯、中值、Sobel、拉普拉斯),原理篇见 [spatial-filtering-basics.md](../../Documents/05-spatial-filtering/spatial-filtering-basics.md),脚本未开始 |
+> | `20`~ | 3.4~3.6 空间滤波(卷积引擎、高斯、中值、Sobel、拉普拉斯),文档见 [05-spatial-filtering/](../../Documents/05-spatial-filtering/)(原理篇 + 平滑篇) |
 >
-> 段内编号即阅读顺序。3.2 还差阈值化一篇,已留好 `07`;3.3 的 `18`~`19` 还空着(规定化、局部统计增强),备忘见 [`Documents/03-histogram/further-topics.md`](../../Documents/03-histogram/further-topics.md)。
+> 段内编号即阅读顺序。3.2 还差阈值化一篇,已留好 `07`;3.3 的 `18`~`19` 还空着(规定化、局部统计增强),备忘见 [`Documents/03-histogram/04-further-topics.md`](../../Documents/03-histogram/04-further-topics.md)。
 
 ## 实践任务
 

@@ -1,6 +1,6 @@
 """第 6 周(3.4 节):空间滤波 —— 21 自己写一个卷积引擎。
 
-对应文档 Documents/05-spatial-filtering/spatial-filtering-basics.md。
+对应文档 Documents/05-spatial-filtering/01-spatial-filtering-basics.md。
 20 号脚本是「验证 OpenCV 怎么做的」,这一篇是「不调库,自己做一遍」。
 
 整个引擎就三件事:

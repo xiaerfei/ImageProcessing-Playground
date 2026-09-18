@@ -190,9 +190,9 @@ cv2 内部走的是整数定点 + SIMD,取整细节和 numpy 的浮点路径不�
 
 ## 相关文档
 
-- [luma-and-linear-light.md](../02-intensity/luma-and-linear-light.md) —— 亮度公式本身、
+- [03-luma-and-linear-light.md](../02-intensity/03-luma-and-linear-light.md) —— 亮度公式本身、
   以及 Y 怎么显示回屏幕
-- [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换里的
+- [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) —— 灰度变换里的
   LUT 写法(查表法天然只取整一次)
 - `Python-Prototyping/Ch01_02_Fundamentals/02_rounding_rules.py` —— 本文所有数字的出处
 - `Python-Prototyping/Ch01_02_Fundamentals/00_gray_image.py` —— 规矩一、三的实际应用

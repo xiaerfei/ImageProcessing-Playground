@@ -1,6 +1,6 @@
 """第 4 周(3.2 节):灰度变换 —— 01 线性变换 s = a·r + b(最基础的一条)。
 
-对应文档 Documents/02-intensity/intensity-and-grayscale.md 第一节。
+对应文档 Documents/02-intensity/01-intensity-and-grayscale.md 第一节。
 
     s = a·r + b        a 是斜率(对比度旋钮),b 是截距(亮度旋钮)
 
@@ -52,7 +52,7 @@ def linear_lut(a: float, b: float) -> npt.NDArray[np.uint8]:
     clip 不是可有可无的收尾,它就是这个变换的一部分:a > 1 时高灰阶会算出
     255 以上,a < 0 或 b < 0 时低灰阶会算出负数,不夹住的话 astype(np.uint8)
     会按 256 取模回绕 —— 提亮后的高光不是变白而是变黑斑。
-    取整规矩见 Documents/01-fundamentals/rounding-and-float.md。
+    取整规矩见 Documents/01-fundamentals/02-rounding-and-float.md。
     """
     r = np.arange(256, dtype=np.float64)
     s = a * r + b

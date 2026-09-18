@@ -1,4 +1,4 @@
-"""直方图的六个深入验证 —— 配合 Documents/03-histogram/histogram-transform.md「深入部分」。
+"""直方图的六个深入验证 —— 配合 Documents/03-histogram/01-histogram-transform.md「深入部分」。
 
 每一节对应文档的一节,打印的数字就是文档里引用的数字:
 

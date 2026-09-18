@@ -1,6 +1,6 @@
 """第 5 周(3.3 节):直方图处理 —— 10 从零手写直方图均衡化。
 
-对应文档 Documents/03-histogram/histogram-transform.md 第三~六节。
+对应文档 Documents/03-histogram/01-histogram-transform.md 第三~六节。
 
 均衡化说白了就一句话:
 

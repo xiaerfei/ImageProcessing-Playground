@@ -42,7 +42,7 @@ def to_lut(s: npt.NDArray[np.float64]) -> npt.NDArray[np.uint8]:
     """浮点曲线 → 256 项 uint8 查找表。
 
     clip 不是收尾而是变换的一部分:越界不夹住的话 astype 会按 256 取模回绕,
-    高光变黑斑。见 Documents/01-fundamentals/rounding-and-float.md。
+    高光变黑斑。见 Documents/01-fundamentals/02-rounding-and-float.md。
     """
     return np.clip(np.rint(s), 0, 255).astype(np.uint8)
 

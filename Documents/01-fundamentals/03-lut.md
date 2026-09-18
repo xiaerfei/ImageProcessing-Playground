@@ -86,7 +86,7 @@ LUT 本身跟公式是什么没关系。把第一步那一行公式换掉,别的
 > 叫**伽马值**。屏幕把输入信号变成实际亮度时会按 `亮度 = 输入^2.2` 压一道,
 > 所以存图的时候要先反着抬一道 `^(1/2.2)` 抵消掉。换成 `1/1.8`、`1/2.4` 也一样跑,
 > 只是效果强弱不同。
-> 完整来龙去脉见 [intensity-and-grayscale.md 的伽马一节](../02-intensity/intensity-and-grayscale.md)。
+> 完整来龙去脉见 [intensity-and-grayscale.md 的伽马一节](../02-intensity/01-intensity-and-grayscale.md)。
 >
 > 之所以拿它当性能例子,是因为**它是上表里唯一「算起来贵」的**:
 > 反转是一次减法,伽马是一次 `pow()`,慢几十倍。**越贵的公式,查表省得越多。**
@@ -131,7 +131,7 @@ LUT 本身跟公式是什么没关系。把第一步那一行公式换掉,别的
 而 **CLAHE 恰恰是被这条判据卡住的例子**:同一个灰度值在图的不同位置要映射到不同结果,
 一张表表达不了。它的解法是**换成 64 张表 + 插值** ——
 换句话说,LUT 这个工具没被丢掉,只是从 1 张变成了一个网格。
-详见 [histogram-transform.md 第十四节](../03-histogram/histogram-transform.md)。
+详见 [histogram-transform.md 第十四节](../03-histogram/01-histogram-transform.md)。
 
 ---
 
@@ -224,7 +224,7 @@ LUT 不只是个优化手段,有时候它就是数据本身的组织方式。
 
 ## 相关文档
 
-- [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换原理篇,LUT 的主战场
-- [gray-transform-tutorial.md](../02-intensity/gray-transform-tutorial.md) —— 七种灰度变换,每一种都是一张表
-- [histogram-transform.md](../03-histogram/histogram-transform.md) —— 均衡化(表从图统计出来)与 CLAHE(64 张表 + 插值)
-- [rounding-and-float.md](rounding-and-float.md) —— 建表时的取整与截断规矩
+- [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) —— 灰度变换原理篇,LUT 的主战场
+- [02-gray-transform-tutorial.md](../02-intensity/02-gray-transform-tutorial.md) —— 七种灰度变换,每一种都是一张表
+- [01-histogram-transform.md](../03-histogram/01-histogram-transform.md) —— 均衡化(表从图统计出来)与 CLAHE(64 张表 + 插值)
+- [02-rounding-and-float.md](02-rounding-and-float.md) —— 建表时的取整与截断规矩

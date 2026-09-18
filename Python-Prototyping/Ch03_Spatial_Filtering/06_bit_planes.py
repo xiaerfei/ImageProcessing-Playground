@@ -1,6 +1,6 @@
 """第 4 周(3.2 节):灰度变换 —— 06 比特平面分层:把 8 个二进制位拆开。
 
-对应文档 Documents/02-intensity/gray-transform-tutorial.md 第四节 4.3。
+对应文档 Documents/02-intensity/02-gray-transform-tutorial.md 第四节 4.3。
 
 一个 8 位像素比如 200,二进制是 11001000。把这 8 位一位一位拆开,
 每一位单独拿出来就是一张黑白图,一共 8 张:

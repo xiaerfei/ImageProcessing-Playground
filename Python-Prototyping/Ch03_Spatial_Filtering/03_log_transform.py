@@ -1,6 +1,6 @@
 """第 4 周(3.2 节):灰度变换 —— 03 对数变换:把暗部掰开。
 
-对应文档 Documents/02-intensity/gray-transform-tutorial.md 第二节。
+对应文档 Documents/02-intensity/02-gray-transform-tutorial.md 第二节。
 
     s = c · log(1 + r)        c = 255 / log(256) ≈ 45.99
 

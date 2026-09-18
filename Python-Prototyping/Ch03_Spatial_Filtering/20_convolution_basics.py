@@ -1,6 +1,6 @@
 """第 6 周(3.4 节):空间滤波基础 —— 20 卷积与相关、边界、可分离。
 
-对应文档 Documents/05-spatial-filtering/spatial-filtering-basics.md,
+对应文档 Documents/05-spatial-filtering/01-spatial-filtering-basics.md,
 这一篇把里面每个数字都跑出来。
 
 3.4 是整个第 3 章的分水岭:3.2 和 3.3 的所有方法都能塌缩成一张 256 项的表,
@@ -62,7 +62,7 @@ def demo_not_a_lut() -> None:
     print(f"  5×5 高斯模糊后,它们变成了 {len(np.unique(blur[same]))} 种不同的值")
     print("\n  同一个输入对应多个输出 —— 一张 256 项的表表达不了,")
     print("  因为输出还取决于这个像素周围长什么样。")
-    print("  判据见 Documents/01-fundamentals/lut.md:输出是否只取决于该像素自己的值。")
+    print("  判据见 Documents/01-fundamentals/03-lut.md:输出是否只取决于该像素自己的值。")
 
 
 # ---------------------------------------------------------------- 2
