@@ -6,7 +6,7 @@
 ```
 Documents/
 ├── 00-roadmap/        学习路线、全书知识地图、参考资料
-├── 01-fundamentals/   图像是什么:内存布局、通道顺序、取整与浮点
+├── 01-fundamentals/   图像是什么:内存布局、通道顺序、取整与浮点、LUT
 ├── 02-intensity/      亮度与灰度:取亮度、灰度变换、Luma 与线性光
 ├── 03-histogram/      直方图与对比度:算法、摄影视角、对比度度量
 ├── 04-geometry/       几何变换:仿射变换原理与 macOS 实现分析
@@ -27,6 +27,7 @@ Documents/
 | :--- | :--- |
 | [week01-image-memory-layout.md](01-fundamentals/week01-image-memory-layout.md) | 图像内存布局、BGR/RGB、YUV 三种排布、cv2 的 I420 标准实测 |
 | [rounding-and-float.md](01-fundamentals/rounding-and-float.md) | **取整与浮点**:小数落回 uint8 的三条规矩。截断为什么是单向偏置(实测 20 轮后整图暗 13 个灰阶)、中间结果别落回 uint8(全程 float 偏移为 0)、`astype` 的回绕坑(300 → 44 变黑斑)、银行家舍入、OpenCV 的整数定点 `+32768 >> 16`、什么时候反而该用 floor |
+| [lut.md](01-fundamentals/lut.md) | **LUT(查找表)**:从 3.2 起每篇都在用的那张表。为什么 8 位图能塌缩成 256 项、1080p 上快 **88 倍**的实测、「输出只取决于该像素自己的值」这条判据(均衡化算,模糊和 CLAHE 不算)、1D 与 **3D LUT**(.cube)、`cv2.LUT` 的 8/16 位表长限制、ffmpeg 与显示器里你早就见过的 LUT |
 
 ## 02-intensity —— 亮度与灰度
 
