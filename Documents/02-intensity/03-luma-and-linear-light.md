@@ -402,7 +402,7 @@ Y = 0.2126*lin[...,0] + 0.7152*lin[...,1] + 0.0722*lin[...,2]   # 真 luminance
 但现实是整个行业(包括 Photoshop 默认)都在编码域直接做 —— 快,而且
 大多数时候看不出来。知道有这回事,遇到问题时知道去哪找就够了。
 
-> 顺带:`sRGB 的 128 只对应 21.6% 的线性光` —— 这个数字在 [contrast.md](../03-histogram/contrast.md)
+> 顺带:`sRGB 的 128 只对应 21.6% 的线性光` —— 这个数字在 [03-contrast.md](../03-histogram/03-contrast.md)
 > 里出现过。中灰看起来在黑白正中间,物理上却只有五分之一的光,
 > 这正是人眼非线性的直接体现,也是 gamma 编码「碰巧好用」的原因。
 
@@ -428,9 +428,9 @@ Y = 0.2126*lin[...,0] + 0.7152*lin[...,1] + 0.0722*lin[...,2]   # 真 luminance
 
 ## 相关文档
 
-- [rounding-and-float.md](../01-fundamentals/rounding-and-float.md) —— 算出来的 Y
+- [02-rounding-and-float.md](../01-fundamentals/02-rounding-and-float.md) —— 算出来的 Y
   怎么落回 uint8:四舍五入 vs 截断、clip 的位置、为什么别指望和 OpenCV 逐像素相同
-- [contrast.md](../03-histogram/contrast.md) —— 对比度、gamma 编码与 256 个码值的分配
-- [histogram-transform.md](../03-histogram/histogram-transform.md) —— 第十三节讲「直方图在哪个域」,
+- [03-contrast.md](../03-histogram/03-contrast.md) —— 对比度、gamma 编码与 256 个码值的分配
+- [01-histogram-transform.md](../03-histogram/01-histogram-transform.md) —— 第十三节讲「直方图在哪个域」,
   和本文第四节是同一件事的两个侧面;第十六节讲彩色图为什么不能分通道处理
 - `Python-Prototyping/Ch06_Color_Processing/01_luma_vs_linear.py` —— 本文所有数字的出处

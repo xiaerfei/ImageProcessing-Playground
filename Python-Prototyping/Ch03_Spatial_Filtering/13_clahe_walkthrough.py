@@ -1,4 +1,4 @@
-"""CLAHE 分步拆解 —— 配合 Documents/03-histogram/histogram-transform.md 的 CLAHE 一节。
+"""CLAHE 分步拆解 —— 配合 Documents/03-histogram/01-histogram-transform.md 的 CLAHE 一节。
 
   1. 全局均衡化为什么搞不定光照不均
   2. AHE(只分块、不限幅)为什么会把噪声放大

@@ -1,6 +1,6 @@
 """第 5 周(3.3 节):直方图处理 —— 16 全局均衡化 vs CLAHE,到底该用哪个。
 
-对应文档 Documents/03-histogram/histogram-transform.md 第六、七节。
+对应文档 Documents/03-histogram/01-histogram-transform.md 第六、七节。
 
 10 号脚本写了全局均衡化,13 号脚本拆了 CLAHE 的内部步骤,
 这一篇只做一件事:**把两者摆在一起比**,回答「什么时候用哪个」。

@@ -1,6 +1,6 @@
 """取整与浮点:小数落回 uint8 的三条规矩,逐条实测。
 
-Documents/01-fundamentals/rounding-and-float.md 里的每个数字都由这里算出。
+Documents/01-fundamentals/02-rounding-and-float.md 里的每个数字都由这里算出。
 
 四个实验:
 1. 截断 vs 四舍五入 —— 偏差是单向的还是零均值的

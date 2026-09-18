@@ -1,4 +1,4 @@
-"""LUT(查找表)的五个验证 —— 配合 Documents/01-fundamentals/lut.md。
+"""LUT(查找表)的五个验证 —— 配合 Documents/01-fundamentals/03-lut.md。
 
 LUT 就是一张「输入 → 输出」的对照表:8 位图只有 256 种可能的像素值,
 所以一张 256 项的表就能穷举所有答案,之后全图只查表、不算数。

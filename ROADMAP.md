@@ -4,7 +4,7 @@
 - **背景**:10 年 iOS/macOS 音视频/推流开发;电子信息工程本科;高数/复变/信号系统需按需重建
 - **时间预算**:每周 6~8 小时(工作日 2~3 晚 × 1~1.5h 读书笔记,周末半天 3~4h 写代码),主线 18 周
 - **节号说明**:以第四版英文原版目录为准,中译本个别节号可能有出入,以书的实际目录为准
-- **全书知识版图**:见 [Documents/book-outline.md](Documents/00-roadmap/book-outline.md)(12 章完整知识点 + 每章路线定位)
+- **全书知识版图**:见 [Documents/book-outline.md](Documents/00-roadmap/01-book-outline.md)(12 章完整知识点 + 每章路线定位)
 
 ## 一、总体原则
 
@@ -103,8 +103,8 @@
 ### ▸ 第 4 周(阶段 2):基本灰度变换
 
 **读**:3.1 精读(空域处理框架:点运算 vs 邻域运算);3.2 精读
-**速查**:[Documents/intensity-and-grayscale.md](Documents/02-intensity/intensity-and-grayscale.md) —— 四种变换的曲线与 LUT 要点
-**速查**:[Documents/contrast.md](Documents/03-histogram/contrast.md) —— 对比度到底是什么、怎么统计、为什么不能用 max−min
+**速查**:[Documents/intensity-and-grayscale.md](Documents/02-intensity/01-intensity-and-grayscale.md) —— 四种变换的曲线与 LUT 要点
+**速查**:[Documents/contrast.md](Documents/03-histogram/03-contrast.md) —— 对比度到底是什么、怎么统计、为什么不能用 max−min
 
 **知识点**:
 - 反色:`s = 255 - r`(X 光片增强类场景)
@@ -127,8 +127,8 @@
 
 **读**:3.3 精读
 
-**速查**:[Documents/histogram-transform.md](Documents/03-histogram/histogram-transform.md) —— 直方图/均衡化/CLAHE/规定化的大白话入门
-**摄影视角**:[Documents/histogram-reading.md](Documents/03-histogram/histogram-reading.md) —— 读懂直方图形态、影调分类、ETTR;第九节给出「形态 → 该用什么变换」对照表
+**速查**:[Documents/histogram-transform.md](Documents/03-histogram/01-histogram-transform.md) —— 直方图/均衡化/CLAHE/规定化的大白话入门
+**摄影视角**:[Documents/histogram-reading.md](Documents/03-histogram/02-histogram-reading.md) —— 读懂直方图形态、影调分类、ETTR;第九节给出「形态 → 该用什么变换」对照表
 
 **知识点**:
 - 直方图 = 灰度分布统计;亮图/暗图/低对比度图的直方图形态
@@ -200,8 +200,8 @@
 ### ▸ 第 8 周(阶段 3):颜色模型与视频色彩工程
 
 **读**:6.1~6.2 精读;6.3 泛读
-**速查**:[Documents/intensity-and-grayscale.md](Documents/02-intensity/intensity-and-grayscale.md) 第三、四节 —— 各图像类型取亮度、Y/V/L*/L 的区别
-**速查**:[Documents/luma-and-linear-light.md](Documents/02-intensity/luma-and-linear-light.md) —— Luma 与真实亮度差在哪(分贝类比)、为什么 8bit 装不下线性光、YUV 的 limited range 陷阱(ffmpeg 实测 235/16)
+**速查**:[Documents/intensity-and-grayscale.md](Documents/02-intensity/01-intensity-and-grayscale.md) 第三、四节 —— 各图像类型取亮度、Y/V/L*/L 的区别
+**速查**:[Documents/luma-and-linear-light.md](Documents/02-intensity/03-luma-and-linear-light.md) —— Luma 与真实亮度差在哪(分贝类比)、为什么 8bit 装不下线性光、YUV 的 limited range 陷阱(ffmpeg 实测 235/16)
 
 **知识点**:
 - 三原色/三补色、色度图;RGB 立方体、CMY(K) 印刷

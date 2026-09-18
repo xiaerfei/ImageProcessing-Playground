@@ -4,8 +4,8 @@
 > 每一条写清三件事:**是什么**、**为什么值得记**、**回头要查哪个 API/关键词**。
 > 等真正用到了,再回来挑一条深挖。
 >
-> 已经做完的部分见 [histogram-transform.md](histogram-transform.md)(均衡化、CLAHE、规定化手算)、
-> [contrast.md](contrast.md)(对比度度量)、[histogram-reading.md](histogram-reading.md)(摄影视角读图)。
+> 已经做完的部分见 [01-histogram-transform.md](01-histogram-transform.md)(均衡化、CLAHE、规定化手算)、
+> [03-contrast.md](03-contrast.md)(对比度度量)、[02-histogram-reading.md](02-histogram-reading.md)(摄影视角读图)。
 
 ---
 
@@ -42,7 +42,7 @@ $$ s = G^{-1}\big(F(r)\big) $$
 
 **回头查**:`np.interp` + 两条 `np.cumsum`;OpenCV 没有现成函数,
 skimage 有 `skimage.exposure.match_histograms`。文档里的手算在
-[histogram-transform.md 第十五节](histogram-transform.md);
+[histogram-transform.md 第十五节](01-histogram-transform.md);
 `15_histogram_deep_dive.py` 有个 demo。**从零实现留给脚本 `18`。**
 
 ---
@@ -128,7 +128,7 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 **是什么**:均衡化和 CLAHE 的表都是**从当前帧统计出来的**。
 相邻两帧内容稍有变化(有人走过、云飘过),表就变,连续播放就是一闪一闪的亮度跳动。
-[histogram-transform.md](histogram-transform.md) 里提了这一句,但**没有实测过**。
+[01-histogram-transform.md](01-histogram-transform.md) 里提了这一句,但**没有实测过**。
 
 **怎么办**(三种,通常混用):
 
@@ -176,10 +176,10 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 | 学到的东西 | ffmpeg 滤镜 | 备注 |
 | :--- | :--- | :--- |
 | 全局直方图均衡化 | `histeq` | 有 `strength` / `intensity` 参数,不是纯教科书版 |
-| 自动色阶(百分位裁剪) | `normalize` | 对应 [contrast.md](contrast.md) 第四节那一套 |
+| 自动色阶(百分位裁剪) | `normalize` | 对应 [03-contrast.md](03-contrast.md) 第四节那一套 |
 | 线性 / 幂律 / 分段线性 | `curves`、`eq`、`lut`、`lutyuv` | `eq` 的 gamma/contrast/brightness 就是 3.2 那几个旋钮 |
 | 看直方图 | `histogram` | 实时画直方图,可叠加在画面上 |
-| 分量图 / 波形图 | `waveform` | 对应 [histogram-reading.md](histogram-reading.md) 第三节的 Waveform |
+| 分量图 / 波形图 | `waveform` | 对应 [02-histogram-reading.md](02-histogram-reading.md) 第三节的 Waveform |
 | 矢量示波器 | `vectorscope` | 色度版本,直方图的二维亲戚 |
 | CLAHE | **没有现成的** | 要么自己写 filter,要么走 OpenCV |
 
@@ -191,6 +191,6 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 ## 相关文档
 
-- [histogram-transform.md](histogram-transform.md) —— 均衡化、CLAHE、规定化(已展开的部分)
-- [contrast.md](contrast.md) —— 对比度的三种度量与自动色阶
-- [histogram-reading.md](histogram-reading.md) —— 摄影视角读直方图
+- [01-histogram-transform.md](01-histogram-transform.md) —— 均衡化、CLAHE、规定化(已展开的部分)
+- [03-contrast.md](03-contrast.md) —— 对比度的三种度量与自动色阶
+- [02-histogram-reading.md](02-histogram-reading.md) —— 摄影视角读直方图

@@ -3,7 +3,7 @@
 > 改写自知乎文章[《数字图像处理 - 灰度变换基础》](https://zhuanlan.zhihu.com/p/2054856557331067380)(作者 YuHan),
 > 配图沿用原文。原文偏教材腔且有几处含糊/出错的地方,这里全部改成大白话并做了修正(见文末「与原文的出入」)。
 >
-> **和 [intensity-and-grayscale.md](intensity-and-grayscale.md) 的分工**:
+> **和 [01-intensity-and-grayscale.md](01-intensity-and-grayscale.md) 的分工**:
 > 那份讲「为什么」(线性/对数/幂律的原理、区别、坑),这份讲「有哪些方法、长什么样、代码怎么写」。
 
 ## 先搞懂三件事
@@ -165,7 +165,7 @@ out = cv2.LUT(img, lut)
   不取对数的话屏幕上只有中心一个白点,其他全黑
 - 低照度图像提亮
 
-> 详细的「对数 vs 幂律有什么区别、为什么频谱非它不可」,见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 第二节。
+> 详细的「对数 vs 幂律有什么区别、为什么频谱非它不可」,见 [01-intensity-and-grayscale.md](01-intensity-and-grayscale.md) 第二节。
 
 ---
 
@@ -206,7 +206,7 @@ out = cv2.LUT(img, lut)
 (把档位往暗部倾斜),显示时屏幕再做一次 γ≈2.2 抵消回来。这一来一回就叫**伽马校正**。
 
 > ⚠️ sRGB 不是纯粹的幂律,它在最暗处接了一小段直线。日常用 `pow(x, 2.2)` 近似够了
-> (差约 2 个灰度级),但精确色彩管理不能这么糊。详见 [intensity-and-grayscale.md](intensity-and-grayscale.md) 第三节。
+> (差约 2 个灰度级),但精确色彩管理不能这么糊。详见 [01-intensity-and-grayscale.md](01-intensity-and-grayscale.md) 第三节。
 
 **动手验证**:[`Ch03_Spatial_Filtering/04_gamma_transform.py`](../../Python-Prototyping/Ch03_Spatial_Filtering/04_gamma_transform.py)
 把本节结论逐条跑了一遍(lenna 灰度图):
@@ -377,7 +377,7 @@ bit-0 精确落在 0.500 —— 它和噪声没有任何区别。
 > 单看一层,`lut[v] = (v >> i) & 1` 照样只取决于像素自己的值,**能塌缩成一张 256 项的表**
 > (实测与直接位运算逐像素相同)。它真正特别的地方是**一进八出** —— 把一张图拆成 8 张,
 > 而不是 01~05 那种一进一出的 s = T(r);而且常见用法(位深削减、LSB 水印)还要把多层重新拼回去。
-> 关于「什么能塌缩成 LUT」的判据,见 [lut.md](../01-fundamentals/lut.md)。
+> 关于「什么能塌缩成 LUT」的判据,见 [03-lut.md](../01-fundamentals/03-lut.md)。
 
 ---
 
@@ -589,8 +589,8 @@ out  = np.clip(inv * gain, 0, 255)      # ③ 把三通道均值拉平
 所以严格说,灰度图里那个数连"亮度"都不完全够格:它是 `Y′`(带撇),属于**编码域**,
 不是物理光强。那一撇不是装饰,就是在提醒这件事。这两份文档拆得更细:
 
-- [intensity-and-grayscale.md](intensity-and-grayscale.md) 第七节 —— 六种"亮度"定义实测对比
-- [luma-and-linear-light.md](luma-and-linear-light.md) 第一节 —— 三个"亮度"词的区别
+- [01-intensity-and-grayscale.md](01-intensity-and-grayscale.md) 第七节 —— 六种"亮度"定义实测对比
+- [03-luma-and-linear-light.md](03-luma-and-linear-light.md) 第一节 —— 三个"亮度"词的区别
 
 ### 附二.3 为什么历史上会绑在一起
 

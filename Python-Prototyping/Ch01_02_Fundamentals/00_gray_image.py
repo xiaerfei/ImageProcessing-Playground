@@ -38,7 +38,7 @@ def to_luma(bgr: cv2.typing.MatLike) -> npt.NDArray[np.uint8]:
     最后必须 np.rint 四舍五入 —— astype(np.uint8) 是向下取整,
     129.9 会变成 129,而 cv2 给的是 130,平均每两个像素就差 1 个灰阶,
     而且永远偏同一个方向(累积起来整张图会发暗)。加上 rint 后误差降到
-    ±1 以内且正负抵消。取整规矩详见 Documents/01-fundamentals/rounding-and-float.md。
+    ±1 以内且正负抵消。取整规矩详见 Documents/01-fundamentals/02-rounding-and-float.md。
     """
     b = bgr[:, :, 0].astype(np.float64)
     g = bgr[:, :, 1].astype(np.float64)

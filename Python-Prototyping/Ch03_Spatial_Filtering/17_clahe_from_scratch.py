@@ -1,6 +1,6 @@
 """第 5 周(3.3 节):直方图处理 —— 17 手写 CLAHE,重点是块间双线性插值怎么实现。
 
-对应文档 Documents/03-histogram/histogram-transform.md 第十四节。
+对应文档 Documents/03-histogram/01-histogram-transform.md 第十四节。
 
 13 号脚本拆了 CLAHE 的四个步骤,16 号脚本比了它和全局均衡化的差别,
 但「块与块之间用双线性插值平滑接上」这句话一直没落到代码上。这一篇把它写出来。

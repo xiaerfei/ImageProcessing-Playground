@@ -1,7 +1,7 @@
 """第 4 周(3.2 节):灰度变换 —— 04 幂律变换(伽马):装了旋钮的对数。
 
-对应文档 Documents/02-intensity/gray-transform-tutorial.md 第三节、
-        Documents/02-intensity/intensity-and-grayscale.md 第三节。
+对应文档 Documents/02-intensity/02-gray-transform-tutorial.md 第三节、
+        Documents/02-intensity/01-intensity-and-grayscale.md 第三节。
 
     s = 255 · (r / 255)^γ
 
@@ -57,7 +57,7 @@ def gamma_lut(gamma: float) -> npt.NDArray[np.uint8]:
     先除以 255 归一化再求幂,最后乘回 255 —— 这一步不能省。
     直接 r^γ 的话,γ<1 时 255^0.5 只有 16(整张图几乎全黑),
     γ>1 时 255^2.2 是 20 万(全部撑爆成白)。归一化保证了两端固定在 0 和 255。
-    取整规矩见 Documents/01-fundamentals/rounding-and-float.md。
+    取整规矩见 Documents/01-fundamentals/02-rounding-and-float.md。
     """
     s = 255.0 * (LEVELS / 255.0) ** gamma
     return np.clip(np.rint(s), 0, 255).astype(np.uint8)
@@ -82,7 +82,7 @@ def srgb_encode(lin: npt.NDArray[np.float64]) -> npt.NDArray[np.float64]:
     """sRGB 的标准编码曲线(线性光进,0~1 编码值出)。srgb_decode 的逆。
 
     线性光算完必须走这一步再送显示,否则屏幕会把它当编码值再解码一次,
-    画面明显偏暗。参见 Documents/02-intensity/luma-and-linear-light.md 第六节。
+    画面明显偏暗。参见 Documents/02-intensity/03-luma-and-linear-light.md 第六节。
     """
     return np.where(lin <= 0.0031308, lin * 12.92, 1.055 * lin ** (1 / 2.4) - 0.055)
 

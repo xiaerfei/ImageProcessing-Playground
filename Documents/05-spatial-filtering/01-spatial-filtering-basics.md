@@ -36,7 +36,7 @@
 
 ## 零、先定位:它是第几类操作
 
-[lut.md](../01-fundamentals/lut.md) 里那条判据:
+[03-lut.md](../01-fundamentals/03-lut.md) 里那条判据:
 
 > **输出是否只取决于这个像素自己的值?**
 
@@ -469,7 +469,7 @@ vis_shift = np.clip(grad + 128, 0, 255).astype(np.uint8)    # 0 移到中灰(看
 vis_norm = cv2.normalize(grad, None, 0, 255, cv2.NORM_MINMAX).astype(np.uint8)  # 拉满
 ```
 
-这条和 [rounding-and-float.md](../01-fundamentals/rounding-and-float.md) 的
+这条和 [02-rounding-and-float.md](../01-fundamentals/02-rounding-and-float.md) 的
 「中间结果别落回 uint8」是同一条规矩,只是在滤波里代价更大 —— 那边丢的是半个灰阶,
 这边丢的是**接近一半的像素**。
 
@@ -633,7 +633,7 @@ k = k[::-1, ::-1]      # 印章转半圈
 | 补 0 边界 | 四周一圈黑边 | 用 `BORDER_REPLICATE` 或默认的 `REFLECT_101` |
 | 偶数边长的核 | 图整体偏移半个像素 | 用奇数核,或显式给 `anchor` |
 | 手写 2D 高斯 | 慢几十倍 | `sepFilter2D` 或 `GaussianBlur` |
-| 在 gamma 域做平滑 | 暗部被平均得偏亮 | 要物理正确就先转线性光(见 [luma-and-linear-light.md](../02-intensity/luma-and-linear-light.md)) |
+| 在 gamma 域做平滑 | 暗部被平均得偏亮 | 要物理正确就先转线性光(见 [03-luma-and-linear-light.md](../02-intensity/03-luma-and-linear-light.md)) |
 
 ---
 
@@ -660,7 +660,8 @@ k = k[::-1, ::-1]      # 印章转半圈
 
 ## 相关文档
 
-- [lut.md](../01-fundamentals/lut.md) —— 「输出只取决于该像素自己的值」那条判据,本篇的起点
-- [rounding-and-float.md](../01-fundamentals/rounding-and-float.md) —— 中间结果别落回 uint8
-- [histogram-transform.md](../03-histogram/histogram-transform.md) —— CLAHE:卡在点运算和邻域运算之间的那个例子
-- [luma-and-linear-light.md](../02-intensity/luma-and-linear-light.md) —— 在哪个域做运算
+- [02-smoothing.md](02-smoothing.md) —— 平滑篇(3.5):盒式/高斯/中值/双边,本篇的第一批实际用户
+- [03-lut.md](../01-fundamentals/03-lut.md) —— 「输出只取决于该像素自己的值」那条判据,本篇的起点
+- [02-rounding-and-float.md](../01-fundamentals/02-rounding-and-float.md) —— 中间结果别落回 uint8
+- [01-histogram-transform.md](../03-histogram/01-histogram-transform.md) —— CLAHE:卡在点运算和邻域运算之间的那个例子
+- [03-luma-and-linear-light.md](../02-intensity/03-luma-and-linear-light.md) —— 在哪个域做运算

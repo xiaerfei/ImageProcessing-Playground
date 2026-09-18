@@ -1,6 +1,6 @@
 """第 4 周(3.2 节):灰度变换 —— 05 分段线性:分区间各管各的。
 
-对应文档 Documents/02-intensity/gray-transform-tutorial.md 第四节 4.1 / 4.2。
+对应文档 Documents/02-intensity/02-gray-transform-tutorial.md 第四节 4.1 / 4.2。
 
 前面四种都是**一个公式管全图**。分段线性把 0~255 切成几段,每段用不同的
 (a, b) —— 所以它不是新公式,只是把 01 篇那条 s = a·r + b 分段用了而已。
@@ -199,7 +199,7 @@ def main() -> None:
     print(f"  自动 [{p1:.0f}, {p99:.0f}](1%/99%) 标准差 {out_auto.std():.1f}  "
           f"压平灰阶 {flattened_ratio(auto, hist)[0]}")
     print("  自动色阶就是这么干的:按百分位取转折点,故意扔掉两端各 1% 的极值,")
-    print("  免得几个噪点把整个区间撑开(详见 Documents/03-histogram/contrast.md)")
+    print("  免得几个噪点把整个区间撑开(详见 Documents/03-histogram/03-contrast.md)")
 
     # --- ⑥ r1 = r2 退化成阈值化 ---
     T = 112
