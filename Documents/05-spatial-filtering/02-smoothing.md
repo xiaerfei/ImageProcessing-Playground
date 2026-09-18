@@ -274,6 +274,7 @@ cv2.GaussianBlur(img, (k, k), 0)       # σ 给 0   → 按 ksize 反推一个 �
 
 ## 相关文档
 
+- [03-sharpening.md](03-sharpening.md) —— 锐化篇(3.6):平滑的反面,而且锐化前一般要先降噪
 - [01-spatial-filtering-basics.md](01-spatial-filtering-basics.md) —— 核怎么滑、边界怎么补、可分离(本篇的地基)
 - [03-lut.md](../01-fundamentals/03-lut.md) —— 为什么这些操作塌缩不成一张表
 - [03-luma-and-linear-light.md](../02-intensity/03-luma-and-linear-light.md) —— 要物理正确的模糊,该在线性光下做
