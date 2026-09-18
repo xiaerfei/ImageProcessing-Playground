@@ -22,6 +22,8 @@
 5. 「先插 LUT 再查表」与「先查表再插值」完全等价 —— 两种实现随便选
 6. ⚠️ OpenCV 的一个怪癖:尺寸不能整除 tileGridSize 时,**能整除的那一边也会补满一整块**。
    不照着做,page.png 上最大差 27;照着做,最大差 1
+7. 插值之后还有没有割裂感 —— 有,但换了形式:双线性只保证值连续、不保证斜率连续,
+   实测映射场的二阶差分**只在块中心非零**。台阶没了,变成了折痕,而且搬了家
 
 用法:
     .venv/bin/python Ch03_Spatial_Filtering/17_clahe_from_scratch.py [--show]
@@ -323,6 +325,50 @@ def demo_padding_quirk() -> None:
     print("  自己实现时如果要和 OpenCV 对齐,这一条必须照抄;不对齐的话其实随便补都行。")
 
 
+
+# ---------------------------------------------------------------- 7
+def demo_residual_artifacts(img: npt.NDArray[np.uint8]) -> None:
+    hr("7. 插值之后还有没有割裂感 —— 有,但换了形式")
+    th, tw = img.shape[0] // TILES, img.shape[1] // TILES
+    luts = tile_luts(img)
+
+    print("  (a) 双线性是 C⁰ 不是 C¹:值连续,斜率不连续")
+    print("      固定一个输入灰度,看它的映射结果沿一整行怎么走,再求二阶差分:\n")
+    u = np.arange(img.shape[1]) / tw - 0.5
+    j1 = np.floor(u).astype(np.int64)
+    xa = u - j1
+    j2 = np.clip(j1 + 1, 0, TILES - 1)
+    j1 = np.clip(j1, 0, TILES - 1)
+    centers = np.array([j * tw + tw // 2 for j in range(TILES)])
+    col = np.arange(1, img.shape[1] - 1)
+    at_center = np.isin(col, centers)
+    print(f"      {'输入灰度':>8s}{'块中心处 |二阶差分|':>22s}{'其它位置':>14s}{'最大值':>10s}")
+    for v0 in (60, 128, 200):
+        s_row = luts[3, j1, v0] * (1 - xa) + luts[3, j2, v0] * xa
+        d2 = np.abs(np.diff(s_row, n=2))
+        print(f"      {v0:8d}{d2[at_center].mean():22.3f}{d2[~at_center].mean():14.4f}"
+              f"{d2.max():10.3f}")
+    print("\n      其它位置**严格是 0**(线性段),转折全部落在块中心。")
+    print("      所以插值没有消灭割裂,是把它搬了家:")
+    print("        不插值 → 块边界上的「台阶」(值跳变),一眼看见")
+    print("        插值后 → 块中心上的「折痕」(斜率跳变),一般看不见")
+    print("      但大面积极平滑的渐变(天空、灯箱)上,人眼的 Mach band 效应会放大二阶不连续。")
+    print("      判据:看到的网格线在**块中心** = 插值的折痕;在**块边界** = 插值没生效或坐标算错了。")
+
+    print("\n  (b) 真正常见的残留:相邻两块对同一个输入的分歧")
+    print(f"      {'clipLimit':>10s}{'相邻块 LUT 最大分歧':>22s}{'摊到一个块宽的坡度':>22s}")
+    for c in (1.0, 2.0, 4.0, 40.0):
+        lt = tile_luts(img, clip=c)
+        gap = max(int(np.abs(lt[:, :-1].astype(np.int64) - lt[:, 1:].astype(np.int64)).max()),
+                  int(np.abs(lt[:-1, :].astype(np.int64) - lt[1:, :].astype(np.int64)).max()))
+        print(f"      {c:10.1f}{gap:19d} 级{gap / tw:19.2f} 级/像素")
+    print("\n      插值做的事是把这个分歧摊到一个块宽上,变成一道缓坡 —— 不再是硬接缝,")
+    print("      但一个横跨两块的物体仍然会被非均匀地处理,那就是 CLAHE 典型的光晕(halo)。")
+    print("      插值只能让它平滑,消不掉 —— 根源是「相邻块需要的处理本来就不一样」,")
+    print("      而这恰恰是 CLAHE 存在的理由。")
+    print("      降 clipLimit 是最直接的旋钮:分歧小了,折痕和光晕一起变小。")
+
+
 # ---------------------------------------------------------------- 图板
 def save_figure(out_path: Path, img: npt.NDArray[np.uint8]) -> None:
     th, tw = img.shape[0] // TILES, img.shape[1] // TILES
@@ -426,6 +472,7 @@ def main() -> None:
     demo_seams(img)
     demo_equivalence(img)
     demo_padding_quirk()
+    demo_residual_artifacts(img)
 
     out = REPO / "Assets" / "results" / "clahe-interpolation-demo.png"
     out.parent.mkdir(parents=True, exist_ok=True)

@@ -34,6 +34,7 @@
 | `00_gray_image.py` | 从 RGB 算亮度 Y′,与 cv2.BGR2GRAY 对照,亮度直方图统计 |
 | `01_hello_image.py` | 图像即数组:读图、shape/dtype、通道顺序 |
 | `02_rounding_rules.py` | 取整与浮点的三条规矩(对应 rounding-and-float.md) |
+| `03_lut_basics.py` | LUT 是什么:建表/查表、88 倍提速实测、什么能塌缩成表、彩色与位深的限制(对应 lut.md) |
 
 > 注:反色/对数/Gamma/线性等灰度变换在第四版属于 3.2 节,
 > 脚本放在 `Ch03_Spatial_Filtering/`(01~03 篇),不在本目录。
