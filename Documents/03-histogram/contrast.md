@@ -252,3 +252,4 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 - [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 线性变换 `s = a·r + b` 的完整讨论
 - [histogram-transform.md](histogram-transform.md) —— 直方图均衡化:自动的、分段的对比度拉伸
 - [histogram-reading.md](histogram-reading.md) —— 摄影视角:软调/硬调就是对比度的美学分类
+- [further-topics.md](further-topics.md) —— 直方图还能做什么(备忘清单,暂不展开)

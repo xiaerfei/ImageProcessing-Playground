@@ -608,3 +608,4 @@ ACR / Lightroom 更省事,直接把三条彩色叠画在一起。灰色 = 三通
 - [histogram-transform.md](histogram-transform.md) —— 直方图变换的算法篇:均衡化、CLAHE、规定化
 - [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换原理篇:线性/对数/伽马、亮度的六种定义
 - [gray-transform-tutorial.md](../02-intensity/gray-transform-tutorial.md) —— 灰度变换图解篇
+- [further-topics.md](further-topics.md) —— 直方图还能做什么(备忘清单,暂不展开)
