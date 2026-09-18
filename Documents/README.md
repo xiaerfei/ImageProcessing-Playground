@@ -10,6 +10,7 @@ Documents/
 ├── 02-intensity/      亮度与灰度:取亮度、灰度变换、Luma 与线性光
 ├── 03-histogram/      直方图与对比度:算法、摄影视角、对比度度量
 ├── 04-geometry/       几何变换:仿射变换原理与 macOS 实现分析
+├── 05-spatial-filtering/  空间滤波:卷积与相关、边界、可分离核
 └── reference-code/    外部参考代码(《VC++ 图像处理程序设计》配套工程)
 ```
 
@@ -52,6 +53,12 @@ Documents/
 | :--- | :--- |
 | [图像仿射变换原理解析.md](04-geometry/图像仿射变换原理解析.md) | **原理篇**:仿射变换的数学基础、基础变换矩阵、复合变换的相乘顺序、重采样、自适应画布、坑点清单与完整参考实现。配套代码 `ImageAlgorithm/Algorithm/IAAffineTransform.m` |
 | [MacOS-图像仿射变换与采样模块分析.md](04-geometry/MacOS-图像仿射变换与采样模块分析.md) | **素材**:围绕 `IAAffineTransform.m` 的逐点答疑原始记录(Gemini 对话),已被上一篇系统整理过 |
+
+## 05-spatial-filtering —— 空间滤波
+
+| 文档 | 内容 |
+| :--- | :--- |
+| [spatial-filtering-basics.md](05-spatial-filtering/spatial-filtering-basics.md) | **原理篇(3.4)**:第一个塌缩不成 LUT 的操作。核/模板术语与为什么用奇数边长、**相关 vs 卷积**(用冲激响应分辨,`cv2.filter2D` 做的是相关;对称核无差别,Sobel 一翻就变号;只有卷积有交换律)、**五种补边**实测对照与各自后果(默认 `REFLECT_101` 为什么)、**核的和**决定它是平滑/求导/锐化、线性 vs 非线性的判据、**可分离核**(秩=1,15×15 实测快 **25 倍**;⚠️ `filter2D` 在 k≥9 时改用 DFT,耗时曲线根本不是 k²)、`ddepth` 与溢出(Sobel 在 uint8 下 **45.3% 的像素被截成 0**)、常见坑清单 |
 
 ## 数学"回血"资源
 
