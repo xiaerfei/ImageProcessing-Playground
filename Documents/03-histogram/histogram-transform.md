@@ -209,6 +209,32 @@ out = clahe.apply(gray)
 
 ---
 
+**动手验证**:[`Ch03_Spatial_Filtering/16_equalize_vs_clahe.py`](../../Python-Prototyping/Ch03_Spatial_Filtering/16_equalize_vs_clahe.py)
+把两者摆在一起横向比了一遍(13 号脚本拆的是 CLAHE 内部步骤,这一篇只回答「该用哪个」):
+
+| 结论 | 实测 |
+| :--- | :--- |
+| **1 张表 vs 64 张表** | 同一个灰度 r=109,在最亮的块和最暗的块里分别被映射到 77 和 170,**差 94 级** |
+| 所以 CLAHE 不是点运算 | 结果取决于像素**在哪儿**,不只取决于它的值 —— 和 3.2 那六篇的根本区别 |
+| 「细节看得清」要用局部对比度量 | `astronaut.png`:全局标准差是均衡化涨得多(75.0 → 80.3),**局部对比度**是 CLAHE 涨得多(50.0 → 58.8) |
+| 低对比度图 | `moon.png` 两个都能救,全局均衡化下手猛得多(σ 13.3 → 74.0 vs CLAHE 18.5) |
+| 光照不均图 | `page.png` 左右亮度差 73.4,全局均衡化做到 **107.4(更糟)**,CLAHE 压到 52.9 |
+| **噪声的代价** | σ=3 的噪声:全局均衡化放大 **12.4 倍**,CLAHE(clip=2)只放大 **2.7 倍** |
+| 灰阶的代价 | 全局均衡化把 178 个灰阶并到 **49** 个(梳齿);CLAHE 还剩 246 个 |
+| 耗时 | 512×512 上 0.16 ms vs 0.25 ms —— CLAHE 贵不了多少 |
+| **CLAHE 有力度旋钮** | clipLimit 1→40,局部对比度 11.4 → 63.5,噪声放大 1.9× → **17.4×**(比全局均衡化还猛) |
+| 两个旋钮拧到底 = 退化 | `tileGridSize=(1,1)` + `clipLimit=40` 与 `cv2.equalizeHist` 最大差 1 级 |
+
+> **怎么选**:整张图偏灰偏暗、分布挤在一起 → 全局均衡化够用且便宜;
+> 光照不均、要看暗部细节、有噪声、或者需要能调力度 → CLAHE。
+> 视频里默认选 CLAHE,但注意它**逐帧独立**会闪烁(见本节末尾的提醒)。
+
+![全局均衡化 vs CLAHE:三张性格不同的图](../../Assets/results/equalize-vs-clahe-demo.png)
+
+![两者的三处关键差别:表的数量、力度旋钮、直方图形状](../../Assets/results/equalize-vs-clahe-curves.png)
+
+---
+
 ## 八、变体:直方图规定化(匹配)
 
 均衡化的目标是"摊平"。但有时候我们想要的不是摊平,而是**变成某个指定的样子**。
@@ -931,3 +957,4 @@ out = cv2.cvtColor(ycc, cv2.COLOR_YCrCb2BGR)
 
 - [intensity-and-grayscale.md](../02-intensity/intensity-and-grayscale.md) —— 灰度变换原理篇(第一类操作)
 - [gray-transform-tutorial.md](../02-intensity/gray-transform-tutorial.md) —— 灰度变换图解篇
+- [further-topics.md](further-topics.md) —— 直方图还能做什么(备忘清单,暂不展开)
