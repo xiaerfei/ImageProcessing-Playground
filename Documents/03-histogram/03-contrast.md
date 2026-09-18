@@ -3,6 +3,16 @@
 > 面向零基础。配合 [01-histogram-transform.md](01-histogram-transform.md) 和 [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) 读。
 > 文中数字可复现:`Python-Prototyping/Ch03_Spatial_Filtering/12_contrast_measures.py`
 
+> **怎么读这篇**(第一遍真的不用全看)
+>
+> | 有多少时间 | 看哪几节 |
+> | :--- | :--- |
+> | **只有 10 分钟** | `一句话` + `小结` |
+> | **第一遍学** | 再加 `一、先分清亮度和对比度` `二、为什么直方图宽 = 对比度高` `三、这个差距怎么统计` |
+> | **踩坑时回来查** | `四、自动色阶` `五、均衡化为什么免疫` `六、显示器上的「对比度」` |
+
+---
+
 ## 一句话
 
 **亮度 = 整体多亮。对比度 = 亮的地方和暗的地方,差多少。**
