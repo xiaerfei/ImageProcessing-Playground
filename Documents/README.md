@@ -91,7 +91,7 @@ python3 tools/check_doc_links.py
 | :--- | :--- |
 | [01-intensity-and-grayscale.md](02-intensity/01-intensity-and-grayscale.md) | **原理篇**:线性/对数/幂律为什么这么设计、彼此区别与坑;RGB→灰度加权、各图像类型取亮度、六种亮度定义辨析 |
 | [02-gray-transform-tutorial.md](02-intensity/02-gray-transform-tutorial.md) | **图解篇**:七种灰度变换方法的效果图与 OpenCV 代码(反转/对数/幂律/对比度拉伸/灰度级分层/比特平面/阈值化)。改写自知乎文章并修正了几处错误 |
-| [03-luma-and-linear-light.md](02-intensity/03-luma-and-linear-light.md) | **亮度的三种含义**:Luminance / Luma / Lightness 到底差在哪;Luma 为什么是「算错了但用了 70 年」的近似(分贝类比 + 高饱和色实测差 70+);**线性光**为什么不能直接存(8bit 的 256 档怎么分配、线性要 16.6bit 才追平);**YUV**:Y 平面直接就是亮度、limited range 陷阱、为什么必须先分离亮度才能做色度子采样;**Y 怎么显示回屏幕** |
+| [03-luma-and-linear-light.md](02-intensity/03-luma-and-linear-light.md) | **亮度的三种含义**:Luminance / Luma / Lightness 在回答**不同的问题**,不是精度不同的近似(HSV 的 V 差到 27.6,却最常被误用);Luma 为什么是「算错了但用了 70 年」的近似 —— 分贝类比,纯红差 **+73**,而**误差严格跟着饱和度走**,三张真实照片实测平均差 4~9 灰阶(不是 0);**8bit 装不下线性光**(最暗的 1% 线性只分到 **3 档**,sRGB 有 26 档;要追平得 16.6bit);**limited range**(黑 16 白 235,当 full 用 σ 58.1→49.9);**Y 怎么显示回屏幕**(抄三份是精确解;⚠️ 不给 `vmin/vmax` 会把 limited range 这个 bug 直接藏起来) |
 
 ## 03-histogram:直方图
 

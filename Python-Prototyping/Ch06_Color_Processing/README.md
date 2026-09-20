@@ -125,3 +125,12 @@ video range(又叫 limited/studio range)的 16/235 是模拟广播时代留下�
 ### 6. 最后一环:4:2:0 与色度上采样
 
 I420 里每 2×2 个像素共用一对 (U, V),解码回 RGB 前要把色度平面放大回全分辨率。脚本用最近邻(`np.repeat` 两次);实验中手写解码与 OpenCV 最大误差仅为 1,说明 OpenCV 内部也是最近邻。更讲究的实现会用双线性上采样,色块边缘的"溢色"会更柔和——这留到第 8 周的 `02_yuv_pitfalls.py` 观察。
+
+## 脚本清单
+
+| 脚本 | 内容 |
+| :--- | :--- |
+| `00_yuv_warmup.py` | YUV 热身:平面布局、Y 直接当灰度图用 |
+| `01_luma_vs_linear.py` | luma 篇所有数字的出处:Luma 与真实亮度的差、8bit 一档跳多少、码值预算、要多少位深、三套权重 |
+| `02_brightness_doc_figures.py` | 2 张配图:简单平均 vs 人眼加权、六种「亮度」定义的差别 |
+| `03_luma_doc_figures.py` | luma 篇 4 张配图:Luma 误差随饱和度、线性 8bit 色带与码值预算、limited range、Y 显示回屏幕与 vmin/vmax 的坑 |
