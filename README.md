@@ -26,11 +26,12 @@ ImageProcessing-Playground/
 │   └── Shaders/               # .metal 文件
 ├── Documents/                 # 读书笔记、公式推导图解(按主题分目录,见其 README)
 │   ├── 00-roadmap/           # 学习路线、全书知识地图、参考资料
-│   ├── 01-fundamentals/      # 图像内存布局、通道顺序、取整与浮点
+│   ├── 01-fundamentals/      # 图像内存布局、通道顺序、取整与浮点、LUT
 │   ├── 02-intensity/         # 亮度与灰度、Luma 与线性光
-│   ├── 03-histogram/         # 直方图与对比度
+│   ├── 03-histogram/         # 直方图、对比度、均衡化、CLAHE、规定化
 │   ├── 04-geometry/          # 几何变换
-│   └── reference-code/       # 外部参考代码(VC++ 图像处理程序设计)
+│   ├── 05-spatial-filtering/ # 空间滤波、平滑、锐化、边缘检测
+│   └── _archive/             # 原始对话记录(不参与成书)
 └── Assets/                    # 测试图片与处理效果对比(GIF/截图)
 ```
 

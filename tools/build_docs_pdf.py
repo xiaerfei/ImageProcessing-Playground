@@ -4,7 +4,7 @@
 脚本做的事(文档增删后重跑一次即可,不需要改任何配置):
 
   1. 扫描 Documents/,按目录名/文件名的**数字前缀**自然排序,收集所有 .md
-     (默认跳过 reference-code/,那是外部参考源码,不是笔记)
+     (默认跳过 _archive/,那是原始对话记录,不是笔记)
   2. 用 pandoc 逐篇转成 HTML 片段,顺手做四件事:
        - 把图片内联成 data URI,最终 HTML 自包含,不依赖相对路径
        - 给每个标题生成稳定唯一的锚点,供目录页与跨篇链接跳转
@@ -72,7 +72,7 @@ def log(msg: str = "") -> None:
 # 下面三张表是唯一需要"手工维护"的地方,而且都不是必须的。
 
 # 不参与成书的分组(外部参考代码等)
-DEFAULT_EXCLUDE_DIRS = {"reference-code", "_archive", "build"}
+DEFAULT_EXCLUDE_DIRS = {"_archive", "build"}
 
 # 分组展示名;没写的就按"目录名去掉数字前缀"原样用
 GROUP_TITLES = {

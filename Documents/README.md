@@ -18,8 +18,7 @@ Documents/
 ├── 03-histogram/      直方图:是什么、怎么读、对比度、均衡化、CLAHE、规定化
 ├── 04-geometry/       几何变换:仿射变换原理与实现
 ├── 05-spatial-filtering/  空间滤波:卷积与相关、边界、可分离核、平滑、锐化、边缘检测
-├── _archive/          原始对话记录(已被正式笔记整理吸收,不参与成书)
-└── reference-code/    外部参考代码(《VC++ 图像处理程序设计》配套工程)
+└── _archive/          原始对话记录(已被正式笔记整理吸收,不参与成书)
 ```
 
 ## 生成 PDF 合集
@@ -29,7 +28,7 @@ python3 tools/build_docs_pdf.py --open
 ```
 
 把下面所有 `.md` 按序号顺序合并成一份带书签目录的 PDF,输出到 `Documents/build/`。
-`_archive/` 和 `reference-code/` 不参与成书。改完文档重跑一次即可,不需要改配置。
+`_archive/` 不参与成书。改完文档重跑一次即可,不需要改配置。
 
 改动文档后顺手跑一下链接检查,避免 PDF 里出现点不动的链接:
 
