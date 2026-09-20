@@ -58,12 +58,17 @@ def show_gray(ax, data, title: str, vmin: float = 0, vmax: float = 255) -> None:
     ax.axis("off")
 
 
-def four_questions(fig, did: str, gained: str, lost: str, limit: str,
+def four_questions(fig, did: str, gained: str, lost: str, limit: str, better: str,
                    y: float = 0.0, bottom: float = 0.03) -> None:
-    """在图底部贴一条「做了什么 / 得到什么 / 失去什么 / 局限在哪」的四色横幅。
+    """在图底部贴一条五色横幅,依次回答:
+    做了什么 / 得到什么 / 失去什么 / 局限在哪 / 更好的做法。
 
-    这是仓库硬约定:只看效果好的那一面最容易在工程里踩坑,
-    代价和边界必须和收益画在同一张图里,不能分成两张。
+    这是仓库硬约定(见 Documents/README.md「写作约定」):
+    只看效果好的那一面最容易在工程里踩坑,代价和边界必须和收益画在同一张图里,
+    不能分成两张。最后一格只**点名**更好的做法,不展开 ——
+    读的人知道"还有路可走、该往哪儿查"就够了,展开会喧宾夺主。
+
+    better 是必填的,不是可选项:写不出出路,通常说明「局限」那一格还没想清楚。
 
     bottom:带折线图的图要调大(0.15 左右),给 x 轴标签留位置,
            否则横幅会压在标签上。
@@ -71,11 +76,12 @@ def four_questions(fig, did: str, gained: str, lost: str, limit: str,
     cells = [("做了什么", did, "#eef3f8", "#2c6fbb"),
              ("得到什么", gained, "#eaf5ec", "#2a8f4a"),
              ("失去什么", lost, "#fdeeea", "#c4442a"),
-             ("局限在哪", limit, "#fff6e5", "#a8700a")]
+             ("局限在哪", limit, "#fff6e5", "#a8700a"),
+             ("更好的做法", better, "#f2eefb", "#6b4fa8")]
     fig.subplots_adjust(bottom=bottom)
     for i, (head, body, bg, fg) in enumerate(cells):
         # matplotlib 不认 Markdown,** 会被原样印出来,这里统一剥掉
         body = body.replace("**", "")
-        fig.text(0.02 + i * 0.245, y, f"{head}\n{body}", fontsize=8.6, va="top", ha="left",
-                 color="#222", linespacing=1.55,
-                 bbox=dict(boxstyle="round,pad=0.45", fc=bg, ec=fg, lw=1.0))
+        fig.text(0.012 + i * 0.197, y, f"{head}\n{body}", fontsize=8.2, va="top", ha="left",
+                 color="#222", linespacing=1.5,
+                 bbox=dict(boxstyle="round,pad=0.4", fc=bg, ec=fg, lw=1.0))

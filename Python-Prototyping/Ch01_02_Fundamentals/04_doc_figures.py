@@ -23,30 +23,17 @@ import sys
 import time
 from pathlib import Path
 
-import cv2
-import matplotlib
-
-if "--show" not in sys.argv:
-    matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
-from matplotlib.patches import FancyArrowPatch, Rectangle
 
-REPO = Path(__file__).resolve().parents[2]
-OUT = REPO / "Assets" / "results"
-IMAGES = REPO / "Assets" / "test-images"
-matplotlib.rcParams["font.family"] = ["Heiti TC", "Arial Unicode MS", "sans-serif"]
-matplotlib.rcParams["axes.unicode_minus"] = False
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figkit import IMAGES, four_questions, save, use_cjk_font  # noqa: E402
+
+use_cjk_font()
+import cv2  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
 
 LEVELS = np.arange(256)
 GAMMA = 1 / 2.2
-
-
-def save(fig, name: str) -> None:
-    fig.savefig(OUT / name, dpi=130, bbox_inches="tight", facecolor="white")
-    print(f"  → Assets/results/{name}")
-    if "--show" not in sys.argv:
-        plt.close(fig)
 
 
 def gamma_lut() -> np.ndarray:
@@ -116,6 +103,13 @@ def fig_how_it_works() -> None:
 
     fig.suptitle("LUT 的全部内容:公式只算 256 次,剩下几百万个像素全靠查",
                  fontsize=13, y=1.04)
+    four_questions(fig,
+        "把公式对 256 个可能的\n输入各算一次,列成表;\n之后每个像素只查表。",
+        "几百万次计算塌缩成 256 次。\n表只有 256 字节,\n全程待在 CPU 一级缓存里。",
+        "灵活性。表一旦建好就\n固定了 —— 参数要变就得\n重建一张(不过建表\n本身只要 0.004 ms)。",
+        "只对「离散 + 取值范围有限」\n的数据成立。输出还必须\n只取决于这个像素自己 ——\n模糊、CLAHE 都不行。",
+        "位深太高或数据是浮点时,\n改成「粗表 + 插值」\n(3D LUT 就是这么干的);\nGPU 上直接用 1D/3D 纹理,\n采样器自带插值。",
+        y=-0.02, bottom=0.05)
     save(fig, "lut-how-it-works.png")
 
 
@@ -168,6 +162,13 @@ def fig_speedup() -> None:
     ax.set_title("同一个伽马校正,四种做法\n建表的开销小到可以忽略 —— 而且是一次性的",
                  fontsize=12)
     ax.spines[["top", "right"]].set_visible(False)
+    four_questions(fig,
+        "同一个伽马校正,\n分别用逐像素 pow、\nnumpy 花式索引、\ncv2.LUT 跑一遍。",
+        f"11.78 ms → 0.13 ms。\ncv2.LUT 用 SIMD 一次处理\n十几个像素,表又小到\n不出一级缓存。",
+        "什么都没失去 ——\n查表和直接算的结果\n逐像素相同,\n这不是近似。",
+        "省下的是「重复计算」。\n公式本身越便宜\n(比如反转只是一次减法),\n查表的相对收益越小。",
+        "整条链路都在 GPU 上时,\n用纹理采样代替 cv2.LUT;\nffmpeg 里直接用\nlut / lutyuv / lut3d 滤镜,\n省掉来回拷贝。",
+        y=-0.02, bottom=0.05)
     save(fig, "lut-speedup.png")
     print("     本次实测:" + "  ".join(f"{k.splitlines()[0]}={v:.2f}ms" for k, v in ms.items()))
 
@@ -216,6 +217,13 @@ def fig_1d_vs_3d() -> None:
                  fontsize=11)
 
     fig.suptitle("彩色图的两种查表方式", fontsize=13, y=1.02)
+    four_questions(fig,
+        "把表从一条线扩成\n一个立方体:输入 3 个数,\n输出 3 个数。",
+        "通道之间能互相影响了 ——\n「红一高就把绿压一点」\n这类联动,1D LUT 根本\n表达不了。",
+        "精确性。完整的 256³\n要 50 MB,实际只存\n17³/33³/65³ 的稀疏网格,\n中间靠三线性插值补 ——\n结果是近似,不是精确。",
+        "网格越稀,色彩过渡处\n越容易出台阶。\n而且它是静态的,\n表达不了跟画面内容\n自适应变化的处理。",
+        "要严谨的色彩管理:\nICC 配置文件 / OCIO,\n它们带完整的色彩空间\n定义而不只是一张表。\n要自适应就别用 LUT 了。",
+        y=-0.02, bottom=0.05)
     save(fig, "lut-1d-vs-3d.png")
 
 
@@ -275,6 +283,13 @@ def fig_truncation_drift() -> None:
                   fontsize=11)
     ax2.spines[["top", "right"]].set_visible(False)
 
+    four_questions(fig,
+        "把每步的 astype(uint8)\n换成 rint,或者干脆\n中间全程留在 float。",
+        "误差从「单向累积」变成\n「正负抵消」:20 轮后\n−13.56 → −1.08;\n全程 float 则是 +0.00。",
+        "全程 float 要多占内存\n(float32 是 uint8 的 4 倍),\n而且每一环都得配合 ——\n有一环落回 uint8 就白搭。",
+        "取整做得再好也扛不住\n次数:四舍五入 20 轮\n仍有 −1.08。**根本解法\n不是取整更精细,是少取整**。",
+        "整条滤镜链统一在\nfloat32 上跑,入口出口\n各落一次地。\n定点场合用 OpenCV 那套\n+32768 >> 16 的整数定点。",
+        y=-0.03, bottom=0.14)
     save(fig, "rounding-truncation-drift.png")
     for k, v in drift.items():
         print(f"     {k}: 20 轮后平均偏移 {v[-1]:+.2f}")
@@ -317,12 +332,18 @@ def fig_wraparound() -> None:
         ax.axis("off")
 
     fig.suptitle("clip 一定要在 astype 之前 —— 顺序反了就救不回来", fontsize=13, y=1.02)
+    four_questions(fig,
+        "在 astype 之前先 clip,\n把越界值夹到 [0,255]\n而不是让它取模。",
+        "过曝处顶格变白、\n欠曝处顶格变黑,\n符合直觉,也符合\nC/OpenCV 的 saturate_cast。",
+        "顶格的那部分层次\n**真的没了** —— 饱和和回绕\n都会丢信息,\n只是饱和丢得「合理」。",
+        "只能救「已经算出来」\n的越界值。真正的解法是\n一开始就别让中间结果\n溢出 —— 见规矩二。",
+        "直接用 cv2.add /\ncv2.addWeighted / cv2.convertScaleAbs,\n它们内置 saturate_cast,\n轮不到你忘记 clip。",
+        y=-0.02, bottom=0.05)
     save(fig, "rounding-wraparound.png")
     print(f"     越界像素占比 {(boosted > 255).mean():.1%}")
 
 
 if __name__ == "__main__":
-    OUT.mkdir(parents=True, exist_ok=True)
     print("LUT:")
     fig_how_it_works()
     fig_speedup()

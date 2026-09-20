@@ -217,13 +217,35 @@ CLAHE 降到 52.9。
 
 ### 完整流程
 
+```text
+算法:CLAHE
+输入:灰度图 img、clipLimit、tileGridSize(比如 8×8)
+输出:增强后的图
+
+【第一阶段:每块各算各的表】
+1. 把 img 切成 tiles×tiles 个小块
+2. 对每个小块:
+       hist ← 这一块自己的直方图
+       limit ← max(round(clipLimit × 块面积 / 256), 1)     // 桶高上限
+       excess ← 所有超出 limit 的部分加起来                  ← Contrast Limited
+       hist ← 逐桶削到不超过 limit
+       hist ← hist + excess/256                            // 削下来的均分回填
+       lut[块] ← round( hist 的累加 × 255 / 块面积 )        ← Histogram Equalization
+                                        ↑ 除的是块面积,不是总像素数
+
+【第二阶段:每个像素向周围 4 块的表要答案】
+3. 对每个像素 (y, x):
+       u ← x / 块宽 − 0.5      // 减的这半块是块中心的偏移,漏了整图偏半块
+       v ← y / 块高 − 0.5
+       左块 ← floor(u), 右块 ← 左块 + 1, 横向权重 ← u − 左块
+       上块 ← floor(v), 下块 ← 上块 + 1, 纵向权重 ← v − 上块
+       把四个块号 clamp 到合法范围                          // 边界自动退化,不用写特判
+       输出[y,x] ← 四张表对 img[y,x] 的结果,按双线性权重加权  ← Adaptive
 ```
-1. 把图切成 tileGridSize 个小块
-2. 每块统计自己的直方图
-3. 削顶 + 均分回填(clipLimit)      ← Contrast Limited
-4. 每块算自己的映射表(CDF)          ← Histogram Equalization
-5. 每个像素用周围 4 块的表插值        ← 消除网格,配合 Adaptive
-```
+
+三件事对应名字里的三个词:**C**ontrast **L**imited 是削顶那两行,
+**H**istogram **E**qualization 是算 lut 那行,**A**daptive 是「每块一张表」
+加上第二阶段的插值。下面两节分别把这两个阶段展开。
 
 ---
 
@@ -462,6 +484,11 @@ def interpolate(img, luts, th, tw):
 > **一句话**:CLAHE 的块是一个工程妥协 —— 用 64 张表 + 插值去近似「每个像素一张表」。
 > 插值把最刺眼的台阶抹掉了,但妥协本身留下的痕迹(折痕、光晕、增益成块)还在,
 > 只是从「一眼看见」降到了「盯着找才看得见」。
+>
+> **想做得更好**(上表已列,这里点一下名字):折痕换**双三次插值**能消掉;
+> 想根本不要「块」这个概念,用**积分图 + 真·滑动窗口**;
+> 要彻底摆脱光晕,那已经不是直方图方法的事了 ——
+> 查**引导滤波(guided filter)**或**局部拉普拉斯滤波**。
 
 ### 为什么不逐像素滑窗
 

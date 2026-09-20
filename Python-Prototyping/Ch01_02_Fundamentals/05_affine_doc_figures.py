@@ -28,19 +28,14 @@
 import sys
 from pathlib import Path
 
-import cv2
-import matplotlib
-
-if "--show" not in sys.argv:
-    matplotlib.use("Agg")
-import matplotlib.pyplot as plt
 import numpy as np
 
-REPO = Path(__file__).resolve().parents[2]
-OUT = REPO / "Assets" / "results"
-IMAGES = REPO / "Assets" / "test-images"
-matplotlib.rcParams["font.family"] = ["Heiti TC", "Arial Unicode MS", "sans-serif"]
-matplotlib.rcParams["axes.unicode_minus"] = False
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figkit import IMAGES, four_questions, save, show_gray, use_cjk_font  # noqa: E402
+
+use_cjk_font()
+import cv2  # noqa: E402
+import matplotlib.pyplot as plt  # noqa: E402
 
 
 # ═══════════════════════════════════════════════════ 矩阵与 warp ═════════
@@ -175,42 +170,6 @@ def check_against_opencv() -> None:
           f"最大 {d.max():.3f} 平均 {d.mean():.5f} —— 那是 OpenCV 的 1/32 定点量化,不是本实现的误差。")
 
 
-# ═══════════════════════════════════════════════════ 四问横幅 ═══════════
-
-
-def four_questions(fig, did: str, gained: str, lost: str, limit: str,
-                   y: float = 0.0, bottom: float = 0.03) -> None:
-    """在图底部统一贴一条「做了什么 / 得到 / 失去 / 局限」的横幅。
-
-    这是仓库约定:只看效果好的那一面最容易踩坑,代价和边界必须和收益同框。
-    """
-    cells = [("做了什么", did, "#eef3f8", "#2c6fbb"),
-             ("得到什么", gained, "#eaf5ec", "#2a8f4a"),
-             ("失去什么", lost, "#fdeeea", "#c4442a"),
-             ("局限在哪", limit, "#fff6e5", "#a8700a")]
-    fig.subplots_adjust(bottom=bottom)    # 把横幅收近一点,别和图隔着一大片白
-                                          # (带折线图的那几张要留出 x 轴标签的位置)
-    for i, (head, body, bg, fg) in enumerate(cells):
-        # matplotlib 不认 Markdown,** 会被原样印出来,这里统一剥掉
-        body = body.replace("**", "")
-        fig.text(0.02 + i * 0.245, y, f"{head}\n{body}", fontsize=8.6, va="top", ha="left",
-                 color="#222", linespacing=1.55,
-                 bbox=dict(boxstyle="round,pad=0.45", fc=bg, ec=fg, lw=1.0))
-
-
-def save(fig, name: str) -> None:
-    fig.savefig(OUT / name, dpi=130, bbox_inches="tight", facecolor="white")
-    print(f"  → Assets/results/{name}")
-    if "--show" not in sys.argv:
-        plt.close(fig)
-
-
-def show_gray(ax, data, title, mask=None):
-    ax.imshow(data, cmap="gray", vmin=0, vmax=255, interpolation="nearest")
-    ax.set_title(title, fontsize=10.5)
-    ax.axis("off")
-
-
 # ═══════════════════════════════════════ 图 1:为什么要升到 3×3 ══════════
 
 
@@ -262,7 +221,9 @@ def fig_homogeneous() -> None:
         "给每个点补第三个\n恒为 1 的分量。",
         "平移从加法变成乘法。\n多步变换能预先连乘\n成一个矩阵;求逆也\n只需求一次。",
         "每点多存一个数,\n每次变换多 3 次乘加。\n(仿射下 z 恒为 1,\n那次除法是空操作)",
-        "第三行必须是 [0,0,1]\n才是仿射。改成 [p,q,1]\n就成了透视 —— 那时\n直线还是直线,但\n平行线不再平行。")
+        "第三行必须是 [0,0,1]\n才是仿射。改成 [p,q,1]\n就成了透视 —— 那时\n直线还是直线,但\n平行线不再平行。",
+        "要透视:第三行换成 [p,q,1]。\n"
+        "要更自由的形变(卷子翘角、\n人脸变形):薄板样条 TPS\n或网格扭曲 —— 那已经不是\n一个矩阵能表达的了。",)
     save(fig, "affine-why-homogeneous.png")
 
 
@@ -296,7 +257,8 @@ def fig_order() -> None:
         "同样的平移、旋转、\n非均匀缩放,只换\n相乘的先后。",
         "看清了「顺序」不是\n写法问题:R 会把平移\n方向一起转走,S 会把\n平移量一起缩放。",
         f"换错顺序 = 换了个功能。\n这里平均差 {diff.mean():.1f} 灰阶,\n而且两张图都「看着\n挺正常」,不会报错。",
-        "不是两两都敏感:旋转\n与**均匀**缩放可交换\n(最右,差 0)。只要\n沾上平移或非均匀缩放,\n顺序就必须钉死。")
+        "不是两两都敏感:旋转\n与**均匀**缩放可交换\n(最右,差 0)。只要\n沾上平移或非均匀缩放,\n顺序就必须钉死。",
+        "把顺序钉成 API 契约,\n配一个单元测试锁住它。\n更省事的是别手动连乘 ——\n用 cv2.getRotationMatrix2D\n这类「按语义一次构建」的接口。",)
     save(fig, "affine-order-matters.png")
     print(f"     T·R·S vs S·R·T 平均差 {diff.mean():.1f};R 与均匀 S 交换后最大差 {same:.0f}")
 
@@ -338,7 +300,8 @@ def fig_sandwich() -> None:
         "在核心变换两边各\n夹一次平移。",
         "旋转、缩放、镜像\n全部变成「原地做」,\n符合用户直觉。\n多的只有两次矩阵乘。",
         f"什么都没多失去 ——\n转 30° 本来就会有\n{lost_good:.0%} 的角落空出来,\n那是旋转自带的,\n不是夹层造成的。",
-        "夹层只解决「绕哪儿转」。\n转出画布的部分照样被裁,\n要留全得配自适应画布\n(见本篇第 6 章)。")
+        "夹层只解决「绕哪儿转」。\n转出画布的部分照样被裁,\n要留全得配自适应画布\n(见本篇第 6 章)。",
+        "cv2.getRotationMatrix2D(center,…)\n内置了夹层,不用自己写。\n要一个像素都不丢,\n配自适应画布(第 6 章)。",)
     save(fig, "affine-sandwich.png")
     print(f"     绕左上角:{lost_naive:.1%} 画布为空;夹层后:{lost_good:.1%}")
 
@@ -382,7 +345,8 @@ def fig_half_pixel() -> None:
         "把旋转轴心从 w/2\n改成 (w−1)/2,也就是\n往回挪半个像素。",
         f"轴心落在像素网格真正的\n几何中心,结果与真值\n**逐像素相同**\n(平均差 {er:.3f},位移 {abs(sr[0]):.3f})。",
         f"用 w/2 的代价:整幅图\n系统性平移 {abs(sw[0]):.3f} 像素,\n平均差 {ew:.2f} 灰阶。\n不报错,只是「有点飘」。",
-        "别用「转满一圈」去测这个 ——\n绕错的中心转满 360°,\n净效果还是恒等变换,\n半像素偏移自己抵消了,\n两种中心会测得一样好。\n单次变换才看得出来。")
+        "别用「转满一圈」去测这个 ——\n绕错的中心转满 360°,\n净效果还是恒等变换,\n半像素偏移自己抵消了,\n两种中心会测得一样好。\n单次变换才看得出来。",
+        "多步变换别反复 warp ——\n把矩阵连乘成一个,\n只采样一次。这同时\n解决轴心和重采样两笔账。",)
     save(fig, "affine-center-half-pixel.png")
     print(f"     转 90°:(w−1)/2 平均差 {er:.3f}/位移 {abs(sr[0]):.3f}px;"
           f"w/2 平均差 {ew:.2f}/位移 {abs(sw[0]):.3f}px")
@@ -414,7 +378,8 @@ def fig_forward_backward() -> None:
         "把循环从「遍历源图」\n改成「遍历目标画布」,\n每个目标像素用 M⁻¹\n反推源坐标。",
         "画布必然填满,零空洞。\n缩小时也不用处理\n「多个源像素抢同一格」\n的冲突。",
         "得先求逆 —— 所以\ndet=0 的矩阵直接没法用,\n必须在求逆前拦下来\n(见本篇第 3.6 节)。",
-        "**缩小时会欠采样**:\n反向映射每个目标格子\n只采 1 个点,源图上\n其余像素根本没被看过,\n细密纹理会抖动成摩尔纹。\n缩小要先降采样\n(高斯金字塔 / INTER_AREA)。")
+        "**缩小时会欠采样**:\n反向映射每个目标格子\n只采 1 个点,源图上\n其余像素根本没被看过,\n细密纹理会抖动成摩尔纹。\n缩小要先降采样\n(高斯金字塔 / INTER_AREA)。",
+        "缩小用 cv2.INTER_AREA\n或高斯金字塔逐级减半。\n真需要正向语义的场合\n(稀疏点云投影、散射)\n用 splatting + 填洞。",)
     save(fig, "affine-forward-vs-backward.png")
     print(f"     正向映射放大 {k}× 的空洞率 {holes:.1%}(理论 {1 - 1 / k**2:.1%})")
 
@@ -480,6 +445,7 @@ def fig_interpolation() -> None:
         "每混合一次糊一点,\n反复变换会越来越糊 ——\n所以多步变换要先把\n矩阵连乘再采样一次。",
         f"最近邻的「锐」是假的:\n它的最陡一级 {step(near):.0f} 很接近\n真值 {step(hi):.0f},可 PSNR 反而低 ——\n"
         "锐边长在了错的位置。\n而且 8× 放大下两者都远不如\n真值,凭空的细节谁也变不出来,\n要更好得上双三次 / Lanczos。",
+        "要更准:双三次 INTER_CUBIC\n或 INTER_LANCZOS4(16 个邻居起步)。\n要凭空造细节:那已经是\n超分辨率的活,\n查 ESPCN / Real-ESRGAN。",
         y=-0.05, bottom=0.17)
     save(fig, "affine-interpolation.png")
     print(f"     PSNR 最近邻 {psnr(near):.2f} / 双线性 {psnr(bili):.2f} dB;"
@@ -508,7 +474,8 @@ def fig_determinant() -> None:
         "求一次 det,在求逆\n之前把它拦下来:\nif |det| < 1e-12: 拒绝",
         "提前拒绝坏参数。\n顺带读懂 det 的含义:\n绝对值 = 面积缩放倍数,\n负号 = 手性翻转。",
         "多一次行列式计算 ——\n3×3 的 det 只有几次\n乘加,可以忽略。",
-        "阈值不能写 == 0。浮点\n连乘后 det 很少精确为 0,\n但 1e-13 这种接近 0 的值\n求逆会产出天文数字坐标,\n采样结果照样是乱码。")
+        "阈值不能写 == 0。浮点\n连乘后 det 很少精确为 0,\n但 1e-13 这种接近 0 的值\n求逆会产出天文数字坐标,\n采样结果照样是乱码。",
+        "更早拦住:在参数层面就\n禁掉 scale=0,比事后查 det 好。\n要判断「接近奇异到什么程度」,\n看 SVD 的条件数比看 det 准。",)
     save(fig, "affine-determinant.png")
 
 
@@ -561,13 +528,13 @@ def fig_canvas() -> None:
         f"{w}×{h} → {dw}×{dh},\n"
         f"内存涨 {(dw * dh) / (w * h):.2f} 倍,\n"
         "而且多出来的全是空白。",
-        "反向映射时必须把\noffset 加回去,漏了就\n整体错位一个包围盒 ——\nKeepSize 下 offset 为 0,\n测不出来,一开 Fit 就炸。\n另外要设尺寸上限:\n缩放 100× 能把内存吃光。")
+        "反向映射时必须把\noffset 加回去,漏了就\n整体错位一个包围盒 ——\nKeepSize 下 offset 为 0,\n测不出来,一开 Fit 就炸。\n另外要设尺寸上限:\n缩放 100× 能把内存吃光。",
+        "只在最后一步 Fit,中间\n保持矩阵不落地。\n超大图用分块/瓦片处理,\n别一次性开整张缓冲区。",)
     save(fig, "affine-canvas-fit.png")
     print(f"     KeepSize 切掉 {cut:.1%};Fit 画布 {w}×{h} → {dw}×{dh},offset=({off[0]:.1f},{off[1]:.1f})")
 
 
 if __name__ == "__main__":
-    OUT.mkdir(parents=True, exist_ok=True)
     check_against_opencv()
     for fn in (fig_homogeneous, fig_order, fig_sandwich, fig_half_pixel,
                fig_forward_backward, fig_interpolation, fig_determinant, fig_canvas):

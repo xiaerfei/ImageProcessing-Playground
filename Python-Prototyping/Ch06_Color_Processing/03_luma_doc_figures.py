@@ -152,6 +152,7 @@ def fig_luma_error() -> None:
         f"coffee 平均差 {stats[0][2]:.1f} 灰阶,\n"
         f"{stats[2][1]:.0f}% 的 astronaut 中位数只有 {stats[2][3]:.2f}。\n"
         "**不是 0,但远小于纯色的 73**。\n纯色 UI、图表、绿幕、霓虹灯\n这些场合会崩,得转线性。",
+        "真要恒定亮度:Rec.2020 的\nYc′CbcCrc(标准里有,\n但产业链基本没人用)。\n自己算的话就老实走\n解码 → 加权 → 编码。",
         y=-0.04, bottom=0.18)
     save(fig, "luma-vs-luminance-error.png")
     print(f"     纯红 {lumas[0]:.1f} vs {trues[0]:.1f}(差 {diffs[0]:+.1f})")
@@ -236,6 +237,7 @@ def fig_linear_banding() -> None:
         "暗部渐变不再出色带。",
         "码值不再正比于光强。\n于是「加法」和「平均」\n在编码域全是错的 ——\n缩放、模糊、图层混合\n严格说都该先转回线性。",
         "位深一够,大家立刻\n就用线性:相机 RAW 12~14 bit、\n渲染引擎 float32,都是线性。\n要全程 1% 以内的台阶,\n线性得 16.6 bit 才追得平\nsRGB 的 8 bit。",
+        "位深够就直接用线性:\nfloat16/32、RAW 12~14bit。\nHDR 用 PQ / HLG —— 它们\n是比 gamma 更贴人眼的感知曲线。",
         y=-0.03, bottom=0.14)
     save(fig, "linear-8bit-banding.png")
     print(f"     线性 8bit 在这段只剩 {n_lin} 档,sRGB 有 {n_srgb} 档;"
@@ -284,6 +286,7 @@ def fig_limited_range() -> None:
         "全黑画面读到 16,\n直方图左边空一截,\n算出的对比度偏小。",
         "OpenCV 这边**全是 full range**,\n`cv2.cvtColor(BGR2YUV)` 和\nffmpeg 的 yuv420p 不是一回事。\n"
         "查清楚再用:\n`ffprobe -show_entries`\n`stream=pix_fmt,color_range`\ntv=limited,pc=full。",
+        "用 ffmpeg 的 scale=in_range=…:\nout_range=… 显式指定,别靠默认。\n或者整条链路统一成 full range,\n在入口出口各转一次。",
         y=-0.03, bottom=0.05)
     save(fig, "yuv-limited-range.png")
     print(f"     误当 full 用:σ {right.std():.1f} → {wrong.std():.1f},"
@@ -358,6 +361,7 @@ def fig_y_to_screen() -> None:
         f"vmin/vmax 必须显式给。\n这里放的是一段 limited range\n"
         f"的 Y(范围 [{lo}, {hi}])。不给范围,\nmatplotlib 就拿它自己的\n"
         "min/max 拉满 —— 看上去很正常,\n**而你永远不会发现\n它其实是 limited range**。",
+        "显示前统一走一次明确的\n「工作域 → 显示编码」转换,\n别让它隐式发生。\n严肃场合上色彩管理:\nICC 配置文件 / OCIO。",
         y=-0.03, bottom=0.12)
     save(fig, "y-to-screen.png")
     print(f"     GRAY2BGR 与 YUV(U=V=128)→RGB 逐值相同:{identical};"

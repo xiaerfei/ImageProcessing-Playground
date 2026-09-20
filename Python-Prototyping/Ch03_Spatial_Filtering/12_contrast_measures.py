@@ -187,6 +187,7 @@ def fig_brightness_vs_contrast() -> None:
         f"顶到 255、{(((g - m) * 1.8 + m) < 0).mean() * 100:.1f}% 掉到 0,\n"
         "那部分层次是**真的没了**,\n调回去也救不回来。",
         "它是条直线,做不到\n「暗部陡、亮部平」——\n想分区间区别对待得用\n分段线性或伽马;\n想让图自己决定力度\n得用直方图均衡化。",
+        "要分区间区别对待:\n分段线性拉伸或伽马。\n要让图自己决定力度:\n直方图均衡化 / CLAHE。",
         y=-0.03, bottom=0.14)
     save(fig, "contrast-brightness-vs-contrast.png")
 
@@ -228,6 +229,7 @@ def fig_metrics_fooled() -> None:
         f"百分位跨度 {percentile_span(fake):.1f} vs {percentile_span(real):.1f}。",
         "标准差对**分布形状**不敏感:\n双峰和均匀分布可能\n算出同一个标准差。\n百分位跨度则要你\n自己选一个阈值。",
         "这三个量的都是\n「全图整体拉得开不开」。\n一张左暗右亮的图\n整体标准差可能很大,\n但每个局部都灰蒙蒙 ——\n那要用局部对比度去量。",
+        "要看局部:滑窗标准差\n(局部对比度)。\n要贴近人眼感受:\n在 CIE Lab 的 L* 上算,\n而不是在 gamma 域的灰度上算。",
         y=-0.03, bottom=0.12)
     save(fig, "contrast-metrics-fooled.png")
 
@@ -272,6 +274,7 @@ def fig_autolevels() -> None:
         f"真的裁掉了 {clipped * 100:.1f}% 的像素。\n"
         "被裁的那部分变成死黑或死白,\n层次不可恢复。反光、镜面、\n真实的高光细节也会一起没。",
         "阈值得看图选。0.5% 对\n普通照片合适;星空、\n医学影像这类「极端值\n本身就是信息」的图,\n扔 0.5% 可能正好把\n要找的目标扔了。",
+        "CLAHE:局部自适应,\n而且天生不怕孤立坏点。\n或者先做一次异常点抑制\n(中值/形态学开闭运算)\n再拉伸。",
         y=-0.03, bottom=0.12)
     save(fig, "contrast-autolevels.png")
 
