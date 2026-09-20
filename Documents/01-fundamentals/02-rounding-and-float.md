@@ -12,6 +12,7 @@
 `rint` 防单向偏置,`clip` 防回绕,顺序不能换。下面逐条说为什么。
 
 文中所有数字由 `Python-Prototyping/Ch01_02_Fundamentals/02_rounding_rules.py` 实测算出,
+配图由同目录下的 `04_doc_figures.py` 生成,
 跑一遍就能复现。
 
 ---
@@ -59,6 +60,13 @@
 
 截断跑 20 轮,整张图平均暗了 13 个灰阶 —— **肉眼可见地发灰发暗**。
 而四舍五入虽然好得多,也仍然有 −1.08:**取整做得再好,做 20 次也扛不住**。
+
+![20 轮往返的漂移,以及它为什么一路向下](../../Assets/results/rounding-truncation-drift.png)
+
+*左边那条红线为什么一路向下,答案在右边那张直方图里:
+**截断的误差全部落在 0 的左边**(要么不变,要么少一点,从不多一点),
+平均 −0.5,做一次亏一次;四舍五入的误差正负各占一半,来回抵消。
+这不是「精度不够」,是**方向单一**—— 误差再小,只要同号,做够次数就一定看得见。*
 
 根本解法不是把取整做得更精细,是**只做一次**:
 
@@ -109,6 +117,13 @@ np.clip(value, 0, 255).astype(np.uint8)    # clip 一定要在 astype 之前
 ```
 
 顺序不能反 —— 先 `astype` 就已经绕完了,再 clip 也救不回来。
+
+![取模回绕:300 变成 44,过曝处长出黑斑](../../Assets/results/rounding-wraparound.png)
+
+*左边那条红线就是「取模」的样子:走到 255 直接**掉回 0 重来**,像汽车里程表跳表。
+中间那张图是整体 +120 之后直接 `astype` 的结果 —— 陨石坑的高光本该变白,
+却翻成了一块块死黑,因为它们算出来是 260、280,取模之后变成 4、24。
+**只有 1.2% 的像素越界,但那 1.2% 全长在最显眼的地方。***
 
 ---
 
@@ -205,4 +220,5 @@ cv2 内部走的是整数定点 + SIMD,取整细节和 numpy 的浮点路径不�
 - [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) —— 灰度变换里的
   LUT 写法(查表法天然只取整一次)
 - `Python-Prototyping/Ch01_02_Fundamentals/02_rounding_rules.py` —— 本文所有数字的出处
+- `Python-Prototyping/Ch01_02_Fundamentals/04_doc_figures.py` —— 本文两张配图的出处
 - `Python-Prototyping/Ch01_02_Fundamentals/00_gray_image.py` —— 规矩一、三的实际应用
