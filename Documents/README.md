@@ -119,7 +119,7 @@ python3 tools/check_doc_links.py
 | 文档 | 内容 |
 | :--- | :--- |
 | [01-intensity-and-grayscale.md](02-intensity/01-intensity-and-grayscale.md) | **原理篇**:线性/对数/幂律为什么这么设计、彼此区别与坑;RGB→灰度加权、各图像类型取亮度、六种亮度定义辨析 |
-| [02-gray-transform-tutorial.md](02-intensity/02-gray-transform-tutorial.md) | **图解篇**:七种灰度变换方法的效果图与 OpenCV 代码(反转/对数/幂律/对比度拉伸/灰度级分层/比特平面/阈值化)。改写自知乎文章并修正了几处错误 |
+| [02-gray-transform-tutorial.md](02-intensity/02-gray-transform-tutorial.md) | **图解篇**:七种灰度变换的效果图与代码(反转/对数/幂律/对比度拉伸/灰度级分层/比特平面/阈值化),每种都是原文图 + **本仓库自己跑的可复现图**并排。点运算的统一骨架:五种方法只改 `T` 那一行;**γ>1 的正经身份是解码**(黑白条纹缩成一像素,编码域 128 vs 线性域 188);**LSB 水印** PSNR 51.1 dB 肉眼无感,但存一次 JPEG 就全是雪花。改写自知乎文章并修正了几处错误 |
 | [03-luma-and-linear-light.md](02-intensity/03-luma-and-linear-light.md) | **亮度的三种含义**:Luminance / Luma / Lightness 在回答**不同的问题**,不是精度不同的近似(HSV 的 V 差到 27.6,却最常被误用);Luma 为什么是「算错了但用了 70 年」的近似 —— 分贝类比,纯红差 **+73**,而**误差严格跟着饱和度走**,三张真实照片实测平均差 4~9 灰阶(不是 0);**8bit 装不下线性光**(最暗的 1% 线性只分到 **3 档**,sRGB 有 26 档;要追平得 16.6bit);**limited range**(黑 16 白 235,当 full 用 σ 58.1→49.9);**Y 怎么显示回屏幕**(抄三份是精确解;⚠️ 不给 `vmin/vmax` 会把 limited range 这个 bug 直接藏起来) |
 
 ## 03-histogram:直方图
@@ -129,7 +129,7 @@ python3 tools/check_doc_links.py
 
 | 文档 | 内容 |
 | :--- | :--- |
-| [01-histogram-basics.md](03-histogram/01-histogram-basics.md) | **认识它**:256 个桶的统计、看直方图诊断照片;**直方图 / PDF / CDF 是同一批数字的三种写法**(归一化 → 累加);它丢掉了什么(打乱像素后直方图逐桶相同,PSNR 只有 7.61 dB)以及这个「缺陷」反过来的用处(场景切换检测);**横轴在哪个域**(gamma vs 线性,128 收到的光只有 255 的 22%);术语小抄 |
+| [01-histogram-basics.md](03-histogram/01-histogram-basics.md) | **认识它**:256 个桶的统计(配真实照片 → 亮度图 → 直方图的三联图)、看直方图诊断照片;**直方图 / PDF / CDF 是同一批数字的三种写法**(归一化 → 累加);它丢掉了什么(打乱像素后直方图逐桶相同,PSNR 只有 7.61 dB)以及这个「缺陷」反过来的用处(场景切换检测);**横轴在哪个域**(gamma vs 线性,128 收到的光只有 255 的 22%);术语小抄 |
 | [02-histogram-reading.md](03-histogram/02-histogram-reading.md) | **摄影篇**:如何用眼睛读直方图。四种直方图辨析(RGB 叠加 vs 明度)、分量图/Waveform、曝光诊断、宽容度与包围曝光、向右曝光 ETTR、影调三维分类(低中高/长中短/软硬)。整理自三篇知乎文章并修正 8 处 |
 | [03-contrast.md](03-histogram/03-contrast.md) | **对比度**:和亮度是两件互不相干的事(**加法改亮度、乘法改对比度**);**max−min 会被两个像素骗过** —— 一块纯灰掺 2 个极端点就报 255,和完整渐变一模一样(标准差 1.81 vs 73.62,差 40 倍);标准差与百分位跨度;**自动色阶为什么故意扔掉 1%**(一个反光坏点就能让 min/max 方案纹丝不动,σ 22.51→22.51;百分位方案涨到 75.33);显示器上三个不同的「对比度」 |
 | [04-equalization.md](03-histogram/04-equalization.md) | **均衡化**:新亮度 = 排名百分比 × 255。手算实例;**为什么 CDF 就是对的**(一场考试讲完概率积分变换);为什么柱子不会真的变平(并列名次拆不开);三个毛病(没有力度旋钮 / 放大噪声 13.3× / 只看全局);⚠️ 对不上 `cv2.equalizeHist` 就是漏了减 `cdf_min`;彩色图分通道做会让**色相平均偏 77°** |
