@@ -29,6 +29,7 @@
 | `10_histogram_equalization.py` | 3.3 从零手写直方图均衡化:教材小例子手算、对齐 `cv2.equalizeHist`(**必须减 cdf_min**)、摊开的代价是灰阶被合并、保序与幂等、噪声放大与局部失效 |
 | `11_histogram_photography_checks.py` | 3.3 摄影视角:曝光诊断、ETTR、影调分类 |
 | `12_contrast_measures.py` | 3.3 对比度怎么统计:标准差、百分位跨度、自动色阶 |
+| `18_histogram_matching.py` | 直方图规定化:手算小图看清「查 CDF」这一步、为什么对不准(桶拆不开)、多机位色调对齐实测(只匹配 Y vs 逐通道) + 2 张配图 |
 | `13_clahe_walkthrough.py` | 3.3 CLAHE 从零拆解:全局 → AHE → 插值 → 限幅 |
 | `14_interactive_intensity.py` | 可拖滑块的灰度变换实验台(图像/直方图/曲线三联动) |
 | `15_histogram_deep_dive.py` | 3.3 深入验证六则:直方图/PDF/CDF、CDF 为什么能摊平、空间信息丢失、gamma 域 vs 线性域、规定化、彩色分通道均衡 |
