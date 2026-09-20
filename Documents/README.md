@@ -110,7 +110,7 @@ python3 tools/check_doc_links.py
 
 | 文档 | 内容 |
 | :--- | :--- |
-| [01-week01-image-memory-layout.md](01-fundamentals/01-week01-image-memory-layout.md) | 图像内存布局、BGR/RGB、YUV 三种排布、cv2 的 I420 标准实测 |
+| [01-week01-image-memory-layout.md](01-fundamentals/01-week01-image-memory-layout.md) | **图在内存里到底是什么**:一长串字节而已。全篇只讲「二维怎么塞进一维」这一件事,以及由此派生的五条约定 —— 它们不是算法,却贡献了音视频开发里绝大多数诡异 bug。**stride ≠ width×3**(对齐填充,宽 500 时 1500→1536;⚠️ 这个 bug 在 512/1024/1920 这些尺寸上**恰好测不出来**);OpenCV 给的是 **BGR**;**为什么必须先转 YUV 才能压缩**(RGB 三个通道都混着亮度,砍哪个都糊);I420 与 NV12 只差 UV 是否交错;4:2:0 把 3.0 压到 1.5 字节/像素;拿纯色块探出 cv2 的 I420 = **BT.601 + limited**(四种组合逐像素误差 0.39 / 2.33 / 10.02 / 9.96) |
 | [02-rounding-and-float.md](01-fundamentals/02-rounding-and-float.md) | **取整与浮点**:小数落回 uint8 的三条规矩。截断为什么是单向偏置(实测 20 轮后整图暗 13 个灰阶)、中间结果别落回 uint8(全程 float 偏移为 0)、`astype` 的回绕坑(300 → 44 变黑斑)、银行家舍入、OpenCV 的整数定点 `+32768 >> 16`、什么时候反而该用 floor |
 | [03-lut.md](01-fundamentals/03-lut.md) | **LUT(查找表)**:从 3.2 起每篇都在用的那张表。为什么 8 位图能塌缩成 256 项、1080p 上快 **88 倍**的实测、「输出只取决于该像素自己的值」这条判据(均衡化算,模糊和 CLAHE 不算)、1D 与 **3D LUT**(.cube)、`cv2.LUT` 的 8/16 位表长限制、ffmpeg 与显示器里你早就见过的 LUT |
 

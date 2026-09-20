@@ -36,6 +36,7 @@
 | `02_rounding_rules.py` | 取整与浮点的三条规矩(对应 rounding-and-float.md) |
 | `03_lut_basics.py` | LUT 是什么:建表/查表、88 倍提速实测、什么能塌缩成表、彩色与位深的限制(对应 03-lut.md) |
 | `04_doc_figures.py` | 上面两篇文档的 5 张配图:LUT 三步 / 耗时对比 / 1D vs 3D LUT / 20 轮取整漂移 / astype 回绕 |
+| `06_memory_layout_figures.py` | 内存布局篇的 2 张配图:行优先与 stride(含对齐填充)、YUV 的 packed/planar/semi-planar 三种排布与 4:2:0 的账 |
 | `05_affine_doc_figures.py` | 仿射变换篇的 8 张配图。内含**从零手写**的 warp(反向映射 + 最近邻/双线性 + 四角包围盒),用整数平移 / 旋转 90° / 半像素平移三个解析情形逐像素验过 |
 
 > 注:反色/对数/Gamma/线性等灰度变换在第四版属于 3.2 节,
