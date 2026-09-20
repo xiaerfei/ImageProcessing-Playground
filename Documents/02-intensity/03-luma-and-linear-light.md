@@ -1,4 +1,4 @@
-# 亮度、Luma 与线性光 —— 大白话
+# 亮度、Luma 与线性光
 
 一句话概括这篇要说的事:**你以为的「亮度」,在工程上至少是三个不同的东西,
 而日常用的那个,严格来说是算错的。**
@@ -92,7 +92,7 @@ y709 = np.clip(0.2126*r + 0.7152*g + 0.0722*b, 0, 255).astype(np.uint8)
 
 ---
 
-## 三、Luma:一个将错就错的近似
+## 三、Luma:将错就错的近似
 
 ### 错在顺序
 
@@ -158,7 +158,7 @@ Rec.2020 专门定义了 `Yc′CbcCrc` 来修它,但基本没人用 —— 整�
 
 ---
 
-## 四、线性光:为什么不直接用它
+## 四、线性光为什么不直接用
 
 **线性光**就是和光子数成正比的物理量:光强翻倍,数值就翻倍。
 听起来这才是唯一正确的表示法,那为什么全世界的图片都不这么存?
@@ -250,7 +250,7 @@ data = np.fromfile("video.yuv", dtype=np.uint8)
 y = data[:w*h].reshape(h, w)          # 这就是亮度图
 ```
 
-### 为什么要转 YUV(而不是一直用 RGB)
+### 为什么要转 YUV
 
 两个理由,都和「亮度」这个话题直接相关:
 
@@ -318,12 +318,12 @@ ffprobe -v error -show_entries stream=pix_fmt,color_range -of default=nw=1 input
 红绿蓝三颗灯,你必须给它三个数。所以任何一张 Y 图在真正点亮之前,
 一定有某一层代码把它变回了三个数。
 
-### 变回去做的就一件事:抄三份
+### 变回去只做一件事
 
 R = G = B = Y。亮度 200 的像素 → 红灯 200、绿灯 200、蓝灯 200 →
 三色等量混合 → 中性灰。没有任何矩阵运算。
 
-### 「抄三份」其实就是 YUV→RGB
+### 抄三份就是 YUV→RGB
 
 这不是近似,也不是偷懒。BT.601 全范围的反变换是:
 
@@ -356,7 +356,7 @@ YUV(U=V=128)→RGB:  [0,0,0] [64,64,64] [128,128,128] [200,200,200] [255,255,255
 这也解释了编码那边的常规操作:要把一路彩色视频变成黑白,
 不用动 Y 平面,把 U/V 两个平面整个填 128 就行。
 
-### matplotlib 里是谁干的:`cmap="gray"`
+### matplotlib 里是谁干的
 
 ```python
 ax.imshow(img, cmap="gray", vmin=0, vmax=255)
@@ -441,6 +441,6 @@ Y = 0.2126*lin[...,0] + 0.7152*lin[...,1] + 0.0722*lin[...,2]   # 真 luminance
 - [02-rounding-and-float.md](../01-fundamentals/02-rounding-and-float.md) —— 算出来的 Y
   怎么落回 uint8:四舍五入 vs 截断、clip 的位置、为什么别指望和 OpenCV 逐像素相同
 - [03-contrast.md](../03-histogram/03-contrast.md) —— 对比度、gamma 编码与 256 个码值的分配
-- [01-histogram-transform.md](../03-histogram/01-histogram-transform.md) —— 第十三节讲「直方图在哪个域」,
+- [01-histogram-basics.md](../03-histogram/01-histogram-basics.md) —— 第五节讲「直方图在哪个域」,
   和本文第四节是同一件事的两个侧面;第十六节讲彩色图为什么不能分通道处理
 - `Python-Prototyping/Ch06_Color_Processing/01_luma_vs_linear.py` —— 本文所有数字的出处

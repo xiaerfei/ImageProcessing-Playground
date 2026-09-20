@@ -1,10 +1,10 @@
-# 第 1 周笔记:图像的内存布局
+# 图像的内存布局
 
 > 配套代码:[01_hello_image.py](../../Python-Prototyping/Ch01_02_Fundamentals/01_hello_image.py)、
 > [00_yuv_warmup.py](../../Python-Prototyping/Ch06_Color_Processing/00_yuv_warmup.py)
 > 结果图:`Assets/results/week01_*.png`
 
-## 1. RGB 图像:HWC + 行优先
+## 1. RGB:HWC + 行优先
 
 - numpy 里一张彩色图就是 `(H, W, C)` 的 `uint8` 数组,**行优先**存储。
 - 实测 512×512×3 图像的 `strides = (1536, 3, 1)`:跨一行跳 1536 字节(512×3)、跨一列跳 3 字节、跨一通道跳 1 字节 —— 即交错(interleaved)排列 `RGBRGBRGB...`。
@@ -27,7 +27,7 @@
 - 4:2:0 = 每 2×2 像素块共用一对 UV → 数据量为 4:4:4 的一半(1 + 1/4 + 1/4 = 1.5 字节/像素)。
 - iOS 摄像头常给 NV12(`kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange`);ffmpeg/编码器世界常用 I420。两者只差 UV 是否交错。
 
-## 4. 实验结论:OpenCV I420 转换用的是什么标准?
+## 4. OpenCV I420 用的哪个标准
 
 用纯色块探测 `cv2.COLOR_RGB2YUV_I420`(见 `00_yuv_warmup.py`):
 
@@ -51,7 +51,7 @@
 - 纹理加载用了 `.SRGB: false`(按原始字节透传)。第 7 周做模糊时要回头处理 sRGB/线性空间问题(避坑清单 #6)。
 - 后续每周的滤镜只需换 fragment 或插 compute pass,这个骨架不用动。
 
-## 遗留问题(带着进第 2 周)
+## 遗留问题
 
 - [ ] `MTKTextureLoader` 加载出的 pixelFormat 是哪个?BGRA 还是 RGBA?(实测 rawValue=80,查表确认)
 - [ ] iOS 端拿到 `CVPixelBuffer` 的 NV12 两个平面,bytesPerRow 和 width 差多少?(回工作项目里打印一次)

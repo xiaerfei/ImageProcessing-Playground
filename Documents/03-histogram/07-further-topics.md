@@ -1,10 +1,10 @@
-# 直方图还能做什么 —— 备忘清单(暂不展开)
+# 直方图还能做什么
 
 > **这篇的定位**:只求「知道有这么回事」,不求现在就会。
 > 每一条写清三件事:**是什么**、**为什么值得记**、**回头要查哪个 API/关键词**。
 > 等真正用到了,再回来挑一条深挖。
 >
-> 已经做完的部分见 [01-histogram-transform.md](01-histogram-transform.md)(均衡化、CLAHE、规定化手算)、
+> 已经做完的部分见 [04-equalization.md](04-equalization.md)、[05-clahe.md](05-clahe.md)、[06-histogram-matching.md](06-histogram-matching.md),
 > [03-contrast.md](03-contrast.md)(对比度度量)、[02-histogram-reading.md](02-histogram-reading.md)(摄影视角读图)。
 
 ---
@@ -23,7 +23,7 @@
 
 ---
 
-## 1. 直方图规定化 / 匹配(Histogram Matching)
+## 1. 规定化 / 匹配
 
 **是什么**:均衡化是「摊平」,规定化是「变成我指定的分布」。
 原理一句话 —— **两条 CDF 做反查表**:
@@ -42,12 +42,12 @@ $$ s = G^{-1}\big(F(r)\big) $$
 
 **回头查**:`np.interp` + 两条 `np.cumsum`;OpenCV 没有现成函数,
 skimage 有 `skimage.exposure.match_histograms`。文档里的手算在
-[histogram-transform.md 第十五节](01-histogram-transform.md);
+[06-histogram-matching.md](06-histogram-matching.md);
 `15_histogram_deep_dive.py` 有个 demo。**从零实现留给脚本 `18`。**
 
 ---
 
-## 2. 局部直方图统计做增强(Gonzalez 3.3.4)
+## 2. 局部统计做增强
 
 **是什么**:CLAHE 是「分块各做各的均衡」,教材还有另一套思路 ——
 算出每个像素邻域的**局部均值和局部标准差**,拿它和全局值比,满足条件才增强:
@@ -88,7 +88,7 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 ---
 
-## 4. 直方图当「特征」,而不是「映射表」
+## 4. 直方图当特征用
 
 这一条教材第 3 章完全不讲,但在工程里是直方图最常见的用法。
 前面所有内容都是「统计直方图 → 算出一张表 → 改像素」;这里是「统计直方图 → 直接拿它当这张图的指纹」。
@@ -112,7 +112,7 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 它知道「灰度 100 和 101」比「灰度 100 和 200」更接近,上面四种都不知道。
 代价是慢。`cv2.EMD`。
 
-### 4.2 反向投影(Back Projection)
+### 4.2 反向投影
 
 **是什么**:把目标物体的颜色直方图当成一张查找表,在整幅图上逐像素问
 「你这个颜色在目标里出现得频繁吗」,输出一张概率图。
@@ -124,11 +124,11 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 ---
 
-## 5. 视频的时域问题 —— 逐帧独立 = 闪烁
+## 5. 逐帧独立会闪烁
 
 **是什么**:均衡化和 CLAHE 的表都是**从当前帧统计出来的**。
 相邻两帧内容稍有变化(有人走过、云飘过),表就变,连续播放就是一闪一闪的亮度跳动。
-[01-histogram-transform.md](01-histogram-transform.md) 里提了这一句,但**没有实测过**。
+[05-clahe.md](05-clahe.md) 里提了这一句,但**没有实测过**。
 
 **怎么办**(三种,通常混用):
 
@@ -145,7 +145,7 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 ---
 
-## 6. 8 bit 以外:10/12 bit 与浮点 HDR
+## 6. 10/12 bit 与 HDR
 
 **是什么**:到现在为止所有脚本都默认 8 bit —— 256 个桶、256 项 LUT、`cv2.LUT` 一次查完。
 这条路在更高位深上会逐步走不通:
@@ -191,6 +191,6 @@ $$ \sigma_b^2(t) = w_0(t)\,w_1(t)\,\big[\mu_0(t) - \mu_1(t)\big]^2 $$
 
 ## 相关文档
 
-- [01-histogram-transform.md](01-histogram-transform.md) —— 均衡化、CLAHE、规定化(已展开的部分)
+- [04-equalization.md](04-equalization.md) / [05-clahe.md](05-clahe.md) / [06-histogram-matching.md](06-histogram-matching.md) —— 已展开的那三块
 - [03-contrast.md](03-contrast.md) —— 对比度的三种度量与自动色阶
 - [02-histogram-reading.md](02-histogram-reading.md) —— 摄影视角读直方图

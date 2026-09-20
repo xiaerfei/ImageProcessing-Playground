@@ -127,7 +127,7 @@
 
 **读**:3.3 精读
 
-**速查**:[Documents/histogram-transform.md](Documents/03-histogram/01-histogram-transform.md) —— 直方图/均衡化/CLAHE/规定化的大白话入门
+**速查**:[直方图是什么](Documents/03-histogram/01-histogram-basics.md) · [均衡化](Documents/03-histogram/04-equalization.md) · [CLAHE](Documents/03-histogram/05-clahe.md) · [规定化](Documents/03-histogram/06-histogram-matching.md)
 **摄影视角**:[Documents/histogram-reading.md](Documents/03-histogram/02-histogram-reading.md) —— 读懂直方图形态、影调分类、ETTR;第九节给出「形态 → 该用什么变换」对照表
 
 **知识点**:

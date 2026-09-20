@@ -72,17 +72,17 @@ def log(msg: str = "") -> None:
 # 下面三张表是唯一需要"手工维护"的地方,而且都不是必须的。
 
 # 不参与成书的分组(外部参考代码等)
-DEFAULT_EXCLUDE_DIRS = {"reference-code"}
+DEFAULT_EXCLUDE_DIRS = {"reference-code", "_archive", "build"}
 
 # 分组展示名;没写的就按"目录名去掉数字前缀"原样用
 GROUP_TITLES = {
     "": "总览 · 先读这一篇",
     "00-roadmap": "学习路线与全书地图",
-    "01-fundamentals": "图像基础:图像到底是什么",
+    "01-fundamentals": "图像基础",
     "02-intensity": "亮度与灰度",
-    "03-histogram": "直方图与对比度",
-    "04-geometry": "几何变换:仿射与采样",
-    "05-spatial-filtering": "空间滤波:第 3 章核心",
+    "03-histogram": "直方图",
+    "04-geometry": "几何变换",
+    "05-spatial-filtering": "空间滤波",
 }
 
 # 相对路径 → 篇名覆盖(一般不用写,自动推断已经很准)
@@ -255,6 +255,25 @@ def rewrite_md_links(text: str, base_dir: Path, anchor_by_path: dict[Path, str])
     return _MD_LINK_RE.sub(repl, text)
 
 
+def escape_emphasis(text: str) -> str:
+    """转义标题里裸露的 * 和 _(代码跨度内的不动)。
+
+    为什么要做这一步:pandoc 的标题属性写法 `## 标题 {#id}` 是在行内解析完之后才认的,
+    标题里只要出现一个配不上对的 * 或 _(例如 `Lab 的 L*` `_archive`),
+    行内解析器就会把后面的 `{#id}` 一起吞进未闭合的强调里,属性失效 ——
+    表现为 PDF 书签上直接印出 `{#doc8-h385}` 这一串。
+    标题里我们从不用 **加粗** 或 _斜体_,所以一律转义是安全的。
+    """
+    out, in_code = [], False
+    for ch in text:
+        if ch == "`":
+            in_code = not in_code
+        elif ch in "*_" and not in_code:
+            out.append("\\")
+        out.append(ch)
+    return "".join(out)
+
+
 def transform_markdown(doc: Doc, anchor_by_path: dict[Path, str]) -> str:
     """重排标题层级、降级假标题、改写跨篇链接,产出喂给 pandoc 的 Markdown。"""
     by_line = {h.line: h for h in doc.headings}
@@ -274,7 +293,7 @@ def transform_markdown(doc: Doc, anchor_by_path: dict[Path, str]) -> str:
             continue
 
         level = min(h.level + doc.shift, 6)
-        out.append(f"{'#' * level} {text} {{#doc{doc.index}-h{i}}}")
+        out.append(f"{'#' * level} {escape_emphasis(text)} {{#doc{doc.index}-h{i}}}")
 
     body = rewrite_md_links("\n".join(out), doc.path.parent, anchor_by_path)
     return body

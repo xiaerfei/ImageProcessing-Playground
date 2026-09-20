@@ -1,6 +1,6 @@
-# 对比度 —— 到底在说什么
+# 对比度
 
-> 面向零基础。配合 [01-histogram-transform.md](01-histogram-transform.md) 和 [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) 读。
+> 面向零基础。配合 [01-histogram-basics.md](01-histogram-basics.md) 和 [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) 读。
 > 文中数字可复现:`Python-Prototyping/Ch03_Spatial_Filtering/12_contrast_measures.py`
 
 > **怎么读这篇**(第一遍真的不用全看)
@@ -52,7 +52,7 @@
 
 ---
 
-## 二、为什么"直方图宽 = 对比度高"
+## 二、为什么直方图宽就高
 
 直方图的横轴就是亮度。所以:
 
@@ -70,11 +70,11 @@
 
 ---
 
-## 三、这个"差距"到底怎么统计
+## 三、这个差距怎么统计
 
 这才是关键问题。直觉上会说"最亮减最暗",但**这个定义有致命弱点**。
 
-### `max − min` 会被两个像素骗过
+### max − min 会被骗
 
 我造了一张 10000 像素的图:
 
@@ -93,7 +93,7 @@
 
 **所以实际统计根本不用 `max − min`。**
 
-### 办法一:标准差(RMS 对比度)—— 最常用
+### 办法一:标准差
 
 不看两个端点,而是问:**每个像素离平均值有多远,把所有像素的偏离量平均起来。**
 
@@ -108,7 +108,7 @@
 
 正式名字叫 **RMS contrast**(均方根对比度)。日常说"这张图对比度高",指的基本就是标准差大。
 
-### 办法二:百分位跨度 —— 工程上最实用
+### 办法二:百分位跨度
 
 思路更朴素:**把最极端的那一小撮直接扔掉再算。**
 
@@ -132,7 +132,7 @@
 
 ---
 
-## 四、这不是理论 —— 自动色阶就靠它
+## 四、自动色阶就靠它
 
 Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一键增强",内部干的就是百分位裁剪:
 
@@ -142,7 +142,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 3. 超出的那 1% 直接裁掉
 ```
 
-### 为什么要故意扔掉 1% —— 实测
+### 为什么故意扔掉 1%
 
 造一个真实场景:**隔着雾拍的低对比度照片,画面里有一个反光高光和一个暗坏点**。
 
@@ -164,7 +164,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 
 ---
 
-## 五、直方图均衡化为什么天然免疫
+## 五、均衡化为什么免疫
 
 它用的是 **CDF(累计比例)**,而不是端点。
 
@@ -172,7 +172,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 
 这也解释了均衡化的一个特点:虽然"没法调参"很讨厌,但**鲁棒性极好** —— 它压根不看极端值。
 
-> 均衡化的原理见 [01-histogram-transform.md](01-histogram-transform.md) 第十节。
+> 均衡化的原理见 [04-equalization.md](04-equalization.md)。
 
 ---
 
@@ -180,7 +180,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 
 这里藏着**三个不同的东西都叫对比度**,混在一起就糊涂了。
 
-### 1. 旋钮上的"对比度" —— 就是上面的 `a`
+### 1. 旋钮上的对比度
 
 显示器那两个旋钮,本来就是按加法/乘法分工的,命名来自 CRT 时代:
 
@@ -197,7 +197,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 > ⚠️ **一个坑**:现在很多液晶显示器的"亮度"旋钮,调的其实是**背光灯功率**,不是黑电平。
 > 这是厂商偷换了概念 —— 它更像"整个屏幕多亮"。所以你调它的时候黑色也跟着变亮(背光漏光),行为和 CRT 时代不一样。
 
-### 2. 规格表上的"对比度 1000:1" —— 硬件能力,调不了
+### 2. 规格表上的 1000:1
 
 它叫**对比度比 (contrast ratio)**:
 
@@ -214,7 +214,7 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 
 **"动态对比度 3000000:1"** 是营销话术:分子是"最亮画面时的白",分母是"最暗画面时把背光关掉的黑",**两个数不在同一时刻测**,没有意义。
 
-### 3. 图像本身的对比度 —— 前五节讲的那个
+### 3. 图像本身的对比度
 
 ### 三者的关系
 
@@ -260,6 +260,6 @@ Photoshop 的**自动色阶**、ImageMagick 的 `-contrast-stretch`、各种"一
 ## 相关文档
 
 - [01-intensity-and-grayscale.md](../02-intensity/01-intensity-and-grayscale.md) —— 线性变换 `s = a·r + b` 的完整讨论
-- [01-histogram-transform.md](01-histogram-transform.md) —— 直方图均衡化:自动的、分段的对比度拉伸
+- [04-equalization.md](04-equalization.md) —— 直方图均衡化:自动的、分段的对比度拉伸
 - [02-histogram-reading.md](02-histogram-reading.md) —— 摄影视角:软调/硬调就是对比度的美学分类
-- [04-further-topics.md](04-further-topics.md) —— 直方图还能做什么(备忘清单,暂不展开)
+- [07-further-topics.md](07-further-topics.md) —— 直方图还能做什么(备忘清单,暂不展开)

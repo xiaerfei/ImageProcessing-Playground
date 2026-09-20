@@ -49,7 +49,7 @@
 > | `10`~`19` | 3.3 直方图与对比度 |
 > | `20`~ | 3.4~3.6 空间滤波(卷积引擎、高斯、中值、Sobel、拉普拉斯),文档见 [05-spatial-filtering/](../../Documents/05-spatial-filtering/)(原理篇 + 平滑篇) |
 >
-> 段内编号即阅读顺序。3.2 还差阈值化一篇,已留好 `07`;3.3 的 `18`~`19` 还空着(规定化、局部统计增强),备忘见 [`Documents/03-histogram/04-further-topics.md`](../../Documents/03-histogram/04-further-topics.md)。
+> 段内编号即阅读顺序。3.2 还差阈值化一篇,已留好 `07`;3.3 的 `18`~`19` 还空着(规定化、局部统计增强),备忘见 [`Documents/03-histogram/04-further-topics.md`](../../Documents/03-histogram/07-further-topics.md)。
 
 ## 实践任务
 
