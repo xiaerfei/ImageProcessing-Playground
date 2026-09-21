@@ -51,7 +51,7 @@
 ### 规矩:行优先
 
 从左上角出发,**先走完第 0 行的所有像素,再接第 1 行**,一直到最后一行。
-每个像素内部,三个通道的字节挨在一起(这叫**交错 / interleaved**)。
+每个像素内部,三个通道的字节挨在一起(这叫**交错(interleaved) / interleaved**)。
 
 ![行优先与 stride](../../Assets/results/memory-row-major.png)
 

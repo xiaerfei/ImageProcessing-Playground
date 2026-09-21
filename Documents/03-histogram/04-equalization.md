@@ -225,7 +225,7 @@ P(y ≤ t)                   ← 问:新值 ≤ t 的占多少?
 
 上面一行有两座明显的山(16.3 和 9.9 两处);下面一行全在 5 附近晃 —— 分 20 个桶,理想均匀就是每桶 5.00%。
 
-**各桶占比的标准差只有 0.35 个百分点**(标准差 = 这些数字彼此差多少;0.35 意味着几乎没差别)。
+**各桶占比的标准差(standard deviation)只有 0.35 个百分点**(标准差 = 这些数字彼此差多少;0.35 意味着几乎没差别)。
 
 ### 第 6 步:并列名次
 
@@ -330,7 +330,7 @@ s = (cdf - hist[first]) * (255.0 / (N - hist[first]))
 - **A**:R、G、B 三个通道各自 `equalizeHist`
 - **B**:转 YCrCb,只对 Y 通道 `equalizeHist`,色度通道原样保留
 
-测量**色相**相对原图偏移了多少度。
+测量**色相(hue)**相对原图偏移了多少度。
 
 > **色相(hue)是什么**:一个颜色「是什么颜色」,不管它多亮多暗。
 > 深红、浅红、暗红 —— 明暗不同,但色相都是「红」。
@@ -408,4 +408,4 @@ out = cv2.cvtColor(ycc, cv2.COLOR_YCrCb2BGR)
 - [01-histogram-basics.md](01-histogram-basics.md) —— 直方图是什么
 - [05-clahe.md](05-clahe.md) —— 工程上真正在用的那个版本
 - [06-histogram-matching.md](06-histogram-matching.md) —— 不追求摊平,而是照着目标分布变
-- [03-contrast.md](03-contrast.md) —— 为什么均衡化天然免疫「对比度怎么量」这个问题
+- [03-contrast.md](03-contrast.md) —— 为什么均衡化天然免疫「对比度(contrast)怎么量」这个问题

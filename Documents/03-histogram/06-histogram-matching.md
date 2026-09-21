@@ -18,7 +18,7 @@
 
 均衡化的目标是"摊平"。但有时候我们想要的不是摊平,而是**变成某个指定的样子**。
 
-**直方图规定化 / 直方图匹配(Histogram Specification / Matching)**:给定一张目标直方图,把源图变换成那个分布。
+**直方图规定化(histogram specification) / 直方图匹配(Histogram Specification / Matching)**:给定一张目标直方图,把源图变换成那个分布。
 
 做法:源图和目标图各自算出 CDF,然后对每个源灰度 r,在目标 CDF 里找一个 z,使得两边的累计比例最接近,建立 `r → z` 的映射表。
 
