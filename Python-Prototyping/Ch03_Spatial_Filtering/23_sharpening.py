@@ -417,11 +417,33 @@ def save_gradient_figure(out_path: Path, g: npt.NDArray[np.float64]) -> None:
     fig.savefig(out_path, dpi=110)
 
 
+def demo_half_pixel_shift() -> None:
+    """为什么求导核是 [-1,0,1] 而不是照抄定义的 [-1,1]。
+
+    照抄导数定义会得到「右邻减自己」,但它估计的是 x+0.5 处的导数,
+    不是 x 处的 —— 核里没有中心格,结果就没处落脚。
+    拿 f(x)=x²(真导数 2x,已知)一量就露馅。
+    """
+    print("\n【中心差分】为什么是「右减左」而不是「右减自己」")
+    x = np.arange(0, 12, dtype=float)
+    f = x ** 2
+    fwd = f[1:] - f[:-1]                  # [-1, 1]      右邻减自己
+    ctr = (f[2:] - f[:-2]) / 2            # [-1, 0, 1]/2 右邻减左邻
+    print("    x              :", x[1:6])
+    print("    真导数 2x      :", (2 * x)[1:6])
+    print("    [-1,1]  右减自己:", fwd[1:6], " ← 偏了半格")
+    print("    2(x+0.5) 验证   :", (2 * (x + 0.5))[1:6], " ← 和上一行一模一样")
+    print("    [-1,0,1] 右减左 :", ctr[0:5], " ← 与真导数分毫不差")
+    print("  半格偏移在找边缘时不致命(边还在,只是整体挪半格),")
+    print("  但做图像配准、光流、亚像素定位时会变成系统误差。")
+
+
 def main() -> None:
     g = load_gray("camera.png").astype(np.float64)
     print(f"主图 camera.png  shape={g.shape}")
 
     demo_derivatives_1d()
+    demo_half_pixel_shift()
     demo_laplacian()
     demo_usm(g)
     demo_usm_equals_laplacian(g)
