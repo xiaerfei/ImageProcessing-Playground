@@ -216,6 +216,24 @@ def verify() -> None:
         g = np.exp(-x ** 2 / (2 * s ** 2)); g /= g.sum()
         print(f"     做 {n:>2} 遍(核长 {len(k):>2})  偏差 {np.abs(k - g).max() / k.max() * 100:5.2f}%")
 
+    print("\n── 两个宽度:支撑集线性长,σ 只按 √N 长")
+    print(f"     {'N':>5} {'支撑集':>7} {'σ':>7} {'√N/2':>7} {'8 位下还看得见':>14}")
+    for n in (8, 32, 128, 512):
+        k = binomial(n)
+        x = np.arange(len(k)) - (len(k) - 1) / 2
+        sg = np.sqrt((x ** 2 * k).sum())
+        print(f"     {n:>5} {len(k):>7} {sg:>7.2f} {np.sqrt(n) / 2:>7.2f}"
+              f" {int((k > k.max() / 255).sum()):>14}")
+
+    print("\n── 为什么是 √N:每遍加的是方差(0.25),而方差才可加")
+    for n in (1, 4, 64):
+        k = binomial(n)
+        x = np.arange(len(k)) - (len(k) - 1) / 2
+        print(f"     {n:>2} 遍累计方差 = {(x ** 2 * k).sum():>8.4f}   = {n} × 0.25")
+    print("     反过来 N = (2σ)²:σ 翻一倍,遍数翻四倍")
+    for t in (5, 11, 20):
+        print(f"       想到 σ={t:>2} 格,要做 {int((2 * t) ** 2):>4} 遍")
+
     print("\n── 假之一:曲线无限长,必须剪断(σ=3)")
     for ks in (3, 7, 13, 19, 25):
         print(f"     核边长 {ks:>2}  剪掉 {truncation(3, ks) * 100:6.2f}%")
