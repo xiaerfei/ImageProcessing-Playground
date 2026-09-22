@@ -65,8 +65,9 @@ canvas{width:100%;max-width:100%;aspect-ratio:1;display:block;border-radius:8px;
   image-rendering:pixelated;background:#000;border:1px solid var(--line)}
 svg{display:block;width:100%;height:auto;max-width:100%;overflow:visible}
 
-.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line);
+.stats{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:1px;background:var(--line);
   border:1px solid var(--line);border-radius:12px;overflow:hidden}
+@media (max-width:900px){.stats{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:620px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 .stat{background:var(--panel);padding:13px 15px}
 .stat dt{font-size:11.5px;color:var(--ink-3);margin:0 0 3px;font-weight:500}
@@ -132,6 +133,7 @@ td.num{font-family:var(--mono)}
   <dl class="stats">
     <div class="stat"><dt>做了几遍</dt><dd id="s-n">0</dd></div>
     <div class="stat"><dt>表有多长</dt><dd id="s-len">1<small>格</small></dd></div>
+    <div class="stat"><dt>亮斑半径 σ</dt><dd id="s-sigma">0<small>格</small></dd></div>
     <div class="stat"><dt>亮点峰值</dt><dd id="s-peak">255</dd></div>
     <div class="stat"><dt>与真高斯的最大偏差</dt><dd id="s-err">—</dd></div>
   </dl>
@@ -157,6 +159,14 @@ td.num{font-family:var(--mono)}
       <li><b>1 → 2 遍</b>：方块变成十字，还很尖。偏差 15.2%，蓝点明显偏离红线。</li>
       <li><b>4 → 8 遍</b>：偏差掉到 3.3%，蓝点开始贴着红线走。<b>圆形出来了。</b></li>
       <li><b>32 遍</b>：偏差 0.78%，肉眼完全分不出。<b>这就是「收敛到高斯」——形状定型了，不是越做越平。</b></li>
+      <li><b>为什么 32 遍了还这么小？</b>这里有<b>两个宽度在打架</b>：
+        核的<b>支撑集</b>（有几格非零）是 <code>N+1</code>，<b>线性</b>长 —— 32 遍就是 33 格；
+        但真正亮的那块是 <b>σ = √N ⁄ 2</b>，<b>开根号</b>长 —— 32 遍才 2.83 格。
+        <b>那 33 格里绝大多数已经小到看不见了</b>（紫虚线标的 ±3σ 就是分界）。</li>
+      <li><b>想让亮斑铺满这张 65 格的图，要做 484 遍。</b>
+        因为 <code>N = (2σ)²</code>：σ 翻一倍，遍数翻<b>四</b>倍。
+        而 <code>cv2.GaussianBlur(σ=11)</code> 一次就到位 ——
+        <b>这就是为什么没人真去「做 N 遍」，而是直接写高斯公式。</b></li>
       <li>顺带注意<b>峰值一路在掉</b>（255 → 5）：亮点没有消失，是被摊开了。总量守恒——这就是「核的和必须是 1」的另一面。</li>
       <li>偏差不是单调下降的：<b>3 遍（5.5%）反而比 2 遍（15.2%）好。</b>格子数奇偶交替造成的抖动，看 4、8、16、32 这条主线就行。</li>
     </ul>
@@ -256,6 +266,21 @@ td.num{font-family:var(--mono)}
         "stroke-width":2.2, "stroke-dasharray":"7 5", "stroke-linecap":"round"}));
     }
 
+    // ±3σ:高斯 99.7% 的量都在这里面。它比支撑集窄得多 —— 这正是「看着没长大」的原因
+    if (st){
+      [-3, 3].forEach(sgn => {
+        const u = sgn * st.sigma;
+        if (Math.abs(u) > half) return;
+        svg.appendChild(el("line", {x1:X(u), y1:T, x2:X(u), y2:Y(0),
+          stroke:"var(--violet)", "stroke-width":1.4, "stroke-dasharray":"3 4"}));
+      });
+      if (3 * st.sigma <= half){
+        const t = el("text", {x:X(3*st.sigma)+5, y:T+12, fill:"var(--violet)",
+          "font-size":11, "font-family":"var(--mono)"});
+        t.textContent = "3σ"; svg.appendChild(t);
+      }
+    }
+
     // 实际的核(蓝线 + 蓝点)
     let d = "";
     k.forEach((w, i) => { d += (i ? "L" : "M") + X(i-c).toFixed(2) + " " + Y(w/peak).toFixed(2); });
@@ -294,6 +319,8 @@ td.num{font-family:var(--mono)}
     $("s-peak").innerHTML = (realPeak >= 10 ? realPeak.toFixed(0) : realPeak.toFixed(1))
       + '<small>/255</small>';
     $("s-err").innerHTML = st ? st.err.toFixed(2) + '<small>%</small>' : '—';
+    // σ = √N / 2 —— 每做一遍方差加 0.25,而方差才是可加的(第三节那条勾股定理)
+    $("s-sigma").innerHTML = (Math.sqrt(n) / 2).toFixed(2) + '<small>格</small>';
     $("realpeak").textContent = (255 * Math.pow(Math.max.apply(null, kernelFor(MAX)), 2)).toFixed(0);
 
     const ints = gcdPow2(k);
