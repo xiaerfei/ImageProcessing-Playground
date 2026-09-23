@@ -33,6 +33,9 @@
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figkit import four_questions  # noqa: E402
+
 import cv2
 import matplotlib
 
@@ -306,51 +309,121 @@ def demo_gradient(g: npt.NDArray[np.float64]) -> None:
 
 # ---------------------------------------------------------------- 图板
 def save_derivative_figure(out_path: Path) -> None:
+    """一阶/二阶导数。三行上下叠放,共用 x 轴。
+
+    为什么重画(2026-09-23):上一版把原始信号、一阶、二阶三条线挤在同一根 y 轴上,
+    而三者单位根本不同 —— 原始是灰度值,一阶二阶是「变化量」。为了让后两条看得见,
+    还把它们 ×3,于是图上一阶显示 78,正文表格里却写 26,读的人对不上号。
+    上下叠放、各自一根 y 轴、不做任何缩放,就没有这个问题。
+    """
     x = np.concatenate([np.full(6, 20.0), np.linspace(20, 200, 8),
                         np.full(6, 200.0), np.full(12, 60.0)])
     d1 = np.gradient(x)
     d2 = np.gradient(d1)
+
+    # 四个路段:拿「骑车」当尺子 —— 海拔 / 陡不陡 / 陡度在不在变
+    bands = [(0, 6, "平地", "#f0f3f6"), (6, 14, "缓坡", "#eaf3ea"),
+             (14, 19, "平地", "#f0f3f6"), (19, 21, "一刀切", "#fdeeea"),
+             (21, 32, "平地", "#f0f3f6")]
+
+    fig, axes = plt.subplots(3, 1, figsize=(10.2, 9.0), sharex=True,
+                             gridspec_kw=dict(hspace=0.16))
+    rows = [(x, "black", "原始信号\n(海拔:你在多高)", None),
+            (d1, "#2c6fbb", "一阶差分\n(陡不陡)", 0),
+            (d2, "#c4442a", "二阶差分\n(陡度在不在变)", 0)]
+    for ax, (y, color, label, zero) in zip(axes, rows):
+        for a, b, name, bg in bands:
+            ax.axvspan(a - 0.5, b - 0.5, color=bg, zorder=0)
+        if zero is not None:
+            ax.axhline(0, color="#999", lw=0.9)
+        ax.plot(y, "o-", color=color, ms=3.4, lw=1.8, zorder=3)
+        ax.set_ylabel(label, fontsize=9.5)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.margins(y=0.22)
+
+    for a, b, name, _ in bands:                 # 路段名只标一次,写在最上面那行
+        axes[0].text((a + b - 1) / 2, 232, name, ha="center", fontsize=9.5, color="#4a5560")
+    axes[0].set_ylim(0, 250)
+
+    axes[1].set_yticks([-70, -35, 0, 26])
+    axes[1].annotate("整个坡上一路都是 26\n坡多陡就是多少", xy=(10, 26), xytext=(1.2, 44),
+                     fontsize=9, color="#2c6fbb",
+                     arrowprops=dict(arrowstyle="->", color="#2c6fbb", lw=1.0))
+    axes[1].annotate("一刀切:一个大尖峰 −70", xy=(19.5, -70), xytext=(22.5, -52),
+                     fontsize=9, color="#2c6fbb",
+                     arrowprops=dict(arrowstyle="->", color="#2c6fbb", lw=1.0))
+    axes[2].annotate("坡中间是 0 ——\n二阶对缓坡没反应", xy=(10, 0), xytext=(7.4, 22),
+                     fontsize=9, color="#c4442a",
+                     arrowprops=dict(arrowstyle="->", color="#c4442a", lw=1.0))
+    axes[2].annotate("一正一负,中间穿过 0\n那个零点正好是边的正中",
+                     xy=(20, 0), xytext=(22.5, 22), fontsize=9, color="#c4442a",
+                     arrowprops=dict(arrowstyle="->", color="#c4442a", lw=1.0))
+    # 索引 6:原始还是 20(看着是平的),一阶却已经是 13 —— 中心差分要看两边,
+    # x[7]=46 已经在坡上了。自学时正是在这一格觉得「两行没对齐」,必须标出来。
+    for ax in axes:
+        ax.axvline(6, color="#6b4fa8", ls="--", lw=1.3, zorder=2)
+    axes[0].annotate("算这一格时不看它自己,\n只看左右两边:20 和 46",
+                     xy=(6, 20), xytext=(13.6, 52), fontsize=9, color="#6b4fa8",
+                     arrowprops=dict(arrowstyle="->", color="#6b4fa8", lw=1.0))
+    axes[1].annotate("于是一阶 = (46−20)/2 = 13\n= 坡度 26 的一半\n(窗口只有一半踩在坡上)",
+                     xy=(6, 13), xytext=(0.2, -48), fontsize=9, color="#6b4fa8",
+                     arrowprops=dict(arrowstyle="->", color="#6b4fa8", lw=1.0))
+    axes[2].set_xlabel("位置")
+
+    fig.suptitle("一阶问「变化多快」,二阶问「变化在哪儿拐弯」", fontsize=13, y=0.955)
+    four_questions(fig,
+        "对同一段信号做两次减法:\n一阶 = 右邻减左邻,\n二阶 = 对一阶再做一次。\n"
+        "三行共用一根 x 轴,\n各自一根 y 轴,不做缩放 ——\n图上的数就是表里的数。",
+        "两个分工清楚的探针:\n一阶「整条坡都有反应」,\n适合算梯度、找边在哪;\n"
+        "二阶「只在起点和终点响」,\n零点正好落在边的正中,\n定位更准。",
+        "二阶对缓坡完全无感\n(坡中间是 0)。天空那种\n平缓渐变它一点不标 ——\n"
+        "这既是优点也是代价:\n想增强缓变的层次,\n它帮不上忙。",
+        "3 格宽的核会在真边界\n前后各多响一格(紫线处:\n信号还平着,一阶已 13)——\n"
+        "**梯度图上的边总是胖的**。\n又都是裸差分没有平滑,\n噪声会被原样放大。",
+        "求导前先平滑:一阶用 Sobel,\n二阶用高斯拉普拉斯(LoG);\n"
+        "胖边要削回一格宽,\n查非极大值抑制(NMS);\n要既锐化又不放大噪声,\n改用 USM 并调小 k 和 σ。",
+        y=0.02, bottom=0.235)
+    fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+
+
+def save_overshoot_figure(out_path: Path) -> None:
+    """过冲(halo)单独成图 —— 它属于第五节,不该混在第一节那张导数图里。
+
+    上一版把它当作导数图的右半边,于是第一节的读者被迫先看一个
+    还没讲到的东西(拉普拉斯锐化、USM 都在后面几节)。
+    """
     step = step_image()
-
-    fig, axes = plt.subplots(1, 2, figsize=(15.5, 5.6))
-
-    ax = axes[0]
-    ax.plot(x, "o-", color="black", ms=3, lw=1.8, label="原始信号")
-    ax.plot(d1 * 3, "o-", color="tab:blue", ms=3, lw=1.4, label="一阶差分(×3 便于看)")
-    ax.plot(d2 * 3, "o-", color="tab:red", ms=3, lw=1.4, label="二阶差分(×3)")
-    ax.axhline(0, color="gray", lw=0.8)
-    ax.annotate("缓坡:一阶一路有响应\n二阶只在两头", xy=(10, 78), xytext=(1, 150),
-                fontsize=9, color="tab:blue",
-                arrowprops=dict(arrowstyle="->", color="tab:blue", lw=1.0))
-    ax.annotate("一刀切:二阶是一正一负\n中间穿过 0 = 边的正中", xy=(20, -105), xytext=(22, -230),
-                fontsize=9, color="tab:red",
-                arrowprops=dict(arrowstyle="->", color="tab:red", lw=1.0))
-    ax.set_xlabel("位置")
-    ax.set_title("一阶问「变化多快」,二阶问「变化在哪儿拐弯」", fontsize=10)
-    ax.legend(fontsize=8, loc="upper right")
-    ax.grid(alpha=0.3)
-
-    ax = axes[1]
     row = 20
-    ax.plot(step[row], color="black", lw=2.2, label="原图:只有 50 和 200")
-    ax.plot(laplacian_sharpen(step)[row], color="tab:red", lw=1.5,
-            label="拉普拉斯锐化:冲到 −100 / 350")
-    ax.plot(unsharp(step, 2.0, 1.0)[row], color="tab:green", lw=1.5,
-            label="USM k=1 σ=2:冲到 −10 / 260")
-    ax.axhspan(0, 255, color="tab:blue", alpha=0.06)
-    ax.axhline(0, color="tab:blue", ls="--", lw=1.0)
-    ax.axhline(255, color="tab:blue", ls="--", lw=1.0)
-    ax.text(0.5, 262, "8 位能存的上限 255,冲出去的部分会被截掉,不可逆",
-            fontsize=8, color="tab:blue")
+    fig, ax = plt.subplots(figsize=(9.6, 4.6))
+    ax.axhspan(0, 255, color="#2c6fbb", alpha=0.06, zorder=0)
+    ax.plot(step[row], color="black", lw=2.4, label="原图:只有 50 和 200", zorder=3)
+    ax.plot(laplacian_sharpen(step)[row], color="#c4442a", lw=1.6,
+            label="拉普拉斯锐化:冲到 −100 / 350", zorder=3)
+    ax.plot(unsharp(step, 2.0, 1.0)[row], color="#2a8f4a", lw=1.6,
+            label="USM k=1 σ=2:冲到 −10 / 260", zorder=3)
+    for v in (0, 255):
+        ax.axhline(v, color="#2c6fbb", ls="--", lw=1.0)
+    ax.text(0.5, 264, "8 位能存的范围 0~255,冲出去的部分会被截掉,不可逆",
+            fontsize=9, color="#2c6fbb")
     ax.set_xlabel("列号")
     ax.set_ylabel("灰度")
-    ax.set_title("过冲(halo):锐化会在边的两侧造出暗边和亮边", fontsize=10)
-    ax.legend(fontsize=8, loc="lower right")
-    ax.grid(alpha=0.3)
+    ax.legend(fontsize=9, loc="lower right", frameon=False)
+    ax.spines[["top", "right"]].set_visible(False)
 
-    fig.suptitle("锐化的两块地基:导数怎么看边缘,以及它必然带来的过冲", fontsize=13)
-    fig.tight_layout(rect=(0.0, 0.0, 1.0, 0.92), h_pad=2.0)
-    fig.savefig(out_path, dpi=110)
+    fig.suptitle("过冲(halo):锐化必然在边的两侧造出暗边和亮边", fontsize=13, y=0.99)
+    four_questions(fig,
+        "对一条「左 50 右 200」的\n硬边做锐化,\n把整行的值画出来。",
+        "边变陡了 —— 这正是\n锐化想要的效果,\n人眼看上去更「清楚」。",
+        "边的两侧各多出一条\n暗边和亮边。拉普拉斯\n冲到 −100 / 350,\n"
+        "存成 8 位时被截成 0 / 255,\n**信息真的丢了,不可逆**。",
+        "过冲是锐化的固有产物,\n不是参数没调好 ——\n只要让差别变大,\n"
+        "边两侧就必然反向偏移。\n它也是「数码味」\n最典型的视觉特征。",
+        "用 USM 并调小 k 和 σ\n(k=0.5 时过冲只剩 30);\n"
+        "要完全避开光晕,\n改用保边的做法:\n双边滤波、引导滤波,\n或局部对比度增强。",
+        y=0.02, bottom=0.30)
+    fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
 
 
 def save_compare_figure(out_path: Path, g: npt.NDArray[np.float64]) -> None:
@@ -417,6 +490,40 @@ def save_gradient_figure(out_path: Path, g: npt.NDArray[np.float64]) -> None:
     fig.savefig(out_path, dpi=110)
 
 
+def demo_center_weight_zero() -> None:
+    """求导核中间那格为什么是 0 —— 不是谁定的,是被两条要求逼出来的。
+
+    自学时问到这儿:「为什么和 6 自己的位置无关」。答案是坡度本来就是
+    两点之间的事,一个点没有坡度;而下面两条要求一联立,中间那格只能是 0。
+    """
+    x = np.concatenate([np.full(6, 20.0), np.linspace(20, 200, 8), np.full(6, 200.0)])
+
+    def apply(k, sig):
+        a, c, b = k
+        return np.array([a * sig[i-1] + c * sig[i] + b * sig[i+1]
+                         for i in range(1, len(sig) - 1)])
+
+    print("\n【核中间为什么是 0】设核 = [a, c, b],c 是「自己那一格」的权重")
+    print("  要求① 整条路抬高 100,坡度不能变 —— 淘汰「和不为 0」的核")
+    for name, k in (("[-1, 0, 1]/2", (-0.5, 0, 0.5)), ("[-1, 0.5, 1]", (-1, 0.5, 1)),
+                    ("[-1, 1, 1]", (-1, 1, 1))):
+        d = np.abs(apply(k, x) - apply(k, x + 100)).max()
+        print(f"     {name:14} 和={sum(k):>4.1f}   抬高前后最大差 {d:>6.1f}"
+              + ("   不变" if d < 1e-9 else "   变了 ✗"))
+
+    print("  要求② 左右翻转,坡度应原样翻转再变号 —— 淘汰「和为 0 但不对称」的核")
+    for name, k in (("[-1, 0, 1]/2", (-0.5, 0, 0.5)), ("[-1, 1, 0]", (-1, 1, 0)),
+                    ("[-1.5, 1, 0.5]", (-1.5, 1, 0.5))):
+        f = apply(k, x)
+        r = apply(k, x[::-1])[::-1]
+        d = np.abs(f + r).max()
+        print(f"     {name:14} 和={sum(k):>4.1f}   与 −(翻转版) 最大差 {d:>6.1f}"
+              + ("   不偏" if d < 1e-9 else "   偏了 ✗"))
+
+    print("  两条联立: ① a+c+b=0  ② a=−b  →  c = −(a+b) = −(−b+b) = 0")
+    print("  只剩 0 这一个选择:给正数则平地也有输出,保持和为 0 但左右不等则位置偏半格。")
+
+
 def demo_half_pixel_shift() -> None:
     """为什么求导核是 [-1,0,1] 而不是照抄定义的 [-1,1]。
 
@@ -443,6 +550,7 @@ def main() -> None:
     print(f"主图 camera.png  shape={g.shape}")
 
     demo_derivatives_1d()
+    demo_center_weight_zero()
     demo_half_pixel_shift()
     demo_laplacian()
     demo_usm(g)
@@ -455,6 +563,9 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     save_derivative_figure(out)
     print(f"\n结果已保存: {out.relative_to(REPO)}")
+    over = out.with_name("sharpening-overshoot.png")
+    save_overshoot_figure(over)
+    print(f"结果已保存: {over.relative_to(REPO)}")
     cmp_path = out.with_name("sharpening-compare.png")
     save_compare_figure(cmp_path, g)
     print(f"结果已保存: {cmp_path.relative_to(REPO)}")
