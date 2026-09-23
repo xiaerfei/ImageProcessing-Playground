@@ -38,6 +38,9 @@ import sys
 import time
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figkit import four_questions  # noqa: E402
+
 import cv2
 import matplotlib
 
@@ -471,10 +474,176 @@ def save_operator_figure(out_path: Path, img: npt.NDArray[np.uint8]) -> None:
     fig.savefig(out_path, dpi=110)
 
 
+# ── 一阶找峰顶 vs 二阶找零点 ────────────────────────────────────────────
+# 自学时举了个具体场景:上面蓝天、下面黑山,问「一阶找到边缘,二阶是找到更准确的
+# 边缘吗?」。基本对,但「更准」三个字盖住了两件更要紧的事:二阶不理天空的渐变,
+# 以及这份精度要拿 3.8 倍的噪声去换。这一组就是把它量出来。
+
+SKY_EDGE = 59.5          # 真实边界:在第 59 行和第 60 行之间
+
+
+def sky_mountain_column(rows: int = 120) -> npt.NDArray[np.float64]:
+    """造一列:天空从 185 缓慢暗到 155,第 60 行一刀切到 25 的黑山。
+
+    天空那段**故意做成渐变** —— 真实照片的天空一定有,而它正是区分
+    一阶和二阶的关键:一阶会老实报出来,二阶完全不理。
+    """
+    col = np.empty(rows)
+    col[:60] = np.linspace(185, 155, 60)
+    col[60:] = 25.0
+    return col
+
+
+def conv1(sig: npt.NDArray[np.float64], k) -> npt.NDArray[np.float64]:
+    """一维相关,边界用复制补。核写成人话的顺序,不翻转。"""
+    k = np.asarray(k, float)
+    r = len(k) // 2
+    pad = np.pad(sig, r, mode="edge")
+    return np.array([float(np.dot(k, pad[i:i + len(k)])) for i in range(len(sig))])
+
+
+def demo_peak_vs_zero() -> None:
+    col = sky_mountain_column()
+    d1 = conv1(col, [-0.5, 0, 0.5])      # (右 − 左) / 2
+    d2 = conv1(col, [1, -2, 1])          # 左 − 2×自己 + 右
+
+    print("\n【一阶找峰顶 vs 二阶找零点】上面蓝天(带渐变),下面黑山")
+    print("  行号 :", "  ".join(f"{i:>8}" for i in range(56, 63)))
+    print("  原值 :", "  ".join(f"{col[i]:>8.2f}" for i in range(56, 63)))
+    print("  一阶 :", "  ".join(f"{d1[i]:>8.2f}" for i in range(56, 63)))
+    print("  二阶 :", "  ".join(f"{d2[i]:>8.2f}" for i in range(56, 63)))
+
+    sky = slice(5, 55)
+    print(f"\n  ① 天空那片渐变:一阶平均 {np.abs(d1[sky]).mean():.3f},"
+          f"二阶平均 {np.abs(d2[sky]).mean():.5f}")
+    print("     一阶老实报出天空在变暗;二阶不理 —— 变暗的**速度**一直没变")
+
+    print("\n  ② 边在哪")
+    print(f"     一阶峰顶两格:行 59 = {d1[59]:.2f},行 60 = {d1[60]:.2f},"
+          f"仅差 {abs(abs(d1[59]) - abs(d1[60])):.2f}")
+    print(f"       那 0.25 不是随机的,正好是天空的斜率 "
+          f"(col[59]−col[58])/2 = {(col[59] - col[58]) / 2:.2f}")
+    print(f"     二阶零点两侧:行 59 = {d2[59]:.2f},行 60 = {d2[60]:.2f},"
+          f"落差 {abs(d2[59] - d2[60]):.2f}")
+    t = 59 + d2[59] / (d2[59] - d2[60])
+    print(f"       线性内插 → {t:.2f}   真实 {SKY_EDGE}   误差 {abs(t - SKY_EDGE):.2f} 像素")
+
+    print("\n  ③ 零交叉必须配幅值门槛")
+    raw = [i for i in range(1, len(col)) if d2[i-1] * d2[i] < 0]
+    good = [i for i in raw
+            if max(abs(d2[i-1]), abs(d2[i])) > 0.05 * np.abs(d2).max()]
+    print(f"     不设门槛:{len(raw)} 个过零点 —— 天空那片二阶是 1e-16 量级的浮点误差,")
+    print(f"       符号照样翻来翻去。设门槛(峰值 5%)后只剩 {good},正是真实边界")
+
+    print("\n  ④ 代价:二阶把噪声放大得更狠")
+    print(f"     {'噪声 σ':>7}  {'一阶抖动':>10}  {'二阶抖动':>10}  {'倍数':>6}")
+    for sg in (1.0, 2.0, 5.0):
+        rng = np.random.default_rng(0)
+        n = col + rng.normal(0, sg, len(col))
+        a = float(np.std(conv1(n, [-0.5, 0, 0.5])[70:115]))
+        b = float(np.std(conv1(n, [1, -2, 1])[70:115]))
+        print(f"     {sg:>7.1f}  {a:>10.2f}  {b:>10.2f}  {b / a:>5.1f}×")
+    print("     σ=1 时一阶抖动 0.69,而峰顶两格只差 0.25 —— 噪声比差距还大两倍多,")
+    print("     峰顶落在哪一格基本是随机的。这就是二阶定位更准的真正原因。")
+
+
+def save_peak_vs_zero_figure(out_path: Path) -> None:
+    col = sky_mountain_column()
+    d1 = conv1(col, [-0.5, 0, 0.5])
+    d2 = conv1(col, [1, -2, 1])
+    lo, hi = 40, 80                      # 只画边界附近,天空全画进来看不清
+
+    fig = plt.figure(figsize=(14.2, 7.0))
+    outer = fig.add_gridspec(1, 2, width_ratios=[1.5, 1], wspace=0.24)
+    gs = outer[0, 0].subgridspec(3, 1, hspace=0.18)
+    gsr = outer[0, 1].subgridspec(2, 1, hspace=0.46, height_ratios=[1, 1.5])
+
+    rowspecs = [(col, "black", "原值\n(天空→黑山)"),
+                (d1, "#2c6fbb", "一阶\n找峰顶"),
+                (d2, "#c4442a", "二阶\n找零点")]
+    for r, (y, color, lab) in enumerate(rowspecs):
+        ax = fig.add_subplot(gs[r, 0])
+        ax.axvspan(lo, SKY_EDGE, color="#eaf0f8", zorder=0)     # 天空
+        ax.axvspan(SKY_EDGE, hi, color="#f0efec", zorder=0)     # 山
+        ax.axvline(SKY_EDGE, color="#6b4fa8", ls="--", lw=1.3, zorder=2)
+        if r:
+            ax.axhline(0, color="#999", lw=0.9)
+        ax.plot(range(lo, hi), y[lo:hi], "o-", color=color, ms=3.4, lw=1.7, zorder=3)
+        ax.set_ylabel(lab, fontsize=9.5)
+        ax.spines[["top", "right"]].set_visible(False)
+        ax.margins(y=0.25)
+        if r < 2:
+            ax.set_xticklabels([])
+    fig.axes[0].text(SKY_EDGE + 0.6, 150, f"真实边界 {SKY_EDGE}", fontsize=9, color="#6b4fa8")
+    fig.axes[0].text(46, 60, "天空", fontsize=10, color="#4a5560")
+    fig.axes[0].text(68, 60, "黑山", fontsize=10, color="#4a5560")
+    fig.axes[1].annotate(f"两格几乎一样高\n{d1[59]:.2f} 对 {d1[60]:.2f}\n只差 0.25",
+                         xy=(59.5, d1[59]), xytext=(63, -46), fontsize=9, color="#2c6fbb",
+                         arrowprops=dict(arrowstyle="->", color="#2c6fbb", lw=1.0))
+    t = 59 + d2[59] / (d2[59] - d2[60])
+    fig.axes[2].annotate(f"落差 {abs(d2[59]-d2[60]):.0f},内插 → {t:.2f}\n误差 0.00 像素",
+                         xy=(SKY_EDGE, 0), xytext=(62.5, -105), fontsize=9, color="#c4442a",
+                         arrowprops=dict(arrowstyle="->", color="#c4442a", lw=1.0))
+    fig.axes[2].set_xlabel("行号")
+
+    # 右上:天空那片渐变,两者反应
+    ax = fig.add_subplot(gsr[0, 0])
+    sky = slice(5, 55)
+    vals = [np.abs(d1[sky]).mean(), np.abs(d2[sky]).mean()]
+    ax.bar(["一阶", "二阶"], vals, 0.5, color=["#2c6fbb", "#c4442a"])
+    for i, v in enumerate(vals):
+        ax.text(i, v + 0.02, f"{v:.3f}", ha="center", fontsize=10)
+    ax.set_ylim(0, 0.62)
+    ax.set_ylabel("天空区平均响应")
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.set_title("天空的渐变:一阶会报,二阶不理", fontsize=10.5)
+
+    # 右下:噪声放大倍数
+    ax = fig.add_subplot(gsr[1, 0])
+    sigmas = (1.0, 2.0, 5.0)
+    a_s, b_s = [], []
+    for sg in sigmas:
+        rng = np.random.default_rng(0)
+        n = col + rng.normal(0, sg, len(col))
+        a_s.append(float(np.std(conv1(n, [-0.5, 0, 0.5])[70:115])))
+        b_s.append(float(np.std(conv1(n, [1, -2, 1])[70:115])))
+    xs = np.arange(len(sigmas))
+    ax.bar(xs - 0.19, a_s, 0.36, label="一阶", color="#2c6fbb")
+    ax.bar(xs + 0.19, b_s, 0.36, label="二阶", color="#c4442a")
+    for i in range(len(sigmas)):
+        ax.text(xs[i] - 0.19, a_s[i] + 0.25, f"{a_s[i]:.2f}", ha="center", fontsize=8.6)
+        ax.text(xs[i] + 0.19, b_s[i] + 0.25, f"{b_s[i]:.2f}", ha="center",
+                fontsize=8.6, color="#c4442a")
+    ax.set_xticks(xs)
+    ax.set_xticklabels([f"σ={s:g}" for s in sigmas])
+    ax.set_ylabel("平坦区的抖动")
+    ax.legend(fontsize=9, frameon=False)
+    ax.spines[["top", "right"]].set_visible(False)
+    ax.set_title(f"代价:二阶把噪声放大 {b_s[0]/a_s[0]:.1f} 倍", fontsize=10.5)
+
+    fig.suptitle("边到底在哪:一阶找峰顶,二阶找零点", fontsize=13.5, y=0.975)
+    four_questions(fig,
+        "对同一列(上天空下黑山)\n分别做一阶和二阶,\n再比两件事:\n"
+        "天空的渐变各报多少、\n边的位置各算到哪儿。",
+        "二阶不理天空的渐变(0.00000),\n只认突变;而且靠零交叉\n定位 —— 线性内插出 59.50,\n"
+        "与真实边界误差 0.00 像素,\n是**亚像素**精度。",
+        "噪声安全余量。σ=1 时二阶\n抖动 2.60,是一阶的 3.8 倍。\n"
+        "精度不是白给的,\n是拿信噪比换来的。",
+        "零交叉光看符号不行:\n平坦区 1e-16 量级的浮点误差\n照样翻符号 —— 不设门槛\n"
+        "这一列出来 35 个假零点,\n设成峰值的 5% 才只剩 1 个。",
+        "求二阶前必须先平滑:\n高斯拉普拉斯(LoG)、\n高斯差分(DoG);\n"
+        "要稳健就走一阶那条路:\nCanny(Sobel + NMS + 双阈值)。",
+        y=0.02, bottom=0.235)
+    fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+
+
 def main() -> None:
     img = load_gray("camera.png")
     print(f"主图 camera.png  shape={img.shape}")
 
+
+    demo_peak_vs_zero()
     demo_kernel_sum()
     demo_nms_pitfalls(img)
     demo_hysteresis(img)
@@ -488,6 +657,9 @@ def main() -> None:
     print(f"\n结果已保存: {out.relative_to(REPO)}")
     cmp_path = out.with_name("edge-operator-compare.png")
     save_operator_figure(cmp_path, img)
+    pvz = cmp_path.with_name("edge-peak-vs-zero.png")
+    save_peak_vs_zero_figure(pvz)
+    print(f"结果已保存: {pvz.relative_to(REPO)}")
     print(f"结果已保存: {cmp_path.relative_to(REPO)}")
 
     if "--show" in sys.argv:
