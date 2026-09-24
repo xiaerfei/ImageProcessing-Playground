@@ -192,6 +192,50 @@ def demo_usm(g: npt.NDArray[np.float64]) -> None:
 
 
 # ---------------------------------------------------------------- 4
+def demo_why_subtract(g: npt.NDArray[np.float64]) -> None:
+    hr("3b. f − blur 到底在减什么:一个恒等式,不是什么近似")
+
+    # ① 逐像素手算:一条软边上取一段
+    x = np.arange(40)
+    col = 145 + 60 * np.tanh((18 - x) / 2.0)
+    b1 = cv2.GaussianBlur(col.reshape(-1, 1), (0, 0), 2.0).ravel()
+    d1 = col - b1
+    print("  同一个位置的两个数直接相减,没有别的运算:\n")
+    print(f"  {'x':>4} | {'f(原图)':>9} | {'blur(模糊)':>11} | {'f − blur':>9}")
+    print("  " + "-" * 42)
+    for i in (2, 12, 15, 17, 18, 19, 21, 24, 34):
+        tail = ""
+        if abs(d1[i]) < 1e-9 and 0 < i < len(d1) - 1 and d1[i - 1] * d1[i + 1] < 0:
+            tail = "   <- 边的正中:f 和 blur 相等"
+        print(f"  {i:>4} | {col[i]:>9.1f} | {b1[i]:>11.1f} | {d1[i]:>+9.1f}{tail}")
+    print(f"\n  平坦区(x=2):f 和 blur 都是 {col[2]:.1f},差 {d1[2]:+.2f} ——")
+    print("  糊一片均匀的东西还是那个值,所以**大块的明暗全部归零**。")
+
+    # ② 恒等式:低频 + 高频 = 原图
+    blur = cv2.GaussianBlur(g, (0, 0), 2.0)
+    detail = g - blur
+    print(f"\n  恒等式 f = blur + detail,最大差 {np.abs(g - (blur + detail)).max():.2e}")
+    print("  —— 这不是近似,是减法的定义。blur 是低通,detail 就是剩下的高通。")
+
+    # ③ 为什么 detail 的均值必然是 0
+    print(f"\n  detail 均值 {detail.mean():+.6f},f 均值 {g.mean():.4f},blur 均值 {blur.mean():.4f}")
+    print(f"  两个均值差 {abs(g.mean() - blur.mean()):.2e} —— 高斯核的和是 1,")
+    print("  「平均」不会改变整体亮度,所以减出来的东西必然在 0 上下对称摆。")
+
+    # ④ USM 其实可以合成一个核
+    k = 1.5
+    usm = g + k * detail
+    merged = (1 + k) * g - k * blur
+    print(f"\n  把 out = f + k×detail 展开:f + k(f − blur) = (1+k)·f − k·blur")
+    print(f"  k={k} 时两种算法最大差 {np.abs(usm - merged).max():.2e} —— 完全等价。")
+    print("  所以 USM 本质是:**把原图按 (1+k) 放大,再减掉 k 份模糊**。")
+    print("  锐化不是「加了什么新东西」,是**把高频那一份重复加了 k 次**。")
+    z = int(np.argmin(np.abs(d1[10:30]))) + 10
+    print(f"\n  顺带:上面表里 x={z} 处 f 和 blur 相等,detail = 0 —— 那是边的正中。")
+    print("  detail 在边心过零、两侧一正一负,和拉普拉斯的零点是同一回事")
+    print("  (第四节实测:小半径 USM 与拉普拉斯锐化相关系数 0.9918)。")
+
+
 def demo_usm_equals_laplacian(g: npt.NDArray[np.float64]) -> None:
     hr("4. ⚠️ USM 和拉普拉斯锐化,其实是同一件事")
     lap_added = laplacian_sharpen(g) - g          # 拉普拉斯锐化「加上去的那一份」
@@ -894,6 +938,7 @@ def main() -> None:
     demo_inflection()
     demo_zero_is_steepest()
     demo_usm(g)
+    demo_why_subtract(g)
     demo_usm_equals_laplacian(g)
     demo_overshoot()
     demo_noise(g)
