@@ -648,6 +648,24 @@ def inflection_stats():
     return col, g1, g2, infl, lo, hi
 
 
+def transition_band(col, pct: float = 0.99):
+    """边的「过渡带」有多宽 —— 掉完 pct 的幅度用了从第几行到第几行。
+
+    为什么要算这个:软边根本没有肉眼可辨的「一条线」,
+    有的是一条带。不把带画出来,单画一条拐点线会让人觉得「它没对齐」。
+    """
+    hi, lo = col.max(), col.min()
+    span = hi - lo
+    a = int(np.argmax(col < hi - span * (1 - pct)))
+    b = int(np.argmax(col < lo + span * (1 - pct)))
+    return a, b
+
+
+def hard_edge_column(n: int = 64):
+    """一刀切的硬边,跳变发生在第 31 行和第 32 行之间 —— 真边界在 31.5。"""
+    return np.where(np.arange(n) < EDGE_CENTER, 200.0, 40.0)
+
+
 def demo_inflection() -> None:
     hr("2d. 拐点在哪儿:一阶最陡的那一格,正是二阶过零的那一格")
     col, g1, g2, infl, lo, hi = inflection_stats()
@@ -667,6 +685,25 @@ def demo_inflection() -> None:
     print(f"\n  |二阶| 的两个峰在第 {lo} 行和第 {hi} 行,中点 = {(lo + hi) / 2:.1f}")
     print(f"  —— 锐化时被推得最狠的就是这两行,光晕(halo)长在离边心各 {infl - lo} 格的地方。")
 
+    print("\n  这条边根本没有「一条线」,它有厚度:")
+    for pct in (0.90, 0.95, 0.99):
+        a, b = transition_band(col, pct)
+        print(f"    掉完 {pct:.0%} 幅度 → 第 {a} 行到第 {b} 行,共 {b - a} 行")
+    a99, b99 = transition_band(col, 0.99)
+    print(f"  肉眼要在 {b99 - a99} 行宽的渐变里找「分界」,本来就找不到 ——")
+    print("  拐点在带的正中,但带太宽,中心不显眼。数值上它没错:")
+    print(f"    (200+40)/2 = 120.0 → 第 {int(np.argmin(np.abs(col - 120)))} 行,该行灰度 {col[infl]:.1f}")
+
+    print("\n  换成一刀切的硬边,肉眼立刻找得到边,可零点反而没落在格子上:")
+    hard = hard_edge_column()
+    h1, h2 = d1d(hard, [-0.5, 0, 0.5]), d1d(hard, [1, -2, 1])
+    print(f"    {'行':>6} | {'亮度':>7} | {'一阶':>8} | {'二阶':>9}")
+    for i in range(int(EDGE_CENTER) - 2, int(EDGE_CENTER) + 2):
+        print(f"    {i:>6} | {hard[i]:>7.1f} | {h1[i]:>8.2f} | {h2[i]:>9.2f}")
+    print(f"  二阶从 {h2[int(EDGE_CENTER)-1]:.0f} 直接跳到 {h2[int(EDGE_CENTER)]:.0f},中间没有 0 ——")
+    print(f"  真边界在 {EDGE_CENTER - 0.5},落在两格的缝里,只能靠内插找回来。")
+    print("  **肉眼能对齐的边,算法要内插;算法能精确落点的边,肉眼反而看不出。**")
+
 
 def save_inflection_figure(out_path: Path) -> None:
     """回答「拐点到底在图上哪个位置」—— 2D 图和剖面画在一起,行号对得上。"""
@@ -674,12 +711,14 @@ def save_inflection_figure(out_path: Path) -> None:
     img = sky_mountain_2d()
     n = img.shape[0]
 
-    fig = plt.figure(figsize=(15.2, 5.6))
+    a99, b99 = transition_band(col, 0.99)
+    hard = hard_edge_column(n)
+    fig = plt.figure(figsize=(15.2, 6.2))
     # bottom 要在这儿给死:显式设过边界的 gridspec 不吃 four_questions 里的
     # subplots_adjust,不给的话图和横幅之间会空出一大条
     outer = fig.add_gridspec(1, 2, width_ratios=[1.05, 1.35], wspace=0.22,
                              left=0.045, right=0.985, top=0.90, bottom=0.355)
-    gl = outer[0, 0].subgridspec(2, 1, hspace=0.30, height_ratios=[2.6, 1])
+    gl = outer[0, 0].subgridspec(3, 1, hspace=0.42, height_ratios=[2.5, 1, 1])
     gr = outer[0, 1].subgridspec(3, 1, hspace=0.16)
 
     ax = fig.add_subplot(gl[0])
@@ -692,7 +731,12 @@ def save_inflection_figure(out_path: Path) -> None:
                           (infl, "#2a8f4a", "-", f"拐点 = 边心 (第 {infl} 行)"),
                           (hi, "#c4442a", "--", f"|二阶| 峰 (第 {hi} 行)")):
         ax.axhline(y, color=c, ls=ls, lw=2.0, label=lab)
-    ax.set_title(f"拐点在图上的位置(截第 {top}~{bot - 1} 行):绿线就是边", fontsize=11)
+    ax.axhspan(a99, b99, color="#2a8f4a", alpha=0.30, zorder=0)
+    ax.annotate(f"过渡带 {b99 - a99} 行\n(掉完 99% 幅度)", xy=(0.03, 0.88),
+                xycoords="axes fraction", fontsize=8.6, color="#1d6b38",
+                va="center", ha="left",
+                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#2a8f4a", alpha=0.85))
+    ax.set_title(f"这条边有厚度:绿线在过渡带的正中(截第 {top}~{bot - 1} 行)", fontsize=11)
     ax.set_ylabel("行号")
     ax.set_xticks([])
     ax.legend(fontsize=7.8, loc="lower right", framealpha=0.94)
@@ -710,9 +754,22 @@ def save_inflection_figure(out_path: Path) -> None:
         axz.text(i, 0.5, f"{col[i]:.0f}", ha="center", va="center", fontsize=7.2,
                  color="black" if col[i] > 110 else "white")
     axz.set_yticks([])
-    axz.set_xticks(range(lo_z, hi_z, 2))
+    axz.set_xticks([])
     # xlabel 会被底部横幅压住,横轴含义写进标题
     axz.set_title("把边那一段拉直放大(横轴 = 行号):格子里是真实灰度值", fontsize=10)
+
+    axh = fig.add_subplot(gl[2])
+    axh.imshow(hard[lo_z:hi_z][None, :], cmap="gray", vmin=0, vmax=255,
+               interpolation="nearest", aspect="auto",
+               extent=(lo_z - 0.5, hi_z - 0.5, 0, 1))
+    axh.axvline(EDGE_CENTER - 0.5, color="#2a8f4a", lw=2.4)
+    for i in range(lo_z, hi_z):
+        axh.text(i, 0.5, f"{hard[i]:.0f}", ha="center", va="center", fontsize=7.2,
+                 color="black" if hard[i] > 110 else "white")
+    axh.set_yticks([])
+    axh.set_xticks(range(lo_z, hi_z, 2))
+    axh.set_title("对照:一刀切的硬边 —— 这回肉眼一眼看得到边,"
+                  f"可真边界在 {EDGE_CENTER - 0.5},落在两格的缝里", fontsize=9.6)
 
     x = np.arange(n)
     rows = [(col, "亮度剖面:一路往下掉,从不回头", "#2c6fbb"),
@@ -721,6 +778,7 @@ def save_inflection_figure(out_path: Path) -> None:
     axes = [fig.add_subplot(gr[i]) for i in range(3)]
     for k, (ax_, (data, title, color)) in enumerate(zip(axes, rows)):
         ax_.plot(x, data, color=color, lw=1.6)
+        ax_.axvspan(a99, b99, color="#2a8f4a", alpha=0.13, zorder=0)
         ax_.axvline(infl, color="#2a8f4a", lw=1.6)
         for y in (lo, hi):
             ax_.axvline(y, color="#c4442a", ls="--", lw=1.2)
@@ -742,33 +800,28 @@ def save_inflection_figure(out_path: Path) -> None:
                      fontsize=8.4, color="#2a8f4a",
                      arrowprops=dict(arrowstyle="->", color="#2a8f4a", lw=1.0))
 
-    fig.suptitle("「梯度由增转减的那个转折点」在图上就是这条绿线", fontsize=13, y=0.955)
+    fig.suptitle("绿线没有偏:软边根本没有「一条」分界线,它有 "
+                 f"{b99 - a99} 行厚", fontsize=13, y=0.962)
     four_questions(fig,
         "做一张软边的「天 + 山」图,\n"
-        f"边心定在第 {infl} 行。\n"
-        "沿竖直方向量亮度、\n一阶(陡不陡)、二阶,\n"
-        "三行共用行号,和左边\n那张图的行号对得上。",
-        "看见拐点到底在哪:\n"
-        f"一阶峰顶第 {infl} 行,\n"
-        f"同一行二阶 = {g2[infl]:.2f}。\n"
-        "亮度一路在掉没有转折,\n"
-        "**转折的是「掉得多快」**。",
+        f"边心定在第 {infl} 行,\n"
+        "量亮度 / 一阶 / 二阶。\n"
+        f"绿底标出过渡带({b99 - a99} 行),\n"
+        "底下再放一条一刀切的\n硬边做对照。",
+        f"拐点在第 {infl} 行:\n"
+        f"一阶峰顶 {abs(g1[infl]):.1f},\n"
+        f"同一行二阶 = {g2[infl]:.2f},\n"
+        f"灰度 {col[infl]:.0f} = (200+40)/2。\n"
+        "**它在过渡带的正中**。",
+        f"肉眼对不齐它。过渡带有\n{b99 - a99} 行厚,"
+        "眼睛在这么宽\n的渐变里找不出「一条线」\n—— "
+        "**不是绿线偏了,是\n压根没有线可以对齐**。",
         f"|二阶| 最大的是第 {lo}、{hi} 行,\n"
-        "**都不是边**。照「找最剧烈」\n"
-        "去定位会得到两条线,\n"
-        "边夹在中间 —— 这正是\n"
-        "锐化光晕(halo)的来源。",
-        "这是合成的理想软边。\n"
-        "真实图里有噪声,二阶会\n"
-        "在平坦区反复擦过 0,\n"
-        "**假零点一大堆**(实测\n"
-        "不设门槛出 35 个)。",
-        "零交叉必须配幅值门槛\n"
-        "(峰值 5% 即可);\n"
-        "求二阶前先高斯平滑,\n"
-        "查 LoG / DoG;\n"
-        "只想要边的位置,\n"
-        "走一阶 + NMS 更稳。",
+        "**都不是边**(halo 就长在\n那两行)。换成硬边又反过来:\n"
+        f"肉眼看得见,可真边界 {EDGE_CENTER - 0.5}\n落在两格的缝里,没有零点。",
+        "落在缝里就线性内插\n(上一篇实测误差 0.0010);\n"
+        "零交叉必须配幅值门槛\n(峰值 5%,否则 35 个假零点);\n"
+        "求二阶前先高斯平滑,\n查 LoG / DoG。",
         y=0.285, bottom=0.355)
     fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
     plt.close(fig)
