@@ -17,7 +17,9 @@
    就是「原图 − 拉普拉斯」;这个核不是设计出来的,是横竖两个二阶导相加
    (−2 + −2 = −4);八邻域 −8 没折算对角线的 √2 步长,严格算是 −6;
    ⚠️ 各向同性实测八邻域(9.75%)反而不如四邻域(8.94%);
-   拐点(一阶最陡 = 二阶过零)才是边的正中,|二阶| 最大的两处都不是边
+   拐点(一阶最陡 = 二阶过零)才是边的正中,|二阶| 最大的两处都不是边;
+   ⚠️ 「零点在过渡带正中」只对对称边成立 —— 不对称边实测偏近 10 格,
+   永远成立的是「零点 = 一阶峰顶 = 最陡处」
 3. USM(反锐化掩模)三步:模糊 → 原图减模糊 = 细节 → 把细节加回去
 4. ⚠️ USM 半径很小时,它和拉普拉斯锐化几乎是同一件事(相关系数 0.9918)
 5. 锐化的代价一:过冲(halo)。原本 [50,200] 的边,拉普拉斯锐化后变成 [−100,350]
@@ -705,6 +707,59 @@ def demo_inflection() -> None:
     print("  **肉眼能对齐的边,算法要内插;算法能精确落点的边,肉眼反而看不出。**")
 
 
+def subpixel_zero(g2, lo: int, hi: int, near: float):
+    """在 [lo,hi) 里找二阶变号处,线性内插出亚像素位置,取离 near 最近的那个。
+
+    为什么要挑「最近的」:缓变区域的任何小拐弯都会制造零交叉,
+    不挑的话会选中一个假零点 —— 这也正是零交叉检测必须配幅值门槛的原因。
+    """
+    sg = np.sign(g2)
+    zs = [i + g2[i] / (g2[i] - g2[i + 1])
+          for i in range(lo, hi) if sg[i] * sg[i + 1] < 0]
+    return min(zs, key=lambda v: abs(v - near)) if zs else float("nan")
+
+
+def subpixel_peak(g1):
+    """一阶 |峰顶| 的亚像素位置:拿峰值和左右邻居拟一条抛物线,取顶点。"""
+    p = int(np.abs(g1).argmax())
+    y0, y1, y2 = abs(g1[p - 1]), abs(g1[p]), abs(g1[p + 1])
+    denom = y0 - 2 * y1 + y2
+    return p + (0.5 * (y0 - y2) / denom if denom else 0.0)
+
+
+def lopsided_edge(n: int, center: float, tau_bright: float, tau_dark: float):
+    """两侧快慢不同的边。tau 越大过渡越缓,两个 tau 相等就退化成对称边。"""
+    x = np.arange(n)
+    bright = 200 - 80 * np.exp(-np.maximum(center - x, 0) / tau_bright)
+    dark = 40 + 80 * np.exp(-np.maximum(x - center, 0) / tau_dark)
+    return np.where(x < center, bright, dark)
+
+
+def demo_zero_is_steepest() -> None:
+    hr("2e. 零点落在「最陡处」,不是「过渡带正中」—— 对称边上两者才重合")
+    n, c = 96, 48.0
+    cases = [("对称(两侧一样快)", 120 + 80 * np.tanh((c - np.arange(n)) / 2.5)),
+             ("亮侧缓 τ=6.0,暗侧陡 τ=1.2", lopsided_edge(n, c, 6.0, 1.2)),
+             ("亮侧陡 τ=1.2,暗侧缓 τ=6.0", lopsided_edge(n, c, 1.2, 6.0))]
+    print(f"  {'边的形状':<26} | {'过渡带':>11} | {'几何中点':>8} | "
+          f"{'二阶零点':>8} | {'一阶峰顶':>8} | {'零点−中点':>9}")
+    print("  " + "-" * 92)
+    for name, col in cases:
+        g1, g2 = d1d(col, [-0.5, 0, 0.5]), d1d(col, [1, -2, 1])
+        a, b = transition_band(col, 0.99)
+        geo = (a + b) / 2
+        pk = subpixel_peak(g1)
+        z = subpixel_zero(g2, a - 3, b + 3, pk)
+        print(f"  {name:<26} | {f'{a}~{b} 行':>11} | {geo:>8.2f} | "
+              f"{z:>8.3f} | {pk:>8.3f} | {z - geo:>+9.3f}")
+    print("\n  后两行的零点偏离几何中点近 10 格 —— **「在过渡带正中」只对对称边成立**。")
+    print("  但三行里零点都贴着一阶峰顶(差 <0.15 格),这条永远成立:")
+    print("  零点的意思就是「一阶不再变化」,而一阶不再变化的地方就是它的峰顶。")
+    print("  对称边上「最陡处」恰好也是「正中」,所以看起来像是在中间 —— 那是巧合。")
+    print("\n  第一行的几何中点 48.50 比真边心 48.0 大 0.5,是过渡带端点取整造成的,")
+    print("  不是真偏 —— transition_band 返回的是整行号。")
+
+
 def save_inflection_figure(out_path: Path) -> None:
     """回答「拐点到底在图上哪个位置」—— 2D 图和剖面画在一起,行号对得上。"""
     col, g1, g2, infl, lo, hi = inflection_stats()
@@ -837,6 +892,7 @@ def main() -> None:
     demo_laplacian()
     demo_laplacian_origin()
     demo_inflection()
+    demo_zero_is_steepest()
     demo_usm(g)
     demo_usm_equals_laplacian(g)
     demo_overshoot()
