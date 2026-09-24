@@ -1,0 +1,521 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>USM 分步</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<style>
+:root{
+  --ink:#171c22; --ink-2:#4a5560; --ink-3:#7b8894;
+  --ground:#f4f6f8; --panel:#ffffff; --line:#dde3ea; --line-2:#eaeff4;
+  --blue:#2c6fbb; --red:#c4442a; --orange:#d95f02; --green:#2a8f4a; --violet:#6b4fa8;
+  --blue-wash:#e8f0f9; --shadow:0 1px 2px rgba(23,28,34,.06),0 8px 24px -12px rgba(23,28,34,.18);
+  --mono:"IBM Plex Mono","SF Mono",Menlo,monospace;
+  --sans:"IBM Plex Sans","PingFang SC","Heiti SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e6ebf1; --ink-2:#a3b0bd; --ink-3:#73808d;
+  --ground:#12161b; --panel:#1a2027; --line:#2c353f; --line-2:#232b33;
+  --blue:#6aa6e8; --red:#e8765c; --orange:#f0913a; --green:#5fc282; --violet:#a58ce0;
+  --blue-wash:#1d2935;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}}
+:root[data-theme="dark"]{
+  --ink:#e6ebf1; --ink-2:#a3b0bd; --ink-3:#73808d;
+  --ground:#12161b; --panel:#1a2027; --line:#2c353f; --line-2:#232b33;
+  --blue:#6aa6e8; --red:#e8765c; --orange:#f0913a; --green:#5fc282; --violet:#a58ce0;
+  --blue-wash:#1d2935;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);
+}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);
+  font-size:15px;line-height:1.65;margin:0;padding-block:28px 48px;padding-left:16px;padding-right:16px}
+.wrap{max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:26px;line-height:1.25;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.sub{color:var(--ink-2);margin:6px 0 0;max-width:64ch}
+code{font-family:var(--mono);font-size:.92em;background:var(--line-2);padding:1px 5px;border-radius:4px}
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--ink-3);margin:0 0 10px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;
+  padding:16px;box-shadow:var(--shadow)}
+
+/* 步骤条 */
+.steps{display:flex;gap:8px;flex-wrap:wrap;padding:12px}
+.chip{flex:1 1 150px;min-width:0;text-align:left;padding:10px 12px;border-radius:10px;
+  border:1px solid var(--line);background:var(--panel);cursor:pointer;
+  font-family:var(--sans);font-size:14px;color:var(--ink-3);
+  transition:border-color .14s,background .14s,color .14s}
+.chip b{display:block;font-size:13px;font-weight:600;margin-bottom:1px}
+.chip small{font-family:var(--mono);font-size:11px;opacity:.8}
+.chip.on{border-color:var(--blue);background:var(--blue-wash);color:var(--ink)}
+.chip.done{color:var(--ink-2)}
+
+.stage{display:flex;gap:18px;flex-wrap:wrap}
+.stage-img{flex:0 0 auto;width:300px;max-width:100%}
+.stage-img canvas{width:100%;aspect-ratio:1;image-rendering:pixelated;
+  border:1px solid var(--line);border-radius:8px;display:block;background:var(--line-2)}
+.cap{font-family:var(--mono);font-size:11px;color:var(--ink-3);margin:6px 0 0;text-align:center}
+.stage-say{flex:1 1 330px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.formula{font-family:var(--mono);font-size:15px;background:var(--blue-wash);
+  border-left:3px solid var(--blue);border-radius:0 8px 8px 0;padding:10px 12px;
+  color:var(--ink);overflow-x:auto;white-space:nowrap}
+.say{margin:0;color:var(--ink-2)}
+.say b{color:var(--ink)}
+.nums{display:grid;grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:8px}
+.num{background:var(--line-2);border-radius:8px;padding:8px 10px}
+.num .k{font-size:11px;color:var(--ink-3);display:block;line-height:1.3}
+.num .v{font-family:var(--mono);font-size:17px;font-weight:600;font-variant-numeric:tabular-nums;
+  color:var(--blue);letter-spacing:-.01em}
+.num.warn .v{color:var(--red)}
+.num.ok .v{color:var(--green)}
+
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px}
+button{font-family:var(--sans);font-size:14px;cursor:pointer;border-radius:8px;
+  border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;
+  transition:background .14s,border-color .14s,transform .08s}
+button:hover{background:var(--line-2)}
+button:active{transform:translateY(1px)}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+button.primary:hover{filter:brightness(1.08)}
+.spacer{flex:1 1 auto}
+
+.ctl{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:16px;padding:16px}
+.ctl label{display:flex;flex-direction:column;gap:5px;min-width:0}
+.ctl .lab{display:flex;justify-content:space-between;align-items:baseline;gap:8px;
+  font-size:13px;color:var(--ink-2)}
+/* 这一行会出现 σ:父级若有 uppercase 会把它变成 Σ,所以显式关掉 */
+.ctl .lab .nm{font-weight:500;color:var(--ink);text-transform:none}
+.ctl .lab .vv{font-family:var(--mono);font-size:15px;font-weight:600;color:var(--blue);
+  font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--blue);height:26px;cursor:pointer;margin:0}
+input[type=range]:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.hint{font-size:12px;color:var(--ink-3);margin:0}
+.toggle{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--ink-2);cursor:pointer}
+.toggle input{accent-color:var(--red);width:16px;height:16px;cursor:pointer}
+
+.prof{padding:14px}
+.prof canvas{width:100%;height:210px;display:block}
+.legend{display:flex;gap:14px;flex-wrap:wrap;font-family:var(--mono);font-size:11px;
+  color:var(--ink-3);margin:8px 0 0}
+.legend i{display:inline-block;width:18px;height:3px;border-radius:2px;
+  vertical-align:middle;margin-right:5px}
+
+.note{border-left:3px solid var(--orange);background:var(--panel);border-radius:0 10px 10px 0;
+  padding:12px 14px;box-shadow:var(--shadow)}
+.note p{margin:0;color:var(--ink-2);font-size:14px}
+.note b{color:var(--ink)}
+.foot{color:var(--ink-3);font-size:12.5px;border-top:1px solid var(--line);padding-top:14px}
+.foot a{color:var(--blue)}
+.row2{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Interactive / Unsharp Masking</p>
+  <h1>USM 四步,一步一步看</h1>
+  <p class="sub">名字很怪:「<b>反</b>锐化掩模」怎么会用来锐化?因为它靠的是一张<b>不锐</b>的图。
+  下面每按一次「下一步」走一步,图和剖面曲线都会跟着变 —— 特别注意<b>第 2 步</b>那张图,
+  它有正有负,是整件事里最容易卡住的地方。</p>
+</header>
+
+<div class="panel steps" id="steps"></div>
+
+<div class="panel stage">
+  <div class="stage-img">
+    <canvas id="cv" width="192" height="192"></canvas>
+    <p class="cap" id="cvcap">原图</p>
+  </div>
+  <div class="stage-say">
+    <div class="formula" id="formula"></div>
+    <p class="say" id="say"></p>
+    <div class="nums" id="nums"></div>
+  </div>
+</div>
+
+<div class="panel bar">
+  <button id="prev">← 上一步</button>
+  <button id="next" class="primary">下一步 →</button>
+  <button id="reset">重来</button>
+  <div class="spacer"></div>
+  <label class="toggle" title="把细节图存进 uint8 会把负的那一半当场归零">
+    <input type="checkbox" id="u8"> 用 uint8 存细节(新手最常踩的坑)
+  </label>
+</div>
+
+<div class="panel ctl">
+  <label>
+    <span class="lab"><span class="nm">半径 σ</span><span class="vv" id="vsig">2.0</span></span>
+    <input type="range" id="sig" min="0.5" max="8" step="0.1" value="2">
+    <p class="hint">模糊到什么程度。σ 越大,被当成「细节」的东西越多、光晕越宽。</p>
+  </label>
+  <label>
+    <span class="lab"><span class="nm">强度 k</span><span class="vv" id="vk">1.0</span></span>
+    <input type="range" id="k" min="0" max="4" step="0.1" value="1">
+    <p class="hint">细节加回去几倍。PS 里的 Amount,100% 就是 k = 1。</p>
+  </label>
+  <label>
+    <span class="lab"><span class="nm">阈值 T</span><span class="vv" id="vt">0</span></span>
+    <input type="range" id="t" min="0" max="40" step="1" value="0">
+    <p class="hint">细节小于它就不放大。专门用来躲开噪声,代价是弱纹理也一起丢。</p>
+  </label>
+  <label>
+    <span class="lab"><span class="nm">扫描行</span><span class="vv" id="vrow">128</span></span>
+    <input type="range" id="row" min="2" max="189" step="1" value="128">
+    <p class="hint">剖面取哪一行。拖到 30 看条纹区、90 看噪声带、128 看软边、158 穿过硬边方块。</p>
+  </label>
+</div>
+
+<div class="panel prof">
+  <p class="eyebrow" style="margin-bottom:8px">剖面:上图那条红色扫描线(第 <span id="rowlab">128</span> 行)</p>
+  <canvas id="pf" width="1000" height="420"></canvas>
+  <p class="legend" id="legend"></p>
+</div>
+
+<div class="note" id="note"><p></p></div>
+
+<div class="row2">
+  <div class="note" style="border-left-color:var(--violet)">
+    <p><b>为什么第 2 步必须能存负数。</b>
+    <code>detail = 原图 − 模糊</code> 有正有负:边的亮侧为正、暗侧为负。
+    用 <code>uint8</code> 接的话负的那一半当场归零,锐化就只剩「一边」——
+    上面那个勾选框可以亲眼看到这个坑。</p>
+  </div>
+  <div class="note" style="border-left-color:var(--green)">
+    <p><b>USM 和拉普拉斯锐化其实是同一件事。</b>
+    σ 很小的时候两者相关系数 <code>0.9918</code>。
+    那为什么工程上一律用 USM?因为<b>它有旋钮</b>(σ / k / T),
+    裸拉普拉斯没有,一上来就是最猛的那一档。</p>
+  </div>
+</div>
+
+<p class="foot">
+数值算法跟
+<a href="../Python-Prototyping/Ch03_Spatial_Filtering/23_sharpening.py"><code>23_sharpening.py</code></a>
+的 <code>unsharp()</code> 保持一致(高斯用可分离卷积、边界复制补、最后 clip 到 0–255)——
+<b>两边对不上就是 bug</b>。配套正文:
+<a href="../Documents/05-spatial-filtering/03-sharpening.md">03-sharpening.md</a> 第三节。
+</p>
+
+</div>
+
+<script>
+"use strict";
+const W = 192, H = 192;
+
+/* ---------- 测试图:几样东西凑一张,好让每一步的收益和代价都露出来 ---------- */
+function makeImage(){
+  const f = new Float64Array(W * H);
+  for (let y = 0; y < H; y++){
+    for (let x = 0; x < W; x++){
+      let v;
+      if (y < 56){
+        // 上部:细条纹,从疏到密 —— 看 USM 对不同粗细的细节分别做了什么
+        const freq = 0.04 + 0.34 * (x / W);
+        v = 128 + 30 * Math.sin(x * freq * Math.PI * 2);
+      } else if (y < 104){
+        // 中部:平坦的中灰 + 噪声 —— 阈值 T 的用武之地
+        v = 132 + (Math.sin(x * 12.9898 + y * 78.233) * 43758.5453 % 1) * 17;
+      } else {
+        // 下部:天空渐变 + 一条软边下到黑山 —— 过冲(halo)看得最清楚
+        const t = (x - W * 0.42) / 1.6;
+        v = 150 + 60 * Math.tanh(-t) - (y - 104) * 0.22;
+      }
+      // 左下角埋一块硬边方块:一刀切的边,过冲最夸张
+      if (y > 140 && y < 176 && x > 20 && x < 60) v = 210;
+      f[y * W + x] = Math.max(0, Math.min(255, v));
+    }
+  }
+  return f;
+}
+
+/* ---------- 高斯模糊:可分离,一横一竖,边界复制补 ---------- */
+function gaussKernel(sigma){
+  const r = Math.max(1, Math.ceil(sigma * 3));
+  const k = new Float64Array(2 * r + 1);
+  let s = 0;
+  for (let i = -r; i <= r; i++){
+    const v = Math.exp(-(i * i) / (2 * sigma * sigma));
+    k[i + r] = v; s += v;
+  }
+  for (let i = 0; i < k.length; i++) k[i] /= s;   // 和归一化到 1:纯灰进纯灰出
+  return {k, r};
+}
+function blur(src, sigma){
+  const {k, r} = gaussKernel(sigma);
+  const tmp = new Float64Array(W * H), out = new Float64Array(W * H);
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++){
+      let a = 0;
+      for (let i = -r; i <= r; i++){
+        const xx = Math.min(W - 1, Math.max(0, x + i));
+        a += k[i + r] * src[y * W + xx];
+      }
+      tmp[y * W + x] = a;
+    }
+  for (let y = 0; y < H; y++)
+    for (let x = 0; x < W; x++){
+      let a = 0;
+      for (let i = -r; i <= r; i++){
+        const yy = Math.min(H - 1, Math.max(0, y + i));
+        a += k[i + r] * tmp[yy * W + x];
+      }
+      out[y * W + x] = a;
+    }
+  return out;
+}
+
+/* ---------- 四步 ---------- */
+const SRC = makeImage();
+let state = {step:0, sigma:2, k:1, t:0, u8:false, row:128};
+let D = {};
+
+function compute(){
+  const b = blur(SRC, state.sigma);
+  const raw = new Float64Array(W * H);          // 第 2 步:原图 − 模糊
+  for (let i = 0; i < W * H; i++) raw[i] = SRC[i] - b[i];
+
+  const kept = new Float64Array(W * H);         // 第 3 步:阈值
+  let cut = 0;
+  for (let i = 0; i < W * H; i++){
+    if (Math.abs(raw[i]) < state.t){ kept[i] = 0; cut++; }
+    else kept[i] = raw[i];
+  }
+  // uint8 坑:负的那一半当场归零
+  const used = new Float64Array(W * H);
+  for (let i = 0; i < W * H; i++) used[i] = state.u8 ? Math.max(0, kept[i]) : kept[i];
+
+  const before = new Float64Array(W * H);       // 第 4 步:加回去(clip 之前)
+  const out = new Float64Array(W * H);
+  let over = 0, under = 0;
+  for (let i = 0; i < W * H; i++){
+    const v = SRC[i] + state.k * used[i];
+    before[i] = v;
+    if (v > 255) over++;
+    if (v < 0) under++;
+    out[i] = Math.max(0, Math.min(255, v));
+  }
+  let mn = Infinity, mx = -Infinity, sum = 0;
+  for (let i = 0; i < W * H; i++){ mn = Math.min(mn, raw[i]); mx = Math.max(mx, raw[i]); sum += raw[i]; }
+  D = {blur:b, raw, kept, used, before, out,
+       cut, over, under, dmin:mn, dmax:mx, dmean:sum / (W * H),
+       bmin:Math.min(...before), bmax:Math.max(...before)};
+}
+
+/* ---------- 画图 ---------- */
+function css(n){ return getComputedStyle(document.documentElement).getPropertyValue(n).trim(); }
+
+function drawGray(cv, data){
+  const ctx = cv.getContext("2d"), im = ctx.createImageData(W, H);
+  for (let i = 0; i < W * H; i++){
+    const v = Math.max(0, Math.min(255, Math.round(data[i])));
+    im.data[i*4] = im.data[i*4+1] = im.data[i*4+2] = v; im.data[i*4+3] = 255;
+  }
+  ctx.putImageData(im, 0, 0);
+  scanline(ctx);
+}
+// 有正有负的图:红 = 正(会被推亮),蓝 = 负(会被推暗),灰 = 0
+function drawSigned(cv, data, scale){
+  const ctx = cv.getContext("2d"), im = ctx.createImageData(W, H);
+  for (let i = 0; i < W * H; i++){
+    const v = data[i] * scale, a = Math.min(1, Math.abs(v) / 128);
+    let r, g, b;
+    if (v >= 0){ r = 255; g = Math.round(255 * (1 - a * 0.72)); b = Math.round(255 * (1 - a * 0.80)); }
+    else       { b = 255; g = Math.round(255 * (1 - a * 0.55)); r = Math.round(255 * (1 - a * 0.80)); }
+    const w = 1 - a;                       // 接近 0 的地方发白
+    im.data[i*4]   = Math.round(r * (1 - w) + 245 * w);
+    im.data[i*4+1] = Math.round(g * (1 - w) + 245 * w);
+    im.data[i*4+2] = Math.round(b * (1 - w) + 245 * w);
+    im.data[i*4+3] = 255;
+  }
+  ctx.putImageData(im, 0, 0);
+  scanline(ctx);
+}
+function scanline(ctx){
+  ctx.strokeStyle = "rgba(196,68,42,.85)"; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(0, state.row + .5); ctx.lineTo(W, state.row + .5); ctx.stroke();
+}
+
+function drawProfile(){
+  const cv = document.getElementById("pf"), ctx = cv.getContext("2d");
+  const dpr = Math.min(2, window.devicePixelRatio || 1);
+  const cw = cv.clientWidth, ch = 210;
+  cv.width = cw * dpr; cv.height = ch * dpr;
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  ctx.clearRect(0, 0, cw, ch);
+
+  const pad = {l:38, r:10, t:10, b:20};
+  const gw = cw - pad.l - pad.r, gh = ch - pad.t - pad.b;
+  // 纵轴固定 −60 ~ 320:够容下过冲,又不至于把曲线压成一条平线
+  const lo = -60, hi = 320;
+  const X = i => pad.l + gw * i / (W - 1);
+  const Y = v => pad.t + gh * (1 - (v - lo) / (hi - lo));
+
+  ctx.strokeStyle = css("--line"); ctx.lineWidth = 1;
+  ctx.fillStyle = css("--ink-3"); ctx.font = '11px ' + css("--mono");
+  for (const v of [0, 128, 255]){
+    ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(cw - pad.r, Y(v)); ctx.stroke();
+    ctx.fillText(String(v), 6, Y(v) + 4);
+  }
+  // 0 和 255 是 8 位能存的边界,用虚线强调
+  ctx.save(); ctx.setLineDash([4, 4]); ctx.strokeStyle = css("--red");
+  for (const v of [0, 255]){
+    ctx.beginPath(); ctx.moveTo(pad.l, Y(v)); ctx.lineTo(cw - pad.r, Y(v)); ctx.stroke();
+  }
+  ctx.restore();
+
+  const line = (data, color, width, dash) => {
+    ctx.save(); ctx.strokeStyle = color; ctx.lineWidth = width;
+    if (dash) ctx.setLineDash(dash);
+    ctx.beginPath();
+    for (let x = 0; x < W; x++){
+      const v = data[state.row * W + x];
+      x ? ctx.lineTo(X(x), Y(v)) : ctx.moveTo(X(x), Y(v));
+    }
+    ctx.stroke(); ctx.restore();
+  };
+
+  const s = state.step, L = [];
+  line(SRC, css("--ink-3"), 1.3, null);  L.push(["--ink-3", "原图 f"]);
+  if (s >= 1){ line(D.blur, css("--blue"), 1.8, [5,3]); L.push(["--blue", "① 模糊 blur"]); }
+  if (s >= 2){ line(D.raw, css("--violet"), 1.8, null); L.push(["--violet", "② 细节 f − blur(在 0 上下摆)"]); }
+  if (s >= 3 && state.t > 0){ line(D.kept, css("--green"), 2.0, null); L.push(["--green", "③ 过了阈值的细节"]); }
+  if (s >= 4){
+    line(D.before, css("--orange"), 1.4, [3,3]); L.push(["--orange", "④ clip 之前(看它冲出 0/255)"]);
+    line(D.out, css("--red"), 2.2, null);        L.push(["--red", "④ 最终结果 out"]);
+  }
+  document.getElementById("legend").innerHTML =
+    L.map(([c, t]) => `<span><i style="background:${css(c)}"></i>${t}</span>`).join("");
+}
+
+/* ---------- 每一步说什么 ---------- */
+const STEPS = [
+  {tag:"原图", sub:"f", title:"起点",
+   formula:"输入:图 f、半径 σ、强度 k、阈值 T",
+   say:"这张测试图故意凑了四样东西:<b>上面是由疏到密的条纹</b>(看 USM 对不同粗细的细节分别做了什么)、" +
+       "<b>中间是平坦灰 + 噪点</b>(阈值 T 的用武之地)、<b>下面是软边和天空渐变</b>、" +
+       "<b>左下角埋了一块硬边方块</b>(过冲最夸张的地方)。红线是下面剖面图取的那一行。"},
+  {tag:"第 1 步", sub:"blur", title:"先糊一张",
+   formula:"blur ← GaussianBlur(f, σ)",
+   say:"<b>先把图糊掉。</b>这一步本身跟锐化没关系 —— 它是为了<b>拿到一张「没有细节」的对照</b>。" +
+       "糊掉的东西正是我们等下想强调的东西。拖动 σ 看:σ 越大糊得越狠,被当成「细节」的东西就越多。"},
+  {tag:"第 2 步", sub:"f − blur", title:"减出细节",
+   formula:"detail ← f − blur",
+   say:"<b>整件事的关键。</b>模糊图里装的是「大块的明暗」,原图减掉它,剩下的正好是" +
+       "<b>模糊时被抹掉的那些东西</b> —— 边缘、纹理,还有噪点。<br>" +
+       "注意这张图<b>有正有负</b>:<span style='color:var(--red)'>红色是正</span>(边的亮侧,等下会被推得更亮)、" +
+       "<span style='color:var(--blue)'>蓝色是负</span>(边的暗侧,会被推得更暗)、白色 ≈ 0(平坦区,什么也不会发生)。"},
+  {tag:"第 3 步", sub:"阈值 T", title:"躲开噪声(可选)",
+   formula:"若 |detail| < T 则置 0",
+   say:"细节太小,多半是噪声而不是真纹理。<b>把它们直接抹成 0,后面就不会被放大。</b>" +
+       "拖 T 看中间那条噪声带怎么一点点变干净 —— 代价是<b>弱纹理也一起丢了</b>," +
+       "上面条纹区最密的那一段会先死。T = 0 就是不设阈值。"},
+  {tag:"第 4 步", sub:"f + k×detail", title:"加回去",
+   formula:"out ← clip( f + k × detail, 0, 255 )",
+   say:"把细节按 k 倍加回原图。边的亮侧更亮、暗侧更暗,<b>对比一拉开,人眼就觉得「清楚了」</b>。<br>" +
+       "看剖面图上那条<b>橙色虚线</b>:它是 clip 之前的值。k 一大就会<b>冲出 0 和 255</b> —— " +
+       "冲出去的部分被削平,边两侧留下一圈黑边和白边,这就是<b>光晕(halo)</b>。"}
+];
+
+/* ---------- 渲染 ---------- */
+function render(){
+  compute();
+  const s = state.step, st = STEPS[s];
+
+  document.getElementById("steps").innerHTML = STEPS.map((x, i) =>
+    `<button class="chip ${i === s ? "on" : (i < s ? "done" : "")}" data-i="${i}">
+       <b>${x.tag} · ${x.title}</b><small>${x.sub}</small></button>`).join("");
+  document.querySelectorAll(".chip").forEach(b =>
+    b.onclick = () => { state.step = +b.dataset.i; render(); });
+
+  const cv = document.getElementById("cv");
+  let cap;
+  if (s === 0){ drawGray(cv, SRC); cap = "原图 f"; }
+  else if (s === 1){ drawGray(cv, D.blur); cap = `模糊后 (σ = ${state.sigma.toFixed(1)})`; }
+  else if (s === 2){ drawSigned(cv, D.raw, 3.2); cap = "细节 f − blur(显示时放大 3.2 倍)"; }
+  else if (s === 3){ drawSigned(cv, D.kept, 3.2); cap = `过了阈值的细节 (T = ${state.t})`; }
+  else { drawGray(cv, D.out); cap = `结果 (σ=${state.sigma.toFixed(1)}, k=${state.k.toFixed(1)}, T=${state.t})`; }
+  document.getElementById("cvcap").textContent = cap;
+
+  document.getElementById("formula").textContent = st.formula;
+  document.getElementById("say").innerHTML = st.say;
+
+  const px = W * H, pct = n => (100 * n / px).toFixed(2) + "%";
+  let nums = [];
+  if (s === 1){
+    nums = [["σ(半径)", state.sigma.toFixed(1)], ["核宽", (2 * Math.ceil(state.sigma * 3) + 1) + " 格"],
+            ["核的和", "1.0000"]];
+  } else if (s === 2){
+    nums = [["细节最小值", D.dmin.toFixed(1), D.dmin < 0 ? "warn" : ""],
+            ["细节最大值", D.dmax.toFixed(1)],
+            ["细节均值", D.dmean.toFixed(3), "ok"]];
+  } else if (s === 3){
+    nums = [["阈值 T", state.t], ["被抹成 0", pct(D.cut), state.t > 0 ? "warn" : ""],
+            ["还剩多少", pct(px - D.cut)]];
+  } else if (s === 4){
+    nums = [["clip 前最大", D.bmax.toFixed(1), D.bmax > 255 ? "warn" : "ok"],
+            ["clip 前最小", D.bmin.toFixed(1), D.bmin < 0 ? "warn" : "ok"],
+            ["冲出 255", pct(D.over), D.over ? "warn" : "ok"],
+            ["冲出 0", pct(D.under), D.under ? "warn" : "ok"]];
+  }
+  document.getElementById("nums").innerHTML = nums.map(([k, v, cls]) =>
+    `<div class="num ${cls || ""}"><span class="k">${k}</span><span class="v">${v}</span></div>`).join("");
+
+  // 底部随状态变的提醒
+  let note;
+  if (state.u8){
+    note = "<b>⚠️ uint8 坑已打开。</b>细节图里负的那一半被当场归零 —— 看第 2 步那张图" +
+           "<span style='color:var(--blue)'>蓝色全没了</span>,结果就是边<b>只有一侧被强调</b>," +
+           "看着发虚、发脏。<b>detail 必须存在有符号或浮点类型里。</b>";
+  } else if (s === 4 && (D.over || D.under)){
+    note = `<b>正在过冲。</b>clip 前的范围是 [${D.bmin.toFixed(1)}, ${D.bmax.toFixed(1)}],` +
+           `已经有 ${pct(D.over + D.under)} 的像素冲出了 8 位能存的 0–255。` +
+           `冲出去的被削平,边两侧就留下一圈光晕 —— <b>把 k 调小或把 σ 调小都能救。</b>`;
+  } else if (s === 4){
+    note = "<b>目前没有像素冲出 0–255。</b>把 k 往上推,或者把 σ 推大,看它从哪一档开始过冲。";
+  } else if (s === 3 && state.t === 0){
+    note = "<b>T = 0,这一步等于没做。</b>往上拖阈值,先看中间噪声带变干净,再看上面最密的条纹怎么先死。";
+  } else {
+    note = "三个滑块随时可以拖,<b>每一步都会跟着重算</b>。也可以直接点上面的步骤条跳着看。";
+  }
+  document.getElementById("note").firstElementChild.innerHTML = note;
+
+  document.getElementById("rowlab").textContent = state.row;
+  drawProfile();
+  document.getElementById("prev").disabled = s === 0;
+  document.getElementById("next").disabled = s === STEPS.length - 1;
+}
+
+/* ---------- 交互 ---------- */
+document.getElementById("next").onclick  = () => { if (state.step < 4){ state.step++; render(); } };
+document.getElementById("prev").onclick  = () => { if (state.step > 0){ state.step--; render(); } };
+document.getElementById("reset").onclick = () => {
+  state = {step:0, sigma:2, k:1, t:0, u8:false, row:128};
+  sig.value = 2; kk.value = 1; tt.value = 0; rr.value = 128;
+  document.getElementById("u8").checked = false;
+  sync(); render();
+};
+const sig = document.getElementById("sig"), kk = document.getElementById("k"),
+      tt = document.getElementById("t"), rr = document.getElementById("row");
+function sync(){
+  document.getElementById("vsig").textContent = (+sig.value).toFixed(1);
+  document.getElementById("vk").textContent   = (+kk.value).toFixed(1);
+  document.getElementById("vt").textContent   = tt.value;
+  document.getElementById("vrow").textContent = rr.value;
+}
+[["sig","sigma"],["k","k"],["t","t"],["row","row"]].forEach(([id, key]) => {
+  document.getElementById(id).addEventListener("input", e => {
+    state[key] = +e.target.value; sync(); render();
+  });
+});
+document.getElementById("u8").addEventListener("change", e => { state.u8 = e.target.checked; render(); });
+window.addEventListener("resize", drawProfile);
+sync(); render();
+</script>
+</body>
+</html>

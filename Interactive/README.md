@@ -5,11 +5,13 @@
 
 ```bash
 open Interactive/高斯收敛实验.html          # macOS
+open Interactive/USM分步演示.html
 ```
 
 | 文件 | 配合哪一篇 | 干什么 |
 | :--- | :--- | :--- |
 | [高斯收敛实验.html](高斯收敛实验.html) | [02-smoothing.md](../Documents/05-spatial-filtering/02-smoothing.md) 第二节 | 点一下做一遍邻域平均,看白点怎么自己长成钟形 |
+| [USM分步演示.html](USM分步演示.html) | [03-sharpening.md](../Documents/05-spatial-filtering/03-sharpening.md) 第三节 | 一步一步走 USM 的四步,看细节图为什么有正有负、光晕从哪一档开始冒出来 |
 
 ## 为什么单独放一个目录
 
