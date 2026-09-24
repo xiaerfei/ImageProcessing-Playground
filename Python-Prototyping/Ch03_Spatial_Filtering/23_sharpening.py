@@ -217,10 +217,29 @@ def demo_why_subtract(g: npt.NDArray[np.float64]) -> None:
     print(f"\n  恒等式 f = blur + detail,最大差 {np.abs(g - (blur + detail)).max():.2e}")
     print("  —— 这不是近似,是减法的定义。blur 是低通,detail 就是剩下的高通。")
 
-    # ③ 为什么 detail 的均值必然是 0
-    print(f"\n  detail 均值 {detail.mean():+.6f},f 均值 {g.mean():.4f},blur 均值 {blur.mean():.4f}")
-    print(f"  两个均值差 {abs(g.mean() - blur.mean()):.2e} —— 高斯核的和是 1,")
-    print("  「平均」不会改变整体亮度,所以减出来的东西必然在 0 上下对称摆。")
+    # ③ 为什么 detail 的均值必然接近 0
+    pos, neg = detail[detail > 0], detail[detail < 0]
+    print(f"\n  detail 分成两堆(均值 = 平均值,把所有值加起来除以像素个数):")
+    print(f"    正的 {pos.size} 个,加起来 {pos.sum():+12.2f}")
+    print(f"    负的 {neg.size} 个,加起来 {neg.sum():+12.2f}")
+    print(f"    合计 {detail.sum():+12.4f}  ÷ {detail.size} 个像素 = {detail.mean():+.6f}")
+    print(f"  两堆几乎一样大,差 {abs(detail.sum()):.2f} 只占 {100*abs(detail.sum())/pos.sum():.3f}%。")
+    print(f"  f 均值 {g.mean():.4f},blur 均值 {blur.mean():.4f},差 {abs(g.mean()-blur.mean()):.2e} ——")
+    print("  高斯核的和是 1,「平均」不改变整幅的亮度总量,所以正负必然互相抵消。")
+
+    # ④ ⚠️ 一个被数据推翻的猜测:切掉边界并不会更接近 0
+    print("\n  那剩下的那点残余是边界处理造成的吗?切掉边界再算一遍:")
+    print(f"    {'sigma':>7} | {'整幅均值':>12} | {'切掉边界后':>12}")
+    for sg in (1.0, 2.0, 4.0, 8.0):
+        b = cv2.GaussianBlur(g, (0, 0), sg)
+        dd = g - b
+        rr = int(np.ceil(sg * 3))
+        print(f"    {sg:>7.1f} | {dd.mean():>+12.6f} | {dd[rr:-rr, rr:-rr].mean():>+12.6f}")
+    print("  ⚠️ sigma 一大,切掉边界反而偏得更狠(-0.05 量级) —— 猜测错了。")
+    print("  原因:「亮度总量守恒」只对**整幅**成立。从中间切一块出来,")
+    print("  模糊会把邻域的值搬进搬出,这块的边界上有净流入流出,")
+    print("  f 与 blur 的总和就没理由相等了。sigma 越大搬得越远,偏差越大。")
+    print("  所以该接近 0 的是整幅那个数,子区域的不是。")
 
     # ④ USM 其实可以合成一个核
     k = 1.5
