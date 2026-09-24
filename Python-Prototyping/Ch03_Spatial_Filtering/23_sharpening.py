@@ -14,7 +14,10 @@
 验证七件事:
 1. 一维小例子:一个斜坡 + 一个台阶,亲眼看一阶和二阶差分长什么样
 2. 拉普拉斯(二阶)的核为什么和为 0,以及锐化核 [[0,-1,0],[-1,5,-1],[0,-1,0]]
-   就是「原图 − 拉普拉斯」
+   就是「原图 − 拉普拉斯」;这个核不是设计出来的,是横竖两个二阶导相加
+   (−2 + −2 = −4);八邻域 −8 没折算对角线的 √2 步长,严格算是 −6;
+   ⚠️ 各向同性实测八邻域(9.75%)反而不如四邻域(8.94%);
+   拐点(一阶最陡 = 二阶过零)才是边的正中,|二阶| 最大的两处都不是边
 3. USM(反锐化掩模)三步:模糊 → 原图减模糊 = 细节 → 把细节加回去
 4. ⚠️ USM 半径很小时,它和拉普拉斯锐化几乎是同一件事(相关系数 0.9918)
 5. 锐化的代价一:过冲(halo)。原本 [50,200] 的边,拉普拉斯锐化后变成 [−100,350]
@@ -26,6 +29,7 @@
 用法:
     .venv/bin/python Ch03_Spatial_Filtering/23_sharpening.py [--show]
     结果图保存到 Assets/results/sharpening-derivatives.png(一阶/二阶 + 过冲)
+                     Assets/results/sharpening-inflection.png(拐点在图上哪儿)
                      Assets/results/sharpening-compare.png(拉普拉斯 vs USM)
                      Assets/results/gradient-compare.png(Sobel 梯度与 Scharr)
 """
@@ -545,6 +549,231 @@ def demo_half_pixel_shift() -> None:
     print("  但做图像配准、光流、亚像素定位时会变成系统误差。")
 
 
+# ------------------------------------------------------- 拉普拉斯这个核是哪来的
+
+LAP6 = np.array([[0.5, 1, 0.5], [1, -6, 1], [0.5, 1, 0.5]], np.float32)  # 对角按步长折算
+
+
+def conv2(img, k):
+    """二维卷积(核翻转),边界复制补。手写是为了看清每一步,不图快。"""
+    k = np.asarray(k, np.float64)
+    r = k.shape[0] // 2
+    pad = np.pad(np.asarray(img, np.float64), r, mode="edge")
+    kf = k[::-1, ::-1]
+    out = np.zeros(np.shape(img), np.float64)
+    for i in range(out.shape[0]):
+        for j in range(out.shape[1]):
+            out[i, j] = float((pad[i:i + k.shape[0], j:j + k.shape[1]] * kf).sum())
+    return out
+
+
+def tilted_edge(theta: float, n: int = 41, amp: float = 100.0):
+    """一条转了 theta 弧度的软边 —— 用来量「核对方向敏不敏感」。"""
+    y, x = np.mgrid[0:n, 0:n] - n // 2
+    return 128 + amp * np.tanh((x * np.cos(theta) + y * np.sin(theta)) / 1.5)
+
+
+def demo_laplacian_origin() -> None:
+    hr("2a. 拉普拉斯不是设计出来的:横着的二阶导 + 竖着的二阶导")
+    d2 = np.array([1.0, -2.0, 1.0])
+    lx = np.zeros((3, 3)); lx[1, :] = d2          # 横着放
+    ly = np.zeros((3, 3)); ly[:, 1] = d2          # 竖着放
+    print(f"  横向二阶导:\n{lx.astype(int)}\n  纵向二阶导:\n{ly.astype(int)}")
+    print(f"  相加:\n{(lx + ly).astype(int)}")
+    print(f"  和四邻域拉普拉斯一致? {np.array_equal(lx + ly, LAP4)}  <- 中心 −4 就是 −2 + −2")
+
+    # 对角线方向的二阶导。对角两点距离是 √2,不是 1
+    ld1 = np.zeros((3, 3)); ld1[0, 0] = ld1[2, 2] = 1; ld1[1, 1] = -2
+    ld2 = np.zeros((3, 3)); ld2[0, 2] = ld2[2, 0] = 1; ld2[1, 1] = -2
+    print(f"\n  再加两条对角线(不折算步长):\n{(lx + ly + ld1 + ld2).astype(int)}")
+    print(f"  和八邻域 −8 一致? {np.array_equal(lx + ly + ld1 + ld2, LAP8)}")
+    print(f"  但对角距离是 √2 ≈ {np.sqrt(2):.4f},二阶导里的 1/h² 要打对折:")
+    print(f"{lx + ly + (ld1 + ld2) / 2}")
+    print("  —— 严格折算出来是 −6 那个版本。−8 不是更准,是权重给多了、响应更猛。")
+
+    hr("2b. 为什么二阶能直接相加,一阶不能")
+    sx = np.array([[-1.0, 0, 1], [-2, 0, 2], [-1, 0, 1]])
+    c = 41 // 2
+    print(f"  {'边的角度':>8} | {'gx':>9} | {'gy':>9} | {'直接相加':>9} | {'√(gx²+gy²)':>11}")
+    for deg in (45, 135):
+        im = tilted_edge(np.deg2rad(deg))
+        gx, gy = conv2(im, sx)[c, c], conv2(im, sx.T)[c, c]
+        print(f"  {deg:>7}° | {gx:>9.2f} | {gy:>9.2f} | {gx + gy:>9.2f} | {np.hypot(gx, gy):>11.2f}")
+    print("  一阶是带方向的箭头,两个箭头相加会互相抵消(135° 那行 ≈ 0),所以必须开方。")
+    print("  二阶量的是「弯曲程度」,没有方向,横的加竖的天然合法 —— 代价是方向信息也没了。")
+
+    hr("2c. 各向同性实测:同一条边转角度,响应波动多少")
+    print("  (量的是软边 tanh(t/1.5) 上 |响应| 的峰值;波动 0% = 完全各向同性)")
+    print(f"  {'核':>16} | {'最大/最小':>9} | {'波动':>7}")
+    for name, k in (("四邻域 −4", LAP4), ("八邻域 −8", LAP8), ("步长折算 −6", LAP6)):
+        v = [np.abs(conv2(tilted_edge(np.deg2rad(d)), k))[5:-5, 5:-5].max()
+             for d in range(0, 91, 5)]
+        print(f"  {name:>16} | {max(v) / min(v):>9.4f} | {100 * (max(v) - min(v)) / np.mean(v):>6.2f}%")
+    print("  ⚠️ 八邻域反而比四邻域更不均匀 —— 就是上面那个步长没折算。")
+    print("  边界条件:这是过渡宽约 1.5 像素的软边。换更宽的边三者差距会缩小,别当普适排名。")
+
+
+# ---------------------------------------------------------------- 拐点在图上哪儿
+
+EDGE_CENTER = 32.0      # 合成图里边的真实中心:第 32 行
+EDGE_WIDTH = 2.5        # 过渡的软硬程度,越小越接近一刀切
+
+
+def sky_mountain_2d(n: int = 64):
+    """一张「上面天、下面山」的合成图,边是软的(有宽度),不是一刀切。
+
+    为什么不用一刀切:一刀切时一阶只用一格就冲到顶,
+    「梯度由增转减」的那个过程在图上根本看不见。
+    """
+    y = np.arange(n)[:, None]
+    col = 120 + 80 * np.tanh((EDGE_CENTER - y) / EDGE_WIDTH)
+    return np.repeat(col, n, axis=1)
+
+
+def d1d(sig, k):
+    """一维相关,边界复制补。核按人话顺序写,不翻转。"""
+    k = np.asarray(k, float)
+    pad = np.pad(np.asarray(sig, float), len(k) // 2, mode="edge")
+    return np.array([float(np.dot(k, pad[i:i + len(k)])) for i in range(len(sig))])
+
+
+def inflection_stats():
+    """把拐点、两个 |二阶| 峰的位置都算出来,图和文字共用同一份数。"""
+    col = sky_mountain_2d()[:, 0]
+    g1 = d1d(col, [-0.5, 0, 0.5])
+    g2 = d1d(col, [1, -2, 1])
+    infl = int(np.abs(g1).argmax())            # 一阶最陡 = 拐点
+    lo = int(np.abs(g2[:infl]).argmax())       # 边上方的 |二阶| 峰
+    hi = infl + 1 + int(np.abs(g2[infl + 1:]).argmax())
+    return col, g1, g2, infl, lo, hi
+
+
+def demo_inflection() -> None:
+    hr("2d. 拐点在哪儿:一阶最陡的那一格,正是二阶过零的那一格")
+    col, g1, g2, infl, lo, hi = inflection_stats()
+    print(f"  边的真实中心 = {EDGE_CENTER}(合成时定的)\n")
+    print(f"  {'行':>4} | {'亮度':>7} | {'一阶':>9} | {'涨还是跌':>9} | {'二阶':>9}")
+    print("  " + "-" * 52)
+    prev = None
+    for i in range(infl - 4, infl + 5):
+        a = abs(g1[i])
+        trend = "" if prev is None else ("涨 ↑" if a > prev else "跌 ↓")
+        tail = "   <- 拐点" if i == infl else ""
+        print(f"  {i:>4} | {col[i]:>7.2f} | {g1[i]:>9.3f} | {trend:>9} | {g2[i]:>9.3f}{tail}")
+        prev = a
+    print(f"\n  一阶 |最陡| 在第 {infl} 行,值 {abs(g1[infl]):.3f}")
+    print(f"  同一行的二阶 = {g2[infl]:.4f}  <- 左右两邻的一阶一样大,所以差为 0")
+    print(f"  左右两邻的一阶: [{infl-1}]={abs(g1[infl-1]):.3f}  [{infl+1}]={abs(g1[infl+1]):.3f}")
+    print(f"\n  |二阶| 的两个峰在第 {lo} 行和第 {hi} 行,中点 = {(lo + hi) / 2:.1f}")
+    print(f"  —— 锐化时被推得最狠的就是这两行,光晕(halo)长在离边心各 {infl - lo} 格的地方。")
+
+
+def save_inflection_figure(out_path: Path) -> None:
+    """回答「拐点到底在图上哪个位置」—— 2D 图和剖面画在一起,行号对得上。"""
+    col, g1, g2, infl, lo, hi = inflection_stats()
+    img = sky_mountain_2d()
+    n = img.shape[0]
+
+    fig = plt.figure(figsize=(15.2, 5.6))
+    # bottom 要在这儿给死:显式设过边界的 gridspec 不吃 four_questions 里的
+    # subplots_adjust,不给的话图和横幅之间会空出一大条
+    outer = fig.add_gridspec(1, 2, width_ratios=[1.05, 1.35], wspace=0.22,
+                             left=0.045, right=0.985, top=0.90, bottom=0.355)
+    gl = outer[0, 0].subgridspec(2, 1, hspace=0.30, height_ratios=[2.6, 1])
+    gr = outer[0, 1].subgridspec(3, 1, hspace=0.16)
+
+    ax = fig.add_subplot(gl[0])
+    # 只截边附近 ±16 行并让它填满子图:画全 64 行的话,
+    # 30/32/34 这三条线在视觉上只隔两个像素,全糊在一起,等于没标
+    top, bot = infl - 16, infl + 17
+    ax.imshow(img[top:bot], cmap="gray", vmin=0, vmax=255, interpolation="nearest",
+              aspect="auto", extent=(0, img.shape[1], bot - 0.5, top - 0.5))
+    for y, c, ls, lab in ((lo, "#c4442a", "--", f"|二阶| 峰 (第 {lo} 行)"),
+                          (infl, "#2a8f4a", "-", f"拐点 = 边心 (第 {infl} 行)"),
+                          (hi, "#c4442a", "--", f"|二阶| 峰 (第 {hi} 行)")):
+        ax.axhline(y, color=c, ls=ls, lw=2.0, label=lab)
+    ax.set_title(f"拐点在图上的位置(截第 {top}~{bot - 1} 行):绿线就是边", fontsize=11)
+    ax.set_ylabel("行号")
+    ax.set_xticks([])
+    ax.legend(fontsize=7.8, loc="lower right", framealpha=0.94)
+
+    axz = fig.add_subplot(gl[1])
+    lo_z, hi_z = infl - 6, infl + 7
+    axz.imshow(col[lo_z:hi_z][None, :], cmap="gray", vmin=0, vmax=255,
+               interpolation="nearest", aspect="auto",
+               extent=(lo_z - 0.5, hi_z - 0.5, 0, 1))
+    for y, c, ls in ((lo, "#c4442a", "--"), (infl, "#2a8f4a", "-"), (hi, "#c4442a", "--")):
+        # 掐掉中间一段:数字就印在那儿,线压上去两样都看不清
+        axz.vlines(y, 0.00, 0.34, color=c, ls=ls, lw=2.2)
+        axz.vlines(y, 0.66, 1.00, color=c, ls=ls, lw=2.2)
+    for i in range(lo_z, hi_z):
+        axz.text(i, 0.5, f"{col[i]:.0f}", ha="center", va="center", fontsize=7.2,
+                 color="black" if col[i] > 110 else "white")
+    axz.set_yticks([])
+    axz.set_xticks(range(lo_z, hi_z, 2))
+    # xlabel 会被底部横幅压住,横轴含义写进标题
+    axz.set_title("把边那一段拉直放大(横轴 = 行号):格子里是真实灰度值", fontsize=10)
+
+    x = np.arange(n)
+    rows = [(col, "亮度剖面:一路往下掉,从不回头", "#2c6fbb"),
+            (np.abs(g1), "一阶 |陡不陡|:先涨后跌,峰顶就在绿线", "#a8700a"),
+            (g2, "二阶:在绿线处过零,两侧各一个峰", "#6b4fa8")]
+    axes = [fig.add_subplot(gr[i]) for i in range(3)]
+    for k, (ax_, (data, title, color)) in enumerate(zip(axes, rows)):
+        ax_.plot(x, data, color=color, lw=1.6)
+        ax_.axvline(infl, color="#2a8f4a", lw=1.6)
+        for y in (lo, hi):
+            ax_.axvline(y, color="#c4442a", ls="--", lw=1.2)
+        ax_.set_title(title, fontsize=10, pad=4)
+        ax_.set_xlim(infl - 14, infl + 14)
+        ax_.grid(alpha=0.25)
+        if k == 2:
+            ax_.axhline(0, color="#888", lw=0.9)
+            ax_.set_xlabel("行号")
+        else:
+            ax_.set_xticklabels([])
+
+    axes[1].annotate(f"峰顶 {abs(g1[infl]):.1f}\n左右两邻都是 {abs(g1[infl-1]):.1f}",
+                     xy=(infl, abs(g1[infl])), xytext=(infl + 4, abs(g1[infl]) * 0.62),
+                     fontsize=8.4, color="#a8700a",
+                     arrowprops=dict(arrowstyle="->", color="#a8700a", lw=1.0))
+    axes[2].annotate(f"这里 = {g2[infl]:.2f}\n左右一样高,差就是 0",
+                     xy=(infl, 0), xytext=(infl + 3.4, g2.max() * 0.55),
+                     fontsize=8.4, color="#2a8f4a",
+                     arrowprops=dict(arrowstyle="->", color="#2a8f4a", lw=1.0))
+
+    fig.suptitle("「梯度由增转减的那个转折点」在图上就是这条绿线", fontsize=13, y=0.955)
+    four_questions(fig,
+        "做一张软边的「天 + 山」图,\n"
+        f"边心定在第 {infl} 行。\n"
+        "沿竖直方向量亮度、\n一阶(陡不陡)、二阶,\n"
+        "三行共用行号,和左边\n那张图的行号对得上。",
+        "看见拐点到底在哪:\n"
+        f"一阶峰顶第 {infl} 行,\n"
+        f"同一行二阶 = {g2[infl]:.2f}。\n"
+        "亮度一路在掉没有转折,\n"
+        "**转折的是「掉得多快」**。",
+        f"|二阶| 最大的是第 {lo}、{hi} 行,\n"
+        "**都不是边**。照「找最剧烈」\n"
+        "去定位会得到两条线,\n"
+        "边夹在中间 —— 这正是\n"
+        "锐化光晕(halo)的来源。",
+        "这是合成的理想软边。\n"
+        "真实图里有噪声,二阶会\n"
+        "在平坦区反复擦过 0,\n"
+        "**假零点一大堆**(实测\n"
+        "不设门槛出 35 个)。",
+        "零交叉必须配幅值门槛\n"
+        "(峰值 5% 即可);\n"
+        "求二阶前先高斯平滑,\n"
+        "查 LoG / DoG;\n"
+        "只想要边的位置,\n"
+        "走一阶 + NMS 更稳。",
+        y=0.285, bottom=0.355)
+    fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+
+
 def main() -> None:
     g = load_gray("camera.png").astype(np.float64)
     print(f"主图 camera.png  shape={g.shape}")
@@ -553,6 +782,8 @@ def main() -> None:
     demo_center_weight_zero()
     demo_half_pixel_shift()
     demo_laplacian()
+    demo_laplacian_origin()
+    demo_inflection()
     demo_usm(g)
     demo_usm_equals_laplacian(g)
     demo_overshoot()
@@ -563,6 +794,9 @@ def main() -> None:
     out.parent.mkdir(parents=True, exist_ok=True)
     save_derivative_figure(out)
     print(f"\n结果已保存: {out.relative_to(REPO)}")
+    infl = out.with_name("sharpening-inflection.png")
+    save_inflection_figure(infl)
+    print(f"结果已保存: {infl.relative_to(REPO)}")
     over = out.with_name("sharpening-overshoot.png")
     save_overshoot_figure(over)
     print(f"结果已保存: {over.relative_to(REPO)}")
