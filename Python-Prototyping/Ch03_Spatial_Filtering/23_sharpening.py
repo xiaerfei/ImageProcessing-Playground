@@ -32,6 +32,7 @@
     .venv/bin/python Ch03_Spatial_Filtering/23_sharpening.py [--show]
     结果图保存到 Assets/results/sharpening-derivatives.png(一阶/二阶 + 过冲)
                      Assets/results/sharpening-inflection.png(拐点在图上哪儿)
+                     Assets/results/sharpening-halo.png(光晕长什么样)
                      Assets/results/sharpening-compare.png(拉普拉斯 vs USM)
                      Assets/results/gradient-compare.png(Sobel 梯度与 Scharr)
 """
@@ -492,6 +493,82 @@ def save_overshoot_figure(out_path: Path) -> None:
         "要完全避开光晕,\n改用保边的做法:\n双边滤波、引导滤波,\n或局部对比度增强。",
         y=0.02, bottom=0.30)
     fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
+    plt.close(fig)
+
+
+# ------------------------------------------------------------ 光晕长什么样
+
+# (行, 列, 边长)。挑的不是「梯度最强」的块,而是「强边 + 两侧大片平坦」的块:
+# 这块 98 分位梯度 423、60 分位只有 3.2 —— 光晕贴在边上才看得出来,
+# 脸那种到处是纹理的地方反而糊成一团,什么也看不清。
+HALO_BOX = (64, 64, 80)
+
+
+def save_halo_gallery_figure(out_path: Path, g: npt.NDArray[np.float64]) -> None:
+    """把光晕画成肉眼能看见的样子。
+
+    第五节原先只有一张剖面曲线图 —— 它讲清了「冲到 −100/350」,
+    可读的人还是不知道**光晕长什么样**。这张补的就是那一半:
+    上排整幅、中排局部放大、下排差值图(到底推了哪儿、推了多少)。
+    """
+    r, c, sz = HALO_BOX
+    variants = [("原图", g),
+                ("USM k=1 σ=2(正常)", unsharp(g, 2.0, 1.0)),
+                ("USM k=3 σ=2(过度)", unsharp(g, 2.0, 3.0)),
+                ("拉普拉斯锐化(最猛)", laplacian_sharpen(g))]
+
+    spans: dict[str, tuple[float, float]] = {}
+    fig = plt.figure(figsize=(15.2, 8.4))
+    gs = fig.add_gridspec(3, 4, hspace=0.16, wspace=0.06,
+                          left=0.035, right=0.99, top=0.91, bottom=0.30,
+                          height_ratios=[1, 1, 1])
+
+    for i, (name, img) in enumerate(variants):
+        ax = fig.add_subplot(gs[0, i])
+        ax.imshow(np.clip(img, 0, 255), cmap="gray", vmin=0, vmax=255)
+        ax.add_patch(plt.Rectangle((c, r), sz, sz, ec="#c4442a", fc="none", lw=1.6))
+        ax.set_title(name, fontsize=10.5)
+        ax.axis("off")
+
+        axz = fig.add_subplot(gs[1, i])
+        axz.imshow(np.clip(img[r:r + sz, c:c + sz], 0, 255), cmap="gray",
+                   vmin=0, vmax=255, interpolation="nearest")
+        axz.set_title("红框放大", fontsize=9.5)
+        axz.axis("off")
+
+        # 差值图:相对原图被推亮(红)还是推暗(蓝),一眼看出光晕贴着边长
+        axd = fig.add_subplot(gs[2, i])
+        diff = np.clip(img, 0, 255) - g
+        blk = diff[r:r + sz, c:c + sz]
+        axd.imshow(blk, cmap="bwr", vmin=-60, vmax=60, interpolation="nearest")
+        lo, hi = blk.min(), blk.max()
+        spans[name] = (lo, hi)
+        axd.set_title("原图减自己,全是 0" if i == 0
+                      else f"被推了多少:[{lo:+.0f}, {hi:+.0f}]", fontsize=9.5)
+        axd.axis("off")
+
+    fig.text(0.006, 0.755, "整幅", rotation=90, va="center", fontsize=10, color="#4a5560")
+    fig.text(0.006, 0.545, "局部放大", rotation=90, va="center", fontsize=10, color="#4a5560")
+    fig.text(0.006, 0.355, "差值(红=推亮\n蓝=推暗)", rotation=90, va="center",
+             fontsize=9.5, color="#4a5560")
+
+    fig.suptitle("光晕(halo)长什么样:边的两侧各贴出一条暗边和亮边", fontsize=13, y=0.965)
+    four_questions(fig,
+        "同一张 camera.png 走四种\n锐化,各取红框那块放大 ——\n"
+        "挑的是「强边 + 两侧大片\n平坦」的地方,光晕才看得出。"
+        "最下一排是\n**锐化后减原图**:\n红 = 被推亮,蓝 = 被推暗。",
+        "看见光晕本身:亮边和暗边\n**紧贴轮廓两侧**,像给人\n描了一圈边。"
+        "k 越大描得越粗、\n越白 —— 这正是「数码味」\n的来源。",
+        "**细节没变多,只是对比被拉开**。\n"
+        f"拉普拉斯那列差值到 [{spans['拉普拉斯锐化(最猛)'][0]:+.0f}, "
+        f"{spans['拉普拉斯锐化(最猛)'][1]:+.0f}],\n"
+        "天空里的噪点也被一起描了边\n(第六节实测放大 5.40 倍)。",
+        "光晕是锐化的**固有产物**,\n不是参数没调好 —— 只要让\n差别变大,"
+        "边两侧必然反向偏移。\n8 位存储时冲出 0/255 的\n部分被截掉,**不可逆**。",
+        "调小 k 和 σ(k=0.5 时过冲\n只剩 30);要完全避开光晕\n得换保边的做法:"
+        "双边滤波、\n引导滤波、局部对比度增强。",
+        y=0.245, bottom=0.30)
+    fig.savefig(out_path, dpi=120, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
 
@@ -973,6 +1050,9 @@ def main() -> None:
     over = out.with_name("sharpening-overshoot.png")
     save_overshoot_figure(over)
     print(f"结果已保存: {over.relative_to(REPO)}")
+    halo = out.with_name("sharpening-halo.png")
+    save_halo_gallery_figure(halo, g)
+    print(f"结果已保存: {halo.relative_to(REPO)}")
     cmp_path = out.with_name("sharpening-compare.png")
     save_compare_figure(cmp_path, g)
     print(f"结果已保存: {cmp_path.relative_to(REPO)}")
