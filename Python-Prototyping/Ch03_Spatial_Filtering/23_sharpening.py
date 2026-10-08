@@ -319,6 +319,113 @@ def demo_noise(g: npt.NDArray[np.float64]) -> None:
     print("\n  实用顺序:**先降噪,再锐化**。反过来做,等于先把噪声放大再想办法擦掉。")
 
 
+def impulse_kernel(fn, n: int = 257) -> npt.NDArray[np.float64]:
+    """把一个脉冲喂给 fn,读出它实际用的核。
+
+    为什么不手拼核:USM 里 cv2.GaussianBlur 的核宽由 σ 自己决定(float64 取 8σ+1),
+    手拼一个「差不多」的核,理论值和实测就可能对不上。
+    喂脉冲读出来的,就是函数真正在用的那张核。
+    """
+    d = np.zeros((n, n))
+    d[n // 2, n // 2] = 1.0
+    return fn(d)
+
+
+def l2(k: npt.NDArray[np.float64]) -> float:
+    """核的 L2 范数:所有数平方、相加、开根。独立噪声过线性核后的放大倍数就是它。"""
+    return float(np.sqrt((k ** 2).sum()))
+
+
+def measured_gain(fn, noise: npt.NDArray[np.float64]) -> float:
+    """纯噪声过一遍 fn,输出标准差 ÷ 输入标准差。"""
+    return float(fn(noise).std() / noise.std())
+
+
+def demo_noise_l2() -> None:
+    hr("6b. 噪声放大倍数能手算:等于核的平方和开根(L2 范数)")
+    rng = np.random.default_rng(0)
+    white = rng.normal(0, 3.0, (512, 512))      # 纯噪声,不掺图 —— 才测得干净
+
+    print("  噪声是一堆互相独立的随机数,独立量做线性组合时方差按平方叠加:")
+    print("    输出噪声 σ = 输入噪声 σ × √(核里所有数的平方和)\n")
+    print(f"  手算锐化核 [[0,-1,0],[-1,5,-1],[0,-1,0]]:√(5² + 1+1+1+1) = √29 = {np.sqrt(29):.4f}\n")
+
+    rows = [("拉普拉斯锐化", laplacian_sharpen),
+            ("裸拉普拉斯(求导)", lambda f: cv2.filter2D(f, -1, LAP4.astype(np.float64))),
+            ("USM k=1 σ=1", lambda f: unsharp(f, 1.0, 1.0)),
+            ("USM k=1 σ=3", lambda f: unsharp(f, 3.0, 1.0)),
+            ("USM k=0.5 σ=3", lambda f: unsharp(f, 3.0, 0.5)),
+            ("USM k=3 σ=2", lambda f: unsharp(f, 2.0, 3.0))]
+    print(f"  {'核':<18s}{'实测':>9s}{'‖k‖₂':>9s}{'差':>9s}")
+    for name, fn in rows:
+        m, t = measured_gain(fn, white), l2(impulse_kernel(fn))
+        print(f"  {name:<18s}{m:8.3f}×{t:9.3f}{abs(m - t):9.4f}")
+
+    print("\n  同一个公式也解释平滑为什么降噪(倍数 < 1):")
+    box = np.ones((5, 5)) / 25
+    smooth = [("高斯模糊 σ=1", lambda f: cv2.GaussianBlur(f, (0, 0), 1.0)),
+              ("高斯模糊 σ=3", lambda f: cv2.GaussianBlur(f, (0, 0), 3.0)),
+              ("5×5 盒式", lambda f: cv2.filter2D(f, -1, box))]
+    for name, fn in smooth:
+        m, t = measured_gain(fn, white), l2(impulse_kernel(fn))
+        print(f"  {name:<18s}{m:8.3f}×{t:9.3f}{abs(m - t):9.4f}")
+    print(f"    5×5 盒式手算:√(25 × (1/25)²) = 1/5 = {np.sqrt(25 * (1 / 25) ** 2):.1f}")
+
+    print("\n  「和」与「平方和」管的是两件事 —— 这两个核的和都是 1(亮度不变):")
+    sharp_k = impulse_kernel(laplacian_sharpen)
+    print(f"    {'5×5 盒式':<10s} 和 {box.sum():.0f}   平方和开根 {l2(box):.3f}   噪声压到 1/5")
+    print(f"    {'锐化核':<10s} 和 {sharp_k.sum():.0f}   平方和开根 {l2(sharp_k):.3f}   噪声放大 5.4 倍")
+    print("    和 = 1 只保证平均亮度不变,跟噪声无关。管噪声的是平方和。")
+
+    # —— 上一轮我只看了两个极限就说「夹在 1 和 1+k 之间」,这里用整条 σ 扫描验 ——
+    print("\n  USM 的放大倍数随 σ 怎么变?(等价核 (1+k)δ − kG,扫 σ 从 0.3 到 20)")
+    sigmas = [0.3, 0.5, 0.7, 1, 1.5, 2, 3, 5, 8, 12, 20]
+    print(f"  {'k':>4} | " + " ".join(f"{s:>6g}" for s in sigmas) + " | 1+k")
+    for k in (0.5, 1.0, 2.0, 3.0):
+        gains = [l2(impulse_kernel(lambda f, s=s, k=k: unsharp(f, s, k))) for s in sigmas]
+        mono = all(b >= a - 1e-9 for a, b in zip(gains, gains[1:]))
+        print(f"  {k:>4g} | " + " ".join(f"{x:6.3f}" for x in gains) + f" | {1 + k:.1f}"
+              f"   {'单调升' if mono else '⚠️ 非单调'},范围 [{min(gains):.3f}, {max(gains):.3f}]")
+
+    print("\n  ⚠️ 这条理论只对**白噪声**(每个像素独立)成立。")
+    print("  真实相机噪声经过去马赛克、降噪、JPEG 之后往往带空间相关,实测与理论就会分叉:")
+    corr = cv2.GaussianBlur(white, (0, 0), 1.0)
+    corr *= white.std() / corr.std()            # 拉回同样的 σ,只改相关性
+    f = laplacian_sharpen
+    print(f"    白噪声:   实测 {measured_gain(f, white):.3f}×   白噪声公式预测 {l2(impulse_kernel(f)):.3f}")
+    print(f"    相关噪声: 实测 {measured_gain(f, corr):.3f}×   白噪声公式预测 {l2(impulse_kernel(f)):.3f}"
+          "   ← 差远了")
+
+    # 机制:核在每个频率上有自己的增益;噪声能量落在哪些频率,就按那里的增益加权。
+    # 白噪声各频率能量一样 → 退化成「增益平方的平均」= ‖k‖₂²;
+    # 相关噪声能量挤在低频,而核在零频的增益恰好是「核的和 = 1」,放大得就少。
+    k = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float64)
+    hm = np.abs(np.fft.fft2(k, s=white.shape))
+    fx = np.abs(np.fft.fftfreq(white.shape[0]))
+    low = (fx[:, None] < 0.1) & (fx[None, :] < 0.1)
+
+    def periodic_gain(n):                       # 周期边界,和 FFT 的假设一致
+        out = 5 * n - np.roll(n, 1, 0) - np.roll(n, -1, 0) - np.roll(n, 1, 1) - np.roll(n, -1, 1)
+        return out.std() / n.std()
+
+    def spectrum_gain(n):                       # 按噪声自己的能量谱给核的增益加权
+        pw = np.abs(np.fft.fft2(n)) ** 2
+        return float(np.sqrt((hm ** 2 * pw).sum() / pw.sum()))
+
+    print(f"\n  机制:核的频率响应零频 {hm[0, 0]:.3f}(= 核的和),最高频 {hm[hm.shape[0] // 2, hm.shape[1] // 2]:.3f}。")
+    print("  噪声的能量落在哪些频率,就按那里的增益加权 —— 预测与实测:")
+    # 反过来:把低通噪声乘棋盘格 (-1)^(x+y),频谱整体平移到最高频附近
+    yy, xx = np.mgrid[0:white.shape[0], 0:white.shape[1]]
+    high = corr * np.where((xx + yy) % 2 == 0, 1.0, -1.0)
+    for name, n in (("白噪声", white), ("相关噪声", corr), ("高频集中", high)):
+        pw = np.abs(np.fft.fft2(n)) ** 2
+        print(f"    {name}: 实测 {periodic_gain(n):.3f}×  按能量谱加权预测 {spectrum_gain(n):.3f}×  "
+              f"低频小方块(占 {100 * low.mean():.0f}% 面积)里有 {100 * pw[low].sum() / pw.sum():4.1f}% 能量")
+    print("  相关噪声的能量挤在低频,那里核的增益 ≈ 1,所以放大得少;")
+    print("  高频集中的噪声反过来,逼近最高频增益 9,放大得比白噪声更狠。")
+    print("  → 拿 ‖k‖₂ 估算之前先问一句:这噪声白不白?(这一段用周期边界,相关噪声那行与上面反射边界差 0.012)")
+
+
 # ---------------------------------------------------------------- 7
 def demo_gradient(g: npt.NDArray[np.float64]) -> None:
     hr("7. 一阶导数:Sobel 梯度")
@@ -1038,6 +1145,7 @@ def main() -> None:
     demo_usm_equals_laplacian(g)
     demo_overshoot()
     demo_noise(g)
+    demo_noise_l2()
     demo_gradient(g)
 
     out = REPO / "Assets" / "results" / "sharpening-derivatives.png"
