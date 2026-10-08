@@ -17,17 +17,53 @@
 10. 弹簧振子 ω=√(k/m);三角恒等式用复数一步推出
 11. 回到图像处理:卷积核的频率响应 H(ω) = Σ k[n]e^{−iωn},用欧拉公式化成余弦
 
+生成 1 张(写到 Assets/results/):
+    euler-taylor-spiral.png     x=π 时泰勒部分和在复平面上逼近 −1 的路径
+
 用法:
-    .venv/bin/python Ch04_Frequency_Domain/30_euler_formula.py
+    .venv/bin/python Ch04_Frequency_Domain/30_euler_formula.py [--show]
 """
 
 from __future__ import annotations
 
+import sys
 from math import factorial
+from pathlib import Path
 
 import numpy as np
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from figkit import four_questions, save, use_cjk_font  # noqa: E402
+
+use_cjk_font()
+import matplotlib.pyplot as plt  # noqa: E402
+
 I = 1j
+
+
+def cplx(z: complex, nd: int = 2) -> str:
+    """复数写成 1.00+3.14i 的样子(实部不带正号,比 fmt() 更适合放进图里)。"""
+    return f"{z.real:.{nd}f}{z.imag:+.{nd}f}i"
+
+
+def partial_sum(x: float, n: int) -> complex:
+    """e^{ix} 泰勒展开的前 n 项之和。"""
+    return sum((I * x) ** k / factorial(k) for k in range(n))
+
+
+def big_x_cost(x: float, terms: int = 100) -> dict:
+    """x 变大时朴素泰勒求和的代价:单项暴涨,要抵消回模长 1,浮点精度被吃掉。
+
+    折回 [−π,π] 是利用 e^{ix} 的周期 2π:先把 x 减掉整圈再展开,单项永远不会太大。
+    """
+    exact = np.exp(I * x)
+    xr = (x + np.pi) % (2 * np.pi) - np.pi
+    return {
+        "x": x,
+        "max_term": max(abs((I * x) ** k / factorial(k)) for k in range(terms)),
+        "naive_err": abs(partial_sum(x, terms) - exact),
+        "reduced_err": abs(partial_sum(xr, 40) - exact),
+    }
 
 
 def hr(title: str) -> None:
@@ -124,8 +160,33 @@ def demo_taylor() -> None:
     print("\n  x = π 时前 N 项的部分和怎么逼近 −1(复平面上的落点):")
     print(f"  {'N':>3} | {'部分和':>22} | {'离 −1 有多远':>12}")
     for n in (2, 4, 6, 8, 12, 16, 20, 24):
-        s = sum((I * np.pi) ** k / factorial(k) for k in range(n))
+        s = partial_sum(np.pi, n)
         print(f"  {n:>3} | {fmt(s, 6):>22} | {abs(s + 1):>12.3e}")
+
+    print("\n  路径为什么是直角折线:第 n 项 = 第 n−1 项 × (iπ/n)。")
+    print("  乘 i 是转 90°(逆时针),再缩放 π/n —— 每一步都在上一步的基础上「转 90° 并缩放」:")
+    print(f"  {'n':>3} | {'这一步的长度 π^n/n!':>20} | {'方向':>6} | 相对上一步")
+    names = {1: "上", 2: "左", 3: "下", 0: "右"}
+    for n in range(1, 8):
+        step = np.pi ** n / factorial(n)
+        trend = f"× π/{n} = ×{np.pi / n:.3f}  {'变长' if np.pi / n > 1 else '变短'}"
+        print(f"  {n:>3} | {step:>20.4f} | {names[n % 4]:>6} | {trend}")
+    print("  π/n > 1 只到 n=3:前三步越走越长(3.14 → 4.93 → 5.17),从第 4 步起越走越短 —— 这就是「先冲出去再收回来」。")
+
+    path = [partial_sum(np.pi, n) for n in range(1, 31)]
+    far = int(np.argmax([abs(z) for z in path])) + 1
+    print(f"\n  路径一度冲到离原点 {abs(path[far - 1]):.3f} 远(N={far}),是单位圆半径的 {abs(path[far - 1]):.1f} 倍 ——")
+    print("  部分和根本不沿圆走;它能算出 −1,却看不出「为什么在转」。")
+    n17 = next(n for n in range(1, 60) if abs(partial_sum(np.pi, n) + 1) < 1e-6)
+    print(f"  x=π 时误差降到 1e−6 以下需要 N={n17} 项。")
+
+    print("\n  x 变大时朴素求和的代价(同样 100 项;右列先折回 [−π,π] 再算):")
+    print(f"  {'x':>6} | {'最大单项':>10} | {'朴素求和误差':>12} | {'折回后误差':>10}")
+    for x in (np.pi, 10, 20, 30):
+        c = big_x_cost(x)
+        print(f"  {c['x']:6.2f} | {c['max_term']:10.3g} | {c['naive_err']:12.2e} | {c['reduced_err']:10.2e}")
+    print("  单项最大到 7.8e11,却要加减抵消回模长 1,双精度只有 ~16 位有效数字,")
+    print("  所以误差从 3e−16 涨到 2e−4。折回之后单项永远不超过 ~5,误差回到 1e−15 量级。")
 
 
 # ------------------------------------------------------------------ 7
@@ -254,6 +315,103 @@ def demo_kernel_frequency_response() -> None:
     print("  零频 1、最高频 9 —— 正是 03-sharpening 里「核的和 = 1 / 最高频增益 9」的来历。")
 
 
+# ------------------------------------------------------------------ 图
+def save_taylor_spiral_figure() -> None:
+    """x=π 时泰勒部分和 S_N 在复平面上怎么逼近 −1。
+
+    为什么要画:文档里那张表给了 N=2…24 的部分和与误差,数字都对,
+    可看表看不出「它在平面上是怎么走的」—— 前几项乱跳、甚至越走越远,
+    到 N=12 才贴住 −1。画出来一眼就看懂了。
+    """
+    x, n_max = np.pi, 30
+    pts = np.array([partial_sum(x, n) for n in range(1, n_max + 1)])   # S_1 … S_30
+    err = np.maximum(np.abs(pts + 1), 1e-17)
+    far = int(np.argmax(np.abs(pts)))
+    c30, c_pi = big_x_cost(30.0), big_x_cost(np.pi)
+    table_n = (2, 4, 8, 12, 16, 20, 24)           # 与文档里那张表同一组 N
+
+    fig = plt.figure(figsize=(15.2, 6.6))
+    gs = fig.add_gridspec(1, 3, width_ratios=[1.15, 1.0, 1.0], wspace=0.24,
+                          left=0.045, right=0.985, top=0.885, bottom=0.40)
+
+    th = np.linspace(0, 2 * np.pi, 400)
+    cmap = plt.get_cmap("viridis")
+
+    # ① 全貌
+    ax = fig.add_subplot(gs[0])
+    ax.plot(np.cos(th), np.sin(th), "--", color="#2c6fbb", lw=1.2, label="单位圆(e^(ix) 真正走的路)")
+    ax.plot(pts.real, pts.imag, "-", color="#9aa5b1", lw=1.0, zorder=1)
+    sc = ax.scatter(pts.real, pts.imag, c=np.arange(1, n_max + 1), cmap=cmap, s=34, zorder=3)
+    ax.scatter([-1], [0], marker="*", s=260, color="#c4442a", zorder=4, label="目标 −1")
+    for n in (1, 2, 3, 4, 5):
+        z = pts[n - 1]
+        ax.annotate(f"N={n}", (z.real, z.imag), xytext=(7, 6), textcoords="offset points", fontsize=8.6)
+    # 放大窗口的位置
+    wx, wy = (-1.4, 0.35), (-0.25, 0.65)
+    ax.add_patch(plt.Rectangle((wx[0], wy[0]), wx[1] - wx[0], wy[1] - wy[0],
+                               fill=False, ec="#a8700a", lw=1.4, ls=":"))
+    ax.set_aspect("equal")
+    ax.set_xlim(-4.9, 2.0)
+    ax.set_ylim(-3.1, 3.9)
+    ax.axhline(0, color="#ccd3da", lw=0.8); ax.axvline(0, color="#ccd3da", lw=0.8)
+    ax.set_xlabel("实部"); ax.set_ylabel("虚部")
+    ax.set_title(f"全貌:直角折线(每项只沿实轴或虚轴走),前 {n_max} 项", fontsize=10.5)
+    ax.legend(loc="lower left", fontsize=8.2, framealpha=0.92)
+    cb = fig.colorbar(sc, ax=ax, fraction=0.04, pad=0.02)
+    cb.set_label("N(项数)", fontsize=9)
+
+    # ② −1 附近放大
+    ax2 = fig.add_subplot(gs[1])
+    ax2.plot(np.cos(th), np.sin(th), "--", color="#2c6fbb", lw=1.2)
+    sel = pts[5:]                                  # 从 N=6 起
+    ax2.plot(sel.real, sel.imag, "-", color="#9aa5b1", lw=1.0, zorder=1)
+    ax2.scatter(sel.real, sel.imag, c=np.arange(6, n_max + 1), cmap=cmap, vmin=1, vmax=n_max, s=40, zorder=3)
+    ax2.scatter([-1], [0], marker="*", s=260, color="#c4442a", zorder=4)
+    for n, off in ((6, (8, 6)), (7, (8, 6)), (8, (-26, -14)), (9, (8, -14)), (10, (8, 8)), (12, (-34, 10))):
+        z = pts[n - 1]
+        ax2.annotate(f"N={n}", (z.real, z.imag), xytext=off, textcoords="offset points", fontsize=8.6)
+    ax2.set_aspect("equal")
+    ax2.set_xlim(*wx); ax2.set_ylim(*wy)
+    ax2.axhline(0, color="#ccd3da", lw=0.8)
+    ax2.set_xlabel("实部")
+    ax2.set_anchor("N")
+    ax2.set_title("放大(左图虚线框):N=12 起贴住 −1", fontsize=11)
+    for sp in ax2.spines.values():
+        sp.set_edgecolor("#a8700a"); sp.set_linestyle(":"); sp.set_linewidth(1.4)
+
+    # ③ 离 −1 的距离
+    ax3 = fig.add_subplot(gs[2])
+    ns = np.arange(1, n_max + 1)
+    ax3.semilogy(ns, err, "o-", color="#6b4fa8", ms=4.5, lw=1.4)
+    for n in table_n:
+        if n < 8:                       # N=2、N=4 的值挤在曲线顶端,标出来会叠成一团
+            continue
+        ax3.annotate(f"{err[n - 1]:.1e}", (n, err[n - 1]), xytext=(5, 7), textcoords="offset points",
+                     fontsize=8.0, color="#6b4fa8")
+    ax3.axhline(1e-6, color="#2a8f4a", ls="--", lw=1.1)
+    ax3.text(1.0, 1.6e-6, "误差 < 1e−6", color="#2a8f4a", fontsize=8.6)
+    ax3.set_xlim(0, n_max + 1)
+    ax3.set_ylim(5e-17, 2e1)
+    ax3.set_xlabel("N(项数)"); ax3.set_ylabel("|S_N − (−1)|")
+    ax3.set_title("离 −1 有多远(对数轴):越往后降得越快", fontsize=10.5)
+    ax3.grid(alpha=0.25, which="both")
+
+    fig.suptitle("泰勒部分和在复平面上逼近 e^(iπ) = −1:先乱跳,再贴住", fontsize=13, y=0.965)
+    four_questions(fig,
+        "把 e^(iπ) = Σ(iπ)ⁿ/n! 的\n前 N 项部分和,逐项画在\n复平面上(左);\n"
+        "中间放大 −1 附近,\n右边看离 −1 的距离。",
+        f"看见级数怎么落到 −1:\n前几项乱跳(N=2 在 {cplx(pts[1])}、\n"
+        f"N=4 在 {cplx(pts[3])}),\nN=12 起贴住,\nN=20 误差 {err[19]:.1e}。",
+        f"过程**不沿圆走**:路径一度\n冲到离原点 {abs(pts[far]):.2f} 远(N={far + 1},\n"
+        f"单位圆的 {abs(pts[far]):.0f} 倍)。能算出 −1,\n却看不出「为什么在转」。",
+        f"x 一大就崩:x=30 时单项\n最大到 {c30['max_term']:.1e},要抵消\n回模长 1,误差 {c30['naive_err']:.1e}\n"
+        f"(x=π 时是 {c_pi['naive_err']:.0e})。",
+        f"先把 x 折回 [−π,π](周期\n2π)再展开,误差回到\n{c30['reduced_err']:.0e};库函数的 sin/cos\n"
+        "都先做范围缩减 ——\n查 range reduction、CORDIC。",
+        y=0.295, bottom=0.40)
+    save(fig, "euler-taylor-spiral.png")
+
+
 def main() -> None:
     demo_times_i()
     demo_increment_is_perpendicular()
@@ -266,6 +424,8 @@ def main() -> None:
     demo_bombelli()
     demo_spring_and_identities()
     demo_kernel_frequency_response()
+    print()
+    save_taylor_spiral_figure()
 
 
 if __name__ == "__main__":
