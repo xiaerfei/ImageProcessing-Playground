@@ -9,7 +9,8 @@
  1. 离散信号:冲激/阶跃、任何信号 = 一串平移冲激的和、周期与非周期、频率差 2π 等价
  2. 系统:四个系统判线性/时不变;黑盒系统只喂一个冲激,就能预测任意输入的输出
  3. 卷积:手算两题;卷积 = 多项式乘法;交换/结合律;[1,2,1]/4 抹平阶跃
- 4. DFT:4 点五个手算结果;DFT 矩阵的正交性;帕塞瓦尔(Parseval);k 对应的频率
+ 4. DFT:4 点五个手算结果;DFT 矩阵的正交性;帕塞瓦尔(Parseval);k 对应的频率;
+    某本教材把 1/N 放在正变换里,与 np.fft 差 N 倍
  5. DFT 性质:平移只转相位、循环卷积 vs 线性卷积、补零、频谱泄漏与加窗
  6. 频率响应:H(ω)=Σh[n]e^{-iωn} 的三个例子,判低通/高通,零点
  7. 采样与混叠:5 kHz 在 8 kHz 采样下变成 3 kHz;折叠公式;图像隔点抽样
@@ -206,6 +207,13 @@ def step4_dft() -> None:
         X = dft_matrix(4) @ np.array(x, dtype=float)
         ok = np.max(np.abs(X - np.fft.fft(x)))
         print(f"  DFT{x} = {row(X)}   与 np.fft 最大差 {ok:.0e}")
+    # 《复变函数与积分变换》(高教社)1.4.1 的 DFT 把 1/N 放在正变换里;例子抄自该书 N=4 一节,
+    # 用「np.fft / N」核对:四个例子全对得上,说明书上的约定就是 F = (1/N)Σ…,与 np.fft 差 N 倍
+    book = {(1, 0, 0, 0): [1, 1, 1, 1], (0, 1, 0, 0): [1, -1j, -1, 1j],
+            (1, 1, 0, 0): [2, 1 - 1j, 0, 1 + 1j], (1, 1, 0, -1): [1, 1 - 2j, 1, 1 + 2j]}
+    dev = max(np.max(np.abs(np.fft.fft(x) / 4 - np.array(v) / 4)) for x, v in book.items())
+    print(f"  书上例子 ¼·{{…}} 与 np.fft/N 最大差 {dev:.1e}(四个例子;书上正变换带 1/N,np.fft 不带)")
+    print(f"  同一信号 [1,0,0,0]:np.fft = {row(np.fft.fft([1, 0, 0, 0]))};书上 = (1/4)·{row([1, 1, 1, 1])}")
     F = dft_matrix(4)
     print(f"  4 点 DFT 的 W = e^(-i2π/4) 的幂(W⁰..W³):{row([np.exp(-2j * np.pi * k / 4) for k in range(4)])}")
     for N in (4, 64):
