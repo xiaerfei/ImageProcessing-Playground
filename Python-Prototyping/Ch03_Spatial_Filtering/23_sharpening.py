@@ -1090,123 +1090,146 @@ def demo_zero_is_steepest() -> None:
 
 
 def save_inflection_figure(out_path: Path) -> None:
-    """回答「拐点到底在图上哪个位置」—— 2D 图和剖面画在一起,行号对得上。"""
+    """回答「拐点到底在图上哪个位置」—— 软边和硬边各一组,每组都是
+    灰度条 / 曲线 / 数字表,**所有层共用同一根行号轴,一格一列上下对齐**。
+
+    为什么再画一次(2026-10-12):自学时说「坐标对应不上」。上一版左边三张小图的
+    行号范围各不相同(16~48、26~38),右边曲线又是 20~45,而且曲线上没有数字,
+    读的人没法把「第 32 行」从一张图搬到另一张图。这一版全窗口 24~40 行,
+    表里的数字和曲线上的点是同一批数。
+    """
+    from matplotlib.patches import Rectangle
+
     col, g1, g2, infl, lo, hi = inflection_stats()
-    img = sky_mountain_2d()
-    n = img.shape[0]
-
+    hard = hard_edge_column()
+    h1, h2 = d1d(hard, [-0.5, 0, 0.5]), d1d(hard, [1, -2, 1])
     a99, b99 = transition_band(col, 0.99)
-    hard = hard_edge_column(n)
-    fig = plt.figure(figsize=(15.2, 6.2))
-    # bottom 要在这儿给死:显式设过边界的 gridspec 不吃 four_questions 里的
-    # subplots_adjust,不给的话图和横幅之间会空出一大条
-    outer = fig.add_gridspec(1, 2, width_ratios=[1.05, 1.35], wspace=0.22,
-                             left=0.045, right=0.985, top=0.90, bottom=0.355)
-    gl = outer[0, 0].subgridspec(3, 1, hspace=0.42, height_ratios=[2.5, 1, 1])
-    gr = outer[0, 1].subgridspec(3, 1, hspace=0.16)
+    rows_x = np.arange(infl - 8, infl + 9)              # 24..40,一格一列
+    x0, x1 = rows_x[0] - 0.6, rows_x[-1] + 0.6
+    cg, c1, c2, cr = "#2a8f4a", "#a8700a", "#6b4fa8", "#c4442a"
+    hard_cut = EDGE_CENTER - 0.5                        # 31.5
 
-    ax = fig.add_subplot(gl[0])
-    # 只截边附近 ±16 行并让它填满子图:画全 64 行的话,
-    # 30/32/34 这三条线在视觉上只隔两个像素,全糊在一起,等于没标
-    top, bot = infl - 16, infl + 17
-    ax.imshow(img[top:bot], cmap="gray", vmin=0, vmax=255, interpolation="nearest",
-              aspect="auto", extent=(0, img.shape[1], bot - 0.5, top - 0.5))
-    for y, c, ls, lab in ((lo, "#c4442a", "--", f"|二阶| 峰 (第 {lo} 行)"),
-                          (infl, "#2a8f4a", "-", f"拐点 = 边心 (第 {infl} 行)"),
-                          (hi, "#c4442a", "--", f"|二阶| 峰 (第 {hi} 行)")):
-        ax.axhline(y, color=c, ls=ls, lw=2.0, label=lab)
-    ax.axhspan(a99, b99, color="#2a8f4a", alpha=0.30, zorder=0)
-    ax.annotate(f"过渡带 {b99 - a99} 行\n(掉完 99% 幅度)", xy=(0.03, 0.88),
-                xycoords="axes fraction", fontsize=8.6, color="#1d6b38",
-                va="center", ha="left",
-                bbox=dict(boxstyle="round,pad=0.3", fc="white", ec="#2a8f4a", alpha=0.85))
-    ax.set_title(f"这条边有厚度:绿线在过渡带的正中(截第 {top}~{bot - 1} 行)", fontsize=11)
-    ax.set_ylabel("行号")
-    ax.set_xticks([])
-    ax.legend(fontsize=7.8, loc="lower right", framealpha=0.94)
+    fig = plt.figure(figsize=(14.5, 13.4))
+    gs = fig.add_gridspec(8, 1, height_ratios=[0.42, 2.0, 1.15, 2.5, 0.55, 0.42, 1.15, 1.7],
+                          hspace=0.07, left=0.165, right=0.985, top=0.935, bottom=0.225)
+    ax = [fig.add_subplot(gs[0])]
+    ax += [fig.add_subplot(gs[k], sharex=ax[0]) for k in range(1, 8)]
+    sA, cA, tA, dA, gap, sB, tB, dB = ax
+    gap.axis("off")
+    sA.set_xlim(x0, x1)
+    sA.set_xticks(list(rows_x))
 
-    axz = fig.add_subplot(gl[1])
-    lo_z, hi_z = infl - 6, infl + 7
-    axz.imshow(col[lo_z:hi_z][None, :], cmap="gray", vmin=0, vmax=255,
-               interpolation="nearest", aspect="auto",
-               extent=(lo_z - 0.5, hi_z - 0.5, 0, 1))
-    for y, c, ls in ((lo, "#c4442a", "--"), (infl, "#2a8f4a", "-"), (hi, "#c4442a", "--")):
-        # 掐掉中间一段:数字就印在那儿,线压上去两样都看不清
-        axz.vlines(y, 0.00, 0.34, color=c, ls=ls, lw=2.2)
-        axz.vlines(y, 0.66, 1.00, color=c, ls=ls, lw=2.2)
-    for i in range(lo_z, hi_z):
-        axz.text(i, 0.5, f"{col[i]:.0f}", ha="center", va="center", fontsize=7.2,
-                 color="black" if col[i] > 110 else "white")
-    axz.set_yticks([])
-    axz.set_xticks([])
-    # xlabel 会被底部横幅压住,横轴含义写进标题
-    axz.set_title("把边那一段拉直放大(横轴 = 行号):格子里是真实灰度值", fontsize=10)
+    for a in ax:
+        if a is gap:
+            continue
+        a.grid(axis="x", ls=":", lw=0.7, color="#b8c0c8", zorder=1)
+        a.set_axisbelow(True)
+        a.spines[["top", "right"]].set_visible(False)
+        a.tick_params(labelbottom=False)
+    dB.tick_params(labelbottom=True)
+    dB.set_xlabel("行号(一格一列,所有层上下对齐)", fontsize=10)
 
-    axh = fig.add_subplot(gl[2])
-    axh.imshow(hard[lo_z:hi_z][None, :], cmap="gray", vmin=0, vmax=255,
-               interpolation="nearest", aspect="auto",
-               extent=(lo_z - 0.5, hi_z - 0.5, 0, 1))
-    axh.axvline(EDGE_CENTER - 0.5, color="#2a8f4a", lw=2.4)
-    for i in range(lo_z, hi_z):
-        axh.text(i, 0.5, f"{hard[i]:.0f}", ha="center", va="center", fontsize=7.2,
-                 color="black" if hard[i] > 110 else "white")
-    axh.set_yticks([])
-    axh.set_xticks(range(lo_z, hi_z, 2))
-    axh.set_title("对照:一刀切的硬边 —— 这回肉眼一眼看得到边,"
-                  f"可真边界在 {EDGE_CENTER - 0.5},落在两格的缝里", fontsize=9.6)
+    def strip(a, vals, title):
+        """灰度条:一格一列,颜色就是那一行真实的灰度。"""
+        a.imshow(np.asarray(vals)[None, :], cmap="gray", vmin=0, vmax=255, interpolation="nearest",
+                 aspect="auto", extent=(rows_x[0] - 0.5, rows_x[-1] + 0.5, 0, 1))
+        a.set_yticks([])
+        a.set_xlim(x0, x1)
+        a.text(-0.012, 0.5, title, transform=a.get_yaxis_transform(), ha="right", va="center",
+               fontsize=9.6, color="#333")
 
-    x = np.arange(n)
-    rows = [(col, "亮度剖面:一路往下掉,从不回头", "#2c6fbb"),
-            (np.abs(g1), "一阶 |陡不陡|:先涨后跌,峰顶就在绿线", "#a8700a"),
-            (g2, "二阶:在绿线处过零,两侧各一个峰", "#6b4fa8")]
-    axes = [fig.add_subplot(gr[i]) for i in range(3)]
-    for k, (ax_, (data, title, color)) in enumerate(zip(axes, rows)):
-        ax_.plot(x, data, color=color, lw=1.6)
-        ax_.axvspan(a99, b99, color="#2a8f4a", alpha=0.13, zorder=0)
-        ax_.axvline(infl, color="#2a8f4a", lw=1.6)
+    def table(a, rows):
+        """数字表。每个数字印在它那一列的正中,和曲线上的点是同一批数。"""
+        a.set_ylim(0, len(rows))
+        a.set_yticks([])
+        for r, (name, vals, color, fmt) in enumerate(rows):
+            y = len(rows) - 0.5 - r
+            a.text(-0.012, y, name, transform=a.get_yaxis_transform(), ha="right", va="center",
+                   fontsize=9.4, color=color)
+            for xx, v in zip(rows_x, vals):
+                small = abs(v) < 0.0005
+                txt = ("0.000" if (small and "." in fmt(1.0)) else fmt(v)).replace("-", "−")
+                a.text(xx, y, txt, ha="center", va="center", fontsize=8.2,
+                       color=("#1d6b38" if xx == infl else "#9aa5b1") if small else color)
+        for y in range(1, len(rows)):
+            a.axhline(y, color="#cfd6dd", lw=0.9)
+
+    # ================= 第一组:软边 =================
+    strip(sA, col[rows_x], "灰度(真实颜色)")
+    sA.set_title("软边:有厚度的渐变(绿底 = 过渡带,掉完 99% 幅度)", fontsize=11, pad=5)
+    for a in (sA, cA, tA, dA):
+        a.axvspan(a99, b99, color=cg, alpha=0.12, zorder=0)
+    for a in (sA, cA, dA):
+        a.axvline(infl, color=cg, lw=1.6, zorder=2)
         for y in (lo, hi):
-            ax_.axvline(y, color="#c4442a", ls="--", lw=1.2)
-        ax_.set_title(title, fontsize=10, pad=4)
-        ax_.set_xlim(infl - 14, infl + 14)
-        ax_.grid(alpha=0.25)
-        if k == 2:
-            ax_.axhline(0, color="#888", lw=0.9)
-            ax_.set_xlabel("行号")
-        else:
-            ax_.set_xticklabels([])
+            a.axvline(y, color=cr, ls="--", lw=1.2, zorder=2)
+    # 表里不画竖线(会压住数字),改成把那三列染色:绿 = 拐点,红 = |二阶| 最大
+    for y, c in ((lo, cr), (infl, cg), (hi, cr)):
+        tA.axvspan(y - 0.5, y + 0.5, color=c, alpha=0.16, zorder=0)
 
-    axes[1].annotate(f"峰顶 {abs(g1[infl]):.1f}\n左右两邻都是 {abs(g1[infl-1]):.1f}",
-                     xy=(infl, abs(g1[infl])), xytext=(infl + 4, abs(g1[infl]) * 0.62),
-                     fontsize=8.4, color="#a8700a",
-                     arrowprops=dict(arrowstyle="->", color="#a8700a", lw=1.0))
-    axes[2].annotate(f"这里 = {g2[infl]:.2f}\n左右一样高,差就是 0",
-                     xy=(infl, 0), xytext=(infl + 3.4, g2.max() * 0.55),
-                     fontsize=8.4, color="#2a8f4a",
-                     arrowprops=dict(arrowstyle="->", color="#2a8f4a", lw=1.0))
+    cA.plot(rows_x, col[rows_x], "o-", color="#2c6fbb", ms=4.6, lw=1.6, zorder=3)
+    cA.set_ylabel("亮度 f", fontsize=10)
+    cA.set_ylim(30, 210)
 
-    fig.suptitle("绿线没有偏:软边根本没有「一条」分界线,它有 "
-                 f"{b99 - a99} 行厚", fontsize=13, y=0.962)
+    table(tA, [("亮度 f", col[rows_x], "#2c6fbb", lambda v: f"{v:.2f}"),
+               ("一阶 |右−左|/2(陡不陡)", np.abs(g1[rows_x]), c1, lambda v: f"{v:.3f}"),
+               ("二阶 右+左−2×自己", g2[rows_x], c2, lambda v: f"{v:+.3f}")])
+
+    dA.axhline(0, color="#8a949e", lw=1.0, zorder=2)
+    dA.plot(rows_x, np.abs(g1[rows_x]), "o-", color=c1, ms=4.8, lw=1.6, zorder=4, label="一阶 |陡不陡|")
+    dA.plot(rows_x, g2[rows_x], "s-", color=c2, ms=4.8, lw=1.6, zorder=4, label="二阶")
+    dA.set_ylim(-14, 38)
+    dA.set_ylabel("差分值(没有缩放)", fontsize=10)
+    dA.legend(loc="upper left", fontsize=8.8, framealpha=0.95)
+    for y, tx in ((lo, f"|二阶|最大 第 {lo} 行"), (hi, f"|二阶|最大 第 {hi} 行")):
+        dA.text(y + (-0.15 if y == lo else 0.15), 35.5, tx, rotation=0, fontsize=8.2, color=cr,
+                ha="right" if y == lo else "left", va="top")
+    dA.annotate(f"拐点 = 第 {infl} 行\n一阶峰顶 {abs(g1[infl]):.1f},\n左右两邻都是 {abs(g1[infl - 1]):.1f}",
+                xy=(infl, abs(g1[infl])), xytext=(infl + 3.6, 23), fontsize=8.6, color=c1,
+                arrowprops=dict(arrowstyle="->", color=c1, lw=1.0))
+    dA.annotate(f"同一行二阶 = {g2[infl]:.2f}\n(左右一样高,差为 0)",
+                xy=(infl, 0), xytext=(infl + 2.6, -10.5), fontsize=8.6, color=cg,
+                arrowprops=dict(arrowstyle="->", color=cg, lw=1.0))
+
+    # ================= 第二组:硬边对照 =================
+    strip(sB, hard[rows_x], "灰度(真实颜色)")
+    sB.set_title("对照:一刀切的硬边(肉眼一眼看得到边,可零点反而落在缝里)", fontsize=11, pad=5)
+    table(tB, [("亮度 f", hard[rows_x], "#2c6fbb", lambda v: f"{v:.0f}"),
+               ("一阶 (右−左)/2", h1[rows_x], c1, lambda v: f"{v:+.0f}" if v else "0"),
+               ("二阶 右+左−2×自己", h2[rows_x], c2, lambda v: f"{v:+.0f}" if v else "0")])
+    dB.axhline(0, color="#8a949e", lw=1.0, zorder=2)
+    dB.plot(rows_x, h1[rows_x], "o-", color=c1, ms=4.8, lw=1.6, zorder=4, label="一阶")
+    dB.plot(rows_x, h2[rows_x], "s-", color=c2, ms=4.8, lw=1.6, zorder=4, label="二阶")
+    dB.set_ylim(-215, 215)
+    dB.set_yticks([-160, -80, 0, 80, 160])
+    dB.set_yticklabels(["−160", "−80", "0", "80", "160"])
+    dB.set_ylabel("差分值", fontsize=10)
+    dB.legend(loc="upper left", fontsize=8.8, framealpha=0.95)
+    for a in (sB, tB, dB):
+        a.axvline(hard_cut, color=cg, lw=1.8, zorder=2)
+    dB.annotate(f"真边界在 {hard_cut}(31 和 32 两格的缝里)\n二阶从 {h2[int(EDGE_CENTER) - 1]:.0f} 直接跳到 "
+                f"{h2[int(EDGE_CENTER)]:+.0f},\n中间没有一格等于 0。",
+                xy=(hard_cut, 0), xytext=(hard_cut + 2.2, 80), fontsize=8.8, color=cg,
+                arrowprops=dict(arrowstyle="->", color=cg, lw=1.0))
+
+    fig.suptitle(f"绿线没有偏:软边根本没有「一条」分界线,它有 {b99 - a99} 行厚", fontsize=13.5, y=0.972)
     four_questions(fig,
         "做一张软边的「天 + 山」图,\n"
-        f"边心定在第 {infl} 行,\n"
-        "量亮度 / 一阶 / 二阶。\n"
-        f"绿底标出过渡带({b99 - a99} 行),\n"
-        "底下再放一条一刀切的\n硬边做对照。",
+        f"边心定在第 {infl} 行,逐行量\n亮度、一阶、二阶,数字印在\n表里。"
+        f"绿底 = 过渡带,\n底下放一刀切的硬边对照。\n每一列上下对齐。",
         f"拐点在第 {infl} 行:\n"
         f"一阶峰顶 {abs(g1[infl]):.1f},\n"
         f"同一行二阶 = {g2[infl]:.2f},\n"
         f"灰度 {col[infl]:.0f} = (200+40)/2。\n"
-        "**它在过渡带的正中**。",
-        f"肉眼对不齐它。过渡带有\n{b99 - a99} 行厚,"
-        "眼睛在这么宽\n的渐变里找不出「一条线」\n—— "
-        "**不是绿线偏了,是\n压根没有线可以对齐**。",
-        f"|二阶| 最大的是第 {lo}、{hi} 行,\n"
-        "**都不是边**(halo 就长在\n那两行)。换成硬边又反过来:\n"
-        f"肉眼看得见,可真边界 {EDGE_CENTER - 0.5}\n落在两格的缝里,没有零点。",
+        "它在过渡带的正中。",
+        f"肉眼对不齐它:过渡带有\n{b99 - a99} 行厚,眼睛在这么宽的\n渐变里找不出「一条线」。\n"
+        "不是绿线偏了,\n是压根没有线可以对齐。",
+        f"|二阶| 最大的是第 {lo}、{hi} 行,\n都不是边(halo 长在那里)。\n"
+        f"硬边又反过来:真边界 {hard_cut}\n落在两格的缝里,没有零点。",
         "落在缝里就线性内插\n(上一篇实测误差 0.0010);\n"
         "零交叉必须配幅值门槛\n(峰值 5%,否则 35 个假零点);\n"
         "求二阶前先高斯平滑,\n查 LoG / DoG。",
-        y=0.285, bottom=0.355)
+        y=0.185, bottom=0.225)
     fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
