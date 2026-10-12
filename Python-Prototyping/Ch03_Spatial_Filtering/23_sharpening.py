@@ -61,6 +61,23 @@ LAP8 = np.array([[1, 1, 1], [1, -8, 1], [1, 1, 1]], np.float32)       # 连四�
 SHARP = np.array([[0, -1, 0], [-1, 5, -1], [0, -1, 0]], np.float32)   # = 单位核 − LAP4
 
 
+# 一维「扫描线」:平地 → 缓坡爬到 200 → 平地 → 一刀切到 60。
+# 全是整数、坡每格涨 30,于是图上、表里、手算三处的数字一模一样
+# (上一版用 linspace(20,200,8),坡度 25.7、值 46/71/97… 手算对不上,
+#  又拿 np.gradient 套两遍当二阶,二阶铺成 5 格宽,读图时「坐标对不上」)。
+SCAN = np.array([20] * 6 + [20, 50, 80, 110, 140, 170, 200] + [200] * 5 + [60] * 6, dtype=np.float64)
+SCAN_CLIFF = (17, 18)      # 悬崖:从 x=17 的 200 掉到 x=18 的 60
+
+
+def scan_derivatives(f: npt.NDArray[np.float64] = SCAN):
+    """一阶 = (右 − 左)/2;二阶 = 右 + 左 − 2×自己。两端缺邻居,填 NaN。"""
+    d1 = np.full(len(f), np.nan)
+    d2 = np.full(len(f), np.nan)
+    d1[1:-1] = (f[2:] - f[:-2]) / 2
+    d2[1:-1] = f[2:] + f[:-2] - 2 * f[1:-1]
+    return d1, d2
+
+
 def hr(title: str) -> None:
     print(f"\n{'=' * 70}\n{title}\n{'=' * 70}")
 
@@ -122,20 +139,37 @@ def step_image() -> npt.NDArray[np.float64]:
 # ---------------------------------------------------------------- 1
 def demo_derivatives_1d() -> None:
     hr("1. 一维小例子:一阶和二阶差分长什么样")
-    x = np.concatenate([np.full(6, 20.0), np.linspace(20, 200, 8),
-                        np.full(6, 200.0), np.full(12, 60.0)])
-    d1 = np.gradient(x)
-    d2 = np.gradient(d1)
-    print("  信号:一段平地 → 一个缓坡爬到 200 → 一段平地 → 一刀切到 60\n")
-    print("  原始 ", np.round(x).astype(int).tolist())
-    print("  一阶 ", np.round(d1).astype(int).tolist())
-    print("  二阶 ", np.round(d2).astype(int).tolist())
+    f = SCAN
+    d1, d2 = scan_derivatives(f)
+    n = len(f)
+    print("  信号:一段平地 → 一个缓坡爬到 200 → 一段平地 → 一刀切到 60")
+    print("  一阶 = (右 − 左)/2,二阶 = 右 + 左 − 2×自己,两端缺邻居记 ·\n")
+
+    def cell(v):
+        return "    ·" if np.isnan(v) else f"{int(v):5d}"
+    print("  位置 " + "".join(f"{i:5d}" for i in range(n)))
+    print("  原始 " + "".join(f"{int(v):5d}" for v in f))
+    print("  一阶 " + "".join(cell(v) for v in d1))
+    print("  二阶 " + "".join(cell(v) for v in d2))
+
+    nz2 = [i for i in range(n) if not np.isnan(d2[i]) and d2[i] != 0]
+    print(f"\n  二阶非零的列:{nz2},值 {[int(d2[i]) for i in nz2]}")
+    print(f"  一阶在坡上:{sorted(set(int(v) for v in d1[7:12]))}(坡每格涨 {int(f[8] - f[7])},一阶就是多少);"
+          f"坡起点 x=6:{int(d1[6])}(f[6] 还是 {int(f[6])});悬崖两格:{int(d1[17])}、{int(d1[18])}")
+    cross = [i for i in range(n - 1) if d2[i] * d2[i + 1] < 0]
+    for i in cross:
+        x0 = i + d2[i] / (d2[i] - d2[i + 1])
+        print(f"  二阶零交叉:x={i}({int(d2[i]):+d}) → x={i + 1}({int(d2[i + 1]):+d}),线性插值零点 x = {x0:.1f};"
+              f"悬崖本身在 x={SCAN_CLIFF[0]} 与 x={SCAN_CLIFF[1]} 之间,中点 {sum(SCAN_CLIFF) / 2:.1f}")
+    k1, k2 = np.array([-1, 0, 1]) / 2, np.array([1, -2, 1])
+    print(f"  白噪声下核的增益 ‖k‖₂:一阶 [−1,0,1]/2 = {np.linalg.norm(k1):.4f},二阶 [1,−2,1] = {np.linalg.norm(k2):.4f}")
+
     print("\n  怎么读:")
     print("    平地上 —— 一阶和二阶都是 0。**不变的地方,两个导数都没反应**")
-    print("    缓坡上 —— 一阶一路都是 26(坡有多陡就是多少);")
-    print("               二阶只在坡的**起点和终点**有反应(+13 / −13),坡中间是 0")
-    print("    一刀切 —— 一阶是一个大尖峰(−70);")
-    print("               二阶是**一正一负紧挨着**(−35, +35),中间穿过 0")
+    print("    缓坡上 —— 一阶一路都是 30(坡有多陡就是多少);")
+    print("               二阶只在坡的**起点和终点**有反应(+30 / −30),坡中间是 0")
+    print("    一刀切 —— 一阶是两格 −70;")
+    print("               二阶是**一负一正紧挨着**(−140, +140),中间穿过 0")
     print("\n  所以两者分工不同:")
     print("    **一阶**回答「这儿变化多快」→ 找边缘、算梯度(Sobel 就是干这个的)")
     print("    **二阶**回答「变化在哪儿拐弯」→ 边缘定位更准(那个过零点就是边的正中),")
@@ -486,80 +520,128 @@ def demo_gradient(g: npt.NDArray[np.float64]) -> None:
 
 # ---------------------------------------------------------------- 图板
 def save_derivative_figure(out_path: Path) -> None:
-    """一阶/二阶导数。三行上下叠放,共用 x 轴。
+    """一阶/二阶导数:原始信号、数字表、差分曲线三层,共用一根 x 轴,每一列上下对齐。
 
-    为什么重画(2026-09-23):上一版把原始信号、一阶、二阶三条线挤在同一根 y 轴上,
-    而三者单位根本不同 —— 原始是灰度值,一阶二阶是「变化量」。为了让后两条看得见,
-    还把它们 ×3,于是图上一阶显示 78,正文表格里却写 26,读的人对不上号。
-    上下叠放、各自一根 y 轴、不做任何缩放,就没有这个问题。
+    为什么再画一次(2026-10-12):自学时说「坐标对应不上」,原因有三 ——
+    ① 只有曲线,没有数字,看不出每个点是几;
+    ② 信号是 linspace 出来的非整数(46、71、97…),二阶又是 np.gradient 套两遍,
+       铺成 5 格宽,和正文「右 + 左 − 2×自己」对不上;
+    ③ x 轴只标 0、5、10…,找不到「第 6 格」在哪。
+    这一版:全整数、一格一列、x 轴每格一个刻度,中间那张表就是图上每个点的数。
     """
-    x = np.concatenate([np.full(6, 20.0), np.linspace(20, 200, 8),
-                        np.full(6, 200.0), np.full(12, 60.0)])
-    d1 = np.gradient(x)
-    d2 = np.gradient(d1)
+    from matplotlib.lines import Line2D
+    from matplotlib.patches import Rectangle
 
-    # 四个路段:拿「骑车」当尺子 —— 海拔 / 陡不陡 / 陡度在不在变
-    bands = [(0, 6, "平地", "#f0f3f6"), (6, 14, "缓坡", "#eaf3ea"),
-             (14, 19, "平地", "#f0f3f6"), (19, 21, "一刀切", "#fdeeea"),
-             (21, 32, "平地", "#f0f3f6")]
+    f = SCAN
+    n = len(f)
+    d1, d2 = scan_derivatives(f)
+    nz2 = [i for i in range(n) if not np.isnan(d2[i]) and d2[i] != 0]
+    c1, c2, cg = "#2c6fbb", "#c4442a", "#2a8f4a"
+    cross = [i + d2[i] / (d2[i] - d2[i + 1]) for i in range(n - 1) if d2[i] * d2[i + 1] < 0]
 
-    fig, axes = plt.subplots(3, 1, figsize=(10.2, 9.0), sharex=True,
-                             gridspec_kw=dict(hspace=0.16))
-    rows = [(x, "black", "原始信号\n(海拔:你在多高)", None),
-            (d1, "#2c6fbb", "一阶差分\n(陡不陡)", 0),
-            (d2, "#c4442a", "二阶差分\n(陡度在不在变)", 0)]
-    for ax, (y, color, label, zero) in zip(axes, rows):
-        for a, b, name, bg in bands:
-            ax.axvspan(a - 0.5, b - 0.5, color=bg, zorder=0)
-        if zero is not None:
-            ax.axhline(0, color="#999", lw=0.9)
-        ax.plot(y, "o-", color=color, ms=3.4, lw=1.8, zorder=3)
-        ax.set_ylabel(label, fontsize=9.5)
+    fig = plt.figure(figsize=(14.5, 9.8))
+    gs = fig.add_gridspec(3, 1, height_ratios=[2.1, 1.25, 2.7], hspace=0.10,
+                          left=0.155, right=0.985, top=0.905, bottom=0.315)
+    axA = fig.add_subplot(gs[0])
+    axT = fig.add_subplot(gs[1], sharex=axA)
+    axC = fig.add_subplot(gs[2], sharex=axA)
+    axA.set_xlim(-0.6, n - 0.4)
+    axA.set_xticks(range(n))
+
+    for ax in (axA, axT, axC):
+        for i in nz2:                                   # 二阶非零的列,三层一起染黄
+            ax.axvspan(i - 0.5, i + 0.5, color="#fff1bf", alpha=0.85, zorder=0)
+        ax.grid(axis="x", ls=":", lw=0.7, color="#b8c0c8", zorder=1)
+        ax.set_axisbelow(True)
         ax.spines[["top", "right"]].set_visible(False)
-        ax.margins(y=0.22)
+    axA.tick_params(labelbottom=False)
+    axT.tick_params(labelbottom=False, length=0)
+    axC.set_xlabel("位置 x(一格一列,三层上下对齐;浅黄列 = 二阶非零)", fontsize=10)
 
-    for a, b, name, _ in bands:                 # 路段名只标一次,写在最上面那行
-        axes[0].text((a + b - 1) / 2, 232, name, ha="center", fontsize=9.5, color="#4a5560")
-    axes[0].set_ylim(0, 250)
+    # ---- 第一层:原始信号
+    axA.plot(range(n), f, "o-", color="black", ms=4.4, lw=1.8, zorder=3)
+    axA.plot(nz2, f[nz2], "o", ms=13, mfc="none", mec="#e08a00", mew=1.8, zorder=4)
+    axA.set_ylim(0, 270)
+    axA.set_ylabel("亮度 f", fontsize=10)
+    for a, b, name in ((-0.4, 5.5, "平地"), (5.5, 12.5, "缓坡"), (12.5, 16.5, "平地"),
+                       (16.5, 18.5, "一刀切"), (18.5, n - 0.6, "平地")):
+        axA.annotate("", xy=(a, 244), xytext=(b, 244),
+                     arrowprops=dict(arrowstyle="<->", color="#7a8591", lw=1.0))
+        axA.text((a + b) / 2, 252, name, ha="center", va="bottom", fontsize=9.5, color="#4a5560")
+    for i in cross:
+        axA.axvline(i, ymax=0.86, color=cg, lw=1.6, zorder=2)     # 不穿过上面那行路段名
+        axT.axvline(i, color=cg, lw=1.6, zorder=2)
 
-    axes[1].set_yticks([-70, -35, 0, 26])
-    axes[1].annotate("整个坡上一路都是 26\n坡多陡就是多少", xy=(10, 26), xytext=(1.2, 44),
-                     fontsize=9, color="#2c6fbb",
-                     arrowprops=dict(arrowstyle="->", color="#2c6fbb", lw=1.0))
-    axes[1].annotate("一刀切:一个大尖峰 −70", xy=(19.5, -70), xytext=(22.5, -52),
-                     fontsize=9, color="#2c6fbb",
-                     arrowprops=dict(arrowstyle="->", color="#2c6fbb", lw=1.0))
-    axes[2].annotate("坡中间是 0 ——\n二阶对缓坡没反应", xy=(10, 0), xytext=(7.4, 22),
-                     fontsize=9, color="#c4442a",
-                     arrowprops=dict(arrowstyle="->", color="#c4442a", lw=1.0))
-    axes[2].annotate("一正一负,中间穿过 0\n那个零点正好是边的正中",
-                     xy=(20, 0), xytext=(22.5, 22), fontsize=9, color="#c4442a",
-                     arrowprops=dict(arrowstyle="->", color="#c4442a", lw=1.0))
-    # 索引 6:原始还是 20(看着是平的),一阶却已经是 13 —— 中心差分要看两边,
-    # x[7]=46 已经在坡上了。自学时正是在这一格觉得「两行没对齐」,必须标出来。
-    for ax in axes:
-        ax.axvline(6, color="#6b4fa8", ls="--", lw=1.3, zorder=2)
-    axes[0].annotate("算这一格时不看它自己,\n只看左右两边:20 和 46",
-                     xy=(6, 20), xytext=(13.6, 52), fontsize=9, color="#6b4fa8",
-                     arrowprops=dict(arrowstyle="->", color="#6b4fa8", lw=1.0))
-    axes[1].annotate("于是一阶 = (46−20)/2 = 13\n= 坡度 26 的一半\n(窗口只有一半踩在坡上)",
-                     xy=(6, 13), xytext=(0.2, -48), fontsize=9, color="#6b4fa8",
-                     arrowprops=dict(arrowstyle="->", color="#6b4fa8", lw=1.0))
-    axes[2].set_xlabel("位置")
+    # ---- 第二层:数字表。每个数字就印在它那一列的正中
+    rows = [("原始 f", f, "black"),
+            ("一阶  (右 − 左) / 2", d1, c1),
+            ("二阶  右 + 左 − 2×自己", d2, c2)]
+    axT.set_ylim(0, 3)
+    axT.set_yticks([])
+    for r, (name, vals, color) in enumerate(rows):
+        y = 2.5 - r
+        axT.text(-0.012, y, name, transform=axT.get_yaxis_transform(), ha="right", va="center",
+                 fontsize=9.6, color=color)
+        for i, v in enumerate(vals):
+            if np.isnan(v):
+                axT.text(i, y, "·", ha="center", va="center", fontsize=9, color="#9aa5b1")
+            elif r > 0 and v == 0:
+                axT.text(i, y, "0", ha="center", va="center", fontsize=9, color="#9aa5b1")
+            else:
+                if r > 0:
+                    axT.add_patch(Rectangle((i - 0.5, y - 0.5), 1, 1, fc=color, alpha=0.16, ec="none", zorder=1))
+                lab = f"{int(v)}" if r == 0 else f"{int(v):+d}" if r == 2 else f"{int(v)}"
+                axT.text(i, y, lab.replace("-", "−"), ha="center", va="center",
+                         fontsize=8.6 if abs(v) >= 100 else 9.2, color=color)
+    for y in (1, 2):
+        axT.axhline(y, color="#cfd6dd", lw=0.9)
 
-    fig.suptitle("一阶问「变化多快」,二阶问「变化在哪儿拐弯」", fontsize=13, y=0.955)
+    # ---- 第三层:一阶(蓝圆点)和二阶(红方点),同一根 y 轴,不缩放
+    axC.axhline(0, color="#8a949e", lw=1.0, zorder=2)
+    axC.plot(range(n), d1, "o-", color=c1, ms=5.2, lw=1.5, zorder=4)
+    axC.plot(range(n), d2, "s-", color=c2, ms=5.2, lw=1.5, zorder=4)
+    for i in cross:
+        axC.axvline(i, color=cg, lw=1.6, zorder=3)
+    for i in range(n):
+        a, b = d1[i], d2[i]
+        if not np.isnan(a) and a != 0:
+            # 同列二阶若在上方(正),一阶标签放下面,免得叠住;否则看一阶自己的正负
+            up = a > 0 if (np.isnan(b) or b == 0) else b < 0
+            axC.annotate(f"{int(a)}".replace("-", "−"), (i, a), xytext=(0, 8 if up else -13),
+                         textcoords="offset points", ha="center", fontsize=8.3, color=c1)
+        if not np.isnan(b) and b != 0:
+            axC.annotate(f"{int(b):+d}".replace("-", "−"), (i, b), xytext=(0, 8 if b > 0 else -13),
+                         textcoords="offset points", ha="center", fontsize=8.3, color=c2)
+    axC.set_ylim(-180, 185)
+    axC.set_yticks([-140, -70, 0, 30, 140])
+    axC.set_yticklabels(["−140", "−70", "0", "30", "140"])
+    axC.set_ylabel("差分值(没有缩放)", fontsize=10)
+    axC.legend(handles=[Line2D([], [], color=c1, marker="o", ms=5.5, label="一阶:(右 − 左)/2"),
+                        Line2D([], [], color=c2, marker="s", ms=5.5, label="二阶:右 + 左 − 2×自己")],
+               loc="lower left", fontsize=8.8, framealpha=0.95)
+    axC.annotate("x=6:亮度 f 还是 20(平地),\n一阶已是 15 —— 它看的是\n左右邻居,看到了右边的 50",
+                 xy=(6, 15), xytext=(0.2, 92), fontsize=8.6, color="#6b4fa8",
+                 arrowprops=dict(arrowstyle="->", color="#6b4fa8", lw=1.0))
+    x0 = cross[0]
+    axC.annotate(f"零交叉 x={x0:.1f}\n= 悬崖正中\n(17 与 18 之间)", xy=(x0, 0), xytext=(19.3, 75),
+                 fontsize=9, color=cg, arrowprops=dict(arrowstyle="->", color=cg, lw=1.1))
+    axC.annotate("坡中间:一阶一路 30,\n二阶是 0 —— 没反应", xy=(9, 0), xytext=(7.0, -118),
+                 fontsize=8.6, color="#4a5560", arrowprops=dict(arrowstyle="->", color="#7a8591", lw=1.0))
+
+    fig.suptitle("一阶问「变化多快」,二阶问「变化在哪儿拐弯」", fontsize=13.5, y=0.965)
+    k1, k2 = np.array([-1, 0, 1]) / 2, np.array([1, -2, 1])
     four_questions(fig,
-        "对同一段信号做两次减法:\n一阶 = 右邻减左邻,\n二阶 = 对一阶再做一次。\n"
-        "三行共用一根 x 轴,\n各自一根 y 轴,不做缩放 ——\n图上的数就是表里的数。",
-        "两个分工清楚的探针:\n一阶「整条坡都有反应」,\n适合算梯度、找边在哪;\n"
-        "二阶「只在起点和终点响」,\n零点正好落在边的正中,\n定位更准。",
-        "二阶对缓坡完全无感\n(坡中间是 0)。天空那种\n平缓渐变它一点不标 ——\n"
-        "这既是优点也是代价:\n想增强缓变的层次,\n它帮不上忙。",
-        "3 格宽的核会在真边界\n前后各多响一格(紫线处:\n信号还平着,一阶已 13)——\n"
-        "**梯度图上的边总是胖的**。\n又都是裸差分没有平滑,\n噪声会被原样放大。",
-        "求导前先平滑:一阶用 Sobel,\n二阶用高斯拉普拉斯(LoG);\n"
-        "胖边要削回一格宽,\n查非极大值抑制(NMS);\n要既锐化又不放大噪声,\n改用 USM 并调小 k 和 σ。",
-        y=0.02, bottom=0.235)
+        f"拿一条 {n} 格的扫描线,\n逐格算一阶和二阶,\n数字印在中间的表里。\n"
+        "三层共用一根 x 轴,\n每一列上下对齐,\n图上的点 = 表里的数。",
+        f"二阶只在 {len(nz2)} 列非零:\n+30、−30、−140、+140。\n一阶在坡上一路是 30,\n"
+        f"悬崖上是 −70。\n零交叉在 x={x0:.1f},\n正是悬崖的正中。",
+        "一阶在 x=6 就响了 15,\n可那格亮度还是 20 ——\n它看邻居不看自己。\n"
+        "二阶把一道边变成\n一负一正两个峰,\n还得再去找零点。",
+        f"数据干净、全是整数。\n真图有噪声:白噪声下\n一阶核放大 {np.linalg.norm(k1):.2f} 倍,\n"
+        f"二阶核放大 {np.linalg.norm(k2):.2f} 倍\n(核的平方和开根)。\n坡中间二阶是 0,无感。",
+        "先平滑再求导:\n一阶用 Sobel,\n二阶用高斯拉普拉斯(LoG);\n"
+        "零交叉要加幅值门槛;\n查 Marr-Hildreth、\n非极大值抑制(NMS)。",
+        y=0.235, bottom=0.315)
     fig.savefig(out_path, dpi=130, bbox_inches="tight", facecolor="white")
     plt.close(fig)
 
@@ -749,7 +831,7 @@ def demo_center_weight_zero() -> None:
     自学时问到这儿:「为什么和 6 自己的位置无关」。答案是坡度本来就是
     两点之间的事,一个点没有坡度;而下面两条要求一联立,中间那格只能是 0。
     """
-    x = np.concatenate([np.full(6, 20.0), np.linspace(20, 200, 8), np.full(6, 200.0)])
+    x = SCAN[:SCAN_CLIFF[0] + 1]        # 平地 → 缓坡 → 平地(悬崖之前)
 
     def apply(k, sig):
         a, c, b = k
