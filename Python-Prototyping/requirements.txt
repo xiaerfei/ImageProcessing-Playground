@@ -3,3 +3,4 @@ numpy
 matplotlib
 jupyter
 scikit-image   # 仅用于获取内置标准测试图(camera/astronaut 等,公有领域)
+pypdf         # 仅用于 tools/build_docs_pdf.py 生成 PDF 后自检书签

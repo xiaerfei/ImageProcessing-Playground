@@ -28,8 +28,19 @@ Documents/
 python3 tools/build_docs_pdf.py --open
 ```
 
-把下面所有 `.md` 按序号顺序合并成一份带书签目录的 PDF,输出到 `Documents/build/`。
-`_archive/` 不参与成书。改完文档重跑一次即可,不需要改配置。
+按序号顺序排成带书签目录的 PDF,输出到 `Documents/build/`。`_archive/` 不参与成书。
+改完文档重跑一次即可,不需要改配置。
+
+**一个主题一本,不是全塞进一个 PDF**:
+
+| 书 | 收哪些笔记 | 输出 |
+| :--- | :--- | :--- |
+| 主书 | `00-roadmap` ~ `05-spatial-filtering` 全部,加 `数学基础/` 下直接放着的几篇 | `图像处理学习笔记.pdf` |
+| 子目录书 | 分组目录下**还带 `.md` 的子目录**,每个子目录单独一本,如 `数学基础/复变函数/` | `复变函数.pdf` |
+
+以后在 `数学基础/` 下再建 `信号系统/` 之类的子目录,放进 `.md` 就会自动多出一本,脚本不用改。
+想只出某一本:`--only 复变函数`(主书写 `--only main`);想要老式的合成一份:`--merge`。
+书与书之间的链接在 PDF 里只保留文字,不会变成死链。
 
 有两个排版引擎,内容和书签完全一样,只是版面不同:
 
@@ -38,31 +49,11 @@ python3 tools/build_docs_pdf.py --open
 | Chrome(默认) | `python3 tools/build_docs_pdf.py` | 约 20 秒 | HTML 打印,样式改 CSS |
 | xelatex | `python3 tools/build_docs_pdf.py --engine latex` | 约 90 秒 | 公式与断行更接近书籍排版 |
 
-xelatex 引擎需要先装 TeX 环境(只装一次):
+需要安装哪些东西(pandoc、Chrome、BasicTeX 及宏包、字体)和安装命令,都记在 [`tools/README.md`](../tools/README.md);
+装完跑 `python3 tools/check_pdf_env.py` 体检,缺什么它会直接给出安装命令。
 
-```bash
-brew install --cask basictex
-```
-
-装完把 `/Library/TeX/texbin` 加进 PATH(或重开终端),再补宏包:
-
-```bash
-sudo tlmgr update --self
-```
-
-```bash
-sudo tlmgr install ctex xecjk fontspec collection-fontsrecommended framed mdframed pgf titlesec enumitem fvextra xurl multirow zref needspace newunicodechar
-```
-
-缺哪个包脚本会直接告诉你该装什么,不用自己猜。版式(字体、标题、引用块、代码块、表格)
-都在 [`tools/pdf_latex_header.tex`](../tools/pdf_latex_header.tex),想调样式只改那一个文件。
-中文字体用的是 macOS 自带的宋体-简(正文)和苹方(标题),换系统要改那里的 `\setCJK...` 三行。
-
-改动文档后顺手跑一下链接检查,避免 PDF 里出现点不动的链接:
-
-```bash
-python3 tools/check_doc_links.py
-```
+xelatex 版式(字体、标题、引用块、代码块、表格)在 [`tools/pdf_latex_header.tex`](../tools/pdf_latex_header.tex),
+想调样式只改那一个文件。
 
 ## 写作约定
 

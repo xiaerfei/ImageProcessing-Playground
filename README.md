@@ -32,6 +32,7 @@ ImageProcessing-Playground/
 │   ├── 04-geometry/          # 几何变换
 │   ├── 05-spatial-filtering/ # 空间滤波、平滑、锐化、边缘检测
 │   └── _archive/             # 原始对话记录(不参与成书)
+├── tools/                     # 维护工具:笔记排成 PDF、链接检查、环境体检(换电脑先看其 README)
 └── Assets/                    # 测试图片与处理效果对比(GIF/截图)
 ```
 

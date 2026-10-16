@@ -33,8 +33,12 @@
   - xelatex + 若干宏包                                  —— latex 引擎,安装见 Documents/README.md
   - pypdf        可选,仅用于自检生成的书签数量(最长书签 ≤ 25 字)
 
+一个主题一本 PDF:主书收分组目录下直接放着的笔记;分组目录下还带 .md 的子目录(如
+数学基础/复变函数/)各自单独成书,PDF 名就是子目录名。--only 书名 只出一本,--merge 合成一份。
+
 用法:
-  python3 tools/build_docs_pdf.py              # 生成 Documents/build/图像处理学习笔记.pdf
+  python3 tools/build_docs_pdf.py              # 主书 图像处理学习笔记.pdf + 每个子目录一本(复变函数.pdf …)
+  python3 tools/build_docs_pdf.py --only 复变函数   # 只出复变函数这一本
   python3 tools/build_docs_pdf.py --engine latex   # 用 xelatex 排版(缺宏包会告诉你怎么装)
   python3 tools/build_docs_pdf.py --open       # 生成后顺便打开
   python3 tools/build_docs_pdf.py --keep-html  # 保留中间 HTML(latex 引擎下是 .tex/.md/.log)
@@ -258,7 +262,8 @@ def rewrite_md_links(text: str, base_dir: Path, anchor_by_path: dict[Path, str])
         except OSError:
             return m.group(0)
         anchor = anchor_by_path.get(resolved)
-        return f"[{label}](#{anchor})" if anchor else m.group(0)
+        # 指向别的书(或没收进来的笔记)的 .md 链接:PDF 里点不开,只留文字,免得出现死链
+        return f"[{label}](#{anchor})" if anchor else label
 
     return _MD_LINK_RE.sub(repl, text)
 
@@ -411,6 +416,39 @@ def iter_groups(docs_dir: Path, excludes: set[str]) -> list[tuple[str, list[Path
     return groups
 
 
+def iter_units(docs_dir: Path, excludes: set[str], merge: bool = False
+               ) -> list[tuple[str, str | None, list[tuple[str, list[Path]]]]]:
+    """把笔记拆成若干本「书」,每本单独出一份 PDF。返回 [(键, 书名, 分组列表)]。
+
+    规则:第一本是主书(键为 "",书名用 --title),收所有分组里「直接放在分组目录下」的篇;
+    分组目录下面如果还有放着 .md 的子目录(如 数学基础/复变函数/),这个子目录单独成一本,
+    键和书名都是子目录名。以后加 数学基础/信号系统/ 也是同样处理,不用改脚本。
+    merge=True 时不拆,所有篇合成一本(老行为)。
+    """
+    groups = iter_groups(docs_dir, excludes)
+    if merge:
+        return [("", None, groups)]
+    main_groups: list[tuple[str, list[Path]]] = []
+    nested: dict[str, list[Path]] = {}
+    for gname, paths in groups:
+        if not gname:
+            main_groups.append((gname, paths))
+            continue
+        keep = []
+        for pth in paths:
+            parts = pth.relative_to(docs_dir / gname).parts
+            if len(parts) > 1:
+                nested.setdefault(parts[0], []).append(pth)
+            else:
+                keep.append(pth)
+        if keep:
+            main_groups.append((gname, keep))
+    units: list[tuple[str, str | None, list[tuple[str, list[Path]]]]] = [("", None, main_groups)]
+    for key, paths in nested.items():
+        units.append((key, key, [(key, paths)]))
+    return units
+
+
 def load_docs(docs_dir: Path, groups: list[tuple[str, list[Path]]]) -> list[tuple[str, list[Doc]]]:
     """只做"读文件 → 扫标题 → 定篇名",不碰 pandoc(增量判断和 --list 都靠它)。"""
     plan: list[tuple[str, list[Doc]]] = []
@@ -442,15 +480,13 @@ def prepare_markdown(doc: Doc, anchor_by_path: dict[Path, str]) -> str:
 
 
 def scan_docs(
-    docs_dir: Path,
+    plan: list[tuple[str, list[Doc]]],
     pandoc: str,
-    excludes: set[str],
     math: str,
     workdir: Path,
     jobs: int = 1,
 ) -> tuple[dict[str, list[Doc]], list[str]]:
-    """按阅读顺序收集文档并逐篇转换,返回 ({分组名: [Doc]}, 警告列表)。"""
-    plan = load_docs(docs_dir, iter_groups(docs_dir, excludes))
+    """逐篇转换(plan 是 load_docs 的结果),返回 ({分组名: [Doc]}, 警告列表)。"""
     anchor_by_path = {d.path.resolve(): d.anchor for _, docs in plan for d in docs}
 
     # 逐篇交给 pandoc。篇与篇互不依赖,可以并发
@@ -533,18 +569,19 @@ def build_html(
     body: list[str] = []
     cover_groups: list[str] = []
 
+    single = len(groups) == 1          # 单主题的书(如 复变函数):不要只有一行字的分组扉页
     for g_index, (group_name, docs) in enumerate(groups.items(), start=1):
         if not docs:
             continue
         display = group_label(group_name)
         anchor = f"group{g_index}"
-        cover_groups.append(f"<li>{html.escape(display)}</li>")
-
-        body.append(
-            f'<section class="group"><h1 id="{anchor}">{html.escape(display)}</h1>'
-            f'<p class="group-sub">{len(docs)} 篇</p></section>'
-        )
-        toc_items.append((1, display, anchor))
+        if not single:
+            cover_groups.append(f"<li>{html.escape(display)}</li>")
+            body.append(
+                f'<section class="group"><h1 id="{anchor}">{html.escape(display)}</h1>'
+                f'<p class="group-sub">{len(docs)} 篇</p></section>'
+            )
+            toc_items.append((1, display, anchor))
 
         for doc in docs:
             body.append(f'<section class="doc">')
@@ -589,7 +626,7 @@ def build_html(
 <body>
 <section class="cover">
   <h1>{html.escape(title)}</h1>
-  <p class="cover-sub">按阅读顺序整理 · 共 {doc_total} 篇 / {group_total} 个分组</p>
+  <p class="cover-sub">按阅读顺序整理 · 共 {doc_total} 篇{'' if single else f' / {group_total} 个分组'}</p>
   <div class="cover-rule"></div>
   <ul class="cover-groups">
 {chr(10).join(cover_groups)}
@@ -960,7 +997,8 @@ def build_latex_book(plan: list[tuple[str, list[Doc]]], workdir: Path, title: st
             continue
         label = group_label(group_name)
         cover_groups.append(label)
-        parts.append(f"# {label} {{#group{g_index}}}\n")
+        if len(plan) > 1:            # 单主题的书不要只有一行字的扉页
+            parts.append(f"# {label} {{#group{g_index}}}\n")
         for doc in docs:
             body = latexify_markdown(doc, prepare_markdown(doc, anchor_by_path), imgdir, warn)
             parts.append(f"## {escape_emphasis(doc.title)} {{#{doc.anchor}}}\n\n{body}\n")
@@ -971,6 +1009,10 @@ def build_latex_book(plan: list[tuple[str, list[Doc]]], workdir: Path, title: st
 
     doc_total = sum(len(d) for _, d in plan)
     groups_tex = "\n".join(rf"\item {tex_escape(g)}" for g in cover_groups)
+    groups_block = "" if len(plan) == 1 else (
+        "\\begin{minipage}{0.62\\linewidth}\n"
+        "\\begin{itemize}[label={},leftmargin=0pt,itemsep=3pt,topsep=0pt]\n"
+        f"{groups_tex}\n\\end{{itemize}}\n\\end{{minipage}}")
     # 目录深度:part=-1,chapter=0,section=1 …;命令行 --toc-depth 沿用 Chrome 通道的数法(1=分组,2=篇)
     cover = rf"""\begin{{titlepage}}
 \thispagestyle{{empty}}
@@ -978,15 +1020,11 @@ def build_latex_book(plan: list[tuple[str, list[Doc]]], workdir: Path, title: st
 \begin{{center}}
 {{\sffamily\fontsize{{30}}{{40}}\selectfont {tex_escape(title)}\par}}
 \vspace{{6mm}}
-{{\color{{muted}}\large 按阅读顺序整理 · 共 {doc_total} 篇 / {len(cover_groups)} 个分组\par}}
+{{\color{{muted}}\large 按阅读顺序整理 · 共 {doc_total} 篇{'' if len(plan) == 1 else f' / {len(cover_groups)} 个分组'}\par}}
 \vspace{{9mm}}
 {{\color{{ink}}\rule{{40mm}}{{0.8pt}}}}\par
 \vspace{{9mm}}
-\begin{{minipage}}{{0.62\linewidth}}
-\begin{{itemize}}[label={{}},leftmargin=0pt,itemsep=3pt,topsep=0pt]
-{groups_tex}
-\end{{itemize}}
-\end{{minipage}}
+{groups_block}
 \vspace{{14mm}}
 
 {{\color{{muted}}\small 生成于 {date.today().isoformat()} · 书签栏即目录,可逐级展开\par}}
@@ -1247,14 +1285,27 @@ def save_manifest(path: Path, data: dict[str, Any]) -> None:
 # ============================================================== main =======
 
 
+def unit_out_path(args: argparse.Namespace, docs_dir: Path, key: str, only_one: bool) -> Path:
+    """每本书的输出路径:主书 图像处理学习笔记.pdf,子目录那本用目录名;latex 引擎加 -latex。"""
+    if args.out and only_one:
+        return args.out.resolve()
+    stem = "图像处理学习笔记" if not key else key
+    suffix = "" if args.engine == "chrome" else "-latex"
+    return (docs_dir / "build" / f"{stem}{suffix}.pdf").resolve()
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(
-        description="把 Documents/ 下的 Markdown 笔记按顺序合并成带书签目录的 PDF",
+        description="把 Documents/ 下的 Markdown 笔记按顺序排成带书签目录的 PDF(默认一个主题一本)",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument("--docs-dir", type=Path, default=DEFAULT_DOCS_DIR, help="笔记根目录")
-    parser.add_argument("--out", type=Path, default=None, help="输出 PDF 路径")
-    parser.add_argument("--title", default=DEFAULT_TITLE, help="封面标题")
+    parser.add_argument("--out", type=Path, default=None, help="输出 PDF 路径(只出一本时才有效)")
+    parser.add_argument("--title", default=DEFAULT_TITLE, help="主书封面标题")
+    parser.add_argument("--only", default=None, metavar="书名",
+                        help="只出这一本,如 --only 复变函数;写 main 表示主书")
+    parser.add_argument("--merge", action="store_true",
+                        help="不拆书,所有笔记合成一份 PDF(老行为)")
     parser.add_argument("--toc-depth", type=int, default=2,
                         help="目录页展开到第几级(书签始终是全量,不受此限)")
     parser.add_argument("--math", choices=["mathml", "katex", "none"], default="mathml",
@@ -1275,38 +1326,54 @@ def main() -> None:
     docs_dir: Path = args.docs_dir.resolve()
     if not docs_dir.is_dir():
         sys.exit(f"目录不存在:{docs_dir}")
-
-    default_name = "图像处理学习笔记.pdf" if args.engine == "chrome" else "图像处理学习笔记-latex.pdf"
-    out_pdf = (args.out or docs_dir / "build" / default_name).resolve()
     excludes = DEFAULT_EXCLUDE_DIRS | set(args.exclude)
 
+    units = iter_units(docs_dir, excludes, args.merge)
+    if args.only:
+        wanted = "" if args.only in ("main", "主书") else args.only
+        units = [u for u in units if u[0] == wanted]
+        if not units:
+            names = "、".join(u[0] or "main" for u in iter_units(docs_dir, excludes))
+            sys.exit(f"没有这本书:{args.only}。可选:{names}")
+
     if args.list:
-        groups = collect_only(docs_dir, excludes)
-        for group_name, docs in groups.items():
-            print(f"\n[{group_name or '(根目录)'}]")
-            for d in docs:
-                print(f"  {d.index:>2}. {d.rel.as_posix()}   →  {d.title}")
-        print(f"\n合计 {sum(len(d) for d in groups.values())} 篇")
+        total = 0
+        for key, _, groups in units:
+            plan = load_docs(docs_dir, groups)
+            print(f"\n=== {key or '主书'} ===")
+            for group_name, docs in plan:
+                print(f"[{group_name or '(根目录)'}]")
+                for d in docs:
+                    print(f"  {d.index:>2}. {d.rel.as_posix()}   →  {d.title}")
+                total += len(docs)
+        print(f"\n合计 {len(units)} 本,{total} 篇")
         return
 
     pandoc = find_pandoc(args.pandoc)
+    chrome = find_chrome(args.chrome) if args.engine == "chrome" else ""
+    for i, (key, name, groups) in enumerate(units, start=1):
+        title = args.title if name is None else name
+        out_pdf = unit_out_path(args, docs_dir, key, len(units) == 1)
+        log(f"\n━━ [{i}/{len(units)}] {key or '主书'} → {out_pdf.name} ━━")
+        plan = load_docs(docs_dir, groups)
+        if args.engine == "latex":
+            build_unit_latex(args, plan, title, out_pdf, pandoc)
+        else:
+            build_unit_chrome(args, plan, title, out_pdf, pandoc, chrome)
 
-    if args.engine == "latex":
-        main_latex(args, docs_dir, excludes, out_pdf, pandoc)
-        return
 
-    chrome = find_chrome(args.chrome)
-
+def build_unit_chrome(args: argparse.Namespace, plan: list[tuple[str, list[Doc]]], title: str,
+                      out_pdf: Path, pandoc: str, chrome: str) -> None:
     with tempfile.TemporaryDirectory(prefix="docs-book-") as tmp:
         workdir = Path(tmp)
         t0 = time.time()
         log("① 扫描 Markdown 并按阅读顺序转换 …")
-        groups, warnings = scan_docs(docs_dir, pandoc, excludes, args.math, workdir)
+        groups, warnings = scan_docs(plan, pandoc, args.math, workdir)
         doc_total = sum(len(d) for d in groups.values())
         log(f"   {doc_total} 篇,用时 {time.time() - t0:.1f}s")
 
         log("② 生成目录页并拼装 HTML …")
-        page, toc_items = build_html(groups, args.title, args.toc_depth, args.math,
+        page, toc_items = build_html(groups, title, args.toc_depth, args.math,
                                      pandoc_highlight_css(pandoc))
 
         out_pdf.parent.mkdir(parents=True, exist_ok=True)
@@ -1332,8 +1399,8 @@ def main() -> None:
         subprocess.run(["open", str(out_pdf)], check=False)
 
 
-def main_latex(args: argparse.Namespace, docs_dir: Path, excludes: set[str],
-               out_pdf: Path, pandoc: str) -> None:
+def build_unit_latex(args: argparse.Namespace, plan: list[tuple[str, list[Doc]]], title: str,
+                     out_pdf: Path, pandoc: str) -> None:
     path_env = find_texbin()
     check_latex_packages(path_env)
     t0 = time.time()
@@ -1348,14 +1415,13 @@ def main_latex(args: argparse.Namespace, docs_dir: Path, excludes: set[str],
     with ctx as tmp:
         workdir = Path(tmp)
         log("① 扫描 Markdown,合并成一份 book.md …")
-        plan = load_docs(docs_dir, iter_groups(docs_dir, excludes))
-        book_md, cover_tex = build_latex_book(plan, workdir, args.title, args.toc_depth, warnings)
+        book_md, cover_tex = build_latex_book(plan, workdir, title, args.toc_depth, warnings)
         log("② pandoc 转 .tex,xelatex 排版 …")
-        run_latex_pdf(pandoc, book_md, cover_tex, workdir, out_pdf, args.title, path_env)
+        run_latex_pdf(pandoc, book_md, cover_tex, workdir, out_pdf, title, path_env)
         if args.keep_html:                       # 沿用这个开关:保留中间的 .tex / .md 方便排错
             keep = out_pdf.with_suffix("")
-            for name in ("book.tex", "book.md", "book.log"):
-                shutil.copyfile(workdir / name, keep.parent / f"{keep.name}.{name.split('.')[-1]}")
+            for fname in ("book.tex", "book.md", "book.log"):
+                shutil.copyfile(workdir / fname, keep.parent / f"{keep.name}.{fname.split('.')[-1]}")
             log(f"   中间文件:{keep}.tex / .md / .log")
     for w in dict.fromkeys(warnings):
         log(f"⚠️ {w}")
@@ -1363,40 +1429,6 @@ def main_latex(args: argparse.Namespace, docs_dir: Path, excludes: set[str],
     report(out_pdf, [])
     if args.open:
         subprocess.run(["open", str(out_pdf)], check=False)
-
-
-def collect_only(docs_dir: Path, excludes: set[str]) -> dict[str, list[Doc]]:
-    """--list 用:只做排序和篇名推断,不调用 pandoc。"""
-    groups: dict[str, list[Doc]] = {}
-    index = 0
-    root_mds = sorted((p for p in docs_dir.glob("*.md") if p.is_file()),
-                      key=lambda p: sort_key(Path(p.name)))
-    if root_mds:
-        groups[""] = []
-    for path in root_mds:
-        index += 1
-        doc = Doc(path=path, rel=path.relative_to(docs_dir), index=index, group="")
-        doc.headings = scan_headings(path.read_text(encoding="utf-8").splitlines())
-        first_h1 = next((h for h in doc.headings if h.level == 1), None)
-        doc.title, _ = derive_title(doc, first_h1)
-        groups[""].append(doc)
-
-    for entry in sorted(docs_dir.iterdir(), key=lambda p: sort_key(Path(p.name))):
-        if not entry.is_dir() or entry.name in excludes or entry.name.startswith("."):
-            continue
-        mds = sorted((p for p in entry.rglob("*.md") if p.is_file()),
-                     key=lambda p: sort_key(p.relative_to(entry)))
-        if not mds:
-            continue
-        groups[entry.name] = []
-        for path in mds:
-            index += 1
-            doc = Doc(path=path, rel=path.relative_to(docs_dir), index=index, group=entry.name)
-            doc.headings = scan_headings(path.read_text(encoding="utf-8").splitlines())
-            first_h1 = next((h for h in doc.headings if h.level == 1), None)
-            doc.title, _ = derive_title(doc, first_h1)
-            groups[entry.name].append(doc)
-    return groups
 
 
 if __name__ == "__main__":
