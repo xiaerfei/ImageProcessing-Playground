@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>一阶二阶导数手感</title>
+<style>
+:root{
+  --ink:#171c22; --ink-2:#4a5560; --ink-3:#7b8894;
+  --ground:#f4f6f8; --panel:#ffffff; --line:#dde3ea; --line-2:#eaeff4;
+  --blue:#2c6fbb; --red:#c4442a; --green:#2a8f4a; --amber:#b9770e; --violet:#6b4fa8;
+  --pos:#d9622b; --neg:#2c6fbb; --hl:rgba(44,111,187,.12);
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:"PingFang SC","Heiti SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e6ebf1; --ink-2:#a3b0bd; --ink-3:#73808d;
+  --ground:#12161b; --panel:#1a2027; --line:#2c353f; --line-2:#232b33;
+  --blue:#6aa6e8; --red:#e8765c; --green:#5fc282; --amber:#e0a23a; --violet:#a58ce0;
+  --pos:#f0813f; --neg:#6aa6e8; --hl:rgba(106,166,232,.16);
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;
+  margin:0;padding:28px 16px 56px}
+.wrap{max-width:1040px;margin:0 auto;display:flex;flex-direction:column;gap:22px}
+h1{font-size:26px;margin:0;letter-spacing:-.01em}
+h2{font-size:18px;margin:0 0 4px}
+.sub{color:var(--ink-2);margin:6px 0 0;max-width:68ch}
+code{font-family:var(--mono);font-size:.92em;background:var(--line-2);padding:1px 5px;border-radius:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+button{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:5px 12px;cursor:pointer}
+button:hover{border-color:var(--blue);color:var(--blue)}
+label{font-size:13px;color:var(--ink-2)}
+input[type=range]{vertical-align:middle;width:150px}
+.tip{color:var(--ink-3);font-size:13px}
+svg{display:block;width:100%;height:auto;touch-action:none;user-select:none}
+.legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;color:var(--ink-2);margin-top:6px}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:2px;vertical-align:-1px;margin-right:5px}
+#readout{font-family:var(--mono);font-size:13px;background:var(--line-2);border-radius:8px;padding:10px 14px;
+  min-height:3.4em;line-height:1.75;margin-top:10px;white-space:pre-wrap}
+#readout b{color:var(--blue)}
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px;margin-top:10px}
+.exp div{background:var(--line-2);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.exp b.t{display:block;margin-bottom:2px}
+.grid4{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-top:10px}
+.grid4 figure{margin:0}
+.grid4 canvas{width:100%;image-rendering:pixelated;border:1px solid var(--line);border-radius:6px;background:#808080;
+  touch-action:none;cursor:crosshair}
+.grid4 figcaption{font-size:13px;color:var(--ink-2);margin-top:6px}
+.grid4 figcaption b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>一阶、二阶导数:动手体会</h1>
+    <p class="sub">图像上的「导数」就是相邻像素做减法。下面先拿<b>一行像素</b>摸清楚,再换成<b>整张图</b>看它长什么样。
+      所有计算都在本页完成,不联网。</p>
+  </header>
+
+  <!-- ============ 一行像素 ============ -->
+  <section class="card">
+    <h2>第一部分:一行像素</h2>
+    <p class="tip">在中间的灰度柱上<b>按住鼠标上下拖</b>,改任何一格的灰度(0 黑 ~ 255 白),下面的一阶、二阶立刻跟着变。把鼠标停在某一列上,最下面会写出这一格是怎么算出来的。</p>
+    <div class="row">
+      <span class="tip">先试这几个:</span>
+      <button data-p="flat">平地</button>
+      <button data-p="ramp">斜坡</button>
+      <button data-p="step">台阶(硬边)</button>
+      <button data-p="soft">软边</button>
+      <button data-p="line">一条细线</button>
+      <button data-p="noise">平地 + 小噪声</button>
+    </div>
+    <svg id="s1" viewBox="0 0 960 520" role="img" aria-label="一行像素的灰度、一阶、二阶"></svg>
+    <div class="legend">
+      <span><i style="background:var(--pos)"></i>正:往亮的方向</span>
+      <span><i style="background:var(--neg)"></i>负:往暗的方向</span>
+      <span>一阶 = (右 − 左) ÷ 2 ,二阶 = 右 + 左 − 2 × 自己</span>
+    </div>
+    <div id="readout">把鼠标移到上面某一列试试。</div>
+
+    <h2 style="margin-top:18px">用二阶做锐化</h2>
+    <p class="tip">锐化结果 = 原来 − k × 二阶。k 越大,边两侧被拉得越开(暗的更暗、亮的更亮)。</p>
+    <div class="row"><label>k = <input type="range" id="k1" min="0" max="1" step="0.05" value="0.5"> <span id="k1v">0.50</span></label></div>
+    <svg id="s2" viewBox="0 0 960 200" role="img" aria-label="锐化前后"></svg>
+
+    <div class="exp">
+      <div><b class="t">实验 1:斜坡</b>点「斜坡」。一阶是一排<b>相同的正数</b>(坡一样陡);二阶几乎全是 0,只有坡的<b>起点和终点</b>各有一个值。想想:为什么?</div>
+      <div><b class="t">实验 2:台阶</b>点「台阶」。一阶只在台阶那里有<b>一个大数</b>;二阶在台阶两侧是<b>一正一负</b>。把 k 拉到 0.5,看锐化后台阶两侧多出来的「冲出去的一截」。</div>
+      <div><b class="t">实验 3:噪声</b>点「平地 + 小噪声」,再对比一阶和二阶的大小。二阶把噪声放大得更厉害 —— 这就是拉普拉斯锐化会把噪点一起放大的原因。</div>
+    </div>
+  </section>
+
+  <!-- ============ 整张图 ============ -->
+  <section class="card">
+    <h2>第二部分:整张图</h2>
+    <p class="tip">在最左边的图上<b>按住鼠标涂</b>(画笔灰度和大小在下面调),右边三张实时重算。可以先用预设图再自己改。</p>
+    <div class="row">
+      <button data-i="shapes">方块 + 圆</button>
+      <button data-i="ramp">左右渐变</button>
+      <button data-i="step">竖直边</button>
+      <button data-i="noise">边 + 噪声</button>
+      <label>画笔灰度 <input type="range" id="bv" min="0" max="255" value="255"></label>
+      <label>大小 <input type="range" id="bs" min="1" max="6" value="2"></label>
+      <label>锐化 k = <input type="range" id="k2" min="0" max="1" step="0.05" value="0.5"> <span id="k2v">0.50</span></label>
+    </div>
+    <div class="grid4">
+      <figure><canvas id="c0" width="48" height="48"></canvas><figcaption><b>原图</b>(可涂)</figcaption></figure>
+      <figure><canvas id="c1" width="48" height="48"></canvas><figcaption><b>一阶</b>:越亮 = 变化越陡。边缘是<b>一条亮线</b>,不分哪一侧。平地、匀速渐变处较暗。</figcaption></figure>
+      <figure><canvas id="c2" width="48" height="48"></canvas><figcaption><b>二阶</b>(拉普拉斯):<span style="color:var(--pos)">橙红 = 正</span>,<span style="color:var(--neg)">蓝 = 负</span>,灰 = 0。边缘是<b>并排的一红一蓝</b>。</figcaption></figure>
+      <figure><canvas id="c3" width="48" height="48"></canvas><figcaption><b>锐化结果</b> = 原图 − k × 二阶。边缘更清晰,噪点也更明显。</figcaption></figure>
+    </div>
+    <div class="exp">
+      <div><b class="t">看什么</b>点「方块 + 圆」:一阶把<b>轮廓</b>画成一圈亮线;二阶沿轮廓画出<b>里外两圈颜色相反</b>的线。</div>
+      <div><b class="t">试试</b>在平坦区域随手涂一点淡淡的灰(画笔调到接近背景):一阶、二阶里立刻冒出小斑点 —— 导数对「小变化」非常敏感。</div>
+      <div><b class="t">再试</b>点「边 + 噪声」,把 k 从 0 拉到 1:边缘越来越清楚,但沙沙的噪点也被一起放大。</div>
+    </div>
+  </section>
+  <p class="tip" style="margin:0">算法与 <code>Python-Prototyping/Ch03_Spatial_Filtering/23_sharpening.py</code> 一致:
+    一阶 = (右 − 左) ÷ 2,二阶 = 右 + 左 − 2 × 自己(二维的二阶是上下左右四个邻居之和 − 4 × 自己)。
+    用那份脚本里的 24 点扫描线核对过:一阶 15、30×5、15、−70、−70,二阶在第 6、12、17、18 格分别是 +30、−30、−140、+140。</p>
+</div>
+
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+/* ------------------------------------------------ 第一部分:一行像素 */
+const N=24;
+let f=new Array(N).fill(128);
+const PRESETS={
+  flat:()=>new Array(N).fill(110),
+  ramp:null,   // 下面单独定义
+  step:()=>f.map((_,i)=>i<12?40:220),
+  soft:()=>f.map((_,i)=>Math.round(40+180/(1+Math.exp(-(i-11.5)*1.1)))),
+  line:()=>f.map((_,i)=>i===12?230:60),
+  noise:()=>{let s=7;const r=()=>{s=(s*9301+49297)%233280;return s/233280};
+    return f.map(()=>Math.round(110+(r()-.5)*24))}
+};
+function fix(a){return a.map(v=>clamp(Math.round(v),0,255))}
+function d1(i){return i<=0||i>=N-1?null:(f[i+1]-f[i-1])/2}
+function d2(i){return i<=0||i>=N-1?null:f[i+1]+f[i-1]-2*f[i]}
+const W=960, X0=60, CW=(W-X0-10)/N;
+const colX=i=>X0+i*CW;
+const gray=v=>{const g=Math.round(clamp(v,0,255));return `rgb(${g},${g},${g})`};
+const Y={strip:[8,52], bar:[66,236], d1:[262,372], d2:[398,508]};
+let hover=-1, dragging=false;
+
+function bars(svg_parts, arr, y0, y1, scale, fmt, colorFn){
+  const mid=(y0+y1)/2, half=(y1-y0)/2-10;
+  svg_parts.push(`<line x1="${X0}" x2="${W-10}" y1="${mid}" y2="${mid}" stroke="${css('--line')}" />`);
+  arr.forEach((v,i)=>{
+    if(v===null) {svg_parts.push(`<text x="${colX(i)+CW/2}" y="${mid+4}" text-anchor="middle" font-size="11" fill="${css('--ink-3')}">–</text>`);return;}
+    const h=clamp(v/scale,-1,1)*half;
+    const y=h>=0?mid-h:mid;
+    svg_parts.push(`<rect x="${colX(i)+3}" y="${y}" width="${CW-6}" height="${Math.abs(h)}" fill="${colorFn(v)}" rx="2"/>`);
+    const ty=h>=0?mid-h-4:mid-h+13;
+    svg_parts.push(`<text x="${colX(i)+CW/2}" y="${v===0?mid-5:ty}" text-anchor="middle" font-size="11" font-family="${css('--mono')}" fill="${css('--ink-2')}">${fmt(v)}</text>`);
+  });
+}
+function draw1(){
+  const P=[];
+  const pos=css('--pos'), neg=css('--neg');
+  // 层名
+  [["灰度条",Y.strip],["灰度值\n(可拖)",Y.bar],["一阶",Y.d1],["二阶",Y.d2]].forEach(([t,[a,b]])=>{
+    t.split("\n").forEach((line,k)=>P.push(`<text x="4" y="${(a+b)/2+4+k*15-(t.includes("\n")?7:0)}" font-size="13" fill="${css('--ink-2')}">${line}</text>`));
+  });
+  // 灰度条
+  f.forEach((v,i)=>P.push(`<rect x="${colX(i)}" y="${Y.strip[0]}" width="${CW}" height="${Y.strip[1]-Y.strip[0]}" fill="${gray(v)}" stroke="${css('--line')}" stroke-width=".5"/>`));
+  // 灰度柱(0~255)
+  const [by0,by1]=Y.bar;
+  P.push(`<line x1="${X0}" x2="${W-10}" y1="${by1-8}" y2="${by1-8}" stroke="${css('--line')}"/>`);
+  f.forEach((v,i)=>{
+    const h=(v/255)*(by1-by0-24);
+    P.push(`<rect x="${colX(i)+3}" y="${by1-8-h}" width="${CW-6}" height="${h}" fill="${css('--ink-3')}" opacity=".45" rx="2"/>`);
+    P.push(`<text x="${colX(i)+CW/2}" y="${by1-8-h-4}" text-anchor="middle" font-size="11" font-family="${css('--mono')}" fill="${css('--ink-2')}">${v}</text>`);
+  });
+  // 一阶、二阶
+  const a1=f.map((_,i)=>d1(i)), a2=f.map((_,i)=>d2(i));
+  const s1=Math.max(15,...a1.map(v=>v===null?0:Math.abs(v)));
+  const s2=Math.max(30,...a2.map(v=>v===null?0:Math.abs(v)));
+  const col=v=>v>0?pos:v<0?neg:css('--ink-3');
+  bars(P,a1,Y.d1[0],Y.d1[1],s1,v=>Number.isInteger(v)?v:v.toFixed(1),col);
+  bars(P,a2,Y.d2[0],Y.d2[1],s2,v=>v,col);
+  P.push(`<text x="${W-10}" y="${Y.d1[0]+8}" text-anchor="end" font-size="11" fill="${css('--ink-3')}">满刻度 ±${s1.toFixed(0)}</text>`);
+  P.push(`<text x="${W-10}" y="${Y.d2[0]+8}" text-anchor="end" font-size="11" fill="${css('--ink-3')}">满刻度 ±${s2.toFixed(0)}</text>`);
+  // 悬停列
+  if(hover>=0) P.push(`<rect x="${colX(hover)}" y="2" width="${CW}" height="512" fill="${css('--hl')}" pointer-events="none"/>`);
+  // 感应区
+  P.push(`<rect id="hit" x="${X0}" y="${Y.bar[0]}" width="${W-X0-10}" height="${Y.bar[1]-Y.bar[0]}" fill="transparent" style="cursor:ns-resize"/>`);
+  $("s1").innerHTML=P.join("");
+  readout();
+  draw2();
+}
+function readout(){
+  const r=$("readout");
+  if(hover<0){r.textContent="把鼠标移到上面某一列试试。";return}
+  const i=hover;
+  if(i===0||i===N-1){r.textContent=`第 ${i+1} 格在行的端点,只有一侧邻居,这里不算一阶、二阶。`;return}
+  const L=f[i-1],S=f[i],R=f[i+1];
+  const a=(R-L)/2,b=R+L-2*S;
+  const word1=a>0?"往右变亮":a<0?"往右变暗":"左右一样亮";
+  const word2=b>0?"比邻居的平均更暗(像个小凹坑)":b<0?"比邻居的平均更亮(像个小凸起)":"正好是左右邻居的平均(没有拐弯)";
+  r.innerHTML=`第 ${i+1} 格: 左=${L}  自己=${S}  右=${R}\n`+
+    `一阶 = (右 − 左) ÷ 2 = (${R} − ${L}) ÷ 2 = <b>${a}</b>   → ${word1}\n`+
+    `二阶 = 右 + 左 − 2×自己 = ${R} + ${L} − 2×${S} = <b>${b}</b>   → ${word2}`;
+}
+function draw2(){
+  const k=+$("k1").value; $("k1v").textContent=k.toFixed(2);
+  const P=[];
+  const g=f.map((v,i)=>{const t=d2(i);return t===null?v:clamp(v-k*t,0,255)});
+  const [y0,y1]=[10,160];
+  const sc=v=>y1-(v/255)*(y1-y0-6);
+  P.push(`<text x="4" y="${(y0+y1)/2}" font-size="13" fill="${css('--ink-2')}">灰度</text>`);
+  // 条带:上原图,下锐化
+  f.forEach((v,i)=>P.push(`<rect x="${colX(i)}" y="168" width="${CW}" height="12" fill="${gray(v)}"/>`));
+  g.forEach((v,i)=>P.push(`<rect x="${colX(i)}" y="182" width="${CW}" height="12" fill="${gray(v)}"/>`));
+  P.push(`<text x="4" y="177" font-size="11" fill="${css('--ink-3')}">原</text><text x="4" y="191" font-size="11" fill="${css('--ink-3')}">后</text>`);
+  const pts=a=>a.map((v,i)=>`${colX(i)+CW/2},${sc(v)}`).join(" ");
+  P.push(`<polyline points="${pts(f)}" fill="none" stroke="${css('--ink-3')}" stroke-width="2"/>`);
+  P.push(`<polyline points="${pts(g)}" fill="none" stroke="${css('--red')}" stroke-width="2.2"/>`);
+  g.forEach((v,i)=>{ if(Math.abs(v-f[i])>=1) P.push(`<circle cx="${colX(i)+CW/2}" cy="${sc(v)}" r="3.2" fill="${css('--red')}"/>`)});
+  P.push(`<text x="${W-10}" y="22" text-anchor="end" font-size="12" fill="${css('--ink-3')}">灰线:原来</text>`);
+  P.push(`<text x="${W-10}" y="38" text-anchor="end" font-size="12" fill="${css('--red')}">红线:锐化后(小圆点 = 被改动的格子)</text>`);
+  $("s2").innerHTML=P.join("");
+}
+/* 指针交互:在灰度柱区域按住拖动 */
+function svgPoint(svg,e){const r=svg.getBoundingClientRect();return {x:(e.clientX-r.left)*W/r.width, y:(e.clientY-r.top)*512/r.height}}
+function setFromEvent(e){
+  const p=svgPoint($("s1"),e);
+  const i=clamp(Math.floor((p.x-X0)/CW),0,N-1);
+  hover=i;
+  if(dragging){
+    const [by0,by1]=Y.bar, top=by0+8, bot=by1-8;
+    f[i]=clamp(Math.round((bot-p.y)/(bot-top)*255),0,255);
+  }
+  draw1();
+}
+$("s1").addEventListener("pointerdown",e=>{ $("s1").setPointerCapture(e.pointerId);
+  const p=svgPoint($("s1"),e); if(p.y>=Y.bar[0]-4&&p.y<=Y.bar[1]+4){dragging=true;setFromEvent(e)} });
+$("s1").addEventListener("pointermove",e=>{ if(dragging||true) setFromEvent(e) });
+$("s1").addEventListener("pointerup",()=>{dragging=false});
+$("s1").addEventListener("pointerleave",()=>{dragging=false;hover=-1;draw1()});
+$("k1").addEventListener("input",draw2);
+document.querySelectorAll("button[data-p]").forEach(b=>b.addEventListener("click",()=>{
+  f=fix(PRESETS[b.dataset.p]()); draw1();
+}));
+PRESETS.ramp=()=>f.map((_,i)=>i<6?40:i>=13?230:Math.round(40+(i-5)*(190/8)));
+
+/* ------------------------------------------------ 第二部分:整张图 */
+const M=48;
+let img=new Float32Array(M*M);
+const IMGS={
+  shapes(){const a=new Float32Array(M*M);
+    for(let y=0;y<M;y++)for(let x=0;x<M;x++){
+      let v=70+x*0.6;
+      if(x>=6&&x<22&&y>=8&&y<26) v=210;
+      if((x-34)**2+(y-30)**2<=90) v=30;
+      a[y*M+x]=v;} return a},
+  ramp(){const a=new Float32Array(M*M);
+    for(let y=0;y<M;y++)for(let x=0;x<M;x++) a[y*M+x]=clamp(30+(x-8)*5,30,230); return a},
+  step(){const a=new Float32Array(M*M);
+    for(let y=0;y<M;y++)for(let x=0;x<M;x++) a[y*M+x]=x<24?50:210; return a},
+  noise(){const a=IMGS.step(); let s=11; const r=()=>{s=(s*9301+49297)%233280;return s/233280};
+    for(let i=0;i<a.length;i++) a[i]=clamp(a[i]+(r()-.5)*40,0,255); return a}
+};
+img=IMGS.shapes();
+const at=(a,x,y)=>a[clamp(y,0,M-1)*M+clamp(x,0,M-1)];
+function render(id,fn){
+  const c=$(id),ctx=c.getContext("2d"),d=ctx.createImageData(M,M);
+  for(let y=0;y<M;y++)for(let x=0;x<M;x++){
+    const [r,g,b]=fn(x,y),o=(y*M+x)*4; d.data[o]=r;d.data[o+1]=g;d.data[o+2]=b;d.data[o+3]=255;}
+  ctx.putImageData(d,0,0);
+}
+function draw3(){
+  const k=+$("k2").value; $("k2v").textContent=k.toFixed(2);
+  const gm=new Float32Array(M*M), lp=new Float32Array(M*M);
+  let gmax=1,lmax=30;
+  for(let y=0;y<M;y++)for(let x=0;x<M;x++){
+    const gx=(at(img,x+1,y)-at(img,x-1,y))/2, gy=(at(img,x,y+1)-at(img,x,y-1))/2;
+    const l=at(img,x+1,y)+at(img,x-1,y)+at(img,x,y+1)+at(img,x,y-1)-4*at(img,x,y);
+    gm[y*M+x]=Math.hypot(gx,gy); lp[y*M+x]=l;
+    gmax=Math.max(gmax,gm[y*M+x]); lmax=Math.max(lmax,Math.abs(l));
+  }
+  render("c0",(x,y)=>{const v=Math.round(img[y*M+x]);return [v,v,v]});
+  render("c1",(x,y)=>{const v=Math.round(255*clamp(gm[y*M+x]/Math.max(gmax,20),0,1));return [v,v,v]});
+  render("c2",(x,y)=>{const t=clamp(lp[y*M+x]/lmax,-1,1), m=128, a=Math.sqrt(Math.abs(t));   // 开方:小值也看得见
+    return t>=0?[m+(235-m)*a,m+(98-m)*a,m+(43-m)*a]:[m+(44-m)*a,m+(111-m)*a,m+(187-m)*a]});
+  render("c3",(x,y)=>{const v=Math.round(clamp(img[y*M+x]-k*lp[y*M+x],0,255));return [v,v,v]});
+}
+function paint(e){
+  const c=$("c0"),r=c.getBoundingClientRect();
+  const x=Math.floor((e.clientX-r.left)/r.width*M), y=Math.floor((e.clientY-r.top)/r.height*M);
+  const R=+$("bs").value, v=+$("bv").value;
+  for(let dy=-R+1;dy<=R-1;dy++)for(let dx=-R+1;dx<=R-1;dx++){
+    const X=x+dx,Y=y+dy; if(X>=0&&X<M&&Y>=0&&Y<M&&dx*dx+dy*dy<R*R) img[Y*M+X]=v;
+  }
+  draw3();
+}
+let painting=false;
+$("c0").addEventListener("pointerdown",e=>{painting=true;$("c0").setPointerCapture(e.pointerId);paint(e)});
+$("c0").addEventListener("pointermove",e=>{if(painting)paint(e)});
+$("c0").addEventListener("pointerup",()=>painting=false);
+$("k2").addEventListener("input",draw3);
+document.querySelectorAll("button[data-i]").forEach(b=>b.addEventListener("click",()=>{img=IMGS[b.dataset.i]();draw3();}));
+
+/* 初始状态:一行像素默认放一个「软边」,马上就有东西可看 */
+f=fix(PRESETS.soft());
+draw1(); draw3();
+</script>
+</body>
+</html>
