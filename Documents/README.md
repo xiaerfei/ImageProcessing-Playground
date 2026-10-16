@@ -31,6 +31,33 @@ python3 tools/build_docs_pdf.py --open
 把下面所有 `.md` 按序号顺序合并成一份带书签目录的 PDF,输出到 `Documents/build/`。
 `_archive/` 不参与成书。改完文档重跑一次即可,不需要改配置。
 
+有两个排版引擎,内容和书签完全一样,只是版面不同:
+
+| 引擎 | 命令 | 耗时 | 特点 |
+| :--- | :--- | :--- | :--- |
+| Chrome(默认) | `python3 tools/build_docs_pdf.py` | 约 20 秒 | HTML 打印,样式改 CSS |
+| xelatex | `python3 tools/build_docs_pdf.py --engine latex` | 约 90 秒 | 公式与断行更接近书籍排版 |
+
+xelatex 引擎需要先装 TeX 环境(只装一次):
+
+```bash
+brew install --cask basictex
+```
+
+装完把 `/Library/TeX/texbin` 加进 PATH(或重开终端),再补宏包:
+
+```bash
+sudo tlmgr update --self
+```
+
+```bash
+sudo tlmgr install ctex xecjk fontspec collection-fontsrecommended framed mdframed pgf titlesec enumitem fvextra xurl multirow zref needspace newunicodechar
+```
+
+缺哪个包脚本会直接告诉你该装什么,不用自己猜。版式(字体、标题、引用块、代码块、表格)
+都在 [`tools/pdf_latex_header.tex`](../tools/pdf_latex_header.tex),想调样式只改那一个文件。
+中文字体用的是 macOS 自带的宋体-简(正文)和苹方(标题),换系统要改那里的 `\setCJK...` 三行。
+
 改动文档后顺手跑一下链接检查,避免 PDF 里出现点不动的链接:
 
 ```bash

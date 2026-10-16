@@ -1,0 +1,167 @@
+% tools/build_docs_pdf.py --engine latex 用的版式。
+% 文档类 ctexbook(中文断行/标点/字体由 ctex 管),oneside,A4。
+% 想调样式只改这个文件:颜色、字体、标题、引用块、代码块、表格各占一段。
+
+\usepackage{xcolor}
+\usepackage{etoolbox}
+\usepackage{newunicodechar}
+\usepackage{enumitem}
+\usepackage{fancyhdr}
+\usepackage{titlesec}
+\usepackage{mdframed}
+\usepackage{fvextra}
+\usepackage{xurl}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{float}
+\usepackage{caption}
+
+% ---------------------------------------------------------------- 颜色
+\definecolor{ink}{HTML}{1F2328}
+\definecolor{muted}{HTML}{59636E}
+\definecolor{linkblue}{HTML}{0969DA}
+\definecolor{ruleline}{HTML}{D0D7DE}
+\definecolor{softbg}{HTML}{F6F8FA}
+\definecolor{quotebar}{HTML}{AFB8C1}
+\definecolor{accent}{HTML}{2C6FBB}
+\definecolor{warncol}{HTML}{BF8700}
+\definecolor{okcol}{HTML}{1A7F37}
+\definecolor{nocol}{HTML}{CF222E}
+
+% ---------------------------------------------------------------- 字体
+% 正文宋体(Songti SC 有粗体),标题无衬线(苹方有 Semibold),代码等宽。
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}, ItalicFont={Kaiti SC}]
+\setCJKsansfont{PingFang SC}[BoldFont={PingFang SC Semibold}]
+\setCJKmonofont{Songti SC}
+\setmainfont{STIX Two Text}
+\setsansfont{Helvetica Neue}
+\setmonofont{Menlo}[Scale=0.86]
+\newfontfamily\symfont{Apple Symbols}
+% 正文字体(STIX Two Text)和代码字体(Menlo)都没有的符号:箭头、数学运算符、带圈数字。
+% 箭头/运算符借 STIX Two Math 的字形;①~⑳ 交给 CJK 字体(宋体里有)。
+\newfontfamily\mathsymfont{STIX Two Math}
+\newcommand{\usym}[1]{\ifmmode\text{{\mathsymfont #1}}\else{\mathsymfont #1}\fi}
+\newunicodechar{‖}{\usym{‖}}
+\newunicodechar{⁄}{\usym{⁄}}
+\newunicodechar{←}{\usym{←}}
+\newunicodechar{↑}{\usym{↑}}
+\newunicodechar{→}{\usym{→}}
+\newunicodechar{↓}{\usym{↓}}
+\newunicodechar{↔}{\usym{↔}}
+\newunicodechar{⇔}{\usym{⇔}}
+\newunicodechar{∂}{\usym{∂}}
+\newunicodechar{∇}{\usym{∇}}
+\newunicodechar{√}{\usym{√}}
+\newunicodechar{∞}{\usym{∞}}
+\newunicodechar{≈}{\usym{≈}}
+\newunicodechar{≠}{\usym{≠}}
+\newunicodechar{≡}{\usym{≡}}
+\newunicodechar{≤}{\usym{≤}}
+\newunicodechar{≥}{\usym{≥}}
+\newunicodechar{⬜}{\usym{⬜}}
+\xeCJKDeclareCharClass{CJK}{"222B}   % ∫:交给宋体(newunicodechar 会和 unicode-math 打架)
+\newfontfamily\cjksymfont{Songti SC}
+\newunicodechar{①}{{\cjksymfont ①}}
+\newunicodechar{②}{{\cjksymfont ②}}
+\newunicodechar{③}{{\cjksymfont ③}}
+\newunicodechar{④}{{\cjksymfont ④}}
+\newunicodechar{⑤}{{\cjksymfont ⑤}}
+\newunicodechar{⑥}{{\cjksymfont ⑥}}
+\newunicodechar{⑦}{{\cjksymfont ⑦}}
+\newunicodechar{⑧}{{\cjksymfont ⑧}}
+\newunicodechar{⑨}{{\cjksymfont ⑨}}
+\xeCJKDeclareCharClass{CJK}{"258D}
+\newfontfamily\dingfont{Zapf Dingbats}
+% 笔记里的 ⚠️ ✅ ❌:彩色 emoji 排不出来,换成同色的排版符号
+\newcommand{\wmark}{{\symfont\color{warncol}⚠}\,}
+\newcommand{\okmark}{{\dingfont\color{okcol}✓}}
+\newcommand{\nomark}{{\dingfont\color{nocol}✗}}
+\newunicodechar{✅}{\okmark}
+\newunicodechar{✓}{\okmark}
+\newunicodechar{✗}{\nomark}
+\newunicodechar{❌}{\nomark}
+
+% ---------------------------------------------------------------- 版心与段落
+\linespread{1.28}
+\setlength{\emergencystretch}{3em}
+\raggedbottom
+\setlist{itemsep=0.2em, topsep=0.3em, parsep=0pt}
+\floatplacement{figure}{H}
+% 图片最高占版心的 72%:pandoc 默认缩到整个版心高,再加图注就装不下;
+% [H] 的图又不许浮走,xelatex 会一页接一页地空转。这里把 pandoc 的 \pandocbounded 改成 0.72。
+\makeatletter
+\renewcommand*\pandocbounded[1]{%
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{0.72\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}\fi}
+\makeatother
+\captionsetup{font={small,color=muted}, labelfont={small,color=muted}, labelsep=quad, skip=6pt}
+
+% ---------------------------------------------------------------- 标题
+% part = 分组扉页;chapter = 一篇笔记;section ~ paragraph 对应笔记里的 ## ~ ####
+\titleformat{\part}[display]{\centering\sffamily\bfseries}{}{0pt}{\fontsize{26}{36}\selectfont\color{ink}}[]
+\titlespacing*{\part}{0pt}{0.30\textheight}{0pt}
+\titleformat{\chapter}[block]{\sffamily\bfseries\fontsize{20}{28}\selectfont\color{ink}}{}{0pt}{}[{\vspace{3pt}\color{ruleline}\titlerule[1.2pt]}]
+\titlespacing*{\chapter}{0pt}{-6pt}{16pt}
+\titleformat{\section}{\sffamily\bfseries\Large\color{ink}}{}{0pt}{\color{accent}\rule[-0.22em]{3pt}{1.25em}\hspace{0.55em}}
+\titlespacing*{\section}{0pt}{2.2ex plus 1ex minus .3ex}{1.2ex plus .2ex}
+\titleformat{\subsection}{\sffamily\bfseries\large\color{ink}}{}{0pt}{}
+\titlespacing*{\subsection}{0pt}{2ex plus .8ex minus .2ex}{0.9ex plus .2ex}
+\titleformat{\subsubsection}{\sffamily\bfseries\normalsize\color{ink}}{}{0pt}{}
+\titlespacing*{\subsubsection}{0pt}{1.6ex plus .6ex minus .2ex}{0.6ex plus .2ex}
+\titleformat{\paragraph}[runin]{\sffamily\bfseries\normalsize\color{muted}}{}{0pt}{}
+\titlespacing*{\paragraph}{0pt}{1.2ex}{0.8em}
+
+% ---------------------------------------------------------------- 页眉页脚
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+\setlength{\headheight}{15pt}
+\fancyhead[L]{\small\sffamily\color{muted}\leftmark}
+\fancyfoot[C]{\small\color{muted}\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\headrule}{\hbox to\headwidth{\color{ruleline}\leaders\hrule height \headrulewidth\hfill}}
+\fancypagestyle{plain}{\fancyhf{}\fancyfoot[C]{\small\color{muted}\thepage}\renewcommand{\headrulewidth}{0pt}}
+
+% ---------------------------------------------------------------- 引用块:左边一条竖线 + 浅底
+\renewenvironment{quote}{%
+  \begin{mdframed}[hidealllines=true, leftline=true, linewidth=2.6pt, linecolor=quotebar,
+    backgroundcolor=softbg, innerleftmargin=9pt, innerrightmargin=8pt,
+    innertopmargin=4pt, innerbottommargin=4pt, skipabove=7pt, skipbelow=7pt]%
+  \color{ink}\small
+}{\end{mdframed}}
+
+% 引用块里装了表格时(「怎么读这篇」):不可断页,见 pdf_latex_filter.lua
+\newenvironment{tablequote}{%
+  \par\vspace{6pt}\noindent\begin{minipage}{\linewidth}%
+  \begin{mdframed}[hidealllines=true, leftline=true, linewidth=2.6pt, linecolor=quotebar,
+    backgroundcolor=softbg, innerleftmargin=9pt, innerrightmargin=8pt,
+    innertopmargin=4pt, innerbottommargin=4pt, nobreak=true]%
+  \color{ink}\small
+}{\end{mdframed}\end{minipage}\par\vspace{6pt}}
+
+% ---------------------------------------------------------------- 代码块
+% ```text 这类 pandoc 当普通 verbatim 处理的块:换成会自动折行、带左边线的版本
+\fvset{fontsize=\small}
+\RecustomVerbatimEnvironment{verbatim}{Verbatim}{breaklines, breakanywhere, frame=leftline,
+  framerule=1.6pt, rulecolor=\color{quotebar}, framesep=7pt, formatcom=\color{ink}}
+% 带语法高亮的块(Highlighting)同样折行;Shaded 的底色由 pandoc 自带的 framed 负责
+\fvset{breaklines, breakanywhere}
+\definecolor{shadecolor}{HTML}{F6F8FA}
+
+% ---------------------------------------------------------------- 表格
+\renewcommand{\arraystretch}{1.32}
+\setlength{\tabcolsep}{5.5pt}
+\setlength{\heavyrulewidth}{0.9pt}
+\setlength{\lightrulewidth}{0.45pt}
+\AtBeginEnvironment{longtable}{\small\color{ink}}
+\setlength{\LTpre}{8pt}
+\setlength{\LTpost}{8pt}
+
+% ---------------------------------------------------------------- PDF 书签
+% 目录页只展开到「篇」(tocdepth=0),但书签栏要全量(节、小节都有),方便跳转
+\AtBeginDocument{\bookmarksetup{depth=5, open, openlevel=2}}

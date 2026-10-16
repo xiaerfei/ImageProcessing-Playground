@@ -21,15 +21,23 @@
     所以 html_to_pdf() 不等它结束,而是盯着输出文件"写稳"了就主动收掉它;
   - 接管道时 stdout 是块缓冲的,进度会被憋住,所以统一用 log() 输出并 flush。
 
+两条出 PDF 的路(共用上面 1~2 步,只有最后的排版不同):
+  --engine chrome   默认。HTML + Chrome 打印,快(约 20 秒),样式用 CSS 调
+  --engine latex    pandoc → .tex → xelatex,约 90 秒。公式、断行、表格更讲究,书签同样是全量。
+                    版式在 tools/pdf_latex_header.tex,过滤器在 tools/pdf_latex_filter.lua
+                    产出 Documents/build/图像处理学习笔记-latex.pdf(不覆盖 chrome 那份)
+
 依赖(本机已具备):
   - pandoc       brew install pandoc
-  - Google Chrome(或 Chromium)
-  - pypdf        可选,仅用于自检生成的书签数量
+  - Google Chrome(或 Chromium)                         —— chrome 引擎
+  - xelatex + 若干宏包                                  —— latex 引擎,安装见 Documents/README.md
+  - pypdf        可选,仅用于自检生成的书签数量(最长书签 ≤ 25 字)
 
 用法:
   python3 tools/build_docs_pdf.py              # 生成 Documents/build/图像处理学习笔记.pdf
+  python3 tools/build_docs_pdf.py --engine latex   # 用 xelatex 排版(缺宏包会告诉你怎么装)
   python3 tools/build_docs_pdf.py --open       # 生成后顺便打开
-  python3 tools/build_docs_pdf.py --keep-html  # 保留中间 HTML(相当于一份网页版合集)
+  python3 tools/build_docs_pdf.py --keep-html  # 保留中间 HTML(latex 引擎下是 .tex/.md/.log)
   python3 tools/build_docs_pdf.py --list       # 只打印成书顺序,不转换
   python3 tools/build_docs_pdf.py --toc-depth 3   # 目录页也展开到节(会更长)
 
@@ -421,6 +429,18 @@ def load_docs(docs_dir: Path, groups: list[tuple[str, list[Path]]]) -> list[tupl
     return plan
 
 
+def prepare_markdown(doc: Doc, anchor_by_path: dict[Path, str]) -> str:
+    """定标题层级 + 降级假标题 + 改写跨篇链接,返回喂给 pandoc 的 Markdown(两个引擎共用)。"""
+    doc.dehead_lines = find_noise_lines(doc.headings)
+    extra_h1 = any(
+        h.level == 1 and h.line not in doc.dehead_lines and h.line != doc.title_line
+        for h in doc.headings
+    )
+    # 篇名占 h2;文档自身 H1 若另有其人,整体再多降一级,保证都挂在篇名下面
+    doc.shift = 2 if extra_h1 else 1
+    return transform_markdown(doc, anchor_by_path)
+
+
 def scan_docs(
     docs_dir: Path,
     pandoc: str,
@@ -440,14 +460,7 @@ def scan_docs(
     def convert(doc: Doc) -> list[str]:
         """单篇转换,返回这篇自己的警告(避免多线程往同一个 list 里写)。"""
         local: list[str] = []
-        doc.dehead_lines = find_noise_lines(doc.headings)
-        extra_h1 = any(
-            h.level == 1 and h.line not in doc.dehead_lines and h.line != doc.title_line
-            for h in doc.headings
-        )
-        # 篇名占 h2;文档自身 H1 若另有其人,整体再多降一级,保证都挂在篇名下面
-        doc.shift = 2 if extra_h1 else 1
-        markdown = transform_markdown(doc, anchor_by_path)
+        markdown = prepare_markdown(doc, anchor_by_path)
         fragment = md_to_html(pandoc, markdown, math, workdir, f"doc{doc.index}")
         fragment = tidy_fragment(fragment, doc.index)
         doc.fragment = inline_images(fragment, doc.path.parent, local)
@@ -689,6 +702,365 @@ math { font-size: 1.02em; }
 """
 
 
+# ============================================================== LaTeX 引擎 ===
+# 另一条出 PDF 的路:pandoc 把整本书转成一份 .tex,再交给 xelatex 排版。
+# 和 Chrome 通道共用同一套「扫描 → 排序 → 改标题层级 → 改跨篇链接」,只是最后一步不同:
+#   Chrome 通道:逐篇转 HTML → 内联图片 → 浏览器打印(快,样式用 CSS 调)
+#   LaTeX 通道:合并成一份 Markdown → pandoc → .tex → xelatex ×2~3(慢一些,公式与断行更讲究)
+
+LATEX_HEADER = Path(__file__).resolve().parent / "pdf_latex_header.tex"
+LATEX_FILTER = Path(__file__).resolve().parent / "pdf_latex_filter.lua"
+XELATEX_TIMEOUT = 300                    # 单遍超过 5 分钟就当它卡死了
+TEXBIN = "/Library/TeX/texbin"          # MacTeX / BasicTeX 默认装在这里,但不一定在 PATH 里
+
+# 样式要用到的宏包;缺哪个就告诉用户怎么装,而不是让 xelatex 报一堆看不懂的错
+LATEX_PACKAGES = {
+    "ctexbook.cls": "ctex", "xeCJK.sty": "xecjk", "fontspec.sty": "fontspec",
+    "unicode-math.sty": "unicode-math", "booktabs.sty": "booktabs",
+    "longtable.sty": "tools", "fancyhdr.sty": "fancyhdr", "titlesec.sty": "titlesec",
+    "enumitem.sty": "enumitem", "mdframed.sty": "mdframed", "zref-abspage.sty": "zref",
+    "framed.sty": "framed", "fvextra.sty": "fvextra", "xurl.sty": "xurl",
+    "multirow.sty": "multirow", "tikz.sty": "pgf", "bookmark.sty": "bookmark",
+    "xcolor.sty": "xcolor", "etoolbox.sty": "etoolbox", "needspace.sty": "needspace", "newunicodechar.sty": "newunicodechar", "caption.sty": "caption",
+    "float.sty": "float", "colortbl.sty": "colortbl", "hyperref.sty": "hyperref",
+}
+
+# 装饰性 emoji 一律去掉(xelatex 渲染不了彩色 emoji);有语义的换成排版符号,见 pdf_latex_header.tex
+# 用 raw_attribute 写法(`...`{=latex}):下面整个通道关掉了 raw_tex,否则知乎存档里的
+# 裸 \frac \quad 会被当成 LaTeX 原样放进正文而报错
+_EMOJI_MARKS = {"⚠️": "`\\wmark{}`{=latex}", "⚠": "`\\wmark{}`{=latex}",
+                "✅": "`\\okmark{}`{=latex}", "✓": "`\\okmark{}`{=latex}",
+                "❌": "`\\nomark{}`{=latex}", "✗": "`\\nomark{}`{=latex}"}
+_EMOJI_DROP_RE = re.compile("[💡📝🛠📌🎯📚⭐🚀🗺🗓🖱🔗🔍📂💻✻]️?[  ]?")
+_INLINE_CODE_RE = re.compile(r"(`+)(?:(?!\1).)+?\1")
+_MD_IMAGE_RE = re.compile(r'!\[([^\]]*)\]\(([^)\s]+)((?:\s+"[^"]*")?)\)')
+_SEP_RE = re.compile(r"^(\s*(?:>\s*)*)\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)*\|?\s*$")
+
+
+def tex_escape(text: str) -> str:
+    """封面等直接写进 .tex 的纯文本需要转义。"""
+    table = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#",
+             "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\^{}"}
+    return "".join(table.get(ch, ch) for ch in text)
+
+
+def find_texbin() -> str:
+    """让 pandoc/xelatex 的 PATH 里有 TeX;返回新的 PATH 串。"""
+    path = os.environ.get("PATH", "")
+    if shutil.which("xelatex", path=path):
+        return path
+    if Path(TEXBIN, "xelatex").exists():
+        return f"{TEXBIN}:{path}"
+    sys.exit("找不到 xelatex。安装见 Documents/00-roadmap 或本脚本顶部说明:\n"
+             "  brew install --cask basictex   (装完要重开终端,或把 /Library/TeX/texbin 加进 PATH)")
+
+
+def check_latex_packages(path_env: str) -> None:
+    missing = {}
+    for fname, pkg in LATEX_PACKAGES.items():
+        r = subprocess.run(["kpsewhich", fname], capture_output=True, text=True,
+                           env={**os.environ, "PATH": path_env})
+        if not r.stdout.strip():
+            missing[pkg] = fname
+    if missing:
+        pkgs = " ".join(sorted(missing))
+        sys.exit("缺少这些 LaTeX 宏包:" + "、".join(sorted(missing)) + "\n"
+                 f"  sudo tlmgr install {pkgs}\n"
+                 f"  (不想用 sudo:tlmgr --usermode init-usertree && tlmgr --usermode install {pkgs})")
+
+
+def _outside_code(text: str, fn) -> str:
+    """只对「不在代码里」的文字做替换:围栏代码块、行内代码原样保留。"""
+    out: list[str] = []
+    fence = None
+    for line in text.split("\n"):
+        m = _FENCE_RE.match(line)
+        if m:
+            marker = m.group(1)
+            if fence is None:
+                fence = marker[0] * len(marker)
+            elif marker[0] == fence[0] and len(marker) >= len(fence):
+                fence = None
+            out.append(line)
+            continue
+        if fence is not None:
+            out.append(line)
+            continue
+        pieces, last = [], 0
+        for cm in _INLINE_CODE_RE.finditer(line):
+            pieces.append(fn(line[last:cm.start()]))
+            pieces.append(cm.group(0))
+            last = cm.end()
+        pieces.append(fn(line[last:]))
+        out.append("".join(pieces))
+    return "\n".join(out)
+
+
+def _symbols(text: str) -> str:
+    for src, dst in _EMOJI_MARKS.items():
+        text = text.replace(src, dst)
+    text = text.replace("️", "")
+    return _EMOJI_DROP_RE.sub("", text)
+
+
+def _cell_width(text: str) -> int:
+    import unicodedata
+    text = re.sub(r"[`*$\\]", "", text)
+    return sum(2 if unicodedata.east_asian_width(ch) in "WF" else 1 for ch in text)
+
+
+def _split_row(row: str) -> list[str]:
+    """按未转义、不在反引号里的 | 切一行表格。"""
+    cells, cur, in_code, i = [], [], False, 0
+    while i < len(row):
+        ch = row[i]
+        if ch == "\\" and i + 1 < len(row):
+            cur.append(row[i:i + 2]); i += 2; continue
+        if ch == "`":
+            in_code = not in_code
+        if ch == "|" and not in_code:
+            cells.append("".join(cur)); cur = []
+        else:
+            cur.append(ch)
+        i += 1
+    cells.append("".join(cur))
+    if cells and not cells[0].strip():
+        cells = cells[1:]
+    if cells and not cells[-1].strip():
+        cells = cells[:-1]
+    return cells
+
+
+def tune_table_widths(text: str) -> str:
+    """让管道表格的列宽跟内容成比例。
+
+    pandoc 在表格有长行时,按「分隔行里横线的条数」分配列宽。我们笔记里分隔行都写成 `:---`,
+    结果每列一样宽:窄列(序号、符号)浪费,长文字列挤成一条。这里按每列最长单元格重写分隔行。
+    """
+    lines = text.split("\n")
+    out, i, fence = [], 0, None
+    while i < len(lines):
+        line = lines[i]
+        m = _FENCE_RE.match(line)
+        if m:
+            marker = m.group(1)
+            if fence is None:
+                fence = marker[0] * len(marker)
+            elif marker[0] == fence[0] and len(marker) >= len(fence):
+                fence = None
+        if fence is None and i + 1 < len(lines) and "|" in line and _SEP_RE.match(lines[i + 1]):
+            prefix = re.match(r"^(\s*(?:>\s*)*)", line).group(1)
+            j = i
+            block = []
+            while j < len(lines) and lines[j].startswith(prefix.rstrip()) and "|" in lines[j]:
+                block.append(lines[j]); j += 1
+            rows = [_split_row(r[len(prefix):] if r.startswith(prefix) else r.lstrip("> ")) for r in block]
+            seps = rows[1]
+            ncol = len(seps)
+            body = [r for k, r in enumerate(rows) if k != 1 and len(r) == ncol]
+            if ncol >= 2 and body:
+                widths = [max(_cell_width(r[c].strip()) for r in body) for c in range(ncol)]
+                dashes = [max(4, min(w, 46)) for w in widths]
+                new_sep = []
+                for c, cell in enumerate(seps):
+                    cell = cell.strip()
+                    left, right = cell.startswith(":"), cell.endswith(":")
+                    bar = "-" * dashes[c]
+                    new_sep.append((":" if left else "") + bar + (":" if right else ""))
+                block[1] = prefix + "| " + " | ".join(new_sep) + " |"
+            out.extend(block)
+            i = j
+            continue
+        out.append(line)
+        i += 1
+    return "\n".join(out)
+
+
+def strip_front_matter(markdown: str) -> str:
+    """去掉文首的 YAML 元数据块(知乎存档的 created/tags/source)。
+
+    合订时我们关掉了 pandoc 的 yaml_metadata_block(否则正文里的 --- 会被当成元数据),
+    它就会被当成一张「单列长表格」排出来,里面的长网址不能断行,xelatex 会在这张表上空转。
+    """
+    lines = markdown.split("\n")
+    if lines and lines[0].strip() == "---":
+        for k in range(1, min(len(lines), 40)):
+            if lines[k].strip() in ("---", "..."):
+                return "\n".join(lines[k + 1:]).lstrip("\n")
+    return markdown
+
+
+_BARE_HR_RE = re.compile(r"^ {0,3}(-{3,}|_{3,}|\*{3,})\s*$")
+
+
+def soften_rules(markdown: str) -> str:
+    """把单独成行的 `---` 分隔线改写成 `* * *`。
+
+    关掉 yaml_metadata_block 之后,pandoc 会把「两条 --- 夹着一大段文字」当成一张
+    单列无表头的 multiline table(实测留数那篇从第 27 行一直吞到第 722 行,整篇排成一个表格)。
+    `* * *` 也是分隔线,但没有这个歧义。只改「上一行是空行」的,免得误伤 setext 标题。
+    """
+    lines = markdown.split("\n")
+    fence = None
+    for i, line in enumerate(lines):
+        m = _FENCE_RE.match(line)
+        if m:
+            marker = m.group(1)
+            if fence is None:
+                fence = marker[0] * len(marker)
+            elif marker[0] == fence[0] and len(marker) >= len(fence):
+                fence = None
+            continue
+        if fence is None and _BARE_HR_RE.match(line) and (i == 0 or not lines[i - 1].strip()):
+            lines[i] = "* * *"
+    return "\n".join(lines)
+
+
+def latexify_markdown(doc: Doc, markdown: str, imgdir: Path, warn: list[str]) -> str:
+    """LaTeX 通道专用的 Markdown 预处理:图片换成工作区里的 ASCII 文件名、
+    指向仓库文件的链接降成纯文字、emoji 换成排版符号、表格列宽按内容分配。"""
+    base = doc.path.parent
+
+    def img_repl(m: re.Match[str]) -> str:
+        alt, src, title = m.group(1), unquote(html.unescape(m.group(2))), m.group(3)
+        if src.startswith(("http://", "https://", "data:")):
+            return m.group(0)
+        target = Path(src if Path(src).is_absolute() else (base / src)).resolve()
+        if not target.is_file():
+            warn.append(f"图片不存在 {target}")
+            return m.group(0)
+        dest = imgdir / f"img{len(list(imgdir.iterdir())) + 1:04d}{target.suffix.lower()}"
+        shutil.copyfile(target, dest)
+        return f"![{alt}](img/{dest.name}){title}"
+
+    def link_repl(m: re.Match[str]) -> str:
+        label, target = m.group(1), m.group(2)
+        if re.match(r"^[a-zA-Z][a-zA-Z0-9+.-]*:", target) or target.startswith("#"):
+            return m.group(0)
+        return label        # 指向仓库内 .py/.png 等文件:PDF 里点不开,只保留文字
+
+    markdown = soften_rules(strip_front_matter(markdown).replace("\ufe0f", ""))   # FE0F:变体选择符,字体里没有
+    markdown = _MD_IMAGE_RE.sub(img_repl, markdown)
+    markdown = _outside_code(markdown, lambda t: _MD_LINK_RE.sub(link_repl, t))
+    markdown = _outside_code(markdown, _symbols)
+    return tune_table_widths(markdown)
+
+
+def build_latex_book(plan: list[tuple[str, list[Doc]]], workdir: Path, title: str,
+                     toc_depth: int, warn: list[str]) -> tuple[Path, Path]:
+    """把整本书写成 book.md + cover.tex,返回 (book.md, cover.tex)。"""
+    imgdir = workdir / "img"
+    imgdir.mkdir(exist_ok=True)
+    anchor_by_path = {d.path.resolve(): d.anchor for _, docs in plan for d in docs}
+
+    parts: list[str] = []
+    cover_groups: list[str] = []
+    for g_index, (group_name, docs) in enumerate(plan, start=1):
+        if not docs:
+            continue
+        label = group_label(group_name)
+        cover_groups.append(label)
+        parts.append(f"# {label} {{#group{g_index}}}\n")
+        for doc in docs:
+            body = latexify_markdown(doc, prepare_markdown(doc, anchor_by_path), imgdir, warn)
+            parts.append(f"## {escape_emphasis(doc.title)} {{#{doc.anchor}}}\n\n{body}\n")
+            log(f"   [{doc.index:>2}] {doc.rel.as_posix()}")
+
+    book_md = workdir / "book.md"
+    book_md.write_text("\n".join(parts), encoding="utf-8")
+
+    doc_total = sum(len(d) for _, d in plan)
+    groups_tex = "\n".join(rf"\item {tex_escape(g)}" for g in cover_groups)
+    # 目录深度:part=-1,chapter=0,section=1 …;命令行 --toc-depth 沿用 Chrome 通道的数法(1=分组,2=篇)
+    cover = rf"""\begin{{titlepage}}
+\thispagestyle{{empty}}
+\vspace*{{\fill}}
+\begin{{center}}
+{{\sffamily\fontsize{{30}}{{40}}\selectfont {tex_escape(title)}\par}}
+\vspace{{6mm}}
+{{\color{{muted}}\large 按阅读顺序整理 · 共 {doc_total} 篇 / {len(cover_groups)} 个分组\par}}
+\vspace{{9mm}}
+{{\color{{ink}}\rule{{40mm}}{{0.8pt}}}}\par
+\vspace{{9mm}}
+\begin{{minipage}}{{0.62\linewidth}}
+\begin{{itemize}}[label={{}},leftmargin=0pt,itemsep=3pt,topsep=0pt]
+{groups_tex}
+\end{{itemize}}
+\end{{minipage}}
+\vspace{{14mm}}
+
+{{\color{{muted}}\small 生成于 {date.today().isoformat()} · 书签栏即目录,可逐级展开\par}}
+\end{{center}}
+\vspace*{{\fill}}
+\end{{titlepage}}
+\frontmatter
+\setcounter{{tocdepth}}{{{toc_depth - 2}}}
+\tableofcontents
+\mainmatter
+"""
+    cover_tex = workdir / "cover.tex"
+    cover_tex.write_text(cover, encoding="utf-8")
+    return book_md, cover_tex
+
+
+def run_latex_pdf(pandoc: str, book_md: Path, cover_tex: Path, workdir: Path, out_pdf: Path,
+                  title: str, path_env: str) -> None:
+    env = {**os.environ, "PATH": path_env}
+    tex = workdir / "book.tex"
+    cmd = [
+        pandoc, "-f", "markdown-yaml_metadata_block-raw_tex", "-t", "latex", "-s", str(book_md), "-o", str(tex),
+        "--top-level-division=part", "--syntax-highlighting=tango",
+        "-V", "documentclass=ctexbook",
+        "-V", "classoption=oneside,a4paper,11pt",
+        "-V", "geometry:a4paper,top=24mm,bottom=24mm,left=22mm,right=22mm",
+        "-V", "colorlinks=true", "-V", "linkcolor=linkblue", "-V", "urlcolor=linkblue",
+        "-V", "citecolor=linkblue", "-V", f"title-meta={title}",
+        "-H", str(LATEX_HEADER), "-B", str(cover_tex), "--lua-filter", str(LATEX_FILTER),
+    ]
+    proc = subprocess.run(cmd, capture_output=True, text=True, env=env)
+    if proc.returncode != 0:
+        sys.exit(f"pandoc 转 LaTeX 失败:\n{proc.stderr.strip()}")
+
+    log_path = workdir / "book.log"
+    for run in range(1, 4):
+        t = time.time()
+        try:
+            subprocess.run(
+                ["xelatex", "-interaction=nonstopmode", "-file-line-error", tex.name],
+                cwd=workdir, capture_output=True, text=True, env=env, timeout=XELATEX_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            tail = log_path.read_text(encoding="utf-8", errors="replace").splitlines()[-15:] \
+                if log_path.exists() else []
+            sys.exit(f"xelatex 超过 {XELATEX_TIMEOUT}s 没跑完(多半是某处排版陷入死循环),日志末尾:\n  "
+                     + "\n  ".join(tail))
+        text = log_path.read_text(encoding="utf-8", errors="replace") if log_path.exists() else ""
+        log(f"   xelatex 第 {run} 遍 {time.time() - t:.0f}s")
+        if not (workdir / "book.pdf").exists():
+            errs = [l for l in text.splitlines() if l.startswith("!") or ".tex:" in l][:12]
+            sys.exit("xelatex 失败:\n  " + "\n  ".join(errs or text.splitlines()[-20:]))
+        # 目录与页内引用要多排一遍才稳;至少 2 遍,日志里不再喊 Rerun 就收工
+        if run >= 2 and "Rerun to get" not in text and "Label(s) may have changed" not in text:
+            break
+    text = log_path.read_text(encoding="utf-8", errors="replace")
+    # nonstopmode 遇到错误会「尽量往下排」,累计 100 个错误才停,留下一份被截断的 PDF —— 必须自己查
+    errors = re.findall(r"^\./book\.tex:(\d+): (.+)$", text, re.M)
+    if errors:
+        uniq: dict[str, str] = {}
+        for line_no, msg in errors:
+            uniq.setdefault(msg, line_no)
+        shown = [f"book.tex 第 {ln} 行:{msg}" for msg, ln in list(uniq.items())[:8]]
+        sys.exit(f"xelatex 报了 {len(errors)} 个错误({len(uniq)} 种),PDF 不完整,没有输出。前几种:\n  "
+                 + "\n  ".join(shown) + "\n  加 --keep-html 可保留 .tex/.log 排查")
+    out_pdf.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(workdir / "book.pdf", out_pdf)
+
+    missing = sorted(set(re.findall(r"Missing character: There is no (.+?) \(", text)))
+    if missing:
+        log(f"⚠️ 字体里没有这些字符(排出来是空白):{' '.join(missing)}")
+    undefined = sorted(set(re.findall(r"Reference `([^']+)' on page", text)))
+    if undefined:
+        log(f"⚠️ 有 {len(undefined)} 处引用找不到目标(笔记里的页内锚点链接),例:{undefined[:4]}")
+
 # ============================================================== 打印 PDF ===
 
 CHROME_CANDIDATES = [
@@ -792,8 +1164,20 @@ def report(pdf_path: Path, toc_items: list[tuple[int, str, str]]) -> None:
             else:
                 counted += 1
 
+    titles: list[str] = []
+
+    def collect(node) -> None:
+        for item in node:
+            if isinstance(item, list):
+                collect(item)
+            else:
+                titles.append(str(item.title))
+
     walk(reader.outline)
-    print(f"页数:{len(reader.pages)}    书签:{counted} 条")
+    collect(reader.outline)
+    longest = max((len(t) for t in titles), default=0)
+    print(f"页数:{len(reader.pages)}    书签:{counted} 条    最长书签:{longest} 字"
+          f"{'' if longest <= 25 else '  ⚠️ 超过 25 字'}")
     if counted == 0:
         print("⚠️ 书签为空,检查 Chrome 是否支持 --generate-pdf-document-outline")
 
@@ -801,7 +1185,7 @@ def report(pdf_path: Path, toc_items: list[tuple[int, str, str]]) -> None:
 # ============================================================== 增量判断 ==
 
 # 改了这个文件里的样式/模板就 +1,让旧 PDF 判为过期、强制全部重排
-STYLE_VERSION = "1"
+STYLE_VERSION = "2"
 
 _MD_IMG_RE = re.compile(r"!\[[^\]]*\]\(([^)\s]+)")
 
@@ -880,6 +1264,10 @@ def main() -> None:
     parser.add_argument("--keep-html", action="store_true", help="保留中间 HTML")
     parser.add_argument("--list", action="store_true", help="只打印成书顺序")
     parser.add_argument("--open", action="store_true", help="生成后用默认程序打开")
+    parser.add_argument("--engine", choices=["chrome", "latex"], default="chrome",
+                        help="出 PDF 的引擎:chrome(快,默认) / latex(pandoc + xelatex,排版更讲究)")
+    parser.add_argument("--latex-workdir", type=Path, default=None,
+                        help="latex 引擎:指定(并保留)工作目录,排错时可以进去手跑 xelatex")
     parser.add_argument("--pandoc", default=None, help="pandoc 可执行文件路径")
     parser.add_argument("--chrome", default=None, help="Chrome 可执行文件路径")
     args = parser.parse_args()
@@ -888,7 +1276,8 @@ def main() -> None:
     if not docs_dir.is_dir():
         sys.exit(f"目录不存在:{docs_dir}")
 
-    out_pdf = (args.out or docs_dir / "build" / "图像处理学习笔记.pdf").resolve()
+    default_name = "图像处理学习笔记.pdf" if args.engine == "chrome" else "图像处理学习笔记-latex.pdf"
+    out_pdf = (args.out or docs_dir / "build" / default_name).resolve()
     excludes = DEFAULT_EXCLUDE_DIRS | set(args.exclude)
 
     if args.list:
@@ -901,6 +1290,11 @@ def main() -> None:
         return
 
     pandoc = find_pandoc(args.pandoc)
+
+    if args.engine == "latex":
+        main_latex(args, docs_dir, excludes, out_pdf, pandoc)
+        return
+
     chrome = find_chrome(args.chrome)
 
     with tempfile.TemporaryDirectory(prefix="docs-book-") as tmp:
@@ -934,6 +1328,39 @@ def main() -> None:
     log(f"完成,总用时 {time.time() - t0:.1f}s")
     report(out_pdf, toc_items)
 
+    if args.open:
+        subprocess.run(["open", str(out_pdf)], check=False)
+
+
+def main_latex(args: argparse.Namespace, docs_dir: Path, excludes: set[str],
+               out_pdf: Path, pandoc: str) -> None:
+    path_env = find_texbin()
+    check_latex_packages(path_env)
+    t0 = time.time()
+    warnings: list[str] = []
+    import contextlib
+    if args.latex_workdir:
+        shutil.rmtree(args.latex_workdir, ignore_errors=True)
+        args.latex_workdir.mkdir(parents=True)
+        ctx = contextlib.nullcontext(str(args.latex_workdir))
+    else:
+        ctx = tempfile.TemporaryDirectory(prefix="docs-book-")
+    with ctx as tmp:
+        workdir = Path(tmp)
+        log("① 扫描 Markdown,合并成一份 book.md …")
+        plan = load_docs(docs_dir, iter_groups(docs_dir, excludes))
+        book_md, cover_tex = build_latex_book(plan, workdir, args.title, args.toc_depth, warnings)
+        log("② pandoc 转 .tex,xelatex 排版 …")
+        run_latex_pdf(pandoc, book_md, cover_tex, workdir, out_pdf, args.title, path_env)
+        if args.keep_html:                       # 沿用这个开关:保留中间的 .tex / .md 方便排错
+            keep = out_pdf.with_suffix("")
+            for name in ("book.tex", "book.md", "book.log"):
+                shutil.copyfile(workdir / name, keep.parent / f"{keep.name}.{name.split('.')[-1]}")
+            log(f"   中间文件:{keep}.tex / .md / .log")
+    for w in dict.fromkeys(warnings):
+        log(f"⚠️ {w}")
+    log(f"完成,总用时 {time.time() - t0:.1f}s")
+    report(out_pdf, [])
     if args.open:
         subprocess.run(["open", str(out_pdf)], check=False)
 
