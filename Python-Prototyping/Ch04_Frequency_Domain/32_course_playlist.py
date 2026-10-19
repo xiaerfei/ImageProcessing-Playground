@@ -33,6 +33,18 @@ OPTIONAL = {
     "5 DFT 性质(只挑频移/卷积/共轭对称/帕塞瓦尔)": [34],
     "6 频率响应(待确认哪集真在讲)": [23, 27, 28],
 }
+# 《信号与系统快速路线》:只为读通 Gonzalez 第 4 章挑的集数
+FAST_CORE = {
+    "阶段 3 DFT(换基 + 离散傅里叶)": [17, 32, 33],
+    "阶段 3 性质与补零(用 FFT 算卷积)": [36, 37],
+    "阶段 4 采样与混叠": [38, 39, 42, 43],
+    "阶段 5 二维": [29],
+}
+FAST_OPTIONAL = {
+    "阶段 2 系统的性质": [6],
+    "阶段 2 离散卷积": [7],
+    "阶段 2 卷积的性质": [12],
+}
 SUPPLEMENT = {
     "连续傅里叶(级数 + 性质)": [15, 22],
     "拉普拉斯变换": list(range(45, 54)),
@@ -83,6 +95,16 @@ def main() -> None:
     opt_ids = [i for ids in OPTIONAL.values() for i in ids]
     only34 = total(eps, core_ids + [34])
     print(f"  必看 + 第 34 集:{hm(only34)};必看 + 34 + 23/27/28:{hm(total(eps, core_ids + [34, 23, 27, 28]))}")
+    print("\n[快速路线]")
+    fast_ids: list[int] = []
+    for name, ids in FAST_CORE.items():
+        print(f"  {name:20s} 集 {ids}:{hm(total(eps, ids))}")
+        fast_ids += ids
+    print(f"  快速路线必看合计 {len(fast_ids)} 集:{hm(total(eps, fast_ids))}")
+    for name, ids in FAST_OPTIONAL.items():
+        print(f"  选看 {name:14s} 集 {ids}:{hm(total(eps, ids))}")
+    fast_opt = [i for ids in FAST_OPTIONAL.values() for i in ids]
+    print(f"  必看 + 选看(6、7、12):{hm(total(eps, fast_ids + fast_opt))}")
     print("\n[补全线]")
     for name, ids in SUPPLEMENT.items():
         span = f"{ids[0]}~{ids[-1]}" if ids == list(range(ids[0], ids[-1] + 1)) else "、".join(map(str, ids))
@@ -93,7 +115,7 @@ def main() -> None:
     print("\n[标题核对,文档里引用到的几集]")
     for i in (5, 6, 7, 8, 17, 29, 32, 34, 36, 37, 42, 44):
         print(f"  {i:2d}  {eps[i - 1][0]}")
-    missing = set(core_ids + opt_ids) - set(range(1, len(eps) + 1))
+    missing = set(core_ids + opt_ids + fast_ids + fast_opt) - set(range(1, len(eps) + 1))
     assert not missing, f"集号越界:{missing}"
 
 
