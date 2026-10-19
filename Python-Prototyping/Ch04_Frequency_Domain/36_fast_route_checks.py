@@ -10,6 +10,7 @@
  3. 卷积定理的二维版:补零后频域相乘 = 线性卷积;不补零 = 循环卷积,只在边缘一圈出错
  4. 位置信息在相位里:平移只改相位、幅度不变;拿 A 的幅度配 B 的相位,长得像 B
  5. 缩小前先低通:0.45 周期/像素的细条纹隔点抽样,先过 [1,2,1]/4 再抽,假纹幅度只剩多少
+ 6. 馒头与消化(快速路线/1.理解卷积.md):错位相加 = 翻转滑动 = np.convolve;线性与时不变
 
 ⚠️ 这里的图像用仓库 Assets/test-images 里的 camera.png 和 coins.png;
 换一张图,第 1、4 块里的百分比和相关系数会变,结论(谁在中心、像谁)不变。
@@ -185,9 +186,35 @@ def block5() -> None:
     print(f"  假纹幅度缩小为原来的 1/{a0 / a1:.1f}")
 
 
+# ---------------------------------------------------------------- 6
+def block6() -> None:
+    head("6. 馒头与消化:错位相加、翻转滑动、np.convolve 三种算法同一个结果")
+    h = np.array([1, 0.9, 0.5, 0.3, 0])  # 消化序列:吃 1 个馒头后各时刻还剩多少
+    x = np.array([1, 2])                 # 馒头序列:第 1 刻吃 1 个,第 2 刻吃 2 个
+    print(f"只吃 1 个:[1] * h = {np.convolve([1], h)}  → 冲激响应就是 h 本身")
+    # 算法一:按馒头拆,每口单独的响应错位相加
+    y1 = np.zeros(len(x) + len(h) - 1)
+    for k, xk in enumerate(x):
+        y1[k:k + len(h)] += xk * h
+        print(f"  第 {k + 1} 刻吃 {xk} 个 → 响应 {xk * h},从第 {k + 1} 刻开始")
+    print(f"算法一 错位相加:{y1}")
+    # 算法二:按时刻看,x 翻转后在 h 上滑动
+    xr = x[::-1]
+    hp = np.concatenate([np.zeros(len(x) - 1), h, np.zeros(len(x) - 1)])
+    y2 = np.array([np.dot(xr, hp[n:n + len(x)]) for n in range(len(y1))])
+    for n in range(2):
+        terms = " + ".join(f"{x[k]}×{h[n - k]}" for k in range(len(x)) if 0 <= n - k < len(h))
+        print(f"  第 {n + 1} 刻:{terms} = {y2[n]:.1f}")
+    print(f"算法二 翻转滑动:{y2}")
+    print(f"np.convolve:    {np.convolve(x, h)};三者最大差 {max(np.abs(y1 - y2).max(), np.abs(y1 - np.convolve(x, h)).max()):.1e}")
+    print(f"交换律:h * x = {np.convolve(h, x)}(翻转谁都一样)")
+    print(f"线性:吃 2 个 = 2×h:{np.convolve([2], h)};时不变:晚一刻吃 [0,1] → {np.convolve([0, 1], h)}")
+
+
 if __name__ == "__main__":
     block1()
     block2()
     block3()
     block4()
     block5()
+    block6()

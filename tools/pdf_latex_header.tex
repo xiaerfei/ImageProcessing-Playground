@@ -92,14 +92,16 @@
 \floatplacement{figure}{H}
 % 图片最高占版心的 72%:pandoc 默认缩到整个版心高,再加图注就装不下;
 % [H] 的图又不许浮走,xelatex 会一页接一页地空转。这里把 pandoc 的 \pandocbounded 改成 0.72。
+% 整本书一张图都没有时 pandoc 不定义它(也不加载 graphicx),此时跳过。
 \makeatletter
+\@ifundefined{pandocbounded}{}{%
 \renewcommand*\pandocbounded[1]{%
   \sbox\pandoc@box{#1}%
   \Gscale@div\@tempa{0.72\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
   \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
   \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi
   \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
-  \else\usebox{\pandoc@box}\fi}
+  \else\usebox{\pandoc@box}\fi}}
 \makeatother
 \captionsetup{font={small,color=muted}, labelfont={small,color=muted}, labelsep=quad, skip=6pt}
 
