@@ -1,0 +1,297 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>傅里叶本轮</title>
+<style>
+:root{
+  --ink:#171c22; --ink-2:#4a5560; --ink-3:#7b8894;
+  --ground:#f4f6f8; --panel:#ffffff; --line:#dde3ea; --line-2:#eaeff4;
+  --blue:#2c6fbb; --red:#c4442a; --green:#2a8f4a; --amber:#b9770e; --violet:#6b4fa8;
+  --hl:rgba(44,111,187,.12);
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  --sans:"PingFang SC","Heiti SC","Hiragino Sans GB","Microsoft YaHei",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --ink:#e6ebf1; --ink-2:#a3b0bd; --ink-3:#73808d;
+  --ground:#12161b; --panel:#1a2027; --line:#2c353f; --line-2:#232b33;
+  --blue:#6aa6e8; --red:#e8765c; --green:#5fc282; --amber:#e0a23a; --violet:#a58ce0;
+  --hl:rgba(106,166,232,.16);
+}}
+*{box-sizing:border-box}
+body{background:var(--ground);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.65;
+  margin:0;padding:28px 16px 56px}
+.wrap{max-width:1180px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+h1{font-size:26px;margin:0;letter-spacing:-.01em}
+h2{font-size:18px;margin:0 0 6px}
+.sub{color:var(--ink-2);margin:6px 0 0;max-width:72ch}
+code{font-family:var(--mono);font-size:.92em;background:var(--line-2);padding:1px 5px;border-radius:4px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 20px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:8px 0}
+.row .lbl{font-size:13px;color:var(--ink-3);min-width:4.5em}
+button,select{font:inherit;font-size:13px;color:var(--ink);background:var(--panel);border:1px solid var(--line);
+  border-radius:8px;padding:5px 12px;cursor:pointer}
+button:hover,select:hover{border-color:var(--blue);color:var(--blue)}
+button.on{background:var(--blue);border-color:var(--blue);color:#fff}
+label{font-size:13px;color:var(--ink-2)}
+input[type=range]{vertical-align:middle;width:150px}
+.tip{color:var(--ink-3);font-size:13px}
+.stage{display:flex;justify-content:center;margin-top:6px}
+canvas{max-width:100%;border:1px solid var(--line);border-radius:8px;background:var(--panel);
+  touch-action:none;cursor:crosshair;display:block}
+#readout{font-family:var(--mono);font-size:13px;background:var(--line-2);border-radius:8px;padding:10px 14px;
+  line-height:1.8;margin-top:12px;white-space:pre-wrap}
+#readout b{color:var(--blue)}
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:12px;margin-top:10px}
+.exp div{background:var(--line-2);border-radius:8px;padding:10px 12px;font-size:13.5px}
+.exp b.t{display:block;margin-bottom:2px}
+footer{color:var(--ink-3);font-size:12.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>傅里叶本轮:一串圆盘怎么描出「TES」</h1>
+    <p class="sub">左边那串首尾相接的圆盘,每一个就是傅里叶系数里的一项:<b>半径 = 振幅、转速 = 频率、起始角度 = 相位</b>。
+      它们转起来,末端那支笔画出的就是原图形。拖动「圆盘个数」看它从模糊变清楚 —— 这就是「项数越多越像」。
+      全部计算在本页完成,不联网。</p>
+  </header>
+
+  <section class="card">
+    <div class="row">
+      <span class="lbl">图形</span>
+      <select id="shape">
+        <option value="tes">TES 连笔签名</option>
+        <option value="square">正方形</option>
+        <option value="star">五角星</option>
+        <option value="circle">偏心圆</option>
+      </select>
+      <button id="bDraw">自己画一笔</button>
+      <span class="tip" id="hint">画的时候按住鼠标拖,松手就闭环</span>
+    </div>
+    <div class="row">
+      <span class="lbl">圆盘</span>
+      <button id="bPlay" class="on">暂停</button>
+      <button id="bReset">重置轨迹</button>
+      <label>个数 <input type="range" id="kSlider" min="1" max="200" value="120"> <span id="kV">120</span></label>
+      <label>转速 <input type="range" id="spSlider" min="1" max="60" value="12"> <span id="spV">1.0×</span></label>
+    </div>
+    <div class="row">
+      <span class="lbl">显示</span>
+      <label><input type="checkbox" id="cCircle" checked> 圆盘</label>
+      <label><input type="checkbox" id="cVec" checked> 向量</label>
+      <label><input type="checkbox" id="cTarget" checked> 目标轮廓(灰色虚线)</label>
+      <label><input type="checkbox" id="cPen" checked> 笔尖</label>
+    </div>
+
+    <div class="stage"><canvas id="cv" width="860" height="560"></canvas></div>
+    <div id="readout"></div>
+  </section>
+
+  <section class="card">
+    <h2>试试这几个</h2>
+    <div class="exp">
+      <div><b class="t">1. 一个圆盘 = 一个圆</b>把圆盘个数拖到 <b>1</b>。只剩那个最大的圆盘,笔尖画出来的是个圆 —— 它撑起了整个图形的大框架。</div>
+      <div><b class="t">2. 越加越像</b>从 1 拖到 20,再拖到 120。看右下角「最大偏差」一步步变小;形状先出轮廓,再长出角。</div>
+      <div><b class="t">3. 大圆管骨架,小圆管细节</b>勾掉「圆盘」只看向量:最长的那几根几乎不动地在撑形状,后面一大堆小圆盘转得飞快,只负责把转角磨尖。</div>
+      <div><b class="t">4. 有的圆盘在倒着转</b>看「最大的三个圆盘」里的转速:有负数。那就是负频率 —— 复平面上顺时针转的那一个。</div>
+      <div><b class="t">5. 自己画</b>点「自己画一笔」,在画布上拖出一个闭合形状(画完会自动首尾相连)。越尖的角,需要的圆盘越多。</div>
+      <div><b class="t">6. 为什么必须除以 N</b>圆盘半径 = 累加值 ÷ 采样点数,本页已经除过了;想知道没除会怎样,去看 <code>9.探针为什么反向转.md</code> 第五节。</div>
+    </div>
+  </section>
+
+  <footer>
+    配合 <code>Documents/数学基础/快速路线/9.探针为什么反向转.md</code>(第六节「本轮」)。
+    算法与 <code>Python-Prototyping/Ch04_Frequency_Domain/46_fourier_probe.py</code> 一致:
+    沿路径等弧长采样 400 点 → 映射成复数 x+jy → 用探针 <code>e^{-j2πkt/N}</code> 做 DFT → <b>除以 N</b> 得到半径 → 按振幅从大到小排序;
+    正方形那一项在两边应一致(前 1 项最大偏差 0.2670、前 3 项 0.0919、前 9 项 0.0231,按图形边长归一化后对比)。
+  </footer>
+</div>
+
+<script>
+"use strict";
+const N = 400;                       // 采样点数
+const PATHS = {
+  // 1000 × 600 画布上的一笔连写 TES(三次贝塞尔,闭合)
+  tes: "M 120 180 C 180 170, 320 160, 360 170 C 340 210, 260 360, 250 400 C 240 440, 220 480, 260 470 C 300 460, 340 380, 380 340 C 420 300, 480 290, 470 340 C 460 390, 380 470, 440 470 C 480 470, 520 410, 560 360 C 600 310, 640 240, 680 220 C 730 200, 790 230, 760 290 C 730 350, 620 380, 650 430 C 680 480, 780 460, 830 420 C 750 510, 500 520, 320 510 C 180 500, 100 320, 120 180 Z",
+  square: "M 150 150 L 850 150 L 850 450 L 150 450 Z",
+  star: "M 500 80 L 610 380 L 930 380 L 670 560 L 780 860 L 500 680 L 220 860 L 330 560 L 70 380 L 390 380 Z",
+  circle: "M 500 120 A 260 260 0 1 1 499 120 Z"
+};
+const $ = id => document.getElementById(id);
+const cv = $("cv"), g = cv.getContext("2d");
+
+let pts = [];            // 采样点(已减去中心)
+let coef = [];           // {freq, amp, phase}
+let scale = 1;           // 图形缩放,让不同图形都撑满画布
+let time = 0, trail = [], playing = true;
+let drawing = false, raw = [];
+let err = 0;
+
+// ---------- 采样 ----------
+function samplePath(d, n) {
+  const svg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  const p = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  p.setAttribute("d", d); svg.appendChild(p); document.body.appendChild(svg);
+  const L = p.getTotalLength(), out = [];
+  for (let i = 0; i < n; i++) { const q = p.getPointAtLength(i / n * L); out.push([q.x, q.y]); }
+  document.body.removeChild(svg);
+  return out;
+}
+function resample(poly, n) {          // 按弧长等间距重采样(自己画的用)
+  const seg = [0];
+  for (let i = 1; i < poly.length; i++) seg.push(seg[i - 1] + Math.hypot(poly[i][0] - poly[i - 1][0], poly[i][1] - poly[i - 1][1]));
+  const L = seg[seg.length - 1], out = [];
+  let j = 0;
+  for (let i = 0; i < n; i++) {
+    const s = i / n * L;
+    while (j < seg.length - 2 && seg[j + 1] < s) j++;
+    const f = (s - seg[j]) / Math.max(1e-9, seg[j + 1] - seg[j]);
+    out.push([poly[j][0] + (poly[j + 1][0] - poly[j][0]) * f, poly[j][1] + (poly[j + 1][1] - poly[j][1]) * f]);
+  }
+  return out;
+}
+function setPoints(list) {
+  let cx = 0, cy = 0;
+  for (const p of list) { cx += p[0]; cy += p[1]; }
+  cx /= list.length; cy /= list.length;
+  let mx = 0;
+  for (const p of list) mx = Math.max(mx, Math.abs(p[0] - cx), Math.abs(p[1] - cy));
+  scale = 210 / Math.max(1, mx);
+  pts = list.map(p => [(p[0] - cx) * scale, (p[1] - cy) * scale]);
+  computeDFT();
+  time = 0; trail = []; refresh();
+}
+
+// ---------- DFT:探针 e^{-j2πkt/N},除以 N ----------
+function computeDFT() {
+  const X = [];
+  for (let k = 0; k < N; k++) {
+    let re = 0, im = 0;
+    for (let n = 0; n < N; n++) {
+      const phi = 2 * Math.PI * k * n / N, c = Math.cos(phi), s = Math.sin(phi);
+      re += pts[n][0] * c + pts[n][1] * s;      //  (x+jy)·e^{-jφ} 的实部
+      im += -pts[n][0] * s + pts[n][1] * c;     //  虚部
+    }
+    re /= N; im /= N;
+    X.push({ freq: k, amp: Math.hypot(re, im), phase: Math.atan2(im, re) });
+  }
+  X.sort((a, b) => b.amp - a.amp);              // 按振幅从大到小:大圆盘先画
+  coef = X;
+}
+
+// ---------- 用前 K 项重建,量出最大偏差 ----------
+function maxErr(K) {
+  let mx = 0;
+  for (let n = 0; n < N; n++) {
+    let x = 0, y = 0;
+    for (let i = 0; i < K; i++) {
+      const a = coef[i].freq * (2 * Math.PI * n / N) + coef[i].phase;
+      x += coef[i].amp * Math.cos(a); y += coef[i].amp * Math.sin(a);
+    }
+    mx = Math.max(mx, Math.hypot(x - pts[n][0], y - pts[n][1]));
+  }
+  return mx / scale;                            // 换回原图形的坐标单位
+}
+function refresh() {
+  const K = +$("kSlider").value;
+  err = maxErr(Math.min(K, N));
+  const top = coef.slice(0, 3).map(c => {
+    const f = c.freq <= N / 2 ? c.freq : c.freq - N;
+    return `k=${f >= 0 ? "+" : ""}${f} r=${c.amp.toFixed(1)} φ=${(c.phase * 180 / Math.PI).toFixed(0)}°`;
+  }).join("   ");
+  $("readout").innerHTML =
+    `圆盘 <b>${K}</b> 个(共 ${N} 项,按振幅排序)    重建最大偏差 <b>${err.toFixed(3)}</b>(原图形坐标单位)\n` +
+    `最大的三个圆盘:  <b>${top}</b>`;
+}
+
+// ---------- 画 ----------
+function frame() {
+  g.clearRect(0, 0, cv.width, cv.height);
+  const cx = cv.width / 2, cy = cv.height / 2;
+  const K = Math.min(+$("kSlider").value, N);
+
+  if ($("cTarget").checked && pts.length) {     // 目标轮廓
+    g.save(); g.setLineDash([5, 5]); g.strokeStyle = "rgba(128,136,146,.65)"; g.lineWidth = 1.4;
+    g.beginPath(); g.moveTo(cx + pts[0][0], cy + pts[0][1]);
+    for (let i = 1; i < N; i++) g.lineTo(cx + pts[i][0], cy + pts[i][1]);
+    g.closePath(); g.stroke(); g.restore();
+  }
+
+  let x = cx, y = cy;                            // 圆盘链
+  const showC = $("cCircle").checked, showV = $("cVec").checked;
+  for (let i = 0; i < K; i++) {
+    const c = coef[i], a = c.freq * time + c.phase;
+    const nx = x + c.amp * Math.cos(a), ny = y + c.amp * Math.sin(a);
+    if (showC && c.amp > 0.6) {
+      g.beginPath(); g.arc(x, y, c.amp, 0, Math.PI * 2);
+      g.strokeStyle = "rgba(44,111,187,.22)"; g.lineWidth = 1; g.stroke();
+    }
+    if (showV && c.amp > 0.6) {
+      g.beginPath(); g.moveTo(x, y); g.lineTo(nx, ny);
+      g.strokeStyle = "rgba(44,111,187,.75)"; g.lineWidth = 1.3; g.stroke();
+    }
+    x = nx; y = ny;
+  }
+
+  if (playing) { trail.unshift([x, y]); if (trail.length > N + 60) trail.pop(); }
+  if (trail.length > 1) {                        // 笔迹
+    g.beginPath(); g.moveTo(trail[0][0], trail[0][1]);
+    for (let i = 1; i < trail.length; i++) g.lineTo(trail[i][0], trail[i][1]);
+    g.strokeStyle = "#c4442a"; g.lineWidth = 2.6; g.lineCap = "round"; g.lineJoin = "round"; g.stroke();
+  }
+  if ($("cPen").checked) {
+    g.beginPath(); g.arc(x, y, 4.5, 0, Math.PI * 2); g.fillStyle = "#c4442a"; g.fill();
+  }
+
+  if (playing) {
+    time += (2 * Math.PI / N) * (+$("spSlider").value) / 12;
+    if (time >= 2 * Math.PI) { time = 0; trail = []; }
+  }
+  requestAnimationFrame(frame);
+}
+
+// ---------- 交互 ----------
+function loadShape(name) { setPoints(samplePath(PATHS[name], N)); }
+$("shape").onchange = () => { drawing = false; loadShape($("shape").value); };
+$("kSlider").oninput = () => { $("kV").textContent = $("kSlider").value; trail = []; refresh(); };
+$("spSlider").oninput = () => { $("spV").textContent = (+$("spSlider").value / 12).toFixed(1) + "×"; };
+$("bPlay").onclick = () => {
+  playing = !playing;
+  $("bPlay").textContent = playing ? "暂停" : "播放";
+  $("bPlay").classList.toggle("on", playing);
+};
+$("bReset").onclick = () => { time = 0; trail = []; };
+$("bDraw").onclick = () => {
+  drawing = true; raw = [];
+  g.clearRect(0, 0, cv.width, cv.height);
+  $("hint").textContent = "在画布上按住拖一笔,松手后自动首尾相连并做 DFT";
+};
+function at(ev) { const r = cv.getBoundingClientRect(); return [(ev.clientX - r.left) / r.width * cv.width, (ev.clientY - r.top) / r.height * cv.height]; }
+cv.addEventListener("pointerdown", ev => {
+  if (!drawing) return;
+  cv.setPointerCapture(ev.pointerId); raw = [at(ev)];
+});
+cv.addEventListener("pointermove", ev => {
+  if (!drawing || !raw.length) return;
+  raw.push(at(ev));
+  g.clearRect(0, 0, cv.width, cv.height);
+  g.beginPath(); g.moveTo(raw[0][0], raw[0][1]);
+  for (const p of raw) g.lineTo(p[0], p[1]);
+  g.strokeStyle = "#2c6fbb"; g.lineWidth = 2.4; g.stroke();
+});
+cv.addEventListener("pointerup", () => {
+  if (!drawing || raw.length < 8) return;
+  drawing = false;
+  raw.push(raw[0]);                              // 闭合
+  setPoints(resample(raw, N));
+  $("hint").textContent = "画的时候按住鼠标拖,松手就闭环";
+});
+
+loadShape("tes");
+$("spV").textContent = "1.0×";
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

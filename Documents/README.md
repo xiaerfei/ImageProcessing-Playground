@@ -189,6 +189,7 @@ xelatex 版式(字体、标题、引用块、代码块、表格)在 [`tools/pdf_
 | :--- | :--- |
 | [gemini-对话-自学路线规划.md](_archive/gemini-对话-自学路线规划.md) | 这个仓库的由来:结合 iOS/音视频背景定制自学路线的原始对话。成果见 `00-roadmap/01-book-outline.md` 和根目录 `ROADMAP.md` |
 | [gemini-对话-MacOS仿射变换答疑.md](_archive/gemini-对话-MacOS仿射变换答疑.md) | 围绕 `IAAffineTransform.m` 的逐点答疑原始记录。成果见 `04-geometry/01-图像仿射变换原理解析.md` |
+| [gemini-对话-傅里叶变换正交性.md](_archive/gemini-对话-傅里叶变换正交性.md) | 从「相乘怎么可能是 0」一路追问到相位、atan2、探针为什么带负号的原始对话(配图在 `_archive/images/`)。成果见 `数学基础/快速路线/9.探针为什么反向转.md`,其中那张 3Blue1Brown 本轮截图就是这次讨论的引子 |
 
 ## 数学回血资源
 
