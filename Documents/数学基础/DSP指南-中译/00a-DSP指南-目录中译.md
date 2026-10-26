@@ -1,6 +1,6 @@
 # 《The Scientist and Engineer's Guide to Digital Signal Processing》目录中译
 
-> 原书：同目录下的 `The Scientist and Engineer Guide to Digital Signal Processing.pdf`，对应 PDF 第 2～8 页（罗马页码 v～xi）。
+> 原书：上一级目录 `Documents/数学基础/` 下的 `The Scientist and Engineer Guide to Digital Signal Processing.pdf`，对应 PDF 第 2～8 页（罗马页码 v～xi）。
 > 页码保留原书页码。专业名词第一次出现时在括号里附上英文。
 
 ---
