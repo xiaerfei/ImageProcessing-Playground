@@ -7,6 +7,7 @@
 | [`build_docs_pdf.py`](build_docs_pdf.py) | 把 `Documents/` 下的笔记排成带书签的 PDF,一个主题一本 |
 | [`check_pdf_env.py`](check_pdf_env.py) | 环境体检:检查下面这些东西装齐没有,缺什么直接打印安装命令 |
 | [`check_doc_links.py`](check_doc_links.py) | 检查笔记里的链接、锚点有没有断 |
+| [`split_pdf_pages.py`](split_pdf_pages.py) | 把一个 PDF 拆成单页 PDF;默认输出到被忽略的 `Documents/_archive/原文-<书名>-拆页/` |
 | [`pdf_latex_header.tex`](pdf_latex_header.tex)、[`pdf_latex_filter.lua`](pdf_latex_filter.lua) | xelatex 引擎的版式与过滤器 |
 
 ## 需要安装什么(macOS)
