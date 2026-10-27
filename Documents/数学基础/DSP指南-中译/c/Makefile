@@ -4,7 +4,8 @@ LDLIBS  = -lm
 
 TARGETS = table2-1_mean_sd table2-2_running_stats \
           table2-3_histogram_stats table2-4_binned_histogram \
-          table4-1_float_error table4-2_loop_control table4-5_add
+          table4-1_float_error table4-2_loop_control table4-5_add \
+          table6-1_convolve_input_side table6-2_convolve_output_side
 
 all: $(TARGETS)
 
