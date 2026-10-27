@@ -8,7 +8,10 @@ TARGETS = table2-1_mean_sd table2-2_running_stats \
           table6-1_convolve_input_side table6-2_convolve_output_side \
           table7-1_difference_running_sum \
           table8-1_inverse_dft table8-2_dft_correlation \
-          table8-3_rect_polar table8-4_phase_unwrap
+          table8-3_rect_polar table8-4_phase_unwrap \
+          table12-1_negative_freq table12-2_complex_dft_correlation \
+          table12-3_fft_fortran table12-4_fft table12-5_inverse_fft \
+          table12-6_real_inverse_fft table12-7_real_fft
 
 all: $(TARGETS)
 
