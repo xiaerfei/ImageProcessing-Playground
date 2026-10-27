@@ -18,7 +18,8 @@ TARGETS = table2-1_mean_sd table2-2_running_stats \
           table19-1_recursive_filter table20-4_chebyshev_design \
           table24-1_image_convolution table25-1_skeletonization \
           table26-1_nn_forward table26-2_nn_training \
-          table26-4_iterative_recursive_filter
+          table26-4_iterative_recursive_filter \
+          table33-1_combine_stages
 
 all: $(TARGETS)
 
