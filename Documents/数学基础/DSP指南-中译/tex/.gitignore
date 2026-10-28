@@ -1,0 +1,10 @@
+# xelatex 编译产物（main.pdf 约 25 MB，随时可由 build-tex.sh --pdf 重新生成）
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fdb_latexmk
+*.fls
+*.xdv
+main.pdf

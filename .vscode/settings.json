@@ -1,0 +1,16 @@
+{
+  // LaTeX Workshop 默认配方用 latexmk，本机 TeX Live basic 没装；这里改成 xelatex 跑两遍（第二遍填目录和交叉引用）
+  "latex-workshop.latex.tools": [
+    {
+      "name": "xelatex",
+      "command": "xelatex",
+      "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
+    }
+  ],
+  "latex-workshop.latex.recipes": [
+    { "name": "xelatex ×2", "tools": ["xelatex", "xelatex"] }
+  ],
+  "latex-workshop.latex.recipe.default": "first",
+  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.view.pdf.viewer": "tab"
+}

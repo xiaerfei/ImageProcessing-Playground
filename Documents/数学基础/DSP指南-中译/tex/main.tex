@@ -1,0 +1,108 @@
+% !TEX program = xelatex
+% 《DSP 指南》中译合订本。章节正文在 chapters/ 下，由 build-tex.sh 从上一级目录的 md 生成。
+% 只想看某几章时，把 \includeonly 那行的注释去掉并填上章节号，编译会快很多。
+\documentclass[a4paper,zihao=-4,fontset=mac,openany]{ctexbook}
+
+% ---------- 版面 ----------
+\usepackage[top=2.5cm,bottom=2.5cm,left=2.6cm,right=2.6cm,headheight=15pt]{geometry}
+\linespread{1.35}
+\setlength{\parskip}{0.3em}
+\setcounter{secnumdepth}{0} % 只给章编号，节保持原书的不编号写法
+\setcounter{tocdepth}{1}    % 目录列到节
+\ctexset{
+  chapter = {number = \arabic{chapter}, format = \huge\bfseries\centering, beforeskip = 10pt, afterskip = 30pt},
+  section = {format = \Large\bfseries},
+}
+
+% ---------- 字体 ----------
+% STIX Two 自带希腊字母和常用符号，正文里的 µ、σ、−、≈ 不会缺字
+\usepackage{unicode-math}
+\setmainfont{STIX Two Text}
+\setmathfont{STIX Two Math}
+\setmonofont{Menlo}[Scale=0.85]
+% 正文字体缺箭头和部分数学符号，xelatex 不会自动换字体补字；
+% md2tex.lua 把正文里的这些字符包成 \dspsym{→}，用 STIX Two Math 显示
+\newfontfamily\dspsymfont{STIX Two Math}
+\newcommand{\dspsym}[1]{{\dspsymfont #1}}
+
+% ---------- 常用宏包 ----------
+\usepackage{amsmath}
+\usepackage{graphicx}
+\graphicspath{{../}} % md 里的图片路径是 assets/...，相对上一级目录
+\usepackage[font=small,labelformat=empty]{caption}
+\usepackage{longtable,booktabs,array,calc}
+\newcounter{none} % pandoc 生成的无标题表格用 \begin{longtable}[]，需要这个计数器
+\usepackage{xcolor}
+\usepackage{fvextra}
+\fvset{breaklines=true,breakanywhere=true,fontsize=\small}
+\usepackage{enumitem}
+\setlist{itemsep=0.2em,topsep=0.4em}
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% 代码块浅灰底色、引用块左侧竖线；framed 能跨页断开，且 TeX Live basic 自带
+\usepackage{framed}
+\definecolor{shadecolor}{gray}{0.95}
+\input{highlight.tex}
+\renewenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\renewenvironment{quote}
+  {\def\FrameCommand{{\color{black!30}\vrule width 2pt}\hspace{8pt}}%
+   \MakeFramed{\advance\hsize-\width\FrameRestore}\small\color{black!75}}
+  {\endMakeFramed}
+
+\usepackage[colorlinks=true,linkcolor=blue!50!black,urlcolor=blue!50!black,bookmarksnumbered]{hyperref}
+\usepackage{bookmark}
+\usepackage{xurl}
+
+\title{\textbf{数字信号处理：科学家与工程师指南}\\[1em]\Large The Scientist and Engineer's Guide to Digital Signal Processing\\[0.5em]\large（中译本）}
+\author{Steven W. Smith 著}
+\date{}
+
+% \includeonly{chapters/02,chapters/03}
+
+\begin{document}
+
+\frontmatter
+\maketitle
+\include{chapters/00b}
+\tableofcontents
+
+\mainmatter
+\include{chapters/01}
+\include{chapters/02}
+\include{chapters/03}
+\include{chapters/04}
+\include{chapters/05}
+\include{chapters/06}
+\include{chapters/07}
+\include{chapters/08}
+\include{chapters/09}
+\include{chapters/10}
+\include{chapters/11}
+\include{chapters/12}
+\include{chapters/13}
+\include{chapters/14}
+\include{chapters/15}
+\include{chapters/16}
+\include{chapters/17}
+\include{chapters/18}
+\include{chapters/19}
+\include{chapters/20}
+\include{chapters/21}
+\include{chapters/22}
+\include{chapters/23}
+\include{chapters/24}
+\include{chapters/25}
+\include{chapters/26}
+\include{chapters/27}
+\include{chapters/28}
+\include{chapters/29}
+\include{chapters/30}
+\include{chapters/31}
+\include{chapters/32}
+\include{chapters/33}
+
+\backmatter
+\include{chapters/34}
+\include{chapters/35}
+
+\end{document}
