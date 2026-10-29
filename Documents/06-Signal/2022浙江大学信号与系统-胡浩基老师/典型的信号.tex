@@ -471,7 +471,57 @@ I(0)=\int_0^{+\infty}\frac{\sin t}{t}\d t=-\arctan 0+\frac{\pi}{2}=\frac{\pi}{2}
 
 再由偶函数得 $\int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=2\cdot\frac\pi2=\pi$。
 
-\emph{（补充，严格性：第 2 步「求导进积分号」和第 6 步「$a\to0^{+}$ 时 $I(a)\to I(0)$」严格来说需要论证收敛性，重转写里老师没有展开，他是直接把 $a=0$ 代入的，这一点是我看出来的，不是他说的。）}\par\smallskip\textbf{老师在第 5 步的原话要点}：$a\to+\infty$ 时 $e^{-at}$ 趋于 0，被积函数每一点都趋于 0，所以 $I(+\infty)=0$；第 6 步「最后一步很有趣」：令 $a=0$，$e^{-0\cdot t}=1$，$I(0)$ 就是要求的积分。
+\emph{（补充：第 2 步「求导进积分号」和第 6 步「$a\to0^{+}$ 时 $I(a)\to I(0)$」严格来说需要论证收敛性，重转写里老师没有展开，他是直接把 $a=0$ 代入的，这一点是我看出来的，不是他说的。完整的论证见下面「收敛性与严格性」。）}\par\smallskip\textbf{老师在第 5 步的原话要点}：$a\to+\infty$ 时 $e^{-at}$ 趋于 0，被积函数每一点都趋于 0，所以 $I(+\infty)=0$；第 6 步「最后一步很有趣」：令 $a=0$，$e^{-0\cdot t}=1$，$I(0)$ 就是要求的积分。
+
+\subsubsection*{收敛性与严格性（补充）}
+\begin{note}
+这一小节\textbf{不是老师课上讲的}，是我为了回答「证明里每一步为什么可以这样做」补的，用的是微积分里的标准做法，我自己核对过每一步。初学时可以先跳过，知道「证明里有这几个需要检查的地方」就够了。
+\end{note}
+
+证明里偷偷用了五件事，逐个检查。记 $F(t)=\displaystyle\int_t^{+\infty}\frac{\sin s}{s}\d s$（尾巴）。
+
+\paragraph{（1）$\displaystyle\int_0^{+\infty}\frac{\sin t}{t}\d t$ 本身是收敛的。}
+$t=0$ 附近没有问题：$\bigl|\frac{\sin t}{t}\bigr|\le1$。问题在 $t\to+\infty$。对 $R>1$ 做分部积分：
+\[
+\int_1^R\frac{\sin t}{t}\d t=\Bigl[-\frac{\cos t}{t}\Bigr]_1^R-\int_1^R\frac{\cos t}{t^2}\d t
+=\cos1-\frac{\cos R}{R}-\int_1^R\frac{\cos t}{t^2}\d t .
+\]
+$R\to\infty$ 时，$\frac{\cos R}{R}\to0$；$\bigl|\frac{\cos t}{t^2}\bigr|\le\frac{1}{t^2}$，而 $\int_1^\infty\frac{1}{t^2}\d t$ 有限，所以最后一项也有极限。因此极限存在，积分收敛。
+
+\textbf{但它只是「条件收敛」，不是「绝对收敛」}：在每个区间 $[k\pi,(k+1)\pi]$ 上，$\int\frac{|\sin t|}{t}\d t\ge\frac{1}{(k+1)\pi}\int|\sin t|\d t=\frac{2}{(k+1)\pi}$，把这些加起来像调和级数 $\sum\frac1k$ 一样发散，所以 $\int_0^\infty\frac{|\sin t|}{t}\d t=+\infty$。意思是：它收敛，靠的是正负波瓣相互抵消，而不是靠波瓣越来越小直至可以忽略。这个区别是下面第（5）条为什么要多费一点力气的原因。
+
+\paragraph{（2）对 $a>0$，$I(a)$ 有意义。}
+$\bigl|\frac{\sin t}{t}e^{-at}\bigr|\le e^{-at}$，而 $\int_0^\infty e^{-at}\d t=\frac1a$ 有限，所以绝对收敛。
+
+\paragraph{（3）第 2 步「求导放进积分号」对 $a>0$ 成立。}
+取任意 $a_0>0$。对所有 $a\ge a_0$：
+\[
+\Bigl|\frac{\partial}{\partial a}\Bigl(\frac{\sin t}{t}e^{-at}\Bigr)\Bigr|=|\sin t|\,e^{-at}\le e^{-a_0t},
+\]
+右边与 $a$ 无关，并且 $\int_0^\infty e^{-a_0t}\d t=\frac1{a_0}$ 有限。有这样一个「共同的、可积的上界」，微积分里「积分号下求导」的定理就成立。所以 $I'(a)=-\frac1{a^2+1}$ 对每个 $a>0$ 成立，再积分得 $I(a)=-\arctan a+C$（$a>0$，$C$ 是常数）。
+
+\paragraph{（4）第 5 步 $I(+\infty)=0$ 的严格理由。}
+$|I(a)|\le\int_0^\infty e^{-at}\d t=\frac1a\to0$（$a\to+\infty$），所以 $\lim_{a\to+\infty}I(a)=0$。代入 $I(a)=-\arctan a+C$，得 $0=-\frac\pi2+C$，$C=\frac\pi2$，即对所有 $a>0$：$I(a)=\frac\pi2-\arctan a$。
+
+\paragraph{（5）第 6 步 $a\to0^{+}$ 时 $I(a)\to I(0)$：最需要小心的一步。}
+我们已经知道 $I(a)=\frac\pi2-\arctan a$（$a>0$），所以 $\lim_{a\to0^+}I(a)=\frac\pi2$。要得到的是 $I(0)=\int_0^\infty\frac{\sin t}{t}\d t=\frac\pi2$，需要证明 $\lim_{a\to0^+}I(a)=I(0)$。
+
+因为（1）说过 $\int\frac{\sin t}{t}\d t$ 只是条件收敛，不能用「被积函数有可积的上界，极限可以放进积分号」这类绝对收敛下的办法（这里找不到那个上界）。换一种办法：用尾巴 $F(t)$。
+
+$F$ 连续，$F(0)=I(0)$，$F(t)\to0$（$t\to\infty$，因为是收敛积分的尾巴），$F'(t)=-\frac{\sin t}{t}$，并且 $F$ 有界，设 $|F|\le M$。于是对 $a>0$ 做分部积分：
+\[
+I(a)=\int_0^\infty\bigl(-F'(t)\bigr)e^{-at}\d t=F(0)-a\int_0^\infty F(t)\,e^{-at}\d t .
+\]
+（边界项：$t\to\infty$ 时 $F(t)e^{-at}\to0$。）接下来证明最后一项 $\to0$。任给 $\varepsilon>0$，选 $T$ 使得 $t>T$ 时 $|F(t)|<\varepsilon$，则
+\[
+\Bigl|a\int_0^\infty F(t)e^{-at}\d t\Bigr|
+\le a\int_0^T M\d t+\varepsilon\cdot a\int_T^\infty e^{-at}\d t
+\le aTM+\varepsilon .
+\]
+令 $a\to0^+$，右边 $\to\varepsilon$。$\varepsilon$ 是任意的，所以这一项趋于 $0$，于是 $I(a)\to F(0)=I(0)$。
+
+\paragraph{合起来。}
+$I(0)=\lim_{a\to0^+}I(a)=\lim_{a\to0^+}\bigl(\frac\pi2-\arctan a\bigr)=\frac\pi2$。证明因此是严格的。五个检查点里，（1）（5）是真正需要费力的，因为这个积分只是条件收敛；（2）（3）（4）都靠 $e^{-at}$ 的衰减，这也是老师「人为加一个因子」这一招有效的原因：它让积分在 $a>0$ 时变成绝对收敛，把棘手的部分推到了最后一步 $a\to0^+$。
 
 %==================================================================
 \section{基本的离散时间信号（书上第 15 页起）}
