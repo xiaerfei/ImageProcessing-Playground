@@ -56,6 +56,20 @@
   \foreach \k in {#4} { \draw (\k,0.05) -- (\k,-0.05) node[below,font=\tiny] {$\k$}; }
   \node[font=\scriptsize,anchor=south] at (0,1.65) {#1};
 \end{tikzpicture}}
+% 离散阶跃面板：#1 标题，#2 边界 n0，#3 方向(1: n>=n0 取 1；-1: n<=n0 取 1)，#4 刻度列表
+\newcommand{\stemstep}[4]{%
+\begin{tikzpicture}[x=0.27cm,y=0.9cm,>=stealth]
+  \draw[->] (-7.5,0) -- (8.8,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.2) -- (0,1.5);
+  \foreach \k in {-7,...,7} {
+    \pgfmathtruncatemacro{\one}{(#3==1 && \k>=(#2)) || (#3==-1 && \k<=(#2))}
+    \ifnum\one=1 \stem{\k}{1} \else \stemzero{\k} \fi
+  }
+  \ifnum#3=1 \node[font=\scriptsize,blue!70!black] at (8.2,1) {$\cdots$}; \else \node[font=\scriptsize,blue!70!black] at (-8.0,1) {$\cdots$}; \fi
+  \foreach \k in {#4} { \draw (\k,0.05) -- (\k,-0.05) node[below,font=\tiny] {$\k$}; }
+  \node[left,font=\tiny] at (-0.2,1) {$1$};
+  \node[font=\scriptsize,anchor=south] at (0.5,1.55) {#1};
+\end{tikzpicture}}
 % 离散火柴杆
 \newcommand{\stem}[2]{\draw[thick,blue!70!black] (#1,0) -- (#1,#2); \fill[blue!70!black] (#1,#2) circle (1.8pt);}
 \newcommand{\stemzero}[1]{\fill[blue!70!black] (#1,0) circle (1.4pt);}
@@ -414,6 +428,65 @@ $u(-2t+4)$ & $t=2$ & \textbf{左侧}（$-2t+4>0\iff t<2$） & 标准形式 $u(-2
 \paragraph{为什么 $u(2t)=u(t)$：压缩对阶跃没有效果。}$2t>0$ 和 $t>0$ 是同一个条件，跳变位置都在 $t=0$（而 $0$ 压缩任意倍还是 $0$）。更一般地，对任意 $a>0$，$u(at)=u(t)$。这是阶跃信号很特殊的地方：\textbf{拉伸压缩都不改变它的图像}，只有平移和翻转才会改变。\emph{（补充：这一点对「冲激信号」就不成立，$\delta(at)$ 与 $\delta(t)$ 差一个系数，那是第二章的内容，这里只提一句，不展开。）}
 
 \paragraph{离散情形的一个区别。}$u[n]$ 在 $n=0$ 处\textbf{有确定的值 $1$}，所以 $u[-n]$ 在 $n\le0$ 上是 $1$（包含 $n=0$），$u[n-3]$ 在 $n\ge3$ 上是 $1$（包含 $n=3$）。连续的 $u(t)$ 跳变点处的值不规定，离散的没有这个问题（前面 $u[n+2]-u[n-3]$ 一题里，边界点的处理就是靠这一点）。
+
+\subsection{单位阶跃序列 $u[n]$ 的自变量变换}
+\textbf{（补充：这一节和上一节一样，是我按口诀推的，课上老师只在窗函数里用到了 $u[n-N]$、$u[n+2]$、$u[n-3]$。结论我都用定义验算过。）}
+
+$u[n]$ 的定义是 $n\ge0$ 时为 $1$，$n<0$ 时为 $0$。所以对 $u[n+b]$ 或 $u[-n+b]$ 也可以用同一个最省事的办法：
+\begin{remember}
+\textbf{令括号里的式子 $\ge0$，解出的 $n$ 的范围就是取 $1$ 的那一段；其余是 $0$。}（注意是「$\ge0$」，因为 $u[0]=1$，连续的 $u(t)$ 在边界上不规定值，这里的边界点是\textbf{包含}的。）
+\end{remember}
+
+\begin{center}
+\begin{tabular}{@{}lllp{5.0cm}@{}}
+\toprule
+序列 & 括号里 $\ge0$ & 取 $1$ 的范围 & 对应的口诀 \\
+\midrule
+$u[n-3]$ & $n-3\ge0$ & $n\ge3$ & 减号右移 $3$\\
+$u[n+2]$ & $n+2\ge0$ & $n\ge-2$ & 加号左移 $2$\\
+$u[-n]$ & $-n\ge0$ & $n\le0$ & 前有负号翻转\\
+$u[-n+4]$ & $-n+4\ge0$ & $n\le4$ & 标准形式 $u[-(n-4)]$：翻转，减号右移 $4$\\
+$u[2n]$ & $2n\ge0$ & $n\ge0$ & 与 $u[n]$ 的图相同（见下）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\stemstep{\textcircled{1} $u[n-3]$：右移 3}{3}{1}{-4,3}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\stemstep{\textcircled{2} $u[n+2]$：左移 2}{-2}{1}{-2,4}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\stemstep{\textcircled{3} $u[-n]$：翻转}{0}{-1}{-4,4}
+\end{minipage}
+
+\medskip
+\begin{minipage}{0.32\textwidth}\centering
+\stemstep{\textcircled{4} $u[-n+4]$：翻转再右移 4}{4}{-1}{-4,4}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\stemstep{\textcircled{5} $u[2n]$：与 $u[n]$ 相同}{0}{1}{-4,4}
+\end{minipage}
+\caption{$u[n]$ 的自变量变换。每根竖线高 $1$，横轴上的小圆点表示取值 $0$；边界点 $n_0$ 处的值是确定的 $1$，所以 $u[n-3]$ 的第一根线在 $n=3$，$u[-n]$ 的最后一根线在 $n=0$。}
+\end{figure}
+
+\paragraph{$u[2n]$ 怎么看（补充）。}$u[2n]$ 是把 $u[n]$ 每隔一个取一个点（$n=\dots,-2,-1,0,1,2,\dots$ 对应 $u$ 的 $\dots,-4,-2,0,2,4,\dots$ 这些位置），取出来的值是：负的 $n$ 全是 $0$，$n\ge0$ 全是 $1$，所以结果仍是 $u[n]$。这与连续的 $u(2t)=u(t)$ 一致。老师说过离散的 $n$ 系数是 $2$ 或 $\tfrac12$ 时「定义的时候有歧义」，所以这里 $u[2n]$ 只是一个特例，一般的离散信号在 $n$ 前面带 $2$ 会丢掉点，不能简单地说成「压缩」。$u[n/2]$ 则在 $n$ 为奇数时没有定义，更需要额外约定，我没有往下写。
+
+\paragraph{和上一节连续的对比。}
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & 连续 $u(t)$ & 离散 $u[n]$ \\
+\midrule
+跳变（边界）点的值 & 不规定 & 确定为 $1$\\
+取 $1$ 的条件 & 括号里 $>0$ & 括号里 $\ge0$\\
+$u(at)$ 与 $u[an]$（$a>0$）& 都等于原来的阶跃 & $u[2n]=u[n]$，但一般要小心\\
+\bottomrule
+\end{tabular}
+\end{center}
 
 \subsection{用阶跃函数平移、做减法，表示各种「窗」}
 \begin{enumerate}
