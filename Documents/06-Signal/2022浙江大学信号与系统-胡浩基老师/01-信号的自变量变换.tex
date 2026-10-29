@@ -70,6 +70,14 @@
   \node[left,font=\tiny] at (-0.2,1) {$1$};
   \node[font=\scriptsize,anchor=south] at (0.5,1.55) {#1};
 \end{tikzpicture}}
+% 一行三角形（用于多行叠放）：基线 y=#1，顶点 #2,#3(峰,高 1),#4，颜色 #5，标签 #6，刻度 #7
+\newcommand{\trirow}[7]{%
+  \draw[gray!50] (-8,#1) -- (8.5,#1);
+  \draw[very thick,#5] (#2,#1) -- (#3,{#1+0.9}) -- (#4,#1);
+  \draw[dotted,gray] (#3,#1) -- (#3,{#1+0.9});
+  \foreach \k in {#7} { \draw (\k,{#1+0.04}) -- (\k,{#1-0.04}) node[below,font=\tiny] {$\k$}; }
+  \node[anchor=west,font=\scriptsize,#5] at (8.6,{#1+0.4}) {#6};
+}
 % 离散火柴杆
 \newcommand{\stem}[2]{\draw[thick,blue!70!black] (#1,0) -- (#1,#2); \fill[blue!70!black] (#1,#2) circle (1.8pt);}
 \newcommand{\stemzero}[1]{\fill[blue!70!black] (#1,0) circle (1.4pt);}
@@ -623,6 +631,85 @@ y(t)=x(t)+\tfrac12\,x(t-8)
 \paragraph{平移和压缩一起出现时的顺序（再强调一次）。}$x(2t-4)$ 的标准形式是 $x(2(t-2))$，所以\textbf{先压缩 $2$ 倍，再右移 $2$}，平移量是 $2$ 而不是 $4$。这是前面口诀第一句「化成标准形式」要防的坑。
 
 \paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，前面例 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
+
+\subsection{组合变换：翻转、平移、压缩一起出现 $x(at+b)$}
+\textbf{（补充：这一节是我把前面三小节合起来画图总结，课上老师是用例题讲的，结论我都用定义验算过。）}
+
+前面把口诀的二、三、四句分别拆开看过了。现在把它们放到一起：一般的自变量变换是 $x(at+b)$，其中 $a$ 可正可负，$b$ 是常数。
+\begin{remember}
+\textbf{一步到位的验算公式}：原来在 $t=p$ 处的点，在 $x(at+b)$ 里变到
+\[
+t=\frac{p-b}{a}
+\]
+处，纵轴值不变。（令 $at+b=p$ 解出 $t$。）画图时可以先用这个公式把三个关键点的新位置算出来，再用口诀检查。
+\end{remember}
+
+\paragraph{例：用不对称的三角波 $x(t)$ 画 $x(-2t+4)$。}选一个不对称的三角波，避免翻转之后恰好和原图重合：$x(t)$ 在 $t=0$ 为 $0$，$t=2$ 为峰（高 $1$），$t=6$ 回到 $0$。
+
+\textbf{一步到位验算}：$a=-2$，$b=4$，$t=\dfrac{p-4}{-2}$：
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+原来的点 $p$ & $0$ & $2$ & $6$ \\
+新位置 $t=\frac{p-4}{-2}$ & $2$ & $1$ & $-1$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+所以 $x(-2t+4)$ 是一个三角波：左端在 $t=-1$，峰在 $t=1$，右端在 $t=2$。注意左右互换了（原来的 $p=0$ 现在在右端）。
+
+\textbf{口诀做法（先化成标准形式 $x(-2(t-2))$）}：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.0cm,>=stealth]
+  \draw[->] (0,-4.6) -- (0,1.3);
+  \draw[->] (-8,0.0) -- (8.5,0.0) node[right,font=\scriptsize] {$t$};
+  \trirow{0}{0}{2}{6}{gray}{\textcircled{1} $x(t)$}{0,2,6}
+  \trirow{-1.5}{-6}{-2}{0}{orange!85!black}{\textcircled{2} 翻转：$x(-t)$}{-6,-2,0}
+  \trirow{-3.0}{-3}{-1}{0}{green!50!black}{\textcircled{3} 压缩 2 倍：$x(-2t)$}{-3,-1,0}
+  \trirow{-4.5}{-1}{1}{2}{blue!70!black}{\textcircled{4} 右移 2：$x(-2(t-2))$}{-1,1,2}
+\end{tikzpicture}
+\caption{口诀顺序：\textcircled{1}$\to$\textcircled{2} 前有负号翻转，\textcircled{2}$\to$\textcircled{3} 系数绝对值 $2>1$ 压缩，\textcircled{3}$\to$\textcircled{4} 减号右移 $2$。每步的三个关键点：$(0,2,6)\to(-6,-2,0)\to(-3,-1,0)\to(-1,1,2)$，与一步到位算出的结果一致。}
+\end{figure}
+
+\paragraph{换一种顺序也行，但平移量不同。}也可以先平移、再做翻转和压缩：$x(-2t+4)$ 是把 $x(\cdot+4)$（先左移 $4$）里的 $t$ 换成 $-2t$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.0cm,>=stealth]
+  \draw[->] (0,-3.1) -- (0,1.3);
+  \draw[->] (-8,0.0) -- (8.5,0.0) node[right,font=\scriptsize] {$t$};
+  \trirow{0}{0}{2}{6}{gray}{\textcircled{1} $x(t)$}{0,2,6}
+  \trirow{-1.5}{-4}{-2}{2}{orange!85!black}{\textcircled{2} 先左移 $4$：$x(t+4)$}{-4,-2,2}
+  \trirow{-3.0}{-1}{1}{2}{blue!70!black}{\textcircled{3} 再 $t\to-2t$：$x(-2t+4)$}{-1,1,2}
+\end{tikzpicture}
+\caption{另一种顺序：先把 $x(t)$ 左移 $4$ 得到 $x(t+4)$，再把自变量换成 $-2t$（翻转并压缩 $2$ 倍），每个点 $p\to-p/2$：$(-4,-2,2)\to(2,1,-1)$，即左端 $-1$、峰 $1$、右端 $2$，得到和上一种顺序相同的结果。}
+\end{figure}
+两种顺序结果相同，区别只在平移量：\textbf{先缩放再平移，要先提出系数，括号里是 $t-2$，平移 $2$ 个单位（$=|b/a|=4/2$）；先平移再缩放，平移的是 $x(\cdot+4)$，平移 $4$ 个单位（就是 $b$）。}所以老师把「化成标准形式」放在口诀第一句：提出系数之后，平移量一目了然，不用在心里换算。
+
+\paragraph{最常见的几个错误（对照图）。}同样画 $x(-2t+4)$，下图把正确答案和其中两种错误画在一起：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.4cm,>=stealth]
+  \draw[->] (-7,0) -- (7,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.5);
+  \draw[very thick,blue!70!black] (-1,0) -- (1,1) -- (2,0);
+  \draw[very thick,red!70!black,dashed] (1,0) -- (3,1) -- (4,0);
+  \draw[very thick,orange!85!black,dashed] (-5,0) -- (-3,1) -- (-2,0);
+  \foreach \k in {-5,-3,-2,-1,1,2,3,4} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\tiny] {$\k$}; }
+  \node[blue!70!black,font=\small,anchor=south] at (1,1.05) {正确};
+  \node[red!70!black,font=\small,anchor=south,align=center] at (3.5,1.05) {错：平移量写成 $4$\\（应是 $2$）};
+  \node[orange!85!black,font=\small,anchor=south,align=center] at (-3,1.05) {错：方向写成左移\\（减号应右移）};
+\end{tikzpicture}
+\caption{蓝：正确答案（左端 $-1$、峰 $1$、右端 $2$）。红虚线：把平移量误写成 $b=4$（翻转压缩之后又右移 $4$），整体偏右。橙虚线：把「减号右移」记反，左移 $2$，偏到左边。}
+\end{figure}
+\begin{enumerate}[nosep]
+\item \textbf{忘了提出系数}：$-2t+4$ 里的 $4$ 对应的平移量是 $4/2=2$（不是 $4$）；
+\item \textbf{方向记反}：标准形式是 $x(-2(t-2))$，括号里是\textbf{减号}，所以右移；
+\item \textbf{左右搞反}：有负号就要翻转，翻转之后左端和右端互换（本例中原来的 $p=0$ 变到右端）。
+\end{enumerate}
+遇到拿不准的时候，用上面「一步到位」公式把三个关键点算一遍，对照就知道哪里错了。
 
 %==================================================================
 \section{离散信号的自变量变换}
