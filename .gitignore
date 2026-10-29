@@ -21,3 +21,8 @@ xcuserdata/
 
 # 第三方原文存档(版权归原作者,只在本地留作对比,不推送到公开仓库)
 Documents/_archive/原文-*/
+
+# LaTeX 编译中间文件(VS Code LaTeX Workshop / xelatex 产生)
+*.aux
+*.log
+*.synctex.gz
