@@ -462,6 +462,107 @@ x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
 
 \paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(-t)$ 就是\textbf{倒放}（录音从后往前播）。时间上的翻转是一个数学操作；真实世界里的信号不能真的「倒着发生」，但处理已经录好的数据时可以做。我没有核对书，这是我的类比。
 
+\subsection{单独看一次：平移变换 $x(t-t_0)$}
+\textbf{（补充：这一节和前两节一样，是我把口诀第四句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
+
+只做平移的变换：$x(t)\to x(t-t_0)$。口诀第四句「加号左移，减号右移」说的就是它：
+\begin{itemize}[nosep]
+\item $x(t-t_0)$（$t_0>0$）：\textbf{右移 $t_0$}，也叫\textbf{延迟}（delay）；
+\item $x(t+t_0)$（$t_0>0$）：\textbf{左移 $t_0$}，也叫\textbf{超前}（advance）。
+\end{itemize}
+关键点规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p+t_0$ 处（对 $x(t-t_0)$），形状和纵轴的值都不变。}理由：新信号在 $t$ 处的值是原信号在 $t-t_0$ 处的值，要看到原来 $p$ 处的特征，需要 $t-t_0=p$，即 $t=p+t_0$。「减号」对应「往大的方向（右）走」，所以减号右移。
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & $x(t+2)$：左移 $2$ & $x(t)$ & $x(t-2)$：右移 $2$ \\
+\midrule
+关键点 $t$ 值 & $-2,\ 1,\ 4$ & $0,\ 3,\ 6$ & $2,\ 5,\ 8$ \\
+峰高 & $1$ & $1$ & $1$ \\
+底边宽度 & $6$ & $6$ & $6$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
+  \draw[->] (-4,0) -- (10.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-3.4) -- (0,1.4);
+  % 上：x(t+2)，中：x(t)，下：x(t-2)
+  \draw[very thick,orange!85!black] (-2,0) -- (1,1) -- (4,0);
+  \begin{scope}[yshift=-1.5cm]
+    \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \end{scope}
+  \begin{scope}[yshift=-3cm]
+    \draw[very thick,red!70!black] (2,0) -- (5,1) -- (8,0);
+  \end{scope}
+  % 对齐用虚线：三个峰
+  \draw[dotted,gray] (1,1) -- (1,-3);  \draw[dotted,gray] (3,-0.5) -- (3,-3); \draw[dotted,gray] (5,-2) -- (5,-3);
+  % 基线
+  \draw[gray] (-4,-1.5) -- (10.5,-1.5); \draw[gray] (-4,-3) -- (10.5,-3);
+  \node[orange!70!black,font=\small,anchor=west] at (4.6,0.55) {$x(t+2)$：左移 $2$};
+  \node[blue!70!black,font=\small,anchor=west] at (6.6,-1.0) {$x(t)$};
+  \node[red!70!black,font=\small,anchor=west] at (8.6,-2.5) {$x(t-2)$：右移 $2$};
+  \foreach \k/\yy in {-2/0,1/0,4/0,0/-1.5,3/-1.5,6/-1.5,2/-3,5/-3,8/-3} { \draw (\k,\yy+0.04) -- (\k,\yy-0.04) node[below,font=\tiny] {$\k$}; }
+\end{tikzpicture}
+\caption{平移：三条同样形状的三角形，只是位置不同。竖直点线对齐三个峰（$t=1,3,5$），相邻两个峰之间相差 $2$。形状、峰高、底边都不变。}
+\end{figure}
+
+\paragraph{平移改变了什么，没改变什么。}
+\begin{itemize}[nosep]
+\item \textbf{没变}：形状、峰高、面积（$\int x(t-t_0)\d t=\int x(t)\d t$）、能量。
+\item \textbf{变了}：每个点的位置整体移动 $t_0$。
+\end{itemize}
+对比前面：\textbf{压缩/拉伸}会改变宽度和面积，\textbf{翻转}改变方向，只有\textbf{平移}什么形状上的东西都不改。
+
+\paragraph{一个应用：回声（补充）。}声音的回声就是「原声加上延迟之后、变小的一份」。设 $x(t)$ 是一个声音片段，则
+\[
+y(t)=x(t)+\tfrac12\,x(t-8)
+\]
+是原声加上延迟 $8$、音量减半的回声。用上面的三角波示意：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (15.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.35);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black] (8,0) -- (11,0.5) -- (14,0);
+  \foreach \k in {0,3,6,8,11,14} { \draw (\k,0.02) -- (\k,-0.02) node[below,font=\scriptsize] {$\k$}; }
+  \node[blue!70!black,font=\small] at (3,1.15) {$x(t)$：原声};
+  \node[red!70!black,font=\small] at (11,0.65) {$\tfrac12x(t-8)$：回声（延迟 $8$，音量减半）};
+  \draw[<->,gray] (3,-0.35) -- (11,-0.35) node[midway,below,font=\scriptsize] {延迟 $8$};
+\end{tikzpicture}
+\caption{$y(t)=x(t)+\tfrac12x(t-8)$：原声（蓝）与延迟、减半的回声（红）。两个三角形没有重叠，所以相加后就是各自原样。}
+\end{figure}
+我没有核对书，这是我的例子。如果延迟小于信号宽度，两份会重叠，相加就要把重叠部分逐点加起来。
+
+\paragraph{周期信号：平移 $T$ 之后和原来一样。}第一份笔记里周期信号的定义 $x(t)=x(t+mT)$，用现在的话说就是：\textbf{平移任意整数个周期，信号不变}。再举一个熟悉的例子：$\cos t=\sin\bigl(t+\tfrac\pi2\bigr)$，即\textbf{把正弦左移 $\tfrac\pi2$ 就是余弦}。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.78cm,y=1.2cm,>=stealth]
+  \draw[->] (-6.6,0) -- (6.8,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-1.25) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-6.28:6.28,samples=200,smooth] plot (\x,{sin(\x r)});
+  \draw[very thick,red!70!black,dashed,domain=-6.28:6.28,samples=200,smooth] plot (\x,{cos(\x r)});
+  \foreach \k/\lab in {-6.2832/{-2\pi},-3.1416/{-\pi},3.1416/{\pi},6.2832/{2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\scriptsize] {$\lab$}; }
+  % 图例放在曲线上方，避免压住曲线
+  \draw[very thick,blue!70!black] (-5.8,1.85) -- (-5.0,1.85);
+  \node[blue!70!black,font=\small,anchor=west] at (-4.9,1.85) {$\sin t$};
+  \draw[very thick,red!70!black,dashed] (-2.4,1.85) -- (-1.6,1.85);
+  \node[red!70!black,font=\small,anchor=west] at (-1.5,1.85) {$\cos t=\sin(t+\tfrac\pi2)$};
+  % 左移 π/2：从正弦的峰（t=π/2）指向余弦的峰（t=0）
+  \draw[->,gray,thick] (1.5708,1.18) -- (0.03,1.18) node[midway,above,font=\tiny] {左移 $\tfrac\pi2$};
+\end{tikzpicture}
+\caption{$\cos t=\sin(t+\tfrac\pi2)$：正弦（蓝）左移 $\tfrac\pi2$ 就得到余弦（红虚线）。再左移 $2\pi$（一个周期）则回到原来的曲线。}
+\end{figure}
+
+\paragraph{平移和压缩一起出现时的顺序（再强调一次）。}$x(2t-4)$ 的标准形式是 $x(2(t-2))$，所以\textbf{先压缩 $2$ 倍，再右移 $2$}，平移量是 $2$ 而不是 $4$。这是前面口诀第一句「化成标准形式」要防的坑。
+
+\paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，前面例 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
+
 %==================================================================
 \section{离散信号的自变量变换}
 口诀仍然是这四句，但老师说离散的情况 \textbf{$n$ 前面的系数基本只有 $+1$ 或 $-1$}，所以第三句（压缩、拉伸）一般用不上。原因：如果系数是 $2$ 或 $\tfrac12$，定义的时候有歧义，让大家回去自己想一想。\emph{（补充：我的理解是，$x[2n]$ 会把奇数位置的点丢掉，$x[n/2]$ 在 $n$ 为奇数时没有定义，都需要额外约定；老师没有展开，我没有核对书，以后课上讲到再补。）}
