@@ -395,4 +395,104 @@ u[n]=\begin{cases}1,&n\ge0\\0,&n<0\end{cases}
 \item $\delta[n]$、$u[n]$ 是离散里的对应物；$\delta[n]\neq\delta(t)$。
 \end{enumerate}
 
+\appendix
+\section{附录：广义函数（generalized function）的说明}
+
+\begin{note}
+这个附录\textbf{不是老师课上讲的}：老师说严格的定义留到第二章。它是我为了解释正文里「$\delta(t)$ 不是普通函数」「$u(t)$ 在 $0$ 处不可导却有导数」「$u(0)$ 可以任取」这几句话而写的预习材料，内容是数学里的标准结论（分布论，distribution theory）。我没有查教材，如果第二章老师的讲法和这里不同，以老师和教材为准。
+\end{note}
+
+\subsection*{A.1 一句话主干}
+\textbf{普通函数是「每个点给一个值」；广义函数不给点值，只规定「它作用在别的函数上，会得到一个什么数」。}$\delta(t)$ 就是这样的东西。下面一步一步讲，每一步只加一个新概念。
+
+\subsection*{A.2 第一步：为什么普通函数这套说法不够用}
+普通函数的想法是：给我一个 $t$，我告诉你函数值。$\delta(t)$ 想描述的是「一个极短、极强的冲击」，在 $t=0$ 处它的值是「无穷大」，而无穷大不是一个数，所以按「每点一个值」的办法，根本没法把 $\delta(t)$ 写成一个函数。
+
+但这个冲击有一件事是\textbf{确定而有限}的：它对别的东西产生的\emph{总效果}。比如一个力的冲量（作用的总量），或者它去「抽取」另一个信号在某一点的值。数学家的办法是：\textbf{不去问它每点的值，只问它的总效果}。
+
+\subsection*{A.3 第二步：测试函数（test function）——用来「试探」的工具}
+先准备一类很乖的函数，叫\textbf{测试函数} $\varphi(t)$：
+\begin{itemize}[nosep]
+\item 无穷次可导（非常光滑，没有尖角、没有跳变）；
+\item 在某个有限区间之外恒等于 $0$（像一个光滑的小山丘，两头平坦落地）。
+\end{itemize}
+它的作用像一把「探针」：用它去碰一碰广义函数，看反应。
+
+\subsection*{A.4 第三步：广义函数 $=$ 一台「输入探针、输出一个数」的机器}
+\textbf{广义函数}就是一台机器：你把一个测试函数 $\varphi$ 放进去，它吐出一个数，记作 $\langle T,\varphi\rangle$。（还要求这台机器是线性的、并且「探针变化很小则输出变化也很小」，初学可以先不管。）
+
+\begin{remember}
+\begin{itemize}[nosep]
+\item $\delta$ 这台机器的规则：\textbf{输入 $\varphi$，输出 $\varphi$ 在 $0$ 点的值}：$\langle\delta,\varphi\rangle=\varphi(0)$。
+\item 这正是课上「筛选性质」的来源：$\delta$ 像一个筛子，把 $\varphi$ 在 $0$ 处的值「筛」出来。
+\item 普通函数 $f(t)$ 也能当一台机器：规则是 $\varphi\mapsto\int_{-\infty}^{+\infty}f(t)\varphi(t)\d t$。所以\textbf{普通函数是广义函数的特例}，广义函数是普通函数的推广。
+\end{itemize}
+\end{remember}
+$\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有}任何普通函数能产生「$\varphi\mapsto\varphi(0)$」这台机器。
+
+\subsection*{A.5 第四步：为什么说 $\delta$ 是窄脉冲的「极限」}
+正文里用宽 $\Delta$、高 $1/\Delta$ 的矩形脉冲 $\delta_\Delta(t)$ 来想象 $\delta(t)$。现在可以说清楚这个极限是什么意思了：
+\[
+\langle\delta_\Delta,\varphi\rangle=\frac{1}{\Delta}\int_0^{\Delta}\varphi(t)\d t
+\ \xrightarrow{\ \Delta\to0\ }\ \varphi(0)=\langle\delta,\varphi\rangle .
+\]
+（$\Delta$ 很小时，$\varphi$ 在 $(0,\Delta)$ 上几乎就是常数 $\varphi(0)$，取平均就得到 $\varphi(0)$。）
+
+这叫\textbf{弱收敛}：不是「每一点的函数值收敛」，而是「放进每一个探针，输出都收敛」。逐点看，$\delta_\Delta(0)$ 是 $1/\Delta\to\infty$ 的，根本不收敛；但用探针一试，它收敛得很好。这也解释了为什么\textbf{换成三角形、高斯曲线等别的窄脉冲，只要面积是 $1$、宽度趋于 $0$，结果都一样}：探针看到的只是「面积 $1$、集中在 $0$」这件事。
+
+\subsection*{A.5 第五步：广义导数——解释 $\delta(t)=\dfrac{\d u(t)}{\d t}$}
+先看普通函数。对光滑的 $f$，用分部积分（探针在两头为 $0$，边界项消失）：
+\[
+\int f'(t)\varphi(t)\d t=-\int f(t)\varphi'(t)\d t .
+\]
+也就是说：\textbf{把导数从 $f$ 身上「转移」到探针 $\varphi$ 身上，只多一个负号}。右边的写法即使 $f$ 本身不可导也有意义（只要 $f$ 能积分）。于是数学家\textbf{规定}：
+\[
+\langle T',\varphi\rangle:=-\langle T,\varphi'\rangle
+\]
+这就是\textbf{广义导数}的定义。好处是：\textbf{任何广义函数都能求导，而且可以求无限次}。
+
+现在算 $u(t)$ 的广义导数（这一步就是课件那句「不能作为定义式」背后的严格版本）：
+\begin{align*}
+\langle u',\varphi\rangle
+&=-\langle u,\varphi'\rangle=-\int_{-\infty}^{+\infty}u(t)\varphi'(t)\d t
+=-\int_{0}^{+\infty}\varphi'(t)\d t\\
+&=-\bigl[\varphi(+\infty)-\varphi(0)\bigr]=\varphi(0)=\langle\delta,\varphi\rangle .
+\end{align*}
+（用到了 $u(t)$ 只在 $t>0$ 取 $1$，以及 $\varphi$ 在远处为 $0$。）所以 $u'=\delta$ \textbf{在广义函数的意义下严格成立}，不是什么「工程上的近似」。课件说「不能作为定义式」是因为：这个等式要先有「广义导数」这套规则才有意义，而 $\delta$ 的定义本身（A.4 的筛选规则）不依赖它。
+
+用同样的办法：
+\begin{itemize}[nosep]
+\item \textbf{冲激偶}（doublet）$\delta'(t)$：$\langle\delta',\varphi\rangle=-\langle\delta,\varphi'\rangle=-\varphi'(0)$，它「筛出」的是探针在 $0$ 处的\textbf{导数}（带负号）。
+\item 一个信号在 $t_0$ 处有向上跳变 $A$，它的广义导数 $=$ 普通导数（$t\neq t_0$ 处的斜率）$+\ A\,\delta(t-t_0)$。正文里的 $5\delta(t)$、$\delta(t-2)$ 都是它的特例。
+\end{itemize}
+
+\subsection*{A.6 第六步：回答老师留的悬念——为什么 $u(0)$ 可以取任意值}
+广义函数是靠「积分的结果」来识别的。如果两个普通函数只在\textbf{一个点（或有限个点）}上不同，那么对任何探针 $\varphi$，$\int f\varphi\d t$ 的结果完全一样，因为一个点的「宽度」是零，对积分没有贡献。所以这两个函数产生的是\textbf{同一台机器}，也就是同一个广义函数。
+
+$u(0)$ 取 $0$、$\tfrac12$、$1$ 甚至 $-1$，只改变了 $t=0$ 这一个点的值，机器完全不变，所以信号与系统里它是「可以任取」的。\emph{（这是我的解释；老师说第二章会讲，我猜他讲的就是这件事，但没有证据，不能当成老师的原话。）}
+
+反过来，这也说明了一个重要的限制：\textbf{广义函数没有「某一点的值」这回事}。问「$\delta(0)$ 等于几」本身就是没意义的问题，正文里写的「$t=0$ 处为 $+\infty$」只是帮助想象的说法。
+
+\subsection*{A.7 几条要小心的限制}
+\begin{itemize}
+\item \textbf{没有点值}：见上，不能问 $\delta(t_0)$ 是多少。
+\item \textbf{不能随便相乘}：$\delta(t)\cdot\delta(t)$ 没有意义（两个广义函数一般不能相乘）。但「广义函数 $\times$ 光滑函数」是可以的，比如 $f(t)\delta(t)=f(0)\delta(t)$（$f$ 光滑），这是筛选性质的另一种写法。
+\item \textbf{「连续、间断」这类说法用不上}：这是逐点的概念，而广义函数不逐点定义。
+\end{itemize}
+
+\subsection*{A.8 小结}
+\begin{center}
+\begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.3\textwidth}}
+\toprule
+ & 普通函数 & 广义函数 \\
+\midrule
+怎么定义 & 每个点给一个值 & 作用在探针 $\varphi$ 上给一个数 \\
+$\delta$ 怎么描述 & 无法描述（$+\infty$ 不是数） & $\varphi\mapsto\varphi(0)$ \\
+导数 & 要求连续、可导 & 转移到探针上，总是存在，可无限次求导 \\
+单点的值 & 有，且影响函数本身 & 没有，改一个点不影响 \\
+\bottomrule
+\end{tabular}
+\end{center}
+所以：\textbf{$\delta(t)=\frac{\d u}{\d t}$ 是严格成立的，只不过是在广义函数的意义下；$\delta$ 的「无穷大」是想象的拐杖，真正的定义是筛选性质。}
+
 \end{document}
