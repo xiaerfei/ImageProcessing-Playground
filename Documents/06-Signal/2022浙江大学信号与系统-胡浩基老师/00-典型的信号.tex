@@ -787,6 +787,131 @@ I(a)=\int_0^\infty\bigl(-F'(t)\bigr)e^{-at}\d t=F(0)-a\int_0^\infty F(t)\,e^{-at
 \paragraph{合起来。}
 $I(0)=\lim_{a\to0^+}I(a)=\lim_{a\to0^+}\bigl(\frac\pi2-\arctan a\bigr)=\frac\pi2$。证明因此是严格的。五个检查点里，（1）（5）是真正需要费力的，因为这个积分只是条件收敛；（2）（3）（4）都靠 $e^{-at}$ 的衰减，这也是老师「人为加一个因子」这一招有效的原因：它让积分在 $a>0$ 时变成绝对收敛，把棘手的部分推到了最后一步 $a\to0^+$。
 
+\subsection{预习：$\Sa(t)$ 的傅里叶变换（第三章才正式讲）}
+\begin{note}
+傅里叶变换是第三章的内容，老师还没讲。这一节是我提前写的预习，目的是说明为什么老师反复强调要背那三个积分公式。结论是标准的，我用「从频谱反推回时域」的办法自己验算过。符号约定（不同的书会差 $2\pi$ 的位置，用到时请对照教材）：
+\[
+X(\omega)=\int_{-\infty}^{+\infty}x(t)\,e^{-j\omega t}\d t,\qquad
+x(t)=\frac{1}{2\pi}\int_{-\infty}^{+\infty}X(\omega)\,e^{j\omega t}\d\omega .
+\]
+\end{note}
+
+\paragraph{一句话主干。}傅里叶变换把一个信号拆成「各个频率的成分各有多少」。$\Sa(t)$ 的拆法特别规整：\textbf{频率低于 $1$ 的成分一样多（高度 $\pi$），频率高于 $1$ 的成分一点也没有}。画出来是一个方方正正的矩形。
+
+\paragraph{结论。}
+\[
+\Sa(t)=\frac{\sin t}{t}\ \xrightarrow{\ \text{傅里叶变换}\ }\ 
+X(\omega)=\begin{cases}\pi,&|\omega|<1\\[2pt]0,&|\omega|>1\end{cases}
+\]
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.52\textwidth}
+\centering
+\begin{tikzpicture}[x=0.23cm,y=1.6cm,>=stealth]
+  \draw[->] (-13,0) -- (13.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.3) -- (0,1.3) node[above,font=\small] {$x(t)$};
+  \draw[thick,blue!70!black,domain=-12:12,samples=300,smooth] plot (\x,{sin(\x r)/\x});
+  \fill[blue!70!black] (0,1) circle (1.6pt);
+  \node[left,font=\scriptsize] at (-0.2,1) {$1$};
+  \node[font=\small,align=center] at (0,-0.75) {时域：$\Sa(t)$};
+\end{tikzpicture}
+\end{minipage}%
+\begin{minipage}{0.06\textwidth}\centering $\Longrightarrow$\end{minipage}%
+\begin{minipage}{0.40\textwidth}
+\centering
+\begin{tikzpicture}[x=0.9cm,y=0.5cm,>=stealth]
+  \draw[->] (-2.7,0) -- (2.9,0) node[right,font=\small] {$\omega$};
+  \draw[->] (0,-0.3) -- (0,4.1) node[above,font=\small] {$X(\omega)$};
+  \fill[red!20] (-1,0) rectangle (1,3.14159);
+  \draw[very thick,red!70!black] (-2.5,0) -- (-1,0) -- (-1,3.14159) -- (1,3.14159) -- (1,0) -- (2.5,0);
+  \node[left,font=\scriptsize] at (-0.1,3.14159) {$\pi$};
+  \node[below,font=\scriptsize] at (-1,0) {$-1$};
+  \node[below,font=\scriptsize] at (1,0) {$1$};
+  \node[font=\small,align=center] at (0,-1.2) {频域：矩形};
+\end{tikzpicture}
+\end{minipage}
+\caption{$\Sa(t)$ 与它的傅里叶变换。左边是一串振荡衰减的波，右边是方方正正的矩形（高 $\pi$、宽 $2$）。矩形的两条边 $\omega=\pm1$ 处的值取多少不影响结果（通常取中点 $\pi/2$），原因和 $u(0)$ 可以任取一样。}
+\end{figure}
+
+\paragraph{怎么验算（不用算傅里叶积分）。}反过来做：已知频谱是上面的矩形，用逆变换把它变回时域，看是不是 $\Sa(t)$。
+\[
+\frac{1}{2\pi}\int_{-1}^{1}\pi\,e^{j\omega t}\d\omega
+=\frac12\cdot\frac{e^{jt}-e^{-jt}}{jt}
+=\frac12\cdot\frac{2j\sin t}{jt}
+=\frac{\sin t}{t}.
+\]
+用到了欧拉公式 $e^{jt}-e^{-jt}=2j\sin t$。得到 $\Sa(t)$，说明这个矩形就是它的频谱。
+
+\paragraph{这和那三个积分公式有什么关系。}
+傅里叶变换在 $\omega=0$ 处的值，就是把整个信号加起来：$X(0)=\int_{-\infty}^{+\infty}x(t)\d t$。所以
+\begin{itemize}
+\item \textbf{公式 1} $\displaystyle\int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=\pi$，意思是\textbf{矩形频谱的高度是 $\pi$}；
+\item \textbf{公式 3} $\displaystyle\int_{-\infty}^{+\infty}\frac{\sin\omega_0t}{t}\d t=\pi$（$\omega_0>0$），意思是：时域那个 $\frac{\sin\omega_0t}{t}$ 的频谱是高 $\pi$、宽 $2\omega_0$ 的矩形（边在 $\pm\omega_0$），\textbf{不管 $\omega_0$ 多大，高度都是 $\pi$}，变的只是宽度；
+\item \textbf{公式 2}（半条线 $\pi/2$）只是公式 1 的一半（偶函数使左右对称），在频谱上没有单独的几何对应，我不强行对应。
+\end{itemize}
+这正是老师说「第三章要不断用到」的原因：背下这几个积分，就是背下 $\Sa$ 的频谱长什么样。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=0.2cm,y=0.5cm,>=stealth]
+  \draw[->] (-13,0) -- (13.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.5) -- (0,3.8);
+  \draw[thick,blue!70!black,domain=-12:12,samples=300,smooth] plot (\x,{sin(\x r)/\x});
+  \node[font=\small,anchor=west] at (3,3.2) {$\omega_0=1$：$x=\dfrac{\sin t}{t}$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.5cm,>=stealth]
+  \draw[->] (-3.4,0) -- (3.6,0) node[right,font=\small] {$\omega$};
+  \draw[->] (0,-0.5) -- (0,3.8);
+  \fill[red!20] (-1,0) rectangle (1,3.14159);
+  \draw[very thick,red!70!black] (-3,0) -- (-1,0) -- (-1,3.14159) -- (1,3.14159) -- (1,0) -- (3,0);
+  \node[left,font=\scriptsize] at (-0.1,3.14159) {$\pi$};
+  \node[below,font=\scriptsize] at (-1,0) {$-1$};
+  \node[below,font=\scriptsize] at (1,0) {$1$};
+\end{tikzpicture}
+\end{minipage}
+
+\medskip
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=0.2cm,y=0.5cm,>=stealth]
+  \draw[->] (-13,0) -- (13.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.5) -- (0,3.8);
+  \draw[thick,blue!70!black,domain=-12:12,samples=500,smooth] plot (\x,{sin(3*\x r)/\x});
+  \node[font=\small,anchor=west] at (3,3.2) {$\omega_0=3$：$x=\dfrac{\sin 3t}{t}$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.5cm,>=stealth]
+  \draw[->] (-3.4,0) -- (3.6,0) node[right,font=\small] {$\omega$};
+  \draw[->] (0,-0.5) -- (0,3.8);
+  \fill[red!20] (-3,0) rectangle (3,3.14159);
+  \draw[very thick,red!70!black] (-3.2,0) -- (-3,0) -- (-3,3.14159) -- (3,3.14159) -- (3,0) -- (3.2,0);
+  \node[left,font=\scriptsize] at (-0.1,3.14159) {$\pi$};
+  \node[below,font=\scriptsize] at (-3,0) {$-3$};
+  \node[below,font=\scriptsize] at (3,0) {$3$};
+\end{tikzpicture}
+\end{minipage}
+\caption{公式 3 的图解：左列是时域，右列是频谱。$\omega_0$ 从 $1$ 增大到 $3$，时域曲线变得\textbf{又高又窄}（峰高 $\omega_0$），频谱的矩形变得\textbf{更宽}（宽 $2\omega_0$），\textbf{高度始终是 $\pi$}。}
+\end{figure}
+
+\paragraph{一个值得记住的规律：时域窄，频域宽。}上图说明，一个信号在时间上挤得越窄、越尖，它占据的频率范围就越宽，反之亦然。这条规律（时间和频率不能同时都窄）在整门课里反复出现。
+
+\paragraph{为什么 $\Sa(t)$ 重要（应用，只提一句）。}一个理想低通滤波器，把低于截止频率的成分原样放过、高于截止频率的全部去掉，它的频率响应就是上面那个矩形，它对应的时域响应就是 $\Sa$ 形状的曲线。后面讲采样和信号重建时，$\Sa(t)$ 会一再出现。\emph{（这是我的预告，课上没有讲，我没有核对书。）}
+
+\paragraph{局限与小心。}
+\begin{itemize}[nosep]
+\item $\Sa(t)$ 从 $-\infty$ 延伸到 $+\infty$，实际中做不出来（不可实现）。
+\item 前面证明过它\textbf{不是绝对可积}（条件收敛），所以它的傅里叶变换积分也只在条件收敛的意义下成立，这是矩形频谱边缘处值不确定的原因之一。\emph{（这条是我的理解，没有查教材。）}
+\item 记号约定不同的书，$2\pi$ 出现的位置不同，但「时域 $\Sa$ $\leftrightarrow$ 频域矩形」这个结论不变。
+\end{itemize}
+
 %==================================================================
 \section{基本的离散时间信号（书上第 15 页起）}
 
