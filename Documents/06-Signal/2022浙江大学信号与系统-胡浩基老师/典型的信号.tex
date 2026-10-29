@@ -1,0 +1,297 @@
+% !TeX program = xelatex
+% 编译：xelatex 典型的信号.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
+% 来源：2022 浙江大学《信号与系统》胡浩基老师，第 1 章前两节课（视频约 59 分钟）。
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.4cm}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{enumitem}
+
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
+\setCJKsansfont{PingFang SC}
+
+\newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
+\newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
+\newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
+\newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
+\newcommand{\Sa}{\operatorname{Sa}}
+\renewcommand{\d}{\,\mathrm{d}}
+
+\title{典型的信号\\\large 浙江大学 2022《信号与系统》（胡浩基）第 1 章 听课笔记}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{note}
+这份笔记由视频整理而来，来源要分清：
+\begin{itemize}[nosep]
+\item 概念与口述内容：来自语音转写。转写模型很小，错字很多（如「阶跃」被写成「接越」），我按上下文还原；
+\item 板书公式与证明：来自画面。第一遍转写的 41:30--54:30 一段因 whisper 复读而失效，后来换用 large-v3-turbo 模型（关闭上下文、加术语提示词）对 40:00--56:00 重新转写，这一段已基本恢复；证明的步骤我用重转写的讲解与板书截图互相对照过；
+\item 标注「（补充）」的内容是我自己加的，课上没讲，或讲了但我没听清。
+\end{itemize}
+\end{note}
+
+\section{一句话主干}
+本节讲的是：\textbf{信号怎么分类}，以及\textbf{后面整门课都会反复用到的四个基本信号}——阶跃(unit step)、冲激(impulse)、抽样函数(sampling function)，外加离散里对应的单位脉冲和单位阶跃。其中有两个「必须记住的积分结果」，后面推傅里叶变换要用。
+
+%==================================================================
+\section{信号与系统是什么}
+\begin{itemize}
+\item \textbf{信号}(signal)：表达、传递信息的符号。
+\item \textbf{系统}(system)：有输入、有输出。接收一个输入信号，处理之后变成另一个信号输出。
+\end{itemize}
+
+%==================================================================
+\section{信号的分类}
+老师说：书上第 2--5 页分类很多，只讲重要的。
+
+\subsection{按维度分：这门课只讨论一维}
+\begin{tabular}{@{}lll@{}}
+\toprule
+维度 & 例子 & 自变量 $\to$ 取值 \\
+\midrule
+一维 & 声音（语音）信号 & 时间 $\to$ 声音强度 \\
+二维 & 图像 & （横坐标，纵坐标）$\to$ RGB 三个数 \\
+三维 & 视频；深度图 & 图像两个维度 $+$ 时间；图像两个维度 $+$ 深度 \\
+四维 & VR 眼镜看到的画面 & 三维 $+$ 时间 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+老师的几个说法：
+\begin{itemize}[nosep]
+\item 图像里每个点用 RGB 三个数编码，按课上的说法每个数用 24 比特（取值 $0\sim 2^{24}-1$）。\emph{（补充：常见做法是三个数各 8 比特、合起来 24 比特；课上转写听到的是「每个数 24 比特」，这里很可能是口误或听错，以 8 比特/通道为准，我没有核对书。）}
+\item 人看到一幅图像，计算机看到的是三个矩阵（红、绿、蓝各一个）。
+\item 视频的帧率：传统 24 帧，高清 50 帧。
+\item \textbf{只讨论一维}，原因是简单：一维是学二、三、四维的基础，不是高维不重要，而是它们在别的课里学。二维傅里叶变换会给公式，但不展开。
+\end{itemize}
+
+\subsection{连续信号与离散信号}
+\begin{remember}
+\begin{center}
+圆括号 $x(t)$ $\Rightarrow$ 连续信号，$t\in\mathbb{R}$\qquad\qquad
+方括号 $x[n]$ $\Rightarrow$ 离散信号，$n\in\mathbb{Z}$
+\end{center}
+整本书统一这个写法，\textbf{没有 $x[t]$，也没有 $x(n)$}。老师特别提醒：学到后面做离散傅里叶变换，明明写的是方括号，做着做着套回连续的公式，是常见的错。
+\end{remember}
+
+学生问过：为什么 $n$ 只能取整数，不能取 $0.5$？老师的回答：$n$ 只是一个「名字」，只表示「我不在实数轴上取值，而在一个离散的集合上取值」；用 $-0.5,0.5$ 当名字也行，但为了统一，约定用整数。
+
+\subsection{周期信号与非周期信号}
+\textbf{连续}：
+\[
+x(t)=x(t+mT),\quad m\in\mathbb{Z}
+\]
+$T$ 取\textbf{最小正周期}。若 $T$ 是周期，则 $2T,3T,\dots$ 也都是周期，其中最小的正的那个叫基本周期。
+
+\textbf{离散}：
+\[
+x[n]=x[n+mN],\quad m\in\mathbb{Z},\ N\ \text{为正整数}
+\]
+老师的教学要求：「举一反三、触类旁通」。以后他有时只给连续或只给离散的定义，另一个要自己补出来。
+
+\subsection{奇信号与偶信号}
+\begin{align*}
+\text{偶信号}\ (\text{even}):&\quad x(t)=x(-t)\quad \text{关于纵轴对称}\\
+\text{奇信号}\ (\text{odd}):&\quad x(t)=-x(-t)\quad \text{关于原点旋转 }180^\circ\text{ 对称}
+\end{align*}
+老师评价：这就是高中的奇函数、偶函数，不算本课新知识。
+
+\subsubsection*{本课第一个真正的新知识：任何信号都能唯一分解成「偶 $+$ 奇」}
+\[
+x(t)=\underbrace{\frac{x(t)+x(-t)}{2}}_{x_e(t)\ \text{偶部}}+\underbrace{\frac{x(t)-x(-t)}{2}}_{x_o(t)\ \text{奇部}}
+\]
+这里 $e$ 是 even，$o$ 是 odd，下标是这么来的。
+
+\textbf{验算两件事：}
+\begin{enumerate}[nosep]
+\item 加起来是 $x(t)$：$\tfrac12x(t)+\tfrac12x(t)=x(t)$，而 $\tfrac12x(-t)-\tfrac12x(-t)=0$。
+\item $x_e(-t)=\frac{x(-t)+x(t)}{2}=x_e(t)$，所以是偶的；$x_o(-t)=\frac{x(-t)-x(t)}{2}=-x_o(t)$，所以是奇的。
+\end{enumerate}
+
+\textbf{唯一性证明}（老师课上留作思考题，说下节课会证，转写里没出现他的证明过程；下面是我（补充）的写法）：
+
+假设有两种分解 $x=e_1+o_1=e_2+o_2$，其中 $e_i$ 是偶的、$o_i$ 是奇的。移项得
+\[
+e_1-e_2=o_2-o_1 .
+\]
+左边是两个偶函数之差，仍是偶函数；右边是两个奇函数之差，仍是奇函数。令这个函数为 $f$，则
+\[
+f(t)=f(-t)\quad(\text{偶}),\qquad f(-t)=-f(t)\quad(\text{奇})
+\;\Longrightarrow\; f(t)=-f(t)\;\Longrightarrow\; f(t)\equiv 0 .
+\]
+所以 $e_1=e_2$，$o_1=o_2$，分解唯一。
+
+\textbf{离散的版本}：把 $(t)$ 全换成 $[n]$ 即可：
+$x_e[n]=\dfrac{x[n]+x[-n]}{2}$，$x_o[n]=\dfrac{x[n]-x[-n]}{2}$。
+老师借此再次强调：连续和离散只是自变量换了写法，道理完全一样，后面很多地方只讲其中之一。
+
+\subsection{能量信号与功率信号}
+\textbf{离散}：能量是所有取值的模的平方求和，功率是在有限区间上把能量取平均。
+\textbf{连续}：把求和换成积分（老师的说法：「离散的求和与连续的积分是一回事」，因为定积分本来就是切成小段求和）：
+\[
+E=\lim_{t_0\to-\infty,\ t_1\to+\infty}\int_{t_0}^{t_1}|x(t)|^2\d t,\qquad
+P=\lim_{t_0\to-\infty,\ t_1\to+\infty}\frac{1}{t_1-t_0}\int_{t_0}^{t_1}|x(t)|^2\d t
+\]
+\begin{itemize}[nosep]
+\item $E$ 有限 $\Rightarrow$ \textbf{能量信号}（能量有限信号）；
+\item $P$ 有限 $\Rightarrow$ \textbf{功率信号}（功率有限信号）。
+\end{itemize}
+\emph{（补充）功率的表达式我是按板书上的 $t_0,t_1$ 与老师口述的「在有限区间对能量取平均」写的，转写这一段有错字，没有逐项核对。}
+
+%==================================================================
+\section{基本的连续时间信号}
+
+\subsection{单位阶跃信号 $u(t)$（书上第 10 页）}
+\[
+u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
+\]
+物理含义：电路在 $t=0$ 接入电源，之后电压为 1，之前为 0。
+
+\textbf{$u(0)$ 等于几？} 学生有人答「没定义」，也有答 $0$、$1$、$\tfrac12$。老师说：\textbf{都可以}，取任意值都行；不是随口一说，第二章会严格讲，背后有深刻的数学道理。\emph{（补充：根据我对后续内容的理解，这与「一个点的值不影响积分」有关，但课上没展开，我不替老师下结论。）}
+
+\subsection{冲激信号 $\delta(t)$（书上第 12 页）}
+\[
+\delta(t)=\begin{cases}+\infty,&t=0\\0,&t\neq 0\end{cases}
+\qquad\text{且人为规定}\qquad
+\int_{-\infty}^{+\infty}\delta(t)\d t=1
+\]
+直观图像：在 $0$ 处冲上无穷高、再落下来的一个脉冲。书上叫它\textbf{奇异信号}（singular signal，转写里被听成「启艺」）：高中没学过这种函数。严格的数学定义和它在本课里的作用留到第二章。
+
+老师给的联系：
+\[
+\delta(t)=\frac{\d u(t)}{\d t}
+\]
+直观理由：$u(t)$ 在 $t<0$ 和 $t>0$ 时是常数，导数为 $0$；只在 $t=0$ 处有一个「垂直跳跃」，对它求导得到无穷大。老师明确说：现在有个印象就行，学完第二章才会真正理解。
+
+\subsection{抽样函数 $\Sa(t)$（书上第 14 页，式 1.2.3）}
+\[
+\Sa(t)=\frac{\sin t}{t}\ (t\neq0),\qquad \Sa(0)=1
+\]
+\begin{itemize}[nosep]
+\item $t=0$ 处不能直接代入（$0/0$），严格定义里 $\Sa(0)=1$，因为 $\lim_{t\to0}\frac{\sin t}{t}=1$。
+\item \textbf{偶函数}：$\sin t$ 是奇的，$t$ 是奇的，奇除奇得偶。
+\item 零点：$t=\pm\pi,\pm2\pi,\pm3\pi,\dots$。
+\item 形状：中间一个主峰（高度 1），两边是振荡衰减的波，因为 $\sin t$ 来回振荡，而分母 $|t|$ 越来越大，把幅度压下去。
+\item $\dfrac{\sin\omega t}{t}$（$\omega>0$）的形状（41 分钟老师留给大家先画，43 分钟公布）：形状和 $\Sa(t)$ 一样，但
+\begin{itemize}[nosep]
+\item 主峰高度：$\displaystyle\lim_{t\to0}\frac{\sin\omega t}{t}=\omega$（老师说用洛必达法则）；
+\item 第一个零点：$\omega t=\pi\Rightarrow t=\frac{\pi}{\omega}$，其余零点 $\pm\frac{k\pi}{\omega}$。
+\end{itemize}
+所以「高度乘 $\omega$，横向往里压缩 $\omega$ 倍」，老师说这是马上要讲的信号变换的伏笔。这个形状同时是后面「面积不变」（积分恒为 $\pi$）的直观来源：高度 $\times\omega$，宽度 $\div\omega$。\emph{（最后一句是我（补充）的联想，不是老师原话。）}
+\end{itemize}
+
+\begin{remember}
+\[
+\int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=\pi,\qquad
+\int_{0}^{+\infty}\frac{\sin t}{t}\d t=\int_{-\infty}^{0}\frac{\sin t}{t}\d t=\frac{\pi}{2},\qquad
+\int_{-\infty}^{+\infty}\frac{\sin\omega t}{t}\d t=\pi\ (\omega>0)
+\]
+\end{remember}
+老师说：这三个公式第三章推傅里叶变换要用，必须背。
+
+\subsubsection*{三个公式之间的关系}
+\begin{enumerate}
+\item \textbf{整条线 $\leftrightarrow$ 半条线}：$\frac{\sin t}{t}$ 是偶函数，图像关于纵轴对称，所以 $0$ 右边和 $0$ 左边的积分相等，各占一半：$\pi/2$。
+\item \textbf{$\omega$ 的版本}：令 $s=\omega t$（$\omega>0$ 保证积分上下限不变号），则 $t=s/\omega$，$\d t=\d s/\omega$：
+\[
+\int_{-\infty}^{+\infty}\frac{\sin\omega t}{t}\d t
+=\int_{-\infty}^{+\infty}\frac{\sin s}{s/\omega}\cdot\frac{\d s}{\omega}
+=\int_{-\infty}^{+\infty}\frac{\sin s}{s}\d s=\pi
+\]
+$\omega$ 约掉了。（这是老师 33:30--35:00 在黑板上做的变量代换；40:44 他又说「这个变种上次课证明过」。）
+\end{enumerate}
+
+\subsubsection*{证明 $\displaystyle\int_0^{+\infty}\frac{\sin t}{t}\d t=\frac{\pi}{2}$（板书约 43--54 分钟，参数求导法）}
+\begin{note}
+这一段是 44:16--53:00，老师说这是「超越书上内容」的补充：书上的证明要用复变函数，他给的是不用复变函数的初等证明；目的有两个，一是严谨，二是让大家记住那三个公式（它们在第三章开始不断用到）。下面的步骤与理由按老师的讲解整理，我对照了板书；各步的措辞是我的，数学上我自己代入验算过（见第 3 步）。
+\end{note}
+
+\textbf{思路}：直接积 $\frac{\sin t}{t}$ 积不出来（原函数不是初等函数）。于是在积分里人为添一个衰减因子 $e^{-at}$，把问题变成「含参数 $a$ 的积分」，对 $a$ 求导，导数是好积的，最后让 $a\to0$ 把因子去掉。
+
+\textbf{第 1 步：设}
+\[
+I(a)=\int_0^{+\infty}\frac{\sin t}{t}\,e^{-at}\d t\qquad(a\ge 0)
+\]
+想要的是 $I(0)$。
+
+\textbf{第 2 步：对 $a$ 求导}（把求导放进积分号，$\frac{\partial}{\partial a}e^{-at}=-t\,e^{-at}$，正好把分母的 $t$ 消掉）：
+\[
+\frac{\d I}{\d a}=-\int_0^{+\infty}\sin t\;e^{-at}\d t
+\]
+
+\textbf{第 3 步：用欧拉公式}(Euler's formula) $\sin t=\dfrac{e^{jt}-e^{-jt}}{2j}$：
+\begin{align*}
+\frac{\d I}{\d a}
+&=-\frac{1}{2j}\int_0^{+\infty}\bigl(e^{jt}-e^{-jt}\bigr)e^{-at}\d t\\
+&=-\frac{1}{2j}\Bigl[\int_0^{+\infty}e^{-(a-j)t}\d t-\int_0^{+\infty}e^{-(a+j)t}\d t\Bigr]\\
+&=-\frac{1}{2j}\Bigl[\frac{1}{a-j}-\frac{1}{a+j}\Bigr]
+=-\frac{1}{2j}\cdot\frac{2j}{a^2+1}
+=-\frac{1}{a^2+1}
+\end{align*}
+（这里 $a>0$ 保证 $e^{-(a\mp j)t}\to0$，积分才收敛。老师口头把负号并进括号里，写成 $\frac{1}{2j}\bigl[\frac{1}{a+j}-\frac{1}{a-j}\bigr]$，通分后分母 $a^2-j^2=a^2+1$、分子 $-2j$，结果一样；他说「积分学得好的一眼能看出」，并让大家课后自己验证这一步。）
+
+\textbf{第 4 步：积分求 $I(a)$}：
+\[
+I(a)=-\arctan a+C
+\]
+
+\textbf{第 5 步：用 $a\to+\infty$ 定常数 $C$}。$a$ 很大时 $e^{-at}$ 把整个被积函数压成 $0$，所以 $I(+\infty)=0$：
+\[
+0=I(+\infty)=-\arctan(+\infty)+C=-\frac{\pi}{2}+C\ \Longrightarrow\ C=\frac{\pi}{2}
+\]
+
+\textbf{第 6 步：令 $a\to 0$}：
+\[
+I(0)=\int_0^{+\infty}\frac{\sin t}{t}\d t=-\arctan 0+\frac{\pi}{2}=\frac{\pi}{2}\qquad\blacksquare
+\]
+
+再由偶函数得 $\int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=2\cdot\frac\pi2=\pi$。
+
+\emph{（补充，严格性：第 2 步「求导进积分号」和第 6 步「$a\to0^{+}$ 时 $I(a)\to I(0)$」严格来说需要论证收敛性，重转写里老师没有展开，他是直接把 $a=0$ 代入的，这一点是我看出来的，不是他说的。）}\par\smallskip\textbf{老师在第 5 步的原话要点}：$a\to+\infty$ 时 $e^{-at}$ 趋于 0，被积函数每一点都趋于 0，所以 $I(+\infty)=0$；第 6 步「最后一步很有趣」：令 $a=0$，$e^{-0\cdot t}=1$，$I(0)$ 就是要求的积分。
+
+%==================================================================
+\section{基本的离散时间信号（书上第 15 页起）}
+
+\subsection{单位脉冲序列 $\delta[n]$}
+\[
+\delta[n]=\begin{cases}1,&n=0\\0,&n\neq0\end{cases}
+\]
+书上叫它单位脉冲序列(unit impulse sequence)。
+
+\subsection{单位阶跃序列 $u[n]$}
+\[
+u[n]=\begin{cases}1,&n\ge0\\0,&n<0\end{cases}
+\]
+
+\subsection{连续与离散的四个信号对照}
+\begin{center}
+\begin{tabular}{lcc}
+\toprule
+ & 连续（圆括号） & 离散（方括号）\\
+\midrule
+冲激 & $\delta(t)$：奇异，$t=0$ 处无穷大 & $\delta[n]$：普通，$n=0$ 处等于 1\\
+阶跃 & $u(t)$：$t>0$ 为 1，$u(0)$ 任意 & $u[n]$：$n\ge0$ 为 1\\
+\bottomrule
+\end{tabular}
+\end{center}
+老师特别强调：\textbf{$\delta(t)$ 和 $\delta[n]$ 不是一回事}，常被搞混。$\delta[n]$ 是正常得不得了的信号（零处为 1，别处为 0）；$\delta(t)$ 是高中没学过的奇怪信号，第二章才会严格讲。区分的办法就是前面「圆括号连续、方括号离散」那条规则。
+
+%==================================================================
+\section{本节要记住的清单}
+\begin{enumerate}[nosep]
+\item $x(t)$ 连续，$x[n]$ 离散；没有 $x[t]$ 与 $x(n)$。
+\item 偶 $+$ 奇分解：$x_e=\frac{x(t)+x(-t)}2$，$x_o=\frac{x(t)-x(-t)}2$，唯一。
+\item 能量信号：$E<\infty$；功率信号：$P<\infty$。
+\item $u(t)$：$t>0$ 为 1、$t<0$ 为 0，$u(0)$ 可任取；$\delta(t)=\frac{\d u}{\d t}$，$\int\delta=1$。
+\item $\Sa(t)=\frac{\sin t}{t}$：偶函数，$\Sa(0)=1$，零点 $\pm k\pi$。
+\item $\int_{-\infty}^{\infty}\Sa(t)\d t=\pi$；$\int_0^{\infty}\Sa(t)\d t=\frac\pi2$；$\int_{-\infty}^{\infty}\frac{\sin\omega t}{t}\d t=\pi\ (\omega>0)$。
+\item $\delta[n]$、$u[n]$ 是离散里的对应物；$\delta[n]\neq\delta(t)$。
+\end{enumerate}
+
+\end{document}
