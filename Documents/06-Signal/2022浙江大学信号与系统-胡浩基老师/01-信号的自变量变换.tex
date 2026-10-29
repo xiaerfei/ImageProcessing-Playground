@@ -357,6 +357,111 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 
 \paragraph{$a<0$ 怎么办。}$x(at)$（$a<0$）就是先翻转再压缩或拉伸：$x(-2t)=x(2(-t))$，先画 $x(-t)$，再按绝对值 $2$ 压缩。老师口诀的第二句和第三句分别处理这两件事。
 
+\subsection{单独看一次：翻转变换 $x(-t)$}
+\textbf{（补充：这一节和上一节一样，是我把口诀第二句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
+
+只把 $t$ 换成 $-t$ 的变换叫\textbf{翻转}（time reversal）：$x(t)\to x(-t)$。口诀第二句「前有负号翻转」说的就是它。要点只有两条：
+\begin{itemize}[nosep]
+\item \textbf{以纵轴（$t=0$）为对称轴做镜像}：原来在 $t=p$ 处的点，变到 $t=-p$ 处，纵轴的值不变；
+\item \textbf{$t=0$ 处的点不动}（$x(-0)=x(0)$）。
+\end{itemize}
+翻转两次回到原来的信号：$x(-(-t))=x(t)$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.05);
+  \draw[dashed,gray] (0,-0.1) -- (0,1.05);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black]  (-6,0) -- (-3,1) -- (0,0);
+  \foreach \k in {-6,-3,3,6} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  \draw[<->,gray] (-3,1.12) -- (3,1.12);
+  \node[gray,font=\scriptsize,anchor=south] at (0,1.2) {镜像};
+  \node[blue!70!black,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
+  \node[red!70!black,font=\small,anchor=east] at (-4.6,0.85) {$x(-t)$};
+\end{tikzpicture}
+\caption{翻转：蓝色 $x(t)$ 的三个关键点 $0,3,6$ 变成红色 $x(-t)$ 的 $0,-3,-6$，纵轴值不变，整体以纵轴为对称轴镜像。}
+\end{figure}
+
+\paragraph{翻转和「偶、奇信号」是同一回事。}第一份笔记里「偶信号 $x(t)=x(-t)$」「奇信号 $x(t)=-x(-t)$」，用现在的话说就是：\textbf{翻转之后和原信号相同的是偶信号，翻转之后和原信号相差一个负号的是奇信号。}任何信号的偶部和奇部也都是靠翻转造出来的：
+\[
+x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
+\]
+下图用上面的三角波 $x(t)$ 演示：$x(t)$ 本身不是偶的也不是奇的，它的偶部是「$x(t)$ 与翻转后的 $x(-t)$ 取平均」，两个半高度的三角形左右对称；奇部是「相减再除 $2$」，右边是正的、左边是负的，关于原点反对称。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x(t)$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,green!50!black] (-6,0) -- (-3,0.5) -- (0,0) -- (3,0.5) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_e(t)$：偶部（关于纵轴对称）};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,orange!85!black] (-6,0) -- (-3,-0.5) -- (0,0) -- (3,0.5) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_o(t)$：奇部（关于原点反对称）};
+\end{tikzpicture}
+\end{minipage}
+\caption{用翻转造出偶部与奇部：$x(t)=x_e(t)+x_o(t)$。偶部和奇部的峰高都是 $\tfrac12$。（验算：$t=3$ 时 $x_e=\tfrac{1+0}{2}=\tfrac12$，$x_o=\tfrac{1-0}{2}=\tfrac12$，加起来是 $1$；$t=-3$ 时 $x_e=\tfrac12$，$x_o=-\tfrac12$，加起来是 $0$，与 $x(-3)=0$ 一致。）}
+\end{figure}
+
+\paragraph{翻转加平移：一个常见的坑。}$x(-t+b)$ 的标准形式是 $x(-(t-b))$，括号里是\textbf{减号}，所以是翻转之后\textbf{右移 $b$}，不是左移，哪怕 $b$ 前面看起来是「加号」。下面用直角三角形演示 $x(-t+3)$：
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\rtpanel{0.4cm}{$x(t)$}{-1}{0}{-1,0}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\rtpanel{0.4cm}{$x(-t)$：翻转}{1}{0}{0,1}
+\end{minipage}
+
+\medskip
+\rtpanel{0.4cm}{$x(-t+3)=x(-(t-3))$：右移 3}{4}{3}{3,4}
+\caption{翻转再平移。竖直边（高 $2$）从 $t=-1$ 翻到 $t=1$，再右移 $3$ 到 $t=4$，斜边落点从 $0$ 经 $0$ 到 $3$。验算：$t=4$ 时 $x(-4+3)=x(-1)=2$；$t=3$ 时 $x(0)=0$。}
+\end{figure}
+
+\paragraph{离散的翻转。}$x[n]\to x[-n]$，同样以 $n=0$ 为对称轴：$n=p$ 处的值变到 $n=-p$ 处。用后面「离散信号的自变量变换」一节里的 $x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$）：翻转后 $x[-n]$ 在 $n=2$ 处是 $\tfrac12$，$n=1$ 处是 $-\tfrac12$，$n=0,-1,-2,-3$ 处是 $1$。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
+  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.8) -- (0,1.4);
+  \stem{-2}{0.5} \stem{-1}{-0.5} \stem{0}{1} \stem{1}{1} \stem{2}{1} \stem{3}{1}
+  \foreach \k in {-2,3} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (0.5,1.45) {$x[n]$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
+  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.8) -- (0,1.4);
+  \stem{2}{0.5} \stem{1}{-0.5} \stem{0}{1} \stem{-1}{1} \stem{-2}{1} \stem{-3}{1}
+  \foreach \k in {-3,2} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (-0.5,1.45) {$x[-n]$：翻转};
+\end{tikzpicture}
+\end{minipage}
+\caption{离散翻转：每根竖线以 $n=0$ 为轴镜像，高度不变。}
+\end{figure}
+
+\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(-t)$ 就是\textbf{倒放}（录音从后往前播）。时间上的翻转是一个数学操作；真实世界里的信号不能真的「倒着发生」，但处理已经录好的数据时可以做。我没有核对书，这是我的类比。
+
 %==================================================================
 \section{离散信号的自变量变换}
 口诀仍然是这四句，但老师说离散的情况 \textbf{$n$ 前面的系数基本只有 $+1$ 或 $-1$}，所以第三句（压缩、拉伸）一般用不上。原因：如果系数是 $2$ 或 $\tfrac12$，定义的时候有歧义，让大家回去自己想一想。\emph{（补充：我的理解是，$x[2n]$ 会把奇数位置的点丢掉，$x[n/2]$ 在 $n$ 为奇数时没有定义，都需要额外约定；老师没有展开，我没有核对书，以后课上讲到再补。）}
