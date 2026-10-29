@@ -9,6 +9,8 @@
 \usepackage{mdframed}
 \usepackage{booktabs}
 \usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{float}
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
@@ -286,6 +288,38 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \end{itemize}
 所以「高度乘 $\omega$，横向往里压缩 $\omega$ 倍」，老师说这是马上要讲的信号变换的伏笔。这个形状同时是后面「面积不变」（积分恒为 $\pi$）的直观来源：高度 $\times\omega$，宽度 $\div\omega$。\emph{（最后一句是我（补充）的联想，不是老师原话。）}
 \end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.52cm,y=1.5cm,>=stealth]
+  % 坐标轴
+  \draw[->] (-13.5,0) -- (13.8,0) node[right] {$t$};
+  \draw[->] (0,-0.55) -- (0,2.35) node[above] {$y$};
+  % ω=1:  sin(t)/t   (取偶数个采样点以避开 t=0 处 0/0，主峰另用圆点补上)
+  \draw[thick,blue!70!black,domain=-4*pi:4*pi,samples=400,smooth]
+        plot (\x,{sin(\x r)/\x});
+  % ω=2:  sin(2t)/t
+  \draw[thick,red!75!black,domain=-4*pi:4*pi,samples=400,smooth]
+        plot (\x,{sin(2*\x r)/\x});
+  % 主峰高度
+  \fill[blue!70!black] (0,1) circle (2pt);
+  \fill[red!75!black]  (0,2) circle (2pt);
+  \draw[dashed,gray] (0,1) -- (-1.2,1) node[left,blue!70!black,font=\small] {$1$};
+  \draw[dashed,gray] (0,2) -- (-1.2,2) node[left,red!75!black,font=\small] {$2$};
+  % 零点标注
+  \foreach \k/\lab in {1/{\pi},2/{2\pi},3/{3\pi}} {
+    \draw[blue!70!black] ({\k*pi},0.05) -- ({\k*pi},-0.05) node[below,font=\scriptsize] {$\lab$};
+  }
+  \foreach \k/\lab in {1/{\frac{\pi}{2}},2/{\pi},3/{\frac{3\pi}{2}}} {
+    \draw[red!75!black] ({\k*pi/2},0.05) -- ({\k*pi/2},-0.05);
+  }
+  \node[red!75!black,font=\scriptsize,below] at ({pi/2},-0.07) {$\frac{\pi}{2}$};
+  % 图例
+  \node[blue!70!black,anchor=west,font=\small] at (5.2,1.9) {$\omega=1$：峰高 $1$，首个零点 $\pi$};
+  \node[red!75!black,anchor=west,font=\small] at (5.2,1.5) {$\omega=2$：峰高 $2$，首个零点 $\pi/2$};
+\end{tikzpicture}
+\caption{$\dfrac{\sin\omega t}{t}$（$\omega>0$）：$\omega$ 变大，峰高按 $\omega$ 倍升高，零点按 $1/\omega$ 向里压缩。}
+\end{figure}
 
 \begin{remember}
 \[
