@@ -406,6 +406,38 @@ I(a)=\int_0^{+\infty}\frac{\sin t}{t}\,e^{-at}\d t\qquad(a\ge 0)
 \]
 想要的是 $I(0)$。
 
+这个新加的因子 $e^{-at}$ 是整个证明的「杠杆」，先看清它长什么样（$t\ge0$）：
+\begin{itemize}[nosep]
+\item $a=0$ 时 $e^{-0\cdot t}=1$：不衰减，$I(0)$ 就是原来要求的积分；
+\item $a>0$ 时 $e^{-at}$ 随 $t$ 增大而衰减，\textbf{$a$ 越大，衰减越快}；
+\item $a\to+\infty$ 时，除了 $t=0$ 附近，整条曲线都被压成 $0$。第 5 步就是用这一点定出常数 $C$。
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=2.1cm,y=3.2cm,>=stealth]
+  \draw[->] (-0.1,0) -- (4.3,0) node[right] {$t$};
+  \draw[->] (0,-0.1) -- (0,1.25) node[above] {$e^{-at}$};
+  \draw[dashed,gray] (0,1) -- (4.1,1);
+  \node[left,font=\small] at (-0.02,1) {$1$};
+  % a = 0: 恒为 1
+  \draw[thick,gray] (0,1) -- (4.1,1);
+  % a = 0.5, 1, 2, 5
+  \draw[thick,blue!70!black, domain=0:4.1,samples=100,smooth] plot (\x,{exp(-0.5*\x)});
+  \draw[thick,green!50!black,domain=0:4.1,samples=100,smooth] plot (\x,{exp(-1*\x)});
+  \draw[thick,orange!85!black,domain=0:4.1,samples=100,smooth] plot (\x,{exp(-2*\x)});
+  \draw[thick,red!75!black,  domain=0:4.1,samples=100,smooth] plot (\x,{exp(-5*\x)});
+  % 图例（右上角，避免和曲线重叠）
+  \foreach \y/\c/\lab in {0.80/gray/{a=0},0.68/blue!70!black/{a=0.5},0.56/green!50!black/{a=1},0.44/orange!85!black/{a=2},0.32/red!75!black/{a=5}} {
+    \draw[thick,\c] (2.7,\y) -- (3.1,\y);
+    \node[anchor=west,font=\small,\c] at (3.15,\y) {$\lab$};
+  }
+  \foreach \t in {1,2,3,4} { \draw (\t,0.015) -- (\t,-0.015) node[below,font=\scriptsize] {$\t$}; }
+\end{tikzpicture}
+\caption{衰减因子 $e^{-at}$（$t\ge0$）：$a=0$ 时恒为 $1$；$a$ 越大衰减越快，$a\to+\infty$ 时整条曲线被压向 $0$。}
+\end{figure}
+$a>0$ 时，这个因子还保证被积函数 $\frac{\sin t}{t}e^{-at}$ 在 $t\to+\infty$ 处快速衰减，积分一定收敛。
+
 \textbf{第 2 步：对 $a$ 求导}（把求导放进积分号，$\frac{\partial}{\partial a}e^{-at}=-t\,e^{-at}$，正好把分母的 $t$ 消掉）：
 \[
 \frac{\d I}{\d a}=-\int_0^{+\infty}\sin t\;e^{-at}\d t
