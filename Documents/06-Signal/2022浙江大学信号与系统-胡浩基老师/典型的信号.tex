@@ -448,12 +448,48 @@ I(0)=\int_0^{+\infty}\frac{\sin t}{t}\d t=-\arctan 0+\frac{\pi}{2}=\frac{\pi}{2}
 \[
 \delta[n]=\begin{cases}1,&n=0\\0,&n\neq0\end{cases}
 \]
-书上叫它单位脉冲序列(unit impulse sequence)。
+书上叫它单位脉冲序列(unit impulse sequence)。老师的画法：横轴是 $n$，$n=0$ 处是 $1$，其他整数处都是 $0$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=1.6cm,>=stealth]
+  \draw[->] (-5.6,0) -- (5.9,0) node[right] {$n$};
+  \draw[->] (0,-0.25) -- (0,1.5) node[above] {$\delta[n]$};
+  % n=0: 高度 1 的竖线加实心圆
+  \draw[very thick,blue!70!black] (0,0) -- (0,1);
+  \fill[blue!70!black] (0,1) circle (2.5pt);
+  % 其余整数：值为 0，画实心小圆
+  \foreach \n in {-5,-4,-3,-2,-1,1,2,3,4,5} { \fill[blue!70!black] (\n,0) circle (2.5pt); }
+  \node[left,font=\small] at (-0.1,1) {$1$};
+  \foreach \n in {-4,-2,2,4} { \node[below,font=\scriptsize] at (\n,-0.07) {$\n$}; }
+\end{tikzpicture}
+\caption{单位脉冲序列 $\delta[n]$：只在 $n=0$ 处等于 $1$，其余整数处全为 $0$。与连续的 $\delta(t)$ 不同，这里每个点都有确定的有限值，没有「无穷大」。}
+\end{figure}
 
 \subsection{单位阶跃序列 $u[n]$}
 \[
 u[n]=\begin{cases}1,&n\ge0\\0,&n<0\end{cases}
 \]
+老师的画法：$n=0$ 处是 $1$，$n=1,2,\dots$ 也都是 $1$，一直延伸到右边；左边全是 $0$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=1.6cm,>=stealth]
+  \draw[->] (-5.6,0) -- (6.2,0) node[right] {$n$};
+  \draw[->] (0,-0.25) -- (0,1.5) node[above] {$u[n]$};
+  % n>=0：高度 1
+  \foreach \n in {0,1,2,3,4,5} {
+    \draw[very thick,blue!70!black] (\n,0) -- (\n,1);
+    \fill[blue!70!black] (\n,1) circle (2.5pt);
+  }
+  \node[right,font=\small,blue!70!black] at (5.4,1) {$\cdots$};
+  % n<0：值为 0
+  \foreach \n in {-5,-4,-3,-2,-1} { \fill[blue!70!black] (\n,0) circle (2.5pt); }
+  \node[left,font=\small] at (-0.1,1) {$1$};
+  \foreach \n in {-4,-2,2,4} { \node[below,font=\scriptsize] at (\n,-0.07) {$\n$}; }
+\end{tikzpicture}
+\caption{单位阶跃序列 $u[n]$：$n\ge0$ 时全为 $1$，$n<0$ 时全为 $0$。与连续的 $u(t)$ 不同，离散的 $u[0]$ 有明确的值 $1$，不需要「任取」。}
+\end{figure}
 
 \subsection{连续与离散的四个信号对照}
 \begin{center}
