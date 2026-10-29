@@ -281,6 +281,35 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \item \textbf{偶函数}：$\sin t$ 是奇的，$t$ 是奇的，奇除奇得偶。
 \item 零点：$t=\pm\pi,\pm2\pi,\pm3\pi,\dots$。
 \item 形状：中间一个主峰（高度 1），两边是振荡衰减的波，因为 $\sin t$ 来回振荡，而分母 $|t|$ 越来越大，把幅度压下去。
+\end{itemize}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.52cm,y=2.2cm,>=stealth]
+  \draw[->] (-13.5,0) -- (13.8,0) node[right] {$t$};
+  \draw[->] (0,-0.35) -- (0,1.3) node[above] {$\mathrm{Sa}(t)$};
+  % 包络 ±1/|t|：虚线，说明「分母越大幅度越小」
+  \draw[gray,dashed,domain=pi/2:4*pi,samples=40] plot (\x,{1/\x});
+  \draw[gray,dashed,domain=pi/2:4*pi,samples=40] plot (\x,{-1/\x});
+  \draw[gray,dashed,domain=-4*pi:-pi/2,samples=40] plot (\x,{-1/\x});
+  \draw[gray,dashed,domain=-4*pi:-pi/2,samples=40] plot (\x,{1/\x});
+  % Sa(t)：取偶数个采样点避开 t=0 处 0/0，主峰另用圆点补上
+  \draw[thick,blue!70!black,domain=-4*pi:4*pi,samples=400,smooth]
+        plot (\x,{sin(\x r)/\x});
+  \fill[blue!70!black] (0,1) circle (2pt);
+  \draw[dashed,gray] (0,1) -- (-1.2,1) node[left,font=\small] {$1$};
+  % 零点
+  \foreach \k/\lab/\nlab in {1/{\pi}/{-\pi},2/{2\pi}/{-2\pi},3/{3\pi}/{-3\pi},4/{4\pi}/{-4\pi}} {
+    \draw ({\k*pi},0.03) -- ({\k*pi},-0.03) node[below,font=\scriptsize] {$\lab$};
+    \draw ({-\k*pi},0.03) -- ({-\k*pi},-0.03) node[below,font=\scriptsize] {$\nlab$};
+  }
+  \node[font=\small,anchor=west] at (5.0,1.0) {主峰高度 $1$，偶函数};
+  \node[font=\small,anchor=west,gray] at (5.0,0.78) {虚线：包络 $\pm1/|t|$};
+\end{tikzpicture}
+\caption{$\mathrm{Sa}(t)=\dfrac{\sin t}{t}$：中间主峰高 $1$，零点在 $\pm\pi,\pm2\pi,\dots$，两边振荡衰减（图 1-31 对应的形状）。}
+\end{figure}
+
+\begin{itemize}[nosep]
 \item $\dfrac{\sin\omega t}{t}$（$\omega>0$）的形状（41 分钟老师留给大家先画，43 分钟公布）：形状和 $\Sa(t)$ 一样，但
 \begin{itemize}[nosep]
 \item 主峰高度：$\displaystyle\lim_{t\to0}\frac{\sin\omega t}{t}=\omega$（老师说用洛必达法则）；
