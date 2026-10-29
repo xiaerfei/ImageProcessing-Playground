@@ -43,6 +43,19 @@
   \foreach \k in {#5} { \draw (\k,0.1) -- (\k,-0.1) node[below,font=\scriptsize] {$\k$}; }
   \node[font=\scriptsize,anchor=south] at (0,2.95) {#2};
 \end{tikzpicture}}
+% 阶跃面板：#1 标题，#2 跳变位置 x0，#3 取 1 的方向(1=右侧,-1=左侧)，#4 刻度列表，#5 虚线参考（0 不画，1 画 u(t)）
+\newcommand{\steppanel}[5]{%
+\begin{tikzpicture}[x=0.36cm,y=0.9cm,>=stealth]
+  \draw[->] (-6,0) -- (7,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.6);
+  \ifnum#5=1 \draw[dashed,gray] (0,1) -- (6.5,1); \fi
+  \draw[very thick,blue!70!black] (#2,0) -- (#2,1);
+  \ifnum#3=1 \draw[very thick,blue!70!black] (#2,1) -- (6.5,1); \draw[very thick,blue!70!black] (-5.5,0) -- (#2,0);
+  \else \draw[very thick,blue!70!black] (#2,1) -- (-5.5,1); \draw[very thick,blue!70!black] (#2,0) -- (6.5,0); \fi
+  \node[left,font=\tiny] at (0,1) {$1$};
+  \foreach \k in {#4} { \draw (\k,0.05) -- (\k,-0.05) node[below,font=\tiny] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (0,1.65) {#1};
+\end{tikzpicture}}
 % 离散火柴杆
 \newcommand{\stem}[2]{\draw[thick,blue!70!black] (#1,0) -- (#1,#2); \fill[blue!70!black] (#1,#2) circle (1.8pt);}
 \newcommand{\stemzero}[1]{\fill[blue!70!black] (#1,0) circle (1.4pt);}
@@ -58,7 +71,7 @@
 这份笔记由视频整理而来，来源要分清：
 \begin{itemize}[nosep]
 \item 老师的口述：来自语音转写。这次直接用 whisper 的 large-v3-turbo 模型（关闭上下文复用、加了术语提示词）转写，没有出现复读，错字很少；
-\item 题目里的图和数字：来自画面（PPT 与黑板截图）。个别题目的口述与画面不一致时，以画面为准（见 \S3.3）；
+\item 题目里的图和数字：来自画面（PPT 与黑板截图）。个别题目的口述与画面不一致时，以画面为准（见例 2，\S2.3）；
 \item 标注「（补充）」的内容是我自己加的，课上没讲，或我没有核对书。
 \end{itemize}
 \end{note}
@@ -352,6 +365,55 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 \end{tikzpicture}
 \caption{$X(\omega/T)$ 是 $X(\omega)$ 沿 $\omega$ 轴拉伸 $T$ 倍：峰值不变，宽度变成 $T$ 倍。左边的钟形只是示意，黑板上的具体形状同为一个拱形。}
 \end{figure}
+
+\subsection{阶跃函数 $u(t)$ 的自变量变换}
+\textbf{（补充：这一节是我为了把口诀用到最简单的信号上写的，课上老师只讲了 $u(t-t_0)$ 的右移，其余几个是我按口诀推的，笔记里的结论我自己都用定义验算过。）}
+
+$u(t)$ 只有一个「跳变」：括号里的数大于 $0$ 时为 $1$，小于 $0$ 时为 $0$。所以对 $u(at+b)$ 有一个最省事的办法，不用画中间步骤：
+\begin{remember}
+\textbf{令括号里的式子 $at+b$ 等于 $0$，解出的 $t$ 就是跳变位置；再看括号里 $>0$ 的那一侧，那一侧取 $1$。}
+\end{remember}
+再用口诀对照检查：
+
+\begin{center}
+\begin{tabular}{@{}lllp{5.6cm}@{}}
+\toprule
+信号 & 跳变位置 & 取 $1$ 的一侧 & 对应的口诀 \\
+\midrule
+$u(t-2)$ & $t=2$ & 右侧 & 减号右移 $2$\\
+$u(t+2)$ & $t=-2$ & 右侧 & 加号左移 $2$\\
+$u(-t)$ & $t=0$ & \textbf{左侧}（$-t>0\iff t<0$） & 前有负号翻转\\
+$u(2t)$ & $t=0$ & 右侧 & 压缩 $2$ 倍，但\textbf{图没有变}\\
+$u(-2t+4)$ & $t=2$ & \textbf{左侧}（$-2t+4>0\iff t<2$） & 标准形式 $u(-2(t-2))$：翻转、压缩（无影响）、右移 $2$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\steppanel{\textcircled{1} $u(t-2)$：右移 2}{2}{1}{2}{0}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\steppanel{\textcircled{2} $u(t+2)$：左移 2}{-2}{1}{-2}{0}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\steppanel{\textcircled{3} $u(-t)$：翻转}{0}{-1}{0}{0}
+\end{minipage}
+
+\medskip
+\begin{minipage}{0.32\textwidth}\centering
+\steppanel{\textcircled{4} $u(2t)$：与 $u(t)$ 完全相同}{0}{1}{0}{0}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\steppanel{\textcircled{5} $u(-2t+4)$}{2}{-1}{2}{0}
+\end{minipage}
+\caption{$u(t)$ 的自变量变换。蓝色粗线是新信号，横轴上方一条线表示取值 $1$，下方（贴着横轴）表示取值 $0$。跳变点处的值不规定（和 $u(0)$ 任取一样）。}
+\end{figure}
+
+\paragraph{为什么 $u(2t)=u(t)$：压缩对阶跃没有效果。}$2t>0$ 和 $t>0$ 是同一个条件，跳变位置都在 $t=0$（而 $0$ 压缩任意倍还是 $0$）。更一般地，对任意 $a>0$，$u(at)=u(t)$。这是阶跃信号很特殊的地方：\textbf{拉伸压缩都不改变它的图像}，只有平移和翻转才会改变。\emph{（补充：这一点对「冲激信号」就不成立，$\delta(at)$ 与 $\delta(t)$ 差一个系数，那是第二章的内容，这里只提一句，不展开。）}
+
+\paragraph{离散情形的一个区别。}$u[n]$ 在 $n=0$ 处\textbf{有确定的值 $1$}，所以 $u[-n]$ 在 $n\le0$ 上是 $1$（包含 $n=0$），$u[n-3]$ 在 $n\ge3$ 上是 $1$（包含 $n=3$）。连续的 $u(t)$ 跳变点处的值不规定，离散的没有这个问题（前面 $u[n+2]-u[n-3]$ 一题里，边界点的处理就是靠这一点）。
 
 \subsection{用阶跃函数平移、做减法，表示各种「窗」}
 \begin{enumerate}
