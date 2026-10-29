@@ -11,6 +11,7 @@
     { "name": "xelatex ×2", "tools": ["xelatex", "xelatex"] }
   ],
   "latex-workshop.latex.recipe.default": "first",
-  "latex-workshop.latex.autoBuild.run": "never",
+  "latex-workshop.latex.autoBuild.run": "onSave",
+  "latex-workshop.latex.outDir": "%DIR%",
   "latex-workshop.view.pdf.viewer": "tab"
 }

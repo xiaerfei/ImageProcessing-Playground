@@ -26,3 +26,6 @@ Documents/_archive/原文-*/
 *.aux
 *.log
 *.synctex.gz
+
+# 笔记的 LaTeX 编译产物,只在本地看
+Documents/06-Signal/2022浙江大学信号与系统-胡浩基老师/典型的信号.pdf
