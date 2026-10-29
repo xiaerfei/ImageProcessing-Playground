@@ -372,6 +372,139 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \caption{$\dfrac{\sin\omega t}{t}$（$\omega>0$）：$\omega$ 变大，峰高按 $\omega$ 倍升高，零点按 $1/\omega$ 向里压缩。}
 \end{figure}
 
+\subsubsection*{图解 $\Sa(t)$ 的几个关键性质}
+上面列了几条性质，这里每条配一张图，一条一张。
+
+\paragraph{性质 1：$\Sa(0)=1$（为什么在 $0$ 处要「补一个值」）。}
+$t=0$ 时 $\frac{\sin t}{t}=\frac00$，没有意义。办法是看 $t\to0$ 时它趋于什么。左图画出 $\sin t$（蓝）和直线 $y=t$（灰虚线）：在 $0$ 附近两条线几乎重合（$y=t$ 就是 $\sin t$ 在 $0$ 处的切线），所以两者之比 $\frac{\sin t}{t}\to1$。右图画 $\Sa(t)$：曲线逼近 $(0,1)$，在这一点补上 $\Sa(0)=1$（实心点），曲线就连成一条连续的线。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=1.0cm,y=1.0cm,>=stealth]
+  \draw[->] (-2.6,0) -- (2.8,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-2.2) -- (0,2.4);
+  \draw[dashed,gray,thick,domain=-2.1:2.1] plot (\x,\x);
+  \draw[thick,blue!70!black,domain=-2.4:2.4,samples=80,smooth] plot (\x,{sin(\x r)});
+  \node[gray,font=\scriptsize,anchor=west] at (1.3,1.55) {$y=t$};
+  \node[blue!70!black,font=\scriptsize,anchor=west] at (1.6,0.75) {$y=\sin t$};
+  \fill[red!70!black] (0,0) circle (1.6pt);
+  \node[font=\scriptsize,below right] at (0,0) {$0$附近重合};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.49\textwidth}
+\centering
+\begin{tikzpicture}[x=0.5cm,y=2.0cm,>=stealth]
+  \draw[->] (-5.2,0) -- (5.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.3) -- (0,1.3) node[above,font=\small] {$\mathrm{Sa}(t)$};
+  \draw[thick,blue!70!black,domain=-5:5,samples=200,smooth] plot (\x,{sin(\x r)/\x});
+  \fill[blue!70!black] (0,1) circle (2pt);
+  \node[left,font=\scriptsize] at (-0.15,1.0) {$\mathrm{Sa}(0)=1$};
+\end{tikzpicture}
+\end{minipage}
+\caption{性质 1：左，$\sin t$ 与它在 $0$ 处的切线 $y=t$ 几乎重合；右，因此 $\sin t/t\to1$，补上 $\Sa(0)=1$。}
+\end{figure}
+数值也印证这一点（$t$ 越小，比值越接近 $1$）：
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$t$ & $1$ & $0.5$ & $0.1$ & $0.01$\\
+\midrule
+$\dfrac{\sin t}{t}$ & $0.8415$ & $0.9589$ & $0.99833$ & $0.999983$\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{性质 2：偶函数（奇除以奇得偶）。}
+老师说 $\Sa(t)=\frac{\sin t}{t}$ 是偶函数，理由是「$\sin t$ 是奇函数，$t$ 也是奇函数，奇除以奇得偶」。下面三张图把这句话画出来：每张图在 $t=a$ 和 $t=-a$ 处各标一个点。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}
+\centering
+\begin{tikzpicture}[x=0.32cm,y=0.9cm,>=stealth]
+  \draw[->] (-5.5,0) -- (5.8,0);
+  \draw[->] (0,-1.5) -- (0,1.7);
+  \draw[thick,blue!70!black,domain=-5:5,samples=100,smooth] plot (\x,{sin(\x r)});
+  \fill[red!70!black] (1.2,{sin(1.2 r)}) circle (1.8pt);
+  \fill[red!70!black] (-1.2,{-sin(1.2 r)}) circle (1.8pt);
+  \draw[dashed,gray] (1.2,{sin(1.2 r)}) -- (-1.2,{-sin(1.2 r)});
+  \node[font=\scriptsize] at (0,1.9) {$\sin t$：奇};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+\centering
+\begin{tikzpicture}[x=0.32cm,y=0.45cm,>=stealth]
+  \draw[->] (-5.5,0) -- (5.8,0);
+  \draw[->] (0,-3.3) -- (0,3.4);
+  \draw[thick,blue!70!black,domain=-3:3] plot (\x,\x);
+  \fill[red!70!black] (1.2,1.2) circle (1.8pt);
+  \fill[red!70!black] (-1.2,-1.2) circle (1.8pt);
+  \draw[dashed,gray] (1.2,1.2) -- (-1.2,-1.2);
+  \node[font=\scriptsize] at (0,3.9) {$t$：奇};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}
+\centering
+\begin{tikzpicture}[x=0.32cm,y=1.6cm,>=stealth]
+  \draw[->] (-5.5,0) -- (5.8,0);
+  \draw[->] (0,-0.3) -- (0,1.2);
+  \draw[thick,blue!70!black,domain=-5:5,samples=200,smooth] plot (\x,{sin(\x r)/\x});
+  \fill[red!70!black] (1.2,{sin(1.2 r)/1.2}) circle (1.8pt);
+  \fill[red!70!black] (-1.2,{sin(1.2 r)/1.2}) circle (1.8pt);
+  \draw[dashed,gray] (1.2,{sin(1.2 r)/1.2}) -- (-1.2,{sin(1.2 r)/1.2});
+  \node[font=\scriptsize] at (0,1.35) {$\mathrm{Sa}(t)$：偶};
+\end{tikzpicture}
+\end{minipage}
+\caption{性质 2：红点是 $t=\pm1.2$ 处的值。奇函数两点的函数值\textbf{相反}（虚线穿过原点），偶函数两点的函数值\textbf{相等}（虚线水平）。$\sin t$ 与 $t$ 都是奇的，相除后两个负号抵消，得到偶函数。}
+\end{figure}
+用式子写：$\Sa(-t)=\dfrac{\sin(-t)}{-t}=\dfrac{-\sin t}{-t}=\Sa(t)$。
+
+\paragraph{性质 3：主瓣宽、旁瓣窄，且旁瓣一个比一个小。}
+$\Sa(t)$ 的波瓣分两类：
+\begin{itemize}[nosep]
+\item \textbf{主瓣}：在 $[-\pi,\pi]$，宽度 $2\pi$，峰高 $1$；
+\item \textbf{旁瓣}：主瓣两边的波瓣，每个宽度 $\pi$，正负交替，峰高依次约为（数值）$-0.217$、$+0.128$、$-0.091$、$+0.071$……越来越小。
+\end{itemize}
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=3.4cm,>=stealth]
+  \draw[->] (-7,0) -- (16.8,0) node[right] {$t$};
+  \draw[->] (0,-0.28) -- (0,1.15) node[above] {$\mathrm{Sa}(t)$};
+  % 主瓣、旁瓣着色
+  \fill[blue!20]   (-3.14159,0) -- plot[domain=-3.14159:3.14159,samples=80] (\x,{sin(\x r)/\x}) -- (3.14159,0) -- cycle;
+  \foreach \a/\b/\c in {3.14159/6.28319/red!20, 6.28319/9.42478/green!20, 9.42478/12.5664/red!20, 12.5664/15.708/green!20} {
+    \fill[\c] (\a,0) -- plot[domain=\a:\b,samples=60] (\x,{sin(\x r)/\x}) -- (\b,0) -- cycle;
+  }
+  \draw[thick,black,domain=-6.5:16,samples=400,smooth] plot (\x,{sin(\x r)/\x});
+  % 包络（只画右侧；从 t=3 起，避免靠近 0 处的包络冲到纸面外）
+  \draw[gray,dashed,domain=3:16,samples=60] plot (\x,{1/\x});
+  \draw[gray,dashed,domain=3:16,samples=60] plot (\x,{-1/\x});
+  % 峰值点
+  \fill[blue!70!black] (0,1) circle (1.8pt);
+  \foreach \t/\v in {4.4934/-0.2172, 7.7253/0.1284, 10.9041/-0.0913, 14.0662/0.0709} {
+    \fill[black] (\t,\v) circle (1.6pt);
+  }
+  \node[above,font=\scriptsize] at (0,1.0) {$1$};
+  \node[below,font=\scriptsize] at (4.4934,-0.2172) {$-0.217$};
+  \node[above,font=\scriptsize] at (7.7253,0.1284)  {$0.128$};
+  \node[below,font=\scriptsize] at (10.9041,-0.0913) {$-0.091$};
+  \node[above,font=\scriptsize] at (14.0662,0.0709) {$0.071$};
+  \draw[<->] (-3.14159,-0.07) -- (3.14159,-0.07) node[midway,below,font=\scriptsize] {主瓣宽 $2\pi$};
+  \draw[<->] (3.14159,0.27) -- (6.28319,0.27) node[midway,above,font=\scriptsize] {旁瓣宽 $\pi$};
+  \foreach \k in {1,2,3,4,5} { \draw ({\k*pi},0.01) -- ({\k*pi},-0.01); }
+  \node[blue!60!black,font=\small] at (-4.6,0.7) {主瓣};
+  \node[font=\small] at (9.5,0.45) {旁瓣};
+\end{tikzpicture}
+\caption{性质 3：蓝色是主瓣（宽 $2\pi$、峰高 $1$），其余是旁瓣（宽 $\pi$、正负交替），黑点标出各旁瓣的峰值，灰色虚线是包络 $\pm1/|t|$。}
+\end{figure}
+\begin{itemize}[nosep]
+\item \textbf{第一个旁瓣峰高 $-0.217$}，约是主瓣的 $\frac15$。取 $20\log_{10}0.217\approx-13.3\ \mathrm{dB}$（做过音频的话这是熟悉的量）。\emph{（这个 dB 数是我（补充）的，课上没提。）}
+\item \textbf{旁瓣峰值恰好落在 $t=\tfrac{3\pi}{2},\tfrac{5\pi}{2},\dots$ 的附近，但不精确等于它们}：真正的位置是方程 $\tan t=t$ 的解（$4.493,\ 7.725,\ 10.904,\dots$），比 $\frac{3\pi}2=4.712$ 等略小一些，原因是 $\sin t$ 的峰要被分母 $t$ 一压，峰就往左偏。数值是我算的。
+\item 峰值被 $\pm\frac1{|t|}$ 夹住（虚线），所以越往外越小，衰减得很慢（反比于 $|t|$），不是指数衰减。
+\end{itemize}
+
 \begin{remember}
 \[
 \int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=\pi,\qquad
