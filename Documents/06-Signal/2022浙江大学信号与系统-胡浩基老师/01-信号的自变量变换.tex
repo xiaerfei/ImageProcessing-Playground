@@ -285,6 +285,78 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 
 \paragraph{书上的练习。}老师说书上第 31 页的习题 1-7 和 1-8 都是这类题，也都布置给了大家，回去自己练习。
 
+\subsection{单独看一次：时间尺度变换 $x(at)$}
+\textbf{（补充：这一节是我把口诀的「第三句」单独拿出来画图说明，课上老师讲的是它的用法，没有专门展开，下面的结论我都用定义验算过。）}
+
+只做「压缩或拉伸」而不翻转、不平移的变换，叫\textbf{时间尺度变换}（time scaling）：$x(t)\to x(at)$，$a>0$。口诀第三句说的就是它：
+\begin{itemize}[nosep]
+\item $a>1$：\textbf{压缩}，波形沿横轴向\textbf{纵轴}（$t=0$）靠拢，变窄；
+\item $0<a<1$：\textbf{拉伸}，波形离纵轴越来越远，变宽。
+\end{itemize}
+关键点的位置规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p/a$ 处，纵轴的值不变}。因为新信号在 $t$ 处的值是原信号在 $at$ 处的值，要看到原来 $p$ 处的特征，需要 $at=p$。
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & $x(t)$ & $x(2t)$：压缩 & $x(t/2)$：拉伸 \\
+\midrule
+关键点 $t$ 值 & $0,\ 3,\ 6$ & $0,\ 1.5,\ 3$ & $0,\ 6,\ 12$ \\
+峰高 & $1$ & $1$ & $1$ \\
+底边宽度 & $6$ & $3$ & $12$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+（用的还是前面例 1 的三角波 $x(t)$：$t=0$ 为 $0$，$t=3$ 为峰，$t=6$ 为 $0$。）
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (14,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.4);
+  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black] (0,0) -- (1.5,1) -- (3,0);
+  \draw[very thick,blue!70!black] (0,0) -- (6,1) -- (12,0);
+  \foreach \k in {0,3,6,12} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  % 图例（右上角，避免盖住曲线）
+  \foreach \y/\c/\lab in {1.25/gray/{$x(t)$},1.05/red!70!black/{$x(2t)$：压缩 2 倍},0.85/blue!70!black/{$x(t/2)$：拉伸 2 倍}} {
+    \draw[very thick,\c] (8.6,\y) -- (9.4,\y);
+    \node[anchor=west,font=\small,\c] at (9.5,\y) {\lab};
+  }
+  \draw[dotted,gray] (3,0) -- (3,1); \draw[dotted,red!70!black] (1.5,0) -- (1.5,1); \draw[dotted,blue!70!black] (6,0) -- (6,1);
+\end{tikzpicture}
+\caption{时间尺度变换。灰：$x(t)$；红：$x(2t)$，所有关键点除以 $2$，向纵轴靠拢；蓝：$x(t/2)$，所有关键点乘以 $2$，远离纵轴。三条曲线的峰高都是 $1$，三角形的左端都固定在 $t=0$。}
+\end{figure}
+
+\paragraph{关键：尺度变换是以纵轴为中心的。}上面的三角形左端恰好在 $t=0$，所以看起来像「只是变窄」。如果波形不在原点，压缩的同时\textbf{位置也会变}：关键点 $p\to p/a$，不只是宽度变。下图用一个落在 $[4,8]$ 上的三角形来演示：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (17.4,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.4);
+  \draw[very thick,gray] (4,0) -- (6,1) -- (8,0);
+  \draw[very thick,red!70!black] (2,0) -- (3,1) -- (4,0);
+  \draw[very thick,blue!70!black] (8,0) -- (12,1) -- (16,0);
+  \foreach \k in {2,4,6,8,12,16} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  \node[font=\small,gray,anchor=south] at (6,1.02) {$x(t)$};
+  \node[font=\small,red!70!black,anchor=south] at (3,1.02) {$x(2t)$};
+  \node[font=\small,blue!70!black,anchor=south] at (12,1.02) {$x(t/2)$};
+\end{tikzpicture}
+\caption{原来的三角形在 $[4,8]$（峰在 $6$）。$x(2t)$ 的三角形在 $[2,4]$（峰在 $3$），向原点靠拢；$x(t/2)$ 的三角形在 $[8,16]$（峰在 $12$），远离原点。每个点的位置都乘了 $1/a$。}
+\end{figure}
+所以在老师的口诀里，要先做「压缩或拉伸」再做「平移」，这是同一个道理：压缩是围绕原点进行的。
+
+\paragraph{压缩和拉伸改变了什么，没改变什么。}
+\begin{itemize}[nosep]
+\item \textbf{没变}：峰高（纵轴的值）。
+\item \textbf{变了}：宽度变成原来的 $1/a$ 倍；\textbf{面积}也变成原来的 $1/a$ 倍。三角形的底边 $6\to3\to12$，面积 $3\to1.5\to6$。一般公式 $\int_{-\infty}^{+\infty}x(at)\d t=\dfrac{1}{a}\int_{-\infty}^{+\infty}x(t)\d t$（$a>0$，把 $s=at$ 代入即可）。
+\end{itemize}
+这里能解释前面一份笔记里的一个现象：$\Sa(\omega t)$ 的面积是 $\dfrac{\pi}{\omega}$，会随 $\omega$ 变小；而 $\dfrac{\sin\omega t}{t}=\omega\cdot\Sa(\omega t)$ 乘了一个 $\omega$，面积刚好回到 $\pi$。所以「$\sin\omega t/t$ 的积分始终是 $\pi$」的几何原因是：宽度压成 $1/\omega$，高度又乘 $\omega$，两者抵消。
+
+\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(2t)$ 就是用 $2$ 倍速播放：时长缩短为一半，同时音调升高（采样点被更快地播放）。$x(t/2)$ 是半速播放：时长翻倍，音调降低。注意这里说的是「简单地加速或减速播放」；很多播放器的「变速不变调」用的是别的算法，不属于单纯的 $x(at)$。我没有核对书，这是我的类比。
+
+\paragraph{$a<0$ 怎么办。}$x(at)$（$a<0$）就是先翻转再压缩或拉伸：$x(-2t)=x(2(-t))$，先画 $x(-t)$，再按绝对值 $2$ 压缩。老师口诀的第二句和第三句分别处理这两件事。
+
 %==================================================================
 \section{离散信号的自变量变换}
 口诀仍然是这四句，但老师说离散的情况 \textbf{$n$ 前面的系数基本只有 $+1$ 或 $-1$}，所以第三句（压缩、拉伸）一般用不上。原因：如果系数是 $2$ 或 $\tfrac12$，定义的时候有歧义，让大家回去自己想一想。\emph{（补充：我的理解是，$x[2n]$ 会把奇数位置的点丢掉，$x[n/2]$ 在 $n$ 为奇数时没有定义，都需要额外约定；老师没有展开，我没有核对书，以后课上讲到再补。）}
