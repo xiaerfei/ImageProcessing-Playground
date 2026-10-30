@@ -207,6 +207,26 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 \item \textbf{为什么系数大于 $1$ 压缩}：$x(3t)$ 在 $t$ 处的值是原信号在 $3t$ 处的值，原信号走完 $3$ 个单位，新信号只用 $1$ 个单位，所以「变快」了，波形被挤窄。系数小于 $1$ 则相反，被拉宽。
 \end{enumerate}
 
+下图把第二条（为什么加号左移）画出来：下排是 $x(t+2)$，上排是 $x(t)$，虚线连接「新信号的点」和「它在原信号里读取的位置」（读取位置是 $t+2$）。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=1.1cm,>=stealth]
+  \draw[->] (-3.5,0) -- (7.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.3);
+  \draw[->] (-3.5,-2) -- (7.6,-2) node[right,font=\small] {$t$};
+  \draw[->] (0,-2.2) -- (0,-0.9);
+  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,orange!85!black] (-2,-2) -- (1,-1) -- (4,-2);
+  \foreach \a/\b in {-2/0, 1/3, 4/6} { \draw[->,dashed,gray] (\a,-2) -- (\b,0); }
+  \foreach \k in {0,3,6} { \draw (\k,0.04)--(\k,-0.04) node[above left,font=\tiny] {$\k$}; }
+  \foreach \k in {-2,1,4} { \draw (\k,-1.96)--(\k,-2.04) node[below,font=\tiny] {$\k$}; }
+  \node[gray,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
+  \node[orange!70!black,font=\small,anchor=west] at (4.6,-1.15) {$x(t+2)$};
+\end{tikzpicture}
+\caption{下排 $x(t+2)$ 在 $t=-2,1,4$ 处的值，是上排 $x(t)$ 在 $\tau=t+2=0,3,6$ 处的值。每个特征（比如峰）在新信号里出现的位置，比原来小 $2$，所以是左移。}
+\end{figure}
+
 \begin{note}
 一个容易踩的坑（补充）：先化成标准形式，再按「翻转 $\to$ 压缩或拉伸 $\to$ 平移」的顺序做，平移量是 $b/a$，不是 $b$。如果坚持先平移再压缩，平移量就是 $b$（即 $x(t+6)$，再压缩 $3$ 倍），结果相同，但很容易搞错，所以老师把「先化成标准形式」放在第一条。
 \end{note}
@@ -259,6 +279,37 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 \item 减号右移 $3$：$[-5,-1]$。
 \end{enumerate}
 答案：$x(t)$ 在 $[-5,-3]$ 上高度 $2$，在 $[-3,-1]$ 上高度 $1$。
+
+下面按老师的要求，每一步单独画一张，并标上刻度（这里的 $g$ 就是已知的 $x(3-2t)$）：
+
+\newcommand{\twopanel}[7]{%
+\begin{tikzpicture}[x=0.4cm,y=0.6cm,>=stealth]
+  \draw[->] (-9,0) -- (5.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.3) -- (0,2.8);
+  \draw[very thick,blue!70!black] (#3,0) -- (#3,#6) -- (#4,#6) -- (#4,#7) -- (#5,#7) -- (#5,0);
+  \node[left,font=\scriptsize] at (0,1) {$1$};
+  \node[left,font=\scriptsize] at (0,2) {$2$};
+  \foreach \k in {#3,#4,#5} { \draw (\k,0.1) -- (\k,-0.1) node[below,font=\scriptsize] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (-1.8,2.95) {#2};
+\end{tikzpicture}}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\twopanel{}{\textcircled{1} $g(t)$（已知）}{2}{3}{4}{1}{2}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\twopanel{}{\textcircled{2} $g(-t)$：翻转}{-4}{-3}{-2}{2}{1}
+\end{minipage}
+
+\medskip
+\begin{minipage}{0.48\textwidth}\centering
+\twopanel{}{\textcircled{3} $g(-\frac t2)$：拉伸 2 倍}{-8}{-6}{-4}{2}{1}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\twopanel{}{\textcircled{4} $g(-\frac{t-3}2)=x(t)$：右移 3}{-5}{-3}{-1}{2}{1}
+\end{minipage}
+\caption{例 3 的四步：\textcircled{1}$\to$\textcircled{2} 翻转，区间 $[2,4]\to[-4,-2]$，高度 $1,2$ 的两段左右互换；\textcircled{2}$\to$\textcircled{3} 拉伸 $2$ 倍，$[-8,-4]$；\textcircled{3}$\to$\textcircled{4} 右移 $3$，$[-5,-1]$。}
+\end{figure}
 
 \begin{figure}[H]
 \centering
@@ -605,7 +656,31 @@ y(t)=x(t)+\tfrac12\,x(t-8)
 \end{tikzpicture}
 \caption{$y(t)=x(t)+\tfrac12x(t-8)$：原声（蓝）与延迟、减半的回声（红）。两个三角形没有重叠，所以相加后就是各自原样。}
 \end{figure}
-我没有核对书，这是我的例子。如果延迟小于信号宽度，两份会重叠，相加就要把重叠部分逐点加起来。
+我没有核对书，这是我的例子。如果延迟小于信号宽度，两份会重叠，相加就要把重叠部分逐点加起来。下面把延迟改成 $4$（小于底边 $6$）：$y(t)=x(t)+\tfrac12x(t-4)$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  % 上：原声与回声叠在一起
+  \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.3);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black,dashed] (4,0) -- (7,0.5) -- (10,0);
+  \node[blue!70!black,font=\scriptsize,anchor=south] at (3,1.02) {$x(t)$};
+  \node[red!70!black,font=\scriptsize,anchor=south] at (7,0.52) {$\frac12x(t-4)$};
+  \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
+  % 下：相加的结果
+  \begin{scope}[yshift=-2.3cm]
+    \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
+    \draw[->] (0,-0.2) -- (0,1.3);
+    \draw[very thick,black] (0,0) -- (3,1) -- (4,0.6667) -- (6,0.3333) -- (7,0.5) -- (10,0);
+    \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
+    \node[font=\scriptsize,anchor=south] at (7.5,0.8) {$y(t)$：逐点相加};
+    \draw[dotted,gray] (4,0) -- (4,0.6667); \draw[dotted,gray] (6,0) -- (6,0.3333);
+  \end{scope}
+\end{tikzpicture}
+\caption{延迟 $4$ 时两份重叠在 $[4,6]$ 上。上：蓝 $x(t)$ 与红虚线 $\tfrac12x(t-4)$；下：相加后的 $y(t)$，关键点 $(0,0),(3,1),(4,\tfrac23),(6,\tfrac13),(7,\tfrac12),(10,0)$。验算：$t=4$ 时 $x(4)=\tfrac23$，回声刚开始为 $0$，和为 $\tfrac23$；$t=6$ 时 $x(6)=0$，回声 $\tfrac12x(2)=\tfrac13$。}
+\end{figure}
 
 \paragraph{周期信号：平移 $T$ 之后和原来一样。}第一份笔记里周期信号的定义 $x(t)=x(t+mT)$，用现在的话说就是：\textbf{平移任意整数个周期，信号不变}。再举一个熟悉的例子：$\cos t=\sin\bigl(t+\tfrac\pi2\bigr)$，即\textbf{把正弦左移 $\tfrac\pi2$ 就是余弦}。
 
@@ -629,6 +704,19 @@ y(t)=x(t)+\tfrac12\,x(t-8)
 \end{figure}
 
 \paragraph{平移和压缩一起出现时的顺序（再强调一次）。}$x(2t-4)$ 的标准形式是 $x(2(t-2))$，所以\textbf{先压缩 $2$ 倍，再右移 $2$}，平移量是 $2$ 而不是 $4$。这是前面口诀第一句「化成标准形式」要防的坑。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.0cm,>=stealth]
+  \draw[->] (0,-4.6) -- (0,1.3);
+  \draw[->] (-1,0.0) -- (8.5,0.0) node[right,font=\scriptsize] {$t$};
+  \trirow{0}{0}{3}{6}{gray}{$x(t)$}{0,3,6}
+  \trirow{-1.5}{0}{1.5}{3}{orange!85!black}{先压缩：$x(2t)$}{0,1.5,3}
+  \trirow{-3.0}{2}{3.5}{5}{blue!70!black}{对：右移 $2$}{2,3.5,5}
+  \trirow{-4.5}{4}{5.5}{7}{red!70!black}{错：右移 $4$}{4,5.5,7}
+\end{tikzpicture}
+\caption{$x(2t-4)=x(2(t-2))$：先压缩得到 $x(2t)$（关键点 $0,3,6\to0,1.5,3$），再右移 $2$ 得到 $2,3.5,5$（蓝）。把 $b=4$ 直接当平移量会得到 $4,5.5,7$（红），整体偏右。验算：$t=3.5$ 时 $x(2\times3.5-4)=x(3)=1$，正是峰。}
+\end{figure}
 
 \paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，前面例 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
 
@@ -715,6 +803,35 @@ t=\frac{p-b}{a}
 \section{离散信号的自变量变换}
 口诀仍然是这四句，但老师说离散的情况 \textbf{$n$ 前面的系数基本只有 $+1$ 或 $-1$}，所以第三句（压缩、拉伸）一般用不上。原因：如果系数是 $2$ 或 $\tfrac12$，定义的时候有歧义，让大家回去自己想一想。\emph{（补充：我的理解是，$x[2n]$ 会把奇数位置的点丢掉，$x[n/2]$ 在 $n$ 为奇数时没有定义，都需要额外约定；老师没有展开，我没有核对书，以后课上讲到再补。）}
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.5cm,y=0.9cm,>=stealth]
+  \foreach \yy in {0,-3.2,-6.4} {
+    \draw[->] (-5.5,\yy) -- (8.4,\yy) node[right,font=\scriptsize] {$n$};
+    \draw[->] (0,{\yy-0.2}) -- (0,{\yy+1.4});
+    \foreach \k in {-4,...,7} { \draw (\k,{\yy+0.04})--(\k,{\yy-0.04}) node[below,font=\tiny] {$\k$}; }
+  }
+  % 上：x[n]，奇数位置的点（-1,1,3）用红色标出（x[2n] 会丢掉它们）
+  \stem{-2}{0.5} \stem{0}{1} \stem{2}{1}
+  \foreach \k/\h in {-1/-0.5,1/1,3/1} {
+    \draw[thick,red!70!black] (\k,0) -- (\k,\h); \fill[red!70!black] (\k,\h) circle (1.8pt);
+  }
+  \node[anchor=west,font=\scriptsize] at (4.4,1.0) {$x[n]$（红：奇数位置）};
+  % 中：x[2n]
+  \begin{scope}[yshift=-3.2cm]
+    \stem{-1}{0.5} \stem{0}{1} \stem{1}{1}
+    \node[anchor=west,font=\scriptsize] at (2.6,1.0) {$x[2n]$：只剩偶数位置的 $3$ 个点};
+  \end{scope}
+  % 下：x[n/2]
+  \begin{scope}[yshift=-6.4cm]
+    \stem{-4}{0.5} \stem{-2}{-0.5} \stem{0}{1} \stem{2}{1} \stem{4}{1} \stem{6}{1}
+    \foreach \k in {-3,-1,1,3,5,7} { \node[gray,font=\scriptsize] at (\k,0.35) {?}; }
+    \node[anchor=west,font=\scriptsize] at (-5.4,1.6) {$x[n/2]$：奇数 $n$ 处没有定义（$?$）};
+  \end{scope}
+\end{tikzpicture}
+\caption{离散情形不能随便缩放。上：$x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$）。中：$x[2n]$ 取 $x[-2],x[0],x[2]$，放在 $n=-1,0,1$，奇数位置的 $x[-1],x[1],x[3]$ 被丢掉了。下：$x[n/2]$ 把 $x[k]$ 放到 $n=2k$ 处，奇数 $n$ 要读 $x$ 在半整数处的值，没有定义。}
+\end{figure}
+
 \subsection{例：$x[n-3]$ 与 $x[4-n]$}
 已知 $x[n]$：$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0]=x[1]=x[2]=x[3]=1$，其余为 $0$。
 
@@ -777,6 +894,28 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 已知 $\Sa(t)=\dfrac{\sin t}{t}$，画 $\Sa(\omega t)=\dfrac{\sin\omega t}{\omega t}$（$\omega>0$）。只用第三条口诀：系数是 $\omega$，$\omega>1$ 就压缩 $\omega$ 倍。原来的零点 $\pm\pi,\pm2\pi,\dots$ 变成 $\pm\dfrac{\pi}{\omega},\pm\dfrac{2\pi}{\omega},\dots$，峰高仍是 $1$。
 
 老师接着说：前一节课让大家画的是 $\dfrac{\sin\omega t}{t}$，这个式子就是 $\omega\cdot\Sa(\omega t)$，所以只要把 $\Sa(\omega t)$ 再\textbf{乘一个 $\omega$}，峰高就是 $\omega$。这与上一份笔记里「峰高 $\omega$，零点 $\pm k\pi/\omega$」的结论一致。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
+  \draw[->] (-10,0) -- (10.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.5) -- (0,2.5);
+  \foreach \s in {1,-1} {
+    \draw[very thick,gray,domain=0.001:9.42,samples=120,smooth] plot ({\s*\x},{sin((\x) r)/\x});
+    \draw[very thick,red!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/(2*\x)});
+    \draw[very thick,blue!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/\x});
+  }
+  \node[left,font=\scriptsize] at (0,1) {$1$};
+  \node[left,font=\scriptsize] at (0,2) {$2$};
+  \foreach \k/\lab in {3.1416/{\pi},6.2832/{2\pi},-3.1416/{-\pi},-6.2832/{-2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\lab$}; }
+  \foreach \k/\lab in {1.5708/{\frac\pi2},-1.5708/{-\frac\pi2}} { \draw[red!70!black] (\k,0.04)--(\k,-0.04) node[above,font=\tiny,red!70!black] {$\lab$}; }
+  \foreach \y/\c/\lab in {2.3/gray/{$\Sa(t)$},2.0/red!70!black/{$\Sa(2t)$：压缩，峰高 $1$},1.7/blue!70!black/{$\sin2t/t$：峰高 $2$}} {
+    \draw[very thick,\c] (-9.8,\y) -- (-9.0,\y);
+    \node[anchor=west,font=\scriptsize,\c] at (-8.9,\y) {\lab};
+  }
+\end{tikzpicture}
+\caption{取 $\omega=2$。灰：$\Sa(t)$，零点在 $\pm\pi,\pm2\pi,\dots$；红：$\Sa(2t)$，零点向纵轴靠拢到 $\pm\frac\pi2,\pm\pi,\dots$，峰高仍是 $1$；蓝：$\dfrac{\sin2t}{t}=2\Sa(2t)$，零点和红线相同，峰高变成 $2$。}
+\end{figure}
 
 \subsection{第五章的例子：$X(\omega/T)$}
 老师说第五章会碰到一个标准的例子：$X(\omega)$ 是一个带限信号（band-limited signal，只在 $[-\omega_0,\omega_0]$ 上有值，其他地方为 $0$），峰值（$\omega=0$ 处）为 $E$。问：$X\bigl(\tfrac{\omega}{T}\bigr)$ 是什么形状？答案：\textbf{峰值仍是 $E$}，两个端点从 $\pm\omega_0$ 变成 $\pm T\omega_0$。这就是第三条口诀：系数 $\tfrac1T$，$T>1$ 时系数小于 $1$，是拉伸。\emph{（课堂口述把 $X(\omega/T)$ 听成了「$X\omega$ 除以 $T$」，黑板上写的是 $X(\frac{\omega}{T})$，所以我按黑板写。黑板图没有写 $T$ 的具体值。）}
