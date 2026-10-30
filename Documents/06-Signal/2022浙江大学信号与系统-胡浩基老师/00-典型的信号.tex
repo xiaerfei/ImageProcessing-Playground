@@ -84,6 +84,30 @@
 
 学生问过：为什么 $n$ 只能取整数，不能取 $0.5$？老师的回答：$n$ 只是一个「名字」，只表示「我不在实数轴上取值，而在一个离散的集合上取值」；用 $-0.5,0.5$ 当名字也行，但为了统一，约定用整数。
 
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.85cm,y=1.1cm,>=stealth]
+  \draw[->] (-0.5,0) -- (6.9,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.2) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=0:6.5,samples=100,smooth] plot (\x,{sin(\x r)});
+  \node[font=\scriptsize,anchor=south] at (3.3,1.5) {连续 $x(t)$：每个实数 $t$ 都有值};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.85cm,y=1.1cm,>=stealth]
+  \draw[->] (-0.5,0) -- (6.9,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-1.2) -- (0,1.5);
+  \foreach \n in {0,...,6} {
+    \pgfmathsetmacro{\h}{sin(\n r)}
+    \draw[thick,blue!70!black] (\n,0) -- (\n,\h); \fill[blue!70!black] (\n,\h) circle (1.8pt);
+  }
+  \node[font=\scriptsize,anchor=south] at (3.3,1.5) {离散 $x[n]$：只有整数 $n$ 处有值};
+\end{tikzpicture}
+\end{minipage}
+\caption{连续与离散。左：一条连续的曲线，横轴上每一点都有值；右：只在整数 $n$ 处有值的序列（图中取的是左边那条曲线在 $t=0,1,\dots,6$ 处的值），点与点之间\textbf{没有定义}，不是等于 $0$。}
+\end{figure}
+
 \subsection{周期信号与非周期信号}
 \textbf{连续}：
 \[
@@ -97,12 +121,69 @@ x[n]=x[n+mN],\quad m\in\mathbb{Z},\ N\ \text{为正整数}
 \]
 老师口述这里的 $N$ 是「自然数」，我写成正整数是因为 $N=0$ 时「重复」没有意义。老师的教学要求：「举一反三、触类旁通」。以后他有时只给连续或只给离散的定义，另一个要自己补出来。
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.9cm,y=1.1cm,>=stealth]
+  \draw[->] (-1,0) -- (12.4,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.3) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-1:12,samples=150,smooth] plot (\x,{sin(90*\x)});
+  \foreach \k in {1,5,9} { \draw[dotted,gray] (\k,1) -- (\k,1.3); }
+  \draw[<->,gray] (1,1.25) -- (5,1.25) node[midway,above,font=\scriptsize] {$T=4$};
+  \draw[<->,gray] (5,1.25) -- (9,1.25) node[midway,above,font=\scriptsize] {$T=4$};
+  \node[font=\scriptsize] at (5,-1.55) {连续：$x(t)=x(t+mT)$};
+  \begin{scope}[yshift=-4.2cm]
+    \draw[->] (-1.6,0) -- (12.4,0) node[right,font=\scriptsize] {$n$};
+    \draw[->] (0,-1.0) -- (0,1.5);
+    \foreach \n/\h in {-1/-0.5,0/1,1/0.5,2/0,3/-0.5,4/1,5/0.5,6/0,7/-0.5,8/1,9/0.5,10/0,11/-0.5} {
+      \draw[thick,blue!70!black] (\n,0) -- (\n,\h); \fill[blue!70!black] (\n,\h) circle (1.8pt);
+    }
+    \foreach \k in {0,4,8} { \draw[dotted,gray] (\k,1) -- (\k,1.3); }
+    \draw[<->,gray] (0,1.25) -- (4,1.25) node[midway,above,font=\scriptsize] {$N=4$};
+    \draw[<->,gray] (4,1.25) -- (8,1.25) node[midway,above,font=\scriptsize] {$N=4$};
+    \foreach \k in {0,4,8} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+    \node[font=\scriptsize] at (5,-1.3) {离散：$x[n]=x[n+mN]$};
+  \end{scope}
+\end{tikzpicture}
+\caption{周期信号。上：连续波形每隔 $T$ 重复一遍（图中 $T=4$，量相邻两个峰的距离）；下：离散序列每隔 $N$ 个点重复一遍（图中一个周期内的四个值是 $1,\tfrac12,0,-\tfrac12$，$N=4$）。}
+\end{figure}
+
 \subsection{奇信号与偶信号}
 \begin{align*}
 \text{偶信号}\ (\text{even}):&\quad x(t)=x(-t)\quad \text{关于纵轴对称}\\
 \text{奇信号}\ (\text{odd}):&\quad x(t)=-x(-t)\quad \text{关于原点旋转 }180^\circ\text{ 对称}
 \end{align*}
 老师评价：这就是高中的奇函数、偶函数，不算本课新知识。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.7cm,y=1.2cm,>=stealth]
+  \draw[->] (-3.7,0) -- (3.9,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.3) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-3.5:3.5,samples=100,smooth] plot (\x,{cos(\x r)});
+  \draw[dashed,gray] (-1.2,0.3624) -- (1.2,0.3624);
+  \draw[dotted,gray] (-1.2,0) -- (-1.2,0.3624); \draw[dotted,gray] (1.2,0) -- (1.2,0.3624);
+  \fill[red!70!black] (-1.2,0.3624) circle (2pt); \fill[red!70!black] (1.2,0.3624) circle (2pt);
+  \node[font=\tiny,red!70!black,anchor=south] at (0.6,0.4) {等高};
+  \node[below,font=\tiny] at (-1.2,0) {$-t$}; \node[below,font=\tiny] at (1.2,0) {$t$};
+  \node[font=\scriptsize,anchor=south] at (0,1.55) {偶信号 $\cos t$：$x(-t)=x(t)$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.7cm,y=1.2cm,>=stealth]
+  \draw[->] (-3.7,0) -- (3.9,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.3) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-3.5:3.5,samples=100,smooth] plot (\x,{sin(\x r)});
+  \draw[dashed,gray] (-1.2,-0.932) -- (1.2,0.932);
+  \draw[dotted,gray] (-1.2,0) -- (-1.2,-0.932); \draw[dotted,gray] (1.2,0) -- (1.2,0.932);
+  \fill[red!70!black] (-1.2,-0.932) circle (2pt); \fill[red!70!black] (1.2,0.932) circle (2pt);
+  \node[font=\tiny,red!70!black,anchor=west] at (0.1,0.5) {过原点};
+  \node[above,font=\tiny] at (-1.2,0) {$-t$}; \node[below,font=\tiny] at (1.2,0) {$t$};
+  \node[font=\scriptsize,anchor=south] at (0,1.55) {奇信号 $\sin t$：$x(-t)=-x(t)$};
+\end{tikzpicture}
+\end{minipage}
+\caption{偶、奇信号。左：偶信号关于纵轴对称，$t$ 与 $-t$ 两点等高（红点，取 $t=1.2$，值都是 $\cos1.2\approx0.36$）；右：奇信号关于原点对称，两点高度相反（$\sin(\pm1.2)=\pm0.93$），两点的连线穿过原点。}
+\end{figure}
 
 \subsubsection*{本课第一个真正的新知识：任何信号都能唯一分解成「偶 $+$ 奇」}
 \begin{remember}
@@ -190,6 +271,23 @@ x_e(t)=\frac{e^{t}+e^{-t}}{2}=\cosh t,\qquad x_o(t)=\frac{e^{t}-e^{-t}}{2}=\sinh
 \]
 即 $e^t=\cosh t+\sinh t$，偶部是双曲余弦，奇部是双曲正弦。
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.4cm,y=0.42cm,>=stealth]
+  \draw[->] (-2.4,0) -- (2.8,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-4.3) -- (0,8.3);
+  \draw[very thick,blue!70!black,domain=-2:2,samples=60,smooth] plot (\x,{exp(\x)});
+  \draw[very thick,green!50!black,dashed,domain=-2:2,samples=60,smooth] plot (\x,{(exp(\x)+exp(-\x))/2});
+  \draw[very thick,orange!85!black,domain=-2:2,samples=60,smooth] plot (\x,{(exp(\x)-exp(-\x))/2});
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.2)--(\k,-0.2) node[below,font=\tiny] {$\k$}; }
+  \foreach \y/\c/\lab in {7.8/blue!70!black/{$e^t$},6.6/green!50!black/{$\cosh t$：偶部},5.4/orange!85!black/{$\sinh t$：奇部}} {
+    \draw[very thick,\c] (-2.3,\y) -- (-1.8,\y);
+    \node[anchor=west,font=\scriptsize,\c] at (-1.7,\y) {\lab};
+  }
+\end{tikzpicture}
+\caption{$e^{t}=\cosh t+\sinh t$：偶部 $\cosh t$（绿虚线，关于纵轴对称）与奇部 $\sinh t$（橙，关于原点对称）逐点相加得到蓝色的 $e^t$。验算：$t=1$ 时 $\cosh1\approx1.543$，$\sinh1\approx1.175$，和 $\approx2.718=e$。}
+\end{figure}
+
 \emph{（说明：第一节课老师把唯一性留作思考题，说下节课会证；第二节课开头（约 37:11）他说，已经把「奇、偶信号分解是唯一的」的严格证明发在\textbf{课程群}里了，课上没有再讲。所以视频里没有他的证明，以上写法是我（补充）的，其中验算存在性那一段对应他第一节课「自己验证一下」的要求。）}
 
 \textbf{离散的版本}：把 $(t)$ 全换成 $[n]$ 即可：
@@ -208,6 +306,36 @@ P=\lim_{t_0\to-\infty,\ t_1\to+\infty}\frac{1}{t_1-t_0}\int_{t_0}^{t_1}|x(t)|^2\
 \item $P$ 有限 $\Rightarrow$ \textbf{功率信号}（功率有限信号）。
 \end{itemize}
 \emph{（补充）功率的表达式我是按板书上的 $t_0,t_1$ 与老师口述的「在有限区间对能量取平均」写的，转写这一段有错字，没有逐项核对。}
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.55cm,y=0.9cm,>=stealth]
+  \draw[->] (-4,0) -- (4.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.5);
+  \draw[very thick,blue!70!black] (-4,0) -- (-1,0) -- (-1,1) -- (1,1) -- (1,0) -- (4,0);
+  \node[left,font=\tiny] at (0,1) {$1$};
+  \node[font=\scriptsize,anchor=south] at (0,1.55) {能量信号};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.55cm,y=0.9cm,>=stealth]
+  \draw[->] (-4,0) -- (4.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.2) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-4:4,samples=100,smooth] plot (\x,{cos(\x r)});
+  \node[font=\scriptsize,anchor=south] at (0,1.55) {功率信号};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.55cm,y=0.9cm,>=stealth]
+  \draw[->] (-4,0) -- (4.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.2) -- (0,1.5);
+  \draw[very thick,blue!70!black] (-3.6,-1.1) -- (3.6,1.1);
+  \node[font=\scriptsize,anchor=south] at (0,1.55) {两者都不是};
+\end{tikzpicture}
+\end{minipage}
+\caption{三种典型情形（区间取对称的 $[-T,T]$，$T\to\infty$ 看极限）。左：宽 $2$、高 $1$ 的矩形脉冲，$E=2$ 有限，是能量信号（此时 $P=0$）。中：$\cos t$ 永远振荡下去，$E=\infty$，但平均功率 $P=\tfrac12$ 有限，是功率信号。右：$x(t)=t$ 越走越大，$E=\infty$，$P=\infty$，两者都不是。}
+\end{figure}
 
 %==================================================================
 \section{基本的连续时间信号}
@@ -270,6 +398,52 @@ u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 \end{itemize}
 所以「幅度趋于无穷、面积却固定」就是 $\delta(t)$ 的全部含义。矩形只是为了好算，三角形、高斯曲线等别的窄脉冲，只要面积是 1、宽度趋于 0，也得到同一个 $\delta(t)$。力学上的类比：冲量 $=$ 力 $\times$ 作用时间，力趋于无穷大、时间趋于零，冲量（面积）是有限值。
 
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.8cm,y=0.9cm,>=stealth]
+  \draw[->] (-2,0) -- (2.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.5) -- (0,2.3);
+  \draw[->,very thick,blue!70!black] (0,0) -- (0,1.6); \node[right,font=\small,blue!70!black] at (0,1.6) {$(1)$};
+  \node[font=\scriptsize,anchor=south] at (0,2.35) {$\delta(t)$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.8cm,y=0.9cm,>=stealth]
+  \draw[->] (-2,0) -- (2.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.5) -- (0,2.3);
+  \draw[->,very thick,blue!70!black] (0,0) -- (0,1.6); \node[right,font=\small,blue!70!black] at (0,1.6) {$(5)$};
+  \node[font=\scriptsize,anchor=south] at (0,2.35) {$5\,\delta(t)$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.8cm,y=0.9cm,>=stealth]
+  \draw[->] (-2,0) -- (2.3,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-1.5) -- (0,2.3);
+  \draw[->,very thick,blue!70!black] (0,0) -- (0,-1.2); \node[right,font=\small,blue!70!black] at (0,-1.2) {$(-3)$};
+  \node[font=\scriptsize,anchor=south] at (0,2.35) {$-3\,\delta(t)$};
+\end{tikzpicture}
+\end{minipage}
+\caption{$\delta(t)$ 的画法：一根带箭头的竖线，旁边括号里的数是\textbf{强度}（面积），不是高度。三张图的箭头一样长，只是示意「这里有一个冲激」；强度为负时习惯把箭头朝下画（补充，这是常见的画法，我没有核对课件）。}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=3.2cm,y=0.5cm,>=stealth]
+  \draw[->] (-0.3,0) -- (1.55,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.3) -- (0,5.0);
+  \foreach \d/\h/\c in {1/1/gray, 0.5/2/orange!85!black, 0.25/4/blue!70!black} {
+    \filldraw[fill=\c!15,draw=\c,very thick] (0,0) -- (0,\h) -- (\d,\h) -- (\d,0) -- cycle;
+  }
+  \foreach \k/\lab in {0.25/{$\frac14$},0.5/{$\frac12$},1/{$1$}} { \draw (\k,0.2)--(\k,-0.2) node[below,font=\tiny] {\lab}; }
+  \foreach \h in {1,2,4} { \node[left,font=\tiny] at (0,\h) {$\h$}; }
+  \foreach \y/\c/\lab in {4.4/gray/{$\Delta=1$：高 $1$，面积 $1$},3.5/orange!85!black/{$\Delta=\frac12$：高 $2$，面积 $1$},2.6/blue!70!black/{$\Delta=\frac14$：高 $4$，面积 $1$}} {
+    \node[anchor=west,font=\scriptsize,\c] at (0.95,\y) {\lab};
+  }
+\end{tikzpicture}
+\caption{宽 $\Delta$、高 $\frac1\Delta$ 的矩形脉冲：$\Delta$ 越小，脉冲越窄越高，但面积（宽 $\times$ 高）始终是 $1$。$\Delta\to0$ 时高度趋于无穷，面积仍是 $1$，这就是 $\delta(t)$。}
+\end{figure}
+
 \subsubsection*{$\delta(t)=\dfrac{\d u(t)}{\d t}$ 到底怎么理解}
 老师给的联系：
 \[
@@ -286,6 +460,29 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 对应前面的窄脉冲图像：把阶跃的跳变拉成一小段斜坡，斜坡的斜率是（跳变量）$/\Delta$，斜率就是窄脉冲的高度，面积就是跳变量。
 \end{itemize}
 老师明确说：现在有个印象就行，学完第二章才会真正理解。
+
+\newcommand{\rampcol}[3]{%
+\begin{tikzpicture}[x=0.75cm,y=0.7cm,>=stealth]
+  \draw[->] (-1.3,0) -- (2.4,0) node[right,font=\tiny] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.5);
+  \draw[very thick,blue!70!black] (-1.2,0) -- (0,0) -- (#1,1) -- (2.2,1);
+  \node[left,font=\tiny] at (0,1) {$1$};
+  \draw (#1,0.08)--(#1,-0.08) node[below,font=\tiny] {#2};
+  \node[font=\scriptsize,anchor=south] at (0.5,1.5) {$\Delta=#2$};
+\end{tikzpicture}\par\smallskip
+\begin{tikzpicture}[x=0.75cm,y=0.3cm,>=stealth]
+  \draw[->] (-1.3,0) -- (2.4,0) node[right,font=\tiny] {$t$};
+  \draw[->] (0,-0.5) -- (0,6.2);
+  \draw[very thick,red!70!black] (-1.2,0) -- (0,0) -- (0,#3) -- (#1,#3) -- (#1,0) -- (2.2,0);
+  \node[left,font=\tiny] at (0,#3) {#3};
+\end{tikzpicture}}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering\rampcol{1}{1}{1}\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering\rampcol{0.5}{0.5}{2}\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering\rampcol{0.2}{0.2}{5}\end{minipage}
+\caption{把阶跃的跳变拉成宽 $\Delta$ 的斜坡。上排（蓝）：斜坡，在 $[0,\Delta]$ 上从 $0$ 升到 $1$；下排（红）：它的导数，在 $[0,\Delta]$ 上等于斜率 $\frac1\Delta$，其余处为 $0$。$\Delta$ 越小，导数越窄越高，面积（跳变量 $1$）不变，极限就是 $\delta(t)$。}
+\end{figure}
 
 \textbf{关于「不连续所以不能求导」的两个常见误解}（来自我和豆包的对话，我核对后保留）：
 \begin{itemize}[nosep]
