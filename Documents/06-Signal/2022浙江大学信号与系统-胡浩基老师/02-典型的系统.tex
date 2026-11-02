@@ -1,0 +1,506 @@
+% !TeX program = xelatex
+% 编译：xelatex 02-典型的系统.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
+% 来源：2022 浙江大学《信号与系统》胡浩基老师，教材第 28 页「系统的基本性质」一节课的前 54 分 47 秒（只含「线性系统」；「时不变系统」从 54:53 开始，留给下一份笔记）。
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.4cm}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{float}
+
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
+\setCJKsansfont{PingFang SC}
+
+\newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
+\newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
+\newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
+\newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
+\newmdenv[backgroundcolor=gray!8,linecolor=gray!60,linewidth=0.8pt,innertopmargin=5pt,innerbottommargin=5pt]{skipbox}
+\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过（补充）}\par\smallskip}{\end{skipbox}}
+
+% ---------------------------------------------------------------- 画图用的小宏
+% 一行「输入 -> 系统 -> 输出」。#1 纵坐标，#2 输入，#3 输出，#4 右侧备注（灰字）
+\newcommand{\sysline}[4]{%
+  \node[anchor=east] at (2.9,#1) {#2};
+  \draw[->,thick] (3.0,#1) -- (3.8,#1);
+  \node[draw,rounded corners=2pt,fill=blue!6,minimum width=1.3cm,minimum height=0.62cm] at (4.45,#1) {\small 系统};
+  \draw[->,thick] (5.1,#1) -- (5.9,#1);
+  \node[anchor=west] at (6.0,#1) {#3};
+  \node[anchor=west,gray!55!black,font=\footnotesize] at (9.4,#1) {#4};}
+
+\title{典型的系统：线性系统\\\large 浙江大学 2022《信号与系统》（胡浩基）教材第 28 页「系统的基本性质」听课笔记}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{note}
+这份笔记由视频整理而来，来源要分清：
+\begin{itemize}[nosep]
+\item 老师的口述：来自语音转写（whisper 的 large-v3-turbo 模型，关闭上下文复用、加了术语提示词）。转写仍有错字，已按黑板和上下文改正，常见的几处见文末「转写里听错的地方」；
+\item 题目、式子和每一步推导：来自画面（黑板板书）。口述和板书不一致时，以板书为准；
+\item 标注「（补充）」的内容是我自己加的，课上没讲，也没有核对书；
+\item 这份笔记只覆盖视频的 00:00--54:47。选这里收尾，是因为「线性系统」在 54:47 讲完，老师说「接下来讲时不变系统」，是一个干净的分界点；原计划的 45 分钟停在\textbf{书上定义和我的定义的等价证明}中间，停在那里会把证明劈成两半。
+\end{itemize}
+\end{note}
+
+\section*{怎么读这篇}
+\begin{center}
+\begin{tabular}{@{}p{3.2cm}p{11.8cm}@{}}
+\toprule
+你现在的情况 & 读哪里\\
+\midrule
+只有 10 分钟 & \S1（这节课要讲什么）、\S2（线性系统的两条规矩）、\S5（应付考试的两句话）。读完能回答：什么是线性系统，怎么一眼判断。\\
+第一遍学 & \S1 到 \S5 顺着读。\S3「证明为什么难」里的「一包」是全课最难懂的地方，慢一点；\S4 的反例是另一个难点。\\
+踩坑时回来查 & \S3 的例题清单（放大器、$t\,x(t)$、微分器、积分器、差分、累加）；\S6（书上定义和老师定义等价）；\S7（课后思考题）。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==================================================================
+\section{这节课要讲什么}
+课程从这里开始进入教材第 28 页的\textbf{系统的基本性质}(basic properties of systems)。老师说，他会讲得比书上详细，因为「很多书都没有写清楚」。
+
+一个\textbf{系统}(system)就是一台机器：一个信号 $x(t)$ 从左边进去，另一个信号 $y(t)$ 从右边出来。后面所有的性质，都是在问「这台机器有什么脾气」。老师列了 6 对性质（黑板上左边是名字，括号里是它的反面）：
+
+\begin{center}
+\begin{tabular}{@{}clll@{}}
+\toprule
+序号 & 性质 & 反面 & 老师的难度评价\\
+\midrule
+\textcircled{1} & 线性系统(linear system) & 非线性系统(nonlinear system) & 难，重点\\
+\textcircled{2} & 时不变系统(time-invariant system) & 时变系统(time-varying system) & 难，重点\\
+\textcircled{3} & 因果系统(causal system) & 非因果系统 & 简单\\
+\textcircled{4} & 稳定系统(stable system) & 不稳定（非稳定）系统 & 简单\\
+\textcircled{5} & 无记忆系统(memoryless system) & 记忆系统(system with memory) & 很简单\\
+\textcircled{6} & 可逆系统(invertible system) & 不可逆系统 & 很简单\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师特别说了两点：
+\begin{itemize}[nosep]
+\item 「主要讲\textcircled{1}和\textcircled{2}，\textcircled{3}\textcircled{4}相对简单，\textcircled{5}\textcircled{6}也很简单，就是\textcircled{1}\textcircled{2}比较难。」
+\item 每一对都是\textbf{非此即彼}、互不相交：「不是线性，就是非线性；不是时不变，就是时变」，以此类推。所以只要把「线性」的定义写严格，剩下的都叫非线性，不需要另外定义。
+\end{itemize}
+
+这份笔记只讲\textcircled{1}。老师在开讲前提醒：「请大家认真听，难度又上了一个档次。」
+
+%==================================================================
+\section{线性系统的定义：两条规矩}
+\subsection{先说结论}
+\begin{remember}
+一个系统，如果\textbf{同时}满足下面两条，它就是线性系统；否则（只满足一条，或者两条都不满足）就是非线性系统。
+
+\medskip
+假设对\textbf{任意}输入 $x(t)$，系统给出输出 $y(t)$（记作 $x(t)\to y(t)$），那么：
+\begin{enumerate}[nosep]
+\item \textbf{齐次性}(homogeneity)：$a\,x(t)\to a\,y(t)$，其中 $a$ 是任意实数。\\
+\hfill\emph{输入放大 $a$ 倍，输出也恰好放大 $a$ 倍。}
+\item \textbf{叠加性}(superposition，也叫可加性)：若 $x_1(t)\to y_1(t)$、$x_2(t)\to y_2(t)$，则 $x_1(t)+x_2(t)\to y_1(t)+y_2(t)$。\\
+\hfill\emph{两个输入加在一起送进去，输出就是它们各自输出的和。}
+\end{enumerate}
+\end{remember}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{$x(t)$}{$y(t)$}{这是出发点}
+  \sysline{-1.0}{$a\,x(t)$}{$a\,y(t)$}{齐次性：输入乘 $a$，输出也乘 $a$}
+  \draw[gray!50,dashed] (0.3,-1.65) -- (15.3,-1.65);
+  \sysline{-2.3}{$x_1(t)$}{$y_1(t)$}{各自送进去，各自得到}
+  \sysline{-3.1}{$x_2(t)$}{$y_2(t)$}{}
+  \sysline{-4.1}{$x_1(t)+x_2(t)$}{$y_1(t)+y_2(t)$}{叠加性：和送进去，得到和}
+\end{tikzpicture}
+\caption{线性系统的两条规矩。注意每一行里的「系统」都是\textbf{同一台}机器。}
+\end{figure}
+
+\subsection{老师强调的三个细节}
+\begin{enumerate}
+\item \textbf{「同时满足」是硬条件}。老师说：只有同时满足齐次性和叠加性，才是线性系统。后面第一次作业里有一道思考题，就是考「缺一不可」（见 \S7）。
+\item \textbf{「任意」两个字是整个定义的灵魂}。定义里的 $x(t)$ 是任意的，$x_1(t)$、$x_2(t)$ 是任意的，$a$ 也是任意实数。为了写板书方便，老师把「任意」写成符号 $\forall$（倒过来的 A，读作「对任意」）。老师说，后面所有难点，都出在没有真正理解这个「任意」。
+\item \textbf{这是定义，不是例子}。老师在黑板上写 $y(t)=3x(t)$，意思不是「只对某一个信号成立」，而是「这台机器对\textbf{任意}输入，都把它乘 3 再输出」。书上常用这种简写出题。
+\end{enumerate}
+
+\begin{note}
+\textbf{离散信号怎么改}：老师说，离散线性系统的定义，只需要把所有圆括号 $(t)$ 换成方括号 $[n]$：
+\[x[n]\to y[n],\quad a\,x[n]\to a\,y[n],\quad x_1[n]+x_2[n]\to y_1[n]+y_2[n].\]
+老师说连续和离散的道理完全一样，他这次\textbf{第一次讲}所以两个都讲，之后只讲一个，另一个要自己举一反三。
+\end{note}
+
+%==================================================================
+\section{怎么证明一个系统是线性的}
+老师的做法是：每道题先让同学举手表决（线性 / 非线性），然后他来证明。下面按课上的顺序整理。每一道题都分两步：先证齐次性，再证叠加性。
+
+\subsection{最难的一道：放大器 $y(t)=3x(t)$（09:19--15:09）}
+\textbf{它在做什么}：进来任何信号，都放大 3 倍再输出。老师叫它\textbf{放大器}(amplifier)。表决结果：认为是线性的人少，认为非线性的人也有，「还有很多同学没有举手」。老师公布：\textbf{是线性系统}。
+
+老师说：「当你要说『是』的时候，你的责任很重大，你要依次证明它满足一，满足二。」
+
+\subsubsection*{先看清楚这台机器真正做的事}
+这台机器\textbf{只认一条规矩}：不管送进去什么，出来的是它的 3 倍。所以：
+\begin{itemize}[nosep]
+\item 送进去 $x(t)$，出来 $3x(t)$；
+\item 送进去 $a\,x(t)$，出来 $3\cdot\bigl(a\,x(t)\bigr)$。
+
+\emph{（这里就是全课最难的地方，下面单独讲。）}
+\end{itemize}
+
+\subsubsection*{老师说的「一包」}
+老师反复强调：因为 $x(t)$ 是\textbf{任意}信号，所以 $a\,x(t)$ 也\textbf{只是又一个信号}。你要把 $a\,x(t)$ \textbf{打成一个包}，当作一个整体：「这一包 $x(t)$ 拿到系统里来，系统所做的事，就是把这一包乘以 3。」
+
+用大白话说：放大器是个只会「乘 3」的工人。你递给他一个信号，他不管这信号长什么样、是怎么来的，一律乘 3。你递给他 $x(t)$，他乘 3；你递给他「$x(t)$ 先乘了 $a$」这个信号，他还是乘 3。所以：
+\[
+a\,x(t)\ \xrightarrow{\text{放大器}}\ 3\cdot\bigl(a\,x(t)\bigr)\ =\ a\cdot\bigl(3x(t)\bigr)\ =\ a\,y(t).
+\]
+最后一步只是普通的乘法交换：$3\cdot a=a\cdot 3$。齐次性得证。
+
+\subsubsection*{叠加性}
+设 $x_1(t)\to y_1(t)=3x_1(t)$，$x_2(t)\to y_2(t)=3x_2(t)$。再把 $x_1(t)+x_2(t)$ 也打成一包送进去：
+\[
+x_1(t)+x_2(t)\ \to\ 3\bigl[x_1(t)+x_2(t)\bigr]=3x_1(t)+3x_2(t)=y_1(t)+y_2(t).
+\]
+叠加性得证，所以放大器是线性系统。
+
+\begin{note}
+\textbf{用一组具体数字感受一下}（补充，课上没做）。看某一个时刻，设 $x_1=2$，$x_2=5$，$a=4$：
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+送进去 & 出来（乘 3） & 对照\\
+\midrule
+$x_1=2$ & $6$ & 这是 $y_1$\\
+$x_2=5$ & $15$ & 这是 $y_2$\\
+$x_1+x_2=7$ & $21$ & $=6+15=y_1+y_2$\ \checkmark\\
+$a\,x_1=8$ & $24$ & $=4\times 6=a\,y_1$\ \checkmark\\
+\bottomrule
+\end{tabular}
+\end{center}
+当然，数字只能说明「这一组没问题」。证明靠的是：$x_1,x_2,a$ 换成别的数，上面的算法一字不改。这就是「任意」的意思。
+\end{note}
+
+\subsection{老师教的一招：看不清楚就设「中间变量」（18:20--20:17）}
+第二题：$y(t)=t\,x(t)$，是线性系统吗？表决：认为线性的有 3 位，认为非线性的有十来位。老师公布：\textbf{线性}。他说「你看不出来，我告诉大家怎么看」。
+
+这台机器的规矩是：\textbf{不管送进去什么信号 $f(t)$，出来的是 $t\cdot f(t)$}（把每个时刻的值乘上那个时刻的 $t$）。
+
+\begin{itemize}
+\item \textbf{齐次性}。送进去 $a\,x(t)$，先设 $f(t)=a\,x(t)$，让它当「进来的那个信号」，那么出来的是 $t\,f(t)=t\cdot a\,x(t)=a\cdot\bigl(t\,x(t)\bigr)=a\,y(t)$。
+\item \textbf{叠加性}。设 $x_1\to y_1=t\,x_1(t)$，$x_2\to y_2=t\,x_2(t)$。送进去 $x_1(t)+x_2(t)$，设 $f(t)=x_1(t)+x_2(t)$，出来 $t\,f(t)=t\,x_1(t)+t\,x_2(t)=y_1(t)+y_2(t)$。
+\end{itemize}
+
+老师的话：「当你看不清楚的时候，你设一个中间变量，把它拿过去，然后再做这样的代换。」
+
+\begin{note}
+\textbf{为什么这一题大家容易投错}（补充）：$t\,x(t)$ 里的 $t$ 会随时间变，看起来「很不规矩」。但线性只问一件事：\textbf{信号被放大或相加的时候，输出是不是跟着放大或相加}。$t$ 只是每个时刻的乘数，不影响这件事。真正会让它出问题的，是下一道要讲的「时不变」性质，那是另一回事。
+\end{note}
+
+\subsection{微分器 $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$（20:26--22:39）}
+\textbf{它在做什么}：输入一个函数，输出这个函数的导数。老师叫它\textbf{微分器}(differentiator)。表决：认为线性的比较多，认为非线性的没有人，「我估计有些同学是不敢举手」。答案：\textbf{线性}。
+
+证明直接靠微分自己的性质，不绕：
+\begin{itemize}[nosep]
+\item 齐次性：$\dfrac{\mathrm{d}[a\,x(t)]}{\mathrm{d}t}=a\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}=a\,y(t)$；
+\item 叠加性：$\dfrac{\mathrm{d}[x_1(t)+x_2(t)]}{\mathrm{d}t}=\dfrac{\mathrm{d}x_1}{\mathrm{d}t}+\dfrac{\mathrm{d}x_2}{\mathrm{d}t}=y_1(t)+y_2(t)$。
+\end{itemize}
+老师说：这个证明比前面简单，「因为它不绕」，就是把整个一包拿过来微分。
+
+\subsection{积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$（22:41--24:46）}
+\textbf{它在做什么}：把输入从很早很早以前（$-\infty$）一直加到现在（$t$），得到一个累积量。老师叫它\textbf{积分器}(integrator)。大多数同学举手认为线性，「放心大胆地举手」。答案：\textbf{线性}，理由是积分本身有线性性质（常数可以提出来，和的积分等于积分的和）：
+\begin{align*}
+a\,x(t)\to\int_{-\infty}^{t}a\,x(\tau)\,\mathrm{d}\tau&=a\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau=a\,y(t),\\
+x_1+x_2\to\int_{-\infty}^{t}\bigl[x_1(\tau)+x_2(\tau)\bigr]\mathrm{d}\tau&=\int_{-\infty}^{t}x_1\,\mathrm{d}\tau+\int_{-\infty}^{t}x_2\,\mathrm{d}\tau=y_1(t)+y_2(t).
+\end{align*}
+
+\subsection{离散例子（32:11--40:41）}
+老师把上面三种改成离散形式：
+
+\begin{center}
+\begin{tabular}{@{}lp{3.2cm}p{6.4cm}@{}}
+\toprule
+系统 & 在做什么 & 老师的结论\\
+\midrule
+$y[n]=2x[n]$ & 每个数乘 2 & 线性（「自己去证，和 $3x(t)$ 一样，圆括号 $t$ 换方括号 $n$」）\\
+$y[n]=n\,x[n]$ & 第 $n$ 个数乘 $n$ & 线性（和 $t\,x(t)$ 一样）\\
+$y[n]=x[n]-x[n-1]$ & 当前值减前一个值 & 线性（课上完整证了）\\
+$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在 & 线性（留作业，「其实就是繁琐而已」）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{note}
+黑板上写的是 $y[n]=n\,x[n]$，但老师口述时说成了「$n$ 倍的 $x(t)$」，是口误，以板书为准。
+\end{note}
+
+第三个系统 $y[n]=x[n]-x[n-1]$ 是\textbf{离散的微分器}。老师解释：离散信号没法求导数，但「后一个减前一个、再除以间隔」就是近似的求导，所以叫它离散微分器。第四个叫\textbf{离散积分器}（把「积分」换成「求和」）。（补充：这两个在教材里更常见的名字是\textbf{差分}(difference)和\textbf{累加}(accumulator)。）
+
+\paragraph{差分的完整证明。}老师说这道题「其实不难，就是繁琐」。关键还是那个中间变量：设 $f[n]=x[n]$ 经变换后的那个信号，则「送进去 $f[n]$，出来 $f[n]-f[n-1]$」。
+
+\begin{itemize}[nosep]
+\item 齐次性：送进去 $a\,x[n]$。设 $f[n]=a\,x[n]$，则 $f[n-1]=a\,x[n-1]$（\textbf{把 $f$ 里所有的 $n$ 换成 $n-1$}），输出是
+\[f[n]-f[n-1]=a\,x[n]-a\,x[n-1]=a\bigl(x[n]-x[n-1]\bigr)=a\,y[n].\]
+\item 叠加性：设 $y_1[n]=x_1[n]-x_1[n-1]$，$y_2[n]=x_2[n]-x_2[n-1]$。送进去 $f[n]=x_1[n]+x_2[n]$，则 $f[n-1]=x_1[n-1]+x_2[n-1]$，输出
+\[f[n]-f[n-1]=\bigl(x_1[n]-x_1[n-1]\bigr)+\bigl(x_2[n]-x_2[n-1]\bigr)=y_1[n]+y_2[n].\]
+\end{itemize}
+
+\begin{note}
+\textbf{用具体数字验算一下叠加性}（补充，课上没做）。取 $n=0,1,2$ 处的值，其余位置都是 $0$：$x_1=(1,4,2)$，$x_2=(2,0,1)$。差分 $y[n]=x[n]-x[n-1]$ 要看 $n=0,\dots,3$（$n=3$ 时 $x[3]=0$，减去 $x[2]$）：
+\begin{center}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+$n$ & $0$ & $1$ & $2$ & $3$\\
+\midrule
+$y_1[n]$ & $1$ & $3$ & $-2$ & $-2$\\
+$y_2[n]$ & $2$ & $-2$ & $1$ & $-1$\\
+$y_1[n]+y_2[n]$ & $3$ & $1$ & $-1$ & $-3$\\
+\midrule
+$x_1+x_2=(3,4,3)$ 的差分 & $3$ & $1$ & $-1$ & $-3$\\
+\bottomrule
+\end{tabular}
+\end{center}
+最后两行相等，叠加性在这组数字上成立。
+\end{note}
+
+%==================================================================
+\section{怎么证明一个系统\textbf{不是}线性的：举反例（24:47--32:10）}
+\subsection{第一个反例：$y(t)=x(t)+1$}
+\textbf{它在做什么}：进来一个信号，加上常数 1 再输出。表决结果：大家的水平「提高了特别多」，多数人答对了——\textbf{非线性}。
+
+老师先立一条\textbf{全课最重要的方法论}：
+\begin{remember}
+\textbf{证明}一个系统是线性的：要对\textbf{所有}输入、\textbf{所有} $a$ 都验证两条规矩，一条也不能漏。
+
+\textbf{证明}一个系统不是线性的：只要找到\textbf{一个}反例，让它不满足齐次性或叠加性之一，就够了。
+
+原因就是定义里的「任意」：说「对任意都成立」要全部验完；说「不是对任意都成立」，只要有一个例外。
+\end{remember}
+
+\paragraph{怎么举这个反例。}课上的顺序是：
+\begin{enumerate}[nosep]
+\item 取一个最简单的输入 $x(t)\equiv 0$（全零信号，符号 $\equiv$ 表示「恒等于」）。系统实际输出 $y(t)=0+1=1$。
+\item 取 $a=2$，则 $2x(t)=0$，它和原来的输入\textbf{是同一个信号}，所以实际输出仍是 $1$。
+\item 但如果它是线性系统，齐次性要求输入乘 2、输出也得乘 2，也就是\textbf{希望}得到 $2y(t)=2\times1=2$。
+\item \textbf{实际是 1，希望是 2，矛盾}。矛盾的根源是我们「假设它是线性系统」，所以它不是线性系统。
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{$x(t)\equiv0$}{$1$}{实际：$0+1=1$}
+  \sysline{-1.0}{$2x(t)\equiv0$}{$\mathbf{1}$（实际）}{实际：$0+1=1$}
+  \node[anchor=west,red!70!black,font=\footnotesize] at (6.0,-1.55) {若齐次性成立，应得 $2\times1=\mathbf{2}$（希望）};
+  \node[anchor=west,red!70!black,font=\footnotesize] at (6.0,-2.0) {实际 $1\neq$ 希望 $2$，所以不是线性系统};
+\end{tikzpicture}
+\caption{反例 $y(t)=x(t)+1$：输入是同一个全零信号，输出却被要求同时等于 $1$ 和 $2$。}
+\end{figure}
+
+\subsection{第二个反例：$y(t)=x(t)^2$}
+表决：有同学认为线性，也有同学认为非线性。老师抽了一位同学上来举反例，最后「还是我来举」。答案：\textbf{非线性}。老师说：「反例有很多个，你只要举一个就可以了。」
+
+取 $x(t)\equiv1$，输出 $1^2=1$。取 $a=2$，输入变成 $2x(t)\equiv2$，实际输出 $2^2=4$。线性系统「希望」得到 $2\times1=2$。实际 $4\neq$ 希望 $2$，非线性。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{$x(t)\equiv1$}{$1^2=1$}{实际}
+  \sysline{-1.0}{$2x(t)\equiv2$}{$2^2=\mathbf{4}$（实际）}{实际}
+  \node[anchor=west,red!70!black,font=\footnotesize] at (6.0,-1.55) {若齐次性成立，应得 $2\times1=\mathbf{2}$（希望）};
+  \node[anchor=west,red!70!black,font=\footnotesize] at (6.0,-2.0) {实际 $4\neq$ 希望 $2$，所以不是线性系统};
+\end{tikzpicture}
+\caption{反例 $y(t)=x(t)^2$：输入翻一倍，输出翻了\textbf{四}倍。}
+\end{figure}
+
+\begin{skippable}
+\textbf{一个很快的检查：输入为 0，输出必须为 0}（补充，课上没有这样总结）。因为齐次性里 $a$ 可以取 $0$：$0\cdot x(t)\to0\cdot y(t)$，也就是「全零输入一定得到全零输出」。所以：只要一个系统对全零输入给出了非零输出，它立刻不是线性系统。$y(t)=x(t)+1$ 正是这样，老师的反例用的就是这一点。
+
+反过来\textbf{不成立}：$y(t)=x(t)^2$ 对零输入给零输出，却不是线性的。所以这个检查只能用来「快速判死刑」，不能用来判线性。
+\end{skippable}
+
+%==================================================================
+\section{应付考试的秘诀：两句话（40:51--45:00）}
+老师说：「接下来我要给大家讲应付考试的秘诀。」这个办法\textbf{不能覆盖所有系统，但能覆盖 70\% 到 80\% 以上}。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth,
+  box/.style={draw,rounded corners=3pt,align=center,minimum height=0.9cm,inner sep=5pt},
+  yes/.style={font=\footnotesize,green!40!black},
+  no/.style={font=\footnotesize,red!70!black}]
+  \node[box,fill=gray!8] (a) at (0,0) {拿到一个系统\\ $y=\cdots$};
+  \node[box,fill=blue!6] (b) at (3.9,0) {\textbf{第 1 句}：每一项\\都有 $x$ 吗？};
+  \node[box,fill=blue!6] (c) at (9.3,0) {\textbf{第 2 句}：每一项的 $x$\\都是一次吗？};
+  \node[box,fill=green!10] (d) at (13.6,-2.0) {线性};
+  \node[box,fill=red!10] (e) at (3.9,-2.0) {非线性};
+  \node[box,fill=red!10] (f) at (9.3,-2.0) {非线性};
+  \draw[->] (a) -- (b);
+  \draw[->] (b) -- node[above,yes] {都有} (c);
+  \draw[->] (b) -- node[right,no] {有一项没有} (e);
+  \draw[->] (c) -- node[right,no] {有一项不是一次} (f);
+  \draw[->] (c) -| node[above,pos=0.2,yes] {都是一次} (d);
+\end{tikzpicture}
+\caption{老师的两句话判断法。}
+\end{figure}
+
+\begin{remember}
+线性系统的判据（老师原话的两句）：
+\begin{enumerate}[nosep]
+\item \textbf{每一项都有 $x$}；
+\item \textbf{每一项的 $x$ 都是一次}。
+\end{enumerate}
+\end{remember}
+
+老师用四道题让大家体会：
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+系统 & 两句话检查 & 结论\\
+\midrule
+$y(t)=3x(t)+2x(t-2)$ & 两项都有 $x$，都是一次 & 线性\\
+$y[n]=n\,x[n-2]+3x[n+1]$ & 两项都有 $x$，都是一次（$n$ 是系数，不是 $x$） & 线性\\
+$y(t)=3x(t)+2$ & 第二项「$2$」\textbf{没有 $x$} & 非线性\\
+$y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}要展开看（见下） & 非线性\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\subsection{最后一题 $y[n]=e^{x[n]}$：为什么看起来像线性却不是}
+老师先问大家，不少人说是线性：「这里不是每一项都有 $x$ 吗？$x$ 也只有一次啊。」老师说\textbf{错在这里}：
+\begin{quote}
+「你不要只看它的样子，你要看到它是\textbf{泰勒展开}(Taylor expansion)的。它本身就是一个非线性的函数，它当然不是线性的。」
+\end{quote}
+意思是：$e^{x}$ 展开后是 $1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots$（写出来是无穷多项），里面有常数项 $1$（没有 $x$）、有 $x^2$、$x^3$（不是一次），两句话都不满足，所以非线性。
+
+\begin{note}
+转写把老师口述的展开式听得很乱，上面的展开式是按数学上的 $e^x$ 泰勒展开写的，不是逐字照抄老师口述。老师想说明的意思是清楚的：\textbf{两句话是看「展开以后」每一项的样子，不是看表面写法}。
+\end{note}
+
+\begin{skippable}
+\textbf{这两句话的边界}（补充）。老师说它只能覆盖 70\%--80\%，下面这几类是我想到的容易翻车的地方：
+\begin{itemize}[nosep]
+\item $x$ 被套在函数里面，例如 $y(t)=|x(t)|$、$y(t)=\sin\bigl(x(t)\bigr)$：看上去每一项都有 $x$、也只出现一次，但它们不是线性的，和 $e^{x[n]}$ 是同一类陷阱；
+\item 两个 $x$ 相乘，例如 $y(t)=x(t)\,x(t-1)$：「$x$ 是一次」这句话就不满足（合起来是二次）；
+\item 这两句话只能\textbf{帮你快速筛}，真要严格证明，还是回到两条规矩（齐次 + 叠加）。
+\end{itemize}
+\end{skippable}
+
+%==================================================================
+\section{为什么我的定义和书上的不一样：它们等价（45:03--52:29）}
+老师说：他这里的讲法和书上不太一样，「我来写一下，到底有哪里有区别。」
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{2.2cm}p{12.6cm}@{}}
+\toprule
+ & 内容\\
+\midrule
+老师的定义 & 两条分开写：\textcircled{1} 齐次性：$x(t)\to y(t)\Rightarrow a\,x(t)\to a\,y(t)$；\textcircled{2} 叠加性：$x_1\to y_1,\ x_2\to y_2\Rightarrow x_1+x_2\to y_1+y_2$。\\
+书上的定义 & 一条合起来写（教材第 28 页，式 1-89、1-90）：对任意 $x_1(t)\to y_1(t)$、$x_2(t)\to y_2(t)$ 和任意实数 $a,b$，都有 $a\,x_1(t)+b\,x_2(t)\to a\,y_1(t)+b\,y_2(t)$。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师说，两种定义\textbf{完全等价}，他现场证明。「关键是你要理解，这全都是任意。」
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth,
+  box/.style={draw,rounded corners=4pt,align=center,minimum width=5.4cm,minimum height=1.6cm,inner sep=6pt}]
+  \node[box,fill=blue!6] (L) at (0,0) {\textbf{书上定义}\\ $a\,x_1+b\,x_2\to a\,y_1+b\,y_2$\\ 对任意 $a,b$};
+  \node[box,fill=green!8] (R) at (9.2,0) {\textbf{老师的定义}\\ 齐次性 + 叠加性};
+  \draw[->,thick,bend left=22] (L.north east) to node[above,align=center,font=\footnotesize] {特殊情况：取 $a=1,b=0$ 得齐次性\\ 取 $a=b=1$ 得叠加性} (R.north west);
+  \draw[->,thick,bend left=22] (R.south west) to node[below,align=center,font=\footnotesize] {先对 $x_1$ 用齐次，对 $x_2$ 用齐次\\ 再把两个「包」用叠加加起来} (L.south east);
+\end{tikzpicture}
+\caption{两个定义互相推得出对方，所以说它们等价。}
+\end{figure}
+
+\subsection{书上定义 $\Rightarrow$ 老师的定义（简单）}
+\begin{itemize}
+\item \textbf{取 $b=0$，$a$ 保持任意}，并取 $x_1(t)=x(t)$：书上定义给出 $a\,x(t)+0\cdot x_2(t)\to a\,y(t)+0\cdot y_2(t)$。两边多出来的 $0$ 项去掉，就是 $a\,x(t)\to a\,y(t)$。\textbf{齐次性}得到。（课上老师先取 $a=1$、$b=0$ 说明「$b$ 那一项会变成 $0$ 消掉」，思路相同。）
+\item \textbf{取 $a=b=1$}：直接得到 $x_1(t)+x_2(t)\to y_1(t)+y_2(t)$。\textbf{叠加性}得到。
+\end{itemize}
+老师的话：「书上的定义非常容易推出我的定义。」
+
+\subsection{老师的定义 $\Rightarrow$ 书上定义（稍难）}
+\begin{enumerate}
+\item 因为齐次性对\textbf{任意}输入成立，对 $x_1(t)$ 也成立：$x_1\to y_1\Rightarrow a\,x_1\to a\,y_1$。
+\item 同样，把定义里的任意信号换成 $x_2$、任意实数 $a$ 换成 $b$（它也是任意的）：$x_2\to y_2\Rightarrow b\,x_2\to b\,y_2$。
+\item 现在把 $a\,x_1(t)$ 看成\textbf{一包}，$b\,x_2(t)$ 看成\textbf{另一包}。这两包是两个信号，各自的输出分别是 $a\,y_1(t)$ 和 $b\,y_2(t)$，用叠加性：$a\,x_1+b\,x_2\to a\,y_1+b\,y_2$。书上定义得到。
+\end{enumerate}
+老师说：大家会觉得绕来绕去有点烧脑，如果烧脑，核心是\textbf{没有理解「任意」}。
+
+\begin{note}
+这一段是在帮你确认：以后不管遇到哪本书用哪种写法，说的是同一回事。所以日常\textbf{用哪个都行}，老师的两条分开写更适合入门证明（先证一条，再证一条），书上的合并写法更适合推别的结论。
+\end{note}
+
+%==================================================================
+\section{课后思考题：缺一不可（52:32--54:47）}
+老师说：齐次性和叠加性合起来才是线性，两条「缺一不可」。第一次作业里有一道「非常难的思考题」，他先出在课上：
+
+\begin{remember}
+\begin{enumerate}[nosep]
+\item 请举一个系统，\textbf{满足齐次性，不满足叠加性}；
+\item 请再举一个系统，\textbf{满足叠加性，不满足齐次性}。
+\end{enumerate}
+\end{remember}
+
+老师说两道里\textbf{有一道特别难}（他自己「记不得是哪一个了」），「你除非假定这个 $a$ 可以是负数，更好做一点」（这句转写不太清楚，我不确定他的原意）。他说：「我觉得大家现在的数学水平很难做出来……你如果做出来了，那你真的是天才。」做出来的同学可以私信他。
+
+\begin{skippable}
+\textbf{我的看法（补充，没有核对书，也没有去查答案）}。
+
+\textbf{第 1 道（齐次、不叠加）比较好举}：例如 $y(t)=\dfrac{x(t)^2}{x(t-1)}$（分母为 $0$ 时约定输出 $0$）。输入乘 $a$：$\dfrac{a^2x(t)^2}{a\,x(t-1)}=a\cdot\dfrac{x(t)^2}{x(t-1)}$，满足齐次性。但取某一时刻 $x_1(t)=1,\ x_1(t-1)=1$ 和 $x_2(t)=1,\ x_2(t-1)=2$：$y_1=1$，$y_2=\tfrac12$，而 $x_1+x_2$ 在那一时刻是 $x(t)=2,\ x(t-1)=3$，输出 $\tfrac43\neq1+\tfrac12=\tfrac32$，叠加性不成立。
+
+\textbf{第 2 道（叠加、不齐次）据我所知很难}：如果 $a$ 允许取\textbf{任何实数}，叠加性已经能推出「$a$ 取整数、分数时的齐次性」，只剩无理数的 $a$ 可能出问题。要造出反例，需要用到一类「病态」函数（数学上叫柯西函数方程的非线性解，要借助选择公理才能构造），所以课上说它超出现在的水平。老师提示「$a$ 可以是负数更好做一点」，我没弄明白他指的哪种情形，这里先不猜。
+\end{skippable}
+
+%==================================================================
+\section{一页总结}
+\begin{remember}
+\begin{enumerate}[nosep]
+\item \textbf{线性系统} = 齐次性 + 叠加性，\textbf{缺一不可}，而且对\textbf{任意}输入、任意 $a$ 都成立。
+\item 证线性：两条都要从头验到底；遇到绕不过去的地方，\textbf{设中间变量}，把 $a\,x(t)$、$x_1(t)+x_2(t)$ 当作「一包」送进去。
+\item 证非线性：\textbf{举一个反例}就够。最常用的反例是 $x\equiv0$（或常数）和 $a=2$，对照「实际」和「希望」。
+\item 考试快速判断：\textbf{每一项都有 $x$，每一项的 $x$ 都是一次}；警惕 $e^{x}$ 这类「套了函数」的写法。
+\item 书上的定义（$a,b$ 合并写）和老师的定义（分两条）完全等价。
+\item 离散和连续是一回事：$(t)\to[n]$，$f(t-1)$ 对应 $f[n-1]$。
+\end{enumerate}
+\end{remember}
+
+\section*{待核对：转写听不清的两处}
+下面两处转写听不清，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
+\begin{center}
+\begin{tabular}{@{}p{2.4cm}p{6.2cm}p{6.2cm}@{}}
+\toprule
+视频位置 & 听不清的内容 & 笔记里现在的处理\\
+\midrule
+44:14--44:28 & 老师讲 $e^{x[n]}$ 的泰勒展开，转写把展开式听乱了（出现「1 加上 $x[n]$ 的平方……」之类的片段）。 & 展开式按数学上的 $e^x=1+x+\tfrac{x^2}{2!}+\cdots$ 写，并注明不是逐字照抄；结论（非线性）不受影响。\\
+54:22--54:33 & 思考题的提示「你除非假定这个 $a$ 可以是负数，更好做一点」，不清楚指哪种情形，也不清楚老师说的「特别难」是哪一道。 & 原话保留并注明「我不确定他的原意」；「补充」里给出我自己的看法（未查证），不替老师下结论。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{转写里听错的地方（对照用）}
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+转写原文 & 实际应是\\
+\midrule
+其次性 & 齐次性\\
+实不变系统、十不变系统 & 时不变系统\\
+可力系统、可利系统 & 可逆系统\\
+微分期、积分期 & 微分器、积分器\\
+太克展开 & 泰勒展开\\
+Y7、YT、XET、XRT、X27 & $y(t)$、$x_1(t)$、$x_2(t)$ 等（据板书）\\
+$n$ 倍的 $x(t)$ & $n\,x[n]$（据板书，是口误）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
