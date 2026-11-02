@@ -1,6 +1,6 @@
 % !TeX program = xelatex
 % 编译：xelatex 02-典型的系统.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
-% 来源：2022 浙江大学《信号与系统》胡浩基老师，教材第 28 页「系统的基本性质」一节课的前 54 分 47 秒（只含「线性系统」；「时不变系统」从 54:53 开始，留给下一份笔记）。
+% 来源：2022 浙江大学《信号与系统》胡浩基老师，教材第 28 页「系统的基本性质」一节课及下一堂课的前半，视频 00:00--121:33（整段视频，线性、时不变、因果、无记忆、可逆、稳定，加最后的习题复习）。
 \documentclass[UTF8,a4paper,11pt]{ctexart}
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
@@ -15,6 +15,8 @@
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
+% 行内标记：有疑问、等你对着视频核对的地方（对应文末「待核对」）
+\newcommand{\tbc}{\textcolor{red!75!black}{\textbf{【待核对】}}}
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
 \newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
@@ -33,7 +35,7 @@
   \node[anchor=west] at (6.0,#1) {#3};
   \node[anchor=west,gray!55!black,font=\footnotesize] at (9.4,#1) {#4};}
 
-\title{典型的系统：线性系统\\\large 浙江大学 2022《信号与系统》（胡浩基）教材第 28 页「系统的基本性质」听课笔记}
+\title{典型的系统：线性、时不变、因果、无记忆、可逆、稳定\\\large 浙江大学 2022《信号与系统》（胡浩基）教材第 28 页「系统的基本性质」听课笔记}
 \author{}
 \date{}
 
@@ -45,8 +47,8 @@
 \begin{itemize}[nosep]
 \item 老师的口述：来自语音转写（whisper 的 large-v3-turbo 模型，关闭上下文复用、加了术语提示词）。转写仍有错字，已按黑板和上下文改正，常见的几处见文末「转写里听错的地方」；
 \item 题目、式子和每一步推导：来自画面（黑板板书）。口述和板书不一致时，以板书为准；
-\item 标注「（补充）」的内容是我自己加的，课上没讲，也没有核对书；
-\item 这份笔记只覆盖视频的 00:00--54:47。选这里收尾，是因为「线性系统」在 54:47 讲完，老师说「接下来讲时不变系统」，是一个干净的分界点；原计划的 45 分钟停在\textbf{书上定义和我的定义的等价证明}中间，停在那里会把证明劈成两半。
+\item 标注「（补充）」的内容是我自己加的，课上没讲，也没有核对书；\item 红色的 \tbc{} 是我拿不准、等你对着视频核对的地方，汇总在文末「待核对」一节；
+\item 这份笔记覆盖整段视频的 00:00--121:33，分两部分：第一部分（\S1--\S8）是线性系统，对应 00:00--54:47；第二部分（\S9--\S15）是时不变、因果、无记忆、可逆、稳定，再加最后的习题复习，对应 54:53--121:33。
 \end{itemize}
 \end{note}
 
@@ -58,7 +60,8 @@
 \midrule
 只有 10 分钟 & \S1（这节课要讲什么）、\S2（线性系统的两条规矩）、\S5（应付考试的两句话）。读完能回答：什么是线性系统，怎么一眼判断。\\
 第一遍学 & \S1 到 \S5 顺着读。\S3「证明为什么难」里的「一包」是全课最难懂的地方，慢一点；\S4 的反例是另一个难点。\\
-踩坑时回来查 & \S3 的例题清单（放大器、$t\,x(t)$、微分器、积分器、差分、累加）；\S6（书上定义和老师定义等价）；\S7（课后思考题）。\\
+踩坑时回来查 & \S3 的例题清单（放大器、$t\,x(t)$、微分器、积分器、差分、累加）；\S6（书上定义和老师定义等价）；\S7（课后思考题）；\S9--\S13 的例题表和判据（时不变、因果、无记忆、可逆、稳定）；\S14（五个性质综合判断的习题）。\\
+第二部分只有 10 分钟 & \S9.6（时不变两句话判据）、\S10.3（因果判据）、\S11（无记忆判据）、\S15（一页总结）。\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -378,7 +381,7 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 意思是：$e^{x}$ 展开后是 $1+x+\dfrac{x^2}{2!}+\dfrac{x^3}{3!}+\cdots$（写出来是无穷多项），里面有常数项 $1$（没有 $x$）、有 $x^2$、$x^3$（不是一次），两句话都不满足，所以非线性。
 
 \begin{note}
-转写把老师口述的展开式听得很乱，上面的展开式是按数学上的 $e^x$ 泰勒展开写的，不是逐字照抄老师口述。老师想说明的意思是清楚的：\textbf{两句话是看「展开以后」每一项的样子，不是看表面写法}。
+\tbc{} 转写把老师口述的展开式听得很乱，上面的展开式是按数学上的 $e^x$ 泰勒展开写的，不是逐字照抄老师口述。老师想说明的意思是清楚的：\textbf{两句话是看「展开以后」每一项的样子，不是看表面写法}。
 \end{note}
 
 \begin{skippable}
@@ -450,7 +453,7 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 \end{enumerate}
 \end{remember}
 
-老师说两道里\textbf{有一道特别难}（他自己「记不得是哪一个了」），「你除非假定这个 $a$ 可以是负数，更好做一点」（这句转写不太清楚，我不确定他的原意）。他说：「我觉得大家现在的数学水平很难做出来……你如果做出来了，那你真的是天才。」做出来的同学可以私信他。
+老师说两道里\textbf{有一道特别难}（他自己「记不得是哪一个了」），「你除非假定这个 $a$ 可以是负数，更好做一点」（这句转写不太清楚，我不确定他的原意）\tbc{}。他说：「我觉得大家现在的数学水平很难做出来……你如果做出来了，那你真的是天才。」做出来的同学可以私信他。
 
 \begin{skippable}
 \textbf{我的看法（补充，没有核对书，也没有去查答案）}。
@@ -461,7 +464,7 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 \end{skippable}
 
 %==================================================================
-\section{一页总结}
+\section{线性系统一页总结}
 \begin{remember}
 \begin{enumerate}[nosep]
 \item \textbf{线性系统} = 齐次性 + 叠加性，\textbf{缺一不可}，而且对\textbf{任意}输入、任意 $a$ 都成立。
@@ -473,8 +476,572 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 \end{enumerate}
 \end{remember}
 
-\section*{待核对：转写听不清的两处}
-下面两处转写听不清，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
+%==================================================================
+% 第二部分：时不变、因果、无记忆、可逆（视频 54:53--103:33）
+%==================================================================
+\bigskip\begin{center}\Large\textbf{第二部分：时不变、因果、无记忆、可逆、稳定}\end{center}
+\begin{note}
+第二部分对应视频 54:53--121:33（到视频结束），有一个容易搞混的地方先说清楚：\textbf{这一段视频其实拼了三堂课}。
+\begin{itemize}[nosep]
+\item 54:53--65:43 是\textbf{第一堂课的结尾}：老师刚把时不变系统讲了个开头，65:43 说「今天课程就到这，谢谢大家」。
+\item 66:13 起是\textbf{下一堂课}（老师换了衣服）：先用大约 5 分钟复习上一课（线性、时不变的定义），然后把时不变\textbf{重新、更完整地讲一遍}，再往下讲因果、无记忆、可逆。
+\end{itemize}
+所以时不变的例子分散在两堂课里。下面按\textbf{主题}合并整理，每个小节标了视频时刻。103:34--112:03 讲稳定系统，讲完老师说「下节课继续」；112:48 起是\textbf{第三堂课}，老师带大家快速复习教材第 33 页习题 1-16，把五个性质综合判断，最后宣布小测验（见 \S14）。
+\end{note}
+
+%==================================================================
+\section{时不变系统}
+\subsection{定义（54:53--56:22，复习 69:19--69:53）}
+\begin{remember}
+假设对\textbf{任意}输入 $x(t)$，系统给出输出 $y(t)$。如果对\textbf{任意实数} $t_0$，都有
+\[
+x(t-t_0)\ \to\ y(t-t_0),
+\]
+那么它是\textbf{时不变系统}(time-invariant system)；否则是\textbf{时变系统}(time-varying system)。
+
+\emph{大白话：输入晚到 $t_0$ 秒，输出也恰好晚 $t_0$ 秒，形状一点不变。}
+\end{remember}
+老师说，这个定义在书上，他的口述指向「教材 28 页 1.6.2」（我只听到这个编号，没有翻书核对）\tbc{}。老师提醒：做题之前先「感受一下它在说什么事」：$x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 是负数就是左移）。时不变就是说：输入右移多少，输出也右移多少。
+
+\subsection{老师的比喻：糖果（56:52--57:37）}
+老师用一个小孩来解释（原话大意）：
+
+\begin{itemize}[nosep]
+\item 今天给他一颗糖，他笑得很灿烂；明天再给一颗，同样幅度地笑；后天还是这样笑。这就是\textbf{时不变系统}。
+\item 如果今天给糖他哭了，明天给糖他又笑了，这就是\textbf{时变系统}。
+\end{itemize}
+老师总结：\textbf{系统的输出不会随着时间的变化而改变}，描绘的就是这个意思。
+
+\begin{note}
+\textbf{把比喻和定义对上号}（补充）：「给糖」是输入，「笑的幅度」是输出，「哪一天」就是时间 $t$。定义里的 $x(t-t_0)$ 是「把同样的一次给糖推迟 $t_0$ 天」，$y(t-t_0)$ 是「把原来的笑也推迟 $t_0$ 天」。如果推迟之后孩子的反应一模一样，只是整体晚了几天，就是时不变。
+\end{note}
+
+\subsection{证明时不变的两道题（57:54--62:28，第一堂课）}
+老师先说明方法：和线性一样，\textbf{证明时不变，必须严格按定义证；证明时变，只要举一个反例}。证明里继续用「设中间变量」这一招：看不清楚就设 $f(t)=x(t-t_0)$。
+
+\paragraph{例 1：$y(t)=x(t-1)$ \hfill 时不变。}
+老师说这个系统做的事是「把信号右移 1 个单位」。表决：很多人举手认为时不变，没有人认为时变。证明：
+\begin{enumerate}[nosep]
+\item 这台机器的规矩是：送进去 $f(t)$，出来 $f(t-1)$。
+\item 送进去 $x(t-t_0)$，设 $f(t)=x(t-t_0)$，则 $f(t-1)=x\bigl((t-1)-t_0\bigr)=x(t-1-t_0)$。（把 $f$ 里所有的 $t$ 换成 $t-1$。）
+\item 另一边：$y(t-t_0)$ 是把 $y(t)=x(t-1)$ 里的 $t$ 换成 $t-t_0$，得 $x\bigl((t-t_0)-1\bigr)=x(t-1-t_0)$。
+\item 两边相等，所以 $x(t-t_0)\to y(t-t_0)$，时不变。
+\end{enumerate}
+老师说：稍微有点绕，希望大家不要被绕迷糊。
+
+\paragraph{例 2：$y(t)=e^{x(t+1)}$ \hfill 时不变。}
+\emph{（转写听成「$e$ 的 $x(t)$ 加 1」，板书写的是 $e^{x(t+1)}$，以板书为准。）}
+表决：不少人认为时不变，没有人认为时变，答案：\textbf{时不变}。证明思路完全一样：规矩是「送进去 $f(t)$，出来 $e^{f(t+1)}$」；送进去 $f(t)=x(t-t_0)$，则 $f(t+1)=x(t+1-t_0)$，出来 $e^{x(t+1-t_0)}$；而 $y(t-t_0)=e^{x((t-t_0)+1)}=e^{x(t+1-t_0)}$，两边相等。老师说：「我觉得比线性那里要简单一点。」
+
+\subsection{证明时变的三道题（反例）}
+\paragraph{例 3：$y(t)=x(2t)$ \hfill 时变（62:29--65:36，第一堂课）。}
+表决：1 位同学认为时不变，更多同学认为时变，但「大多数同学好像没有判断」。老师举反例：
+
+\begin{enumerate}[nosep]
+\item 取 $x(t)$：在 $0\le t\le1$ 上等于 $1$，其他地方为 $0$。
+\item 系统 $y(t)=x(2t)$：系数 $2>1$，把波形\textbf{压缩 2 倍}，所以输出在 $0\le t\le 0.5$ 上等于 $1$。（用到上一节的口诀，老师说「大家要把前面的串起来」。）
+\item 取 $t_0=1$，输入 $x(t-1)$：右移 1，在 $1\le t\le2$ 上等于 $1$。
+\item 这个输入\textbf{实际}通过系统：对它压缩 2 倍，得到在 $0.5\le t\le1$ 上等于 $1$ 的波形（实际）。
+\item 如果它是时不变，应该\textbf{希望}得到 $y(t-1)$，也就是把第 2 步的输出右移 1，在 $1\le t\le1.5$ 上等于 $1$（希望）。
+\item 实际 $\neq$ 希望，所以是时变。
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\newcommand{\wavepanel}[6]{% #1 原点x #2 原点y #3 左端 #4 右端 #5 颜色 #6 标签
+  \begin{scope}[shift={(#1,#2)}]
+    \draw[->] (-0.4,0) -- (3.6,0) node[right,font=\scriptsize] {$t$};
+    \draw[->] (0,-0.15) -- (0,1.2);
+    \foreach \k in {0,0.5,1,1.5,2} { \draw (\k*1.4,0.04) -- (\k*1.4,-0.04) node[below,font=\tiny] {$\k$}; }
+    \draw[very thick,#5] (#3*1.4,0) -- (#3*1.4,0.8) -- (#4*1.4,0.8) -- (#4*1.4,0);
+    \node[font=\scriptsize,anchor=south west] at (-0.3,1.0) {#6};
+  \end{scope}}
+\begin{tikzpicture}[>=stealth]
+  \wavepanel{0}{0}{0}{1}{blue!70!black}{输入 $x(t)$}
+  \wavepanel{7.4}{0}{0}{0.5}{blue!70!black}{输出 $y(t)=x(2t)$：压缩}
+  \wavepanel{0}{-2.4}{1}{2}{blue!70!black}{输入 $x(t-1)$：右移 1}
+  \wavepanel{7.4}{-2.4}{0.5}{1}{red!75!black}{\textbf{实际}输出（压缩 $x(t-1)$）}
+  \draw[very thick,green!50!black,dashed] (7.4+1.4,-2.4) -- (7.4+1.4,-2.4+0.8) -- (7.4+2.1,-2.4+0.8) -- (7.4+2.1,-2.4);
+  \node[font=\scriptsize,green!40!black,anchor=west] at (7.4+2.2,-2.4+0.55) {希望：$y(t-1)$};
+  \draw[->,gray] (3.8,0.4) -- (7.1,0.4);
+  \draw[->,gray] (3.8,-2.0) -- (7.1,-2.0);
+\end{tikzpicture}
+\caption{$y(t)=x(2t)$ 的反例：第二行红色（实际）和绿色虚线（希望）不在同一位置，所以是时变系统。}
+\end{figure}
+
+\begin{note}
+\textbf{用一个具体时刻验算}（补充，课上没做）：看 $t=0.75$。实际输出是 $x(2\cdot0.75-1)=x(0.5)=1$；希望的输出是 $y(0.75-1)=x(2\cdot(-0.25))=x(-0.5)=0$。$1\neq0$，一个点就足以说明两者不同。
+\end{note}
+
+\paragraph{例 4：$y(t)=t\,x(t)$ \hfill 时变（70:49--75:11，下一堂课）。}
+表决：认为时不变的只有 1 位。老师说：直观地看，$t$ 在外面，「它肯定会随着时间变化」，但这只是粗略理解，严格说还是要举反例：
+
+\begin{enumerate}[nosep]
+\item 取 $x(t)=u(t)$（$u(t)$ 是单位阶跃(unit step)：$t>0$ 时为 $1$，$t<0$ 时为 $0$），则 $y(t)=t\,u(t)$：$t<0$ 时是 $0$，$t>0$ 时等于 $t$，是一条从原点起向上的斜线。
+\item 取 $t_0=1$，输入 $u(t-1)$（从 $t=1$ 起为 $1$）。\textbf{实际}输出是 $t\,u(t-1)$：$t<1$ 时为 $0$，$t=1$ 时跳到 $1$，之后等于 $t$（$t=2$ 时是 $2$）。
+\item \textbf{希望}（若时不变）：把 $y(t)=t\,u(t)$ 右移 1，即 $(t-1)\,u(t-1)$：在 $t=1$ 处是 $0$，$t=2$ 时是 $1$。
+\item 实际 $\neq$ 希望，所以时变。
+\end{enumerate}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.15cm,y=0.75cm,>=stealth]
+  \draw[->] (-0.6,0) -- (4.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.4) -- (0,4.2);
+  \foreach \k in {1,2,3} { \draw (\k,0.1) -- (\k,-0.1) node[below,font=\scriptsize] {$\k$}; }
+  \foreach \k in {1,2,3} { \draw (0.06,\k) -- (-0.06,\k) node[left,font=\scriptsize] {$\k$}; }
+  \draw[very thick,red!75!black] (-0.5,0) -- (1,0);
+  \draw[very thick,red!75!black] (1,1) -- (4,4);
+  \draw[red!75!black,dotted] (1,0) -- (1,1);
+  \draw[very thick,green!50!black,dashed] (1,0) -- (4,3);
+  \node[red!75!black,font=\scriptsize,anchor=west] at (4.1,4.0) {实际：$t\,u(t-1)$};
+  \node[green!40!black,font=\scriptsize,anchor=west] at (4.1,2.9) {希望：$(t-1)\,u(t-1)$};
+\end{tikzpicture}
+\caption{$y(t)=t\,x(t)$ 的反例，输入 $u(t-1)$：实际输出（红）在 $t=1$ 处直接跳到 $1$，而希望的输出（绿虚线）是从 $0$ 开始爬。两条线上下错开了整整 $1$。}
+\end{figure}
+
+\paragraph{例 5：$y[n]=x[3-n]$ \hfill 时变（75:38--79:47，下一堂课）。}
+表决：认为时不变的有 4--5 位，认为时变的略多一点。答案：\textbf{时变}。老师说关键在于 $n$ 前面有\textbf{一个负号}，「它在随着时间会变」。反例：
+
+\begin{enumerate}[nosep]
+\item 取 $x[n]=\delta[n]$（$\delta[n]$ 是单位脉冲：只在 $n=0$ 处为 $1$，其余为 $0$）。输出 $y[n]=\delta[3-n]$，只在 $n=3$ 处为 $1$。老师的说法：$x[3-n]=x[-(n-3)]$，先翻转（$-n$），再右移 3 格，所以脉冲落在 $n=3$。
+\item 取右移 1 格的输入 $x[n-1]=\delta[n-1]$（脉冲在 $n=1$）。\textbf{实际}输出：$x[3-n]$ 里的 $x$ 换成 $\delta[n-1]$，得 $\delta[(3-n)-1]=\delta[2-n]$，脉冲在 $n=2$。老师的说法：先翻转到 $-1$，再右移 3 格，落在 $n=2$。
+\item \textbf{希望}（若时不变）：把第 1 步的输出右移 1，脉冲应落在 $n=4$。
+\item 实际（$n=2$）$\neq$ 希望（$n=4$），所以时变。
+\end{enumerate}
+老师的原话大意：输入相对于原来右移了一格，输出应该在 4 的时候是 1 才对，但现在却在 2 的时候是 1，所以希望和实际不相等。（补充：从图上看，输入向右移，实际输出的脉冲却向左移，方向正好相反。）
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.5cm,y=0.9cm,>=stealth]
+  % 第一行：输入 δ[n] -> 输出脉冲在 3
+  \begin{scope}[shift={(0,0)}]
+    \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
+    \draw[thick,blue!70!black] (0,0) -- (0,1); \fill[blue!70!black] (0,1) circle (1.6pt);
+    \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输入 $\delta[n]$};
+    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+  \end{scope}
+  \begin{scope}[shift={(10,0)}]
+    \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
+    \draw[thick,blue!70!black] (3,0) -- (3,1); \fill[blue!70!black] (3,1) circle (1.6pt);
+    \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输出 $y[n]=x[3-n]$};
+    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+  \end{scope}
+  \draw[->,gray] (7.2,0.5) -- (8.2,0.5);
+  % 第二行
+  \begin{scope}[shift={(0,-2.8)}]
+    \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
+    \draw[thick,blue!70!black] (1,0) -- (1,1); \fill[blue!70!black] (1,1) circle (1.6pt);
+    \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输入 $\delta[n-1]$：右移 1};
+    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+  \end{scope}
+  \begin{scope}[shift={(10,-2.8)}]
+    \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
+    \draw[thick,red!75!black] (2,0) -- (2,1); \fill[red!75!black] (2,1) circle (1.6pt);
+    \draw[thick,green!50!black,dashed] (4,0) -- (4,1); \fill[green!50!black] (4,1) circle (1.6pt);
+    \node[font=\scriptsize,anchor=south] at (2.5,1.2) {\textcolor{red!75!black}{实际 $n=2$}\ \ \textcolor{green!40!black}{希望 $n=4$}};
+    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+  \end{scope}
+  \draw[->,gray] (7.2,-2.3) -- (8.2,-2.3);
+\end{tikzpicture}
+\caption{$y[n]=x[3-n]$ 的反例：输入右移 1，实际输出的脉冲不是右移到 $4$，而是左移到 $2$。}
+\end{figure}
+
+\subsection{复习里的一个提醒（66:13--70:45）}
+第二堂课开头，老师把上一课的内容过了一遍：信号自变量变换的四句口诀，线性系统的两条规矩，「每一项都有 $x$、每一项的 $x$ 都是一次」，时不变的定义，以及上一课末尾的三个例子（$x(t-1)$ 时不变，$e^{x(t)}$ 时不变，$x(2t)$ 时变）。老师在这里说：「前面是复习，现在我们开始继续讲这个新的课。」这些内容前面都已整理过，不重复。
+
+\subsection{时不变的判据：两句话（79:53--82:28）}
+老师说：这个办法能解决大家遇到的 80\% 以上的题。他还问了一句「有同学能够站起来说一下，你觉得时不变系统的判据是什么吗」，然后自己写在黑板上：
+
+\begin{remember}
+时不变系统的判据（板书）：
+\begin{enumerate}[nosep]
+\item \textbf{$t$ 只在 $x$ 的括号里}（括号外面不能再有 $t$）；
+\item \textbf{$t$ 只能是 $t$}，不能是 $2t$、$-2t$、$t^2$ 等其他函数。
+\end{enumerate}
+离散的时候把 $t$ 换成 $n$。
+\end{remember}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+系统 & 两句话检查 & 结论\\
+\midrule
+$y(t)=x(t-1)$ & $t$ 只在括号里，括号里就是 $t$（平移了 1） & 时不变\\
+$y(t)=e^{x(t)}$ & $t$ 只在括号里，括号里是 $t$ & 时不变\\
+$y(t)=x(2t)$ & 括号里是 $2t$，不只是 $t$ & 时变\\
+$y(t)=t\,x(t)$ & 有一个 $t$ 跑到了 $x$ 的\textbf{括号外面} & 时变\\
+$y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师的话大意：这个问题只是大致讲了一下，后面大家多做题，对它有更多理解会更好。
+
+\begin{skippable}
+\textbf{一处要自己留意的地方}（补充）\tbc{}。板书写的是「$t$ 只能是 $t$」，但老师紧接着把 $x(t-1)$ 判成了\textbf{时不变}。所以这句话应该读成：「括号里是 $t$ 加减一个\textbf{常数}（只平移）」；乘一个系数（$2t$）、取反（$-t$ 或 $3-n$）、平方（$t^2$）才算「其他函数」。这是我对老师两句话的理解，课上没有逐字这样说。
+\end{skippable}
+
+老师在这一段末尾（82:50）说了一句承上启下的话：线性和时不变这两个判据讲完，「这一章最核心的内容已经基本上讲完了」。接下来还有四个系统：因果（教材 29 页）、记忆和无记忆（29 页上部）、可逆（30 页）、稳定（30 页下部），「相对于线性和时不变，相对简单」。
+
+%==================================================================
+\section{因果系统（83:44--92:29）}
+\subsection{定义：输出在输入之后发生}
+老师在黑板上写的定义是：\textbf{输出 $y(t)$ 在输入 $x(t)$ 之后发生}。他用一个直观的画法来说明：
+
+\begin{itemize}[nosep]
+\item 假设输入 $x(t)$ \textbf{从 $t_0$ 才开始有值}（$t<t_0$ 时全为 $0$）；
+\item 经过系统后，输出 $y(t)$ \textbf{从 $t_1$ 才开始有值}（其他地方全为 $0$）。
+\end{itemize}
+那么：\textbf{系统是因果的，当且仅当 $t_1\ge t_0$}。老师特意纠正自己：「大于等于，不好意思，它包含了等于这一项。」
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \foreach \yy/\a/\b/\lab/\col in {0/1.2/2.4/{因果：$t_1\ge t_0$，输出在输入之后（或同时）出现}/green!50!black,
+                                     -3.0/1.2/0.2/{非因果：$t_1<t_0$，输出\textbf{提前}出现（「未卜先知」）}/red!75!black} {
+    \draw[->] (-0.3,\yy) -- (6.4,\yy) node[right,font=\scriptsize] {$t$};
+    \draw[very thick,blue!70!black] (\a,\yy+0.5) -- (\a,\yy) node[below,font=\tiny] {$t_0$};
+    \draw[very thick,blue!70!black] (\a,\yy+0.5) -- (\a+1.6,\yy+0.5);
+    \node[font=\scriptsize,blue!70!black,anchor=west] at (\a+1.7,\yy+0.5) {输入 $x$};
+    \draw[very thick,\col] (\b,\yy+1.0) -- (\b,\yy) node[below,font=\tiny] {$t_1$};
+    \draw[very thick,\col] (\b,\yy+1.0) -- (\b+1.6,\yy+1.0);
+    \node[font=\scriptsize,\col,anchor=west] at (\b+1.7,\yy+1.0) {输出 $y$};
+    \node[font=\scriptsize,anchor=west] at (-0.3,\yy-0.75) {\lab};
+  }
+\end{tikzpicture}
+\caption{因果与非因果：比较两个「起点」$t_0$（输入从这里开始）和 $t_1$（输出从这里开始）。}
+\end{figure}
+
+\begin{note}
+\textbf{老师讲的两层意思}：
+\begin{itemize}[nosep]
+\item 若 $t_1<t_0$：在 $t_0$ 这个时间输入还没来，输出却「未卜先知」，提前放了出来，这当然不是因果的，是\textbf{非因果系统}(non-causal system)。
+\item 现实的系统不具有未卜先知的能力，所以非因果系统\textbf{物理上难以实现}。老师特意写「难以」而不是「不可」，并说：「大家学过量子力学吗？学过双缝干涉实验吗？……在量子的系统当中，很有可能用一些非因果的方式去处理这个事情」，所以他不敢写得太绝对。
+\end{itemize}
+\end{note}
+
+\begin{note}
+\textbf{画面上还有一条字幕，要注意}：视频在讲因果系统时（约 84--86 分的画面），画面下方叠了一条黄色字幕（\textbf{这是视频制作者加的，不是老师说的}）：
+\begin{quote}
+「课上因果系统定义和教材有细微区别，请以教材定义为准：如果一个系统任何时刻输出只决定于现在和过去的输入，就称该系统为因果系统。（P29）」
+\end{quote}
+也就是说，老师课上说的「输出在输入之后发生」是一个形象的说法，\textbf{考试和答题请以教材的定义为准}：输出只取决于\textbf{现在和过去}的输入，不取决于未来的输入。下面的判据和这个定义是一致的。
+\end{note}
+
+\subsection{例题（88:21--92:29）}
+\begin{center}
+\begin{tabular}{@{}llp{7.3cm}@{}}
+\toprule
+系统 & 结论 & 老师的理由\\
+\midrule
+$y(t)=x(t-1)$ & 因果 & 信号右移，输出在输入之后才发生\\
+$y(t)=x(t+1)$ & 非因果 & 「加号左移」：$y(t)$ 要用到 $t+1$ 时刻的输入，输出比输入早一个单位\\
+$y(t)=x(2t)$ & 非因果 & 举反例：输入从 $t=1$ 开始，压缩 2 倍后输出从 $t=\tfrac12$ 开始，比输入\textbf{提前}\\
+$y(t)=x(\tfrac12 t)$ & 非因果 & 取 $t>0$ 举不出反例，要取 $t<0$：输入从 $t=-1$ 开始，拉伸 2 倍后输出从 $t=-2$ 开始，比输入\textbf{早}\\
+$y[n]=x[3-n]$ & 非因果 & （反例不举了，用下面的判据）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{为什么 $y(t)=x(\tfrac12t)$ 要换到 $t<0$。}老师特别提醒：如果取 $t>0$，$\tfrac12t<t$，输出用到的是「过去」的输入，看不出问题；但\textbf{只要有一处时刻}用到了未来的输入，就是非因果。$t<0$ 时 $\tfrac12 t>t$（例如 $t=-2$ 时 $\tfrac12t=-1>-2$），用到了未来，所以非因果。
+
+\subsection{因果的判据（92:29--93:29）}
+老师说这个判据「比线性和时不变的更容易总结」：
+
+\begin{remember}
+\textbf{因果的判据}：$x$ 括号里的数，\textbf{恒}不大于 $y$ 括号里的数。（老师口述和板书写的是「恒小于」，但他前面的定义明确包含「等于」，所以应读作「小于或等于」。）\tbc{}
+\end{remember}
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+系统 & $x$ 括号里 vs $y$ 括号里（$t$ 或 $n$） & 结论\\
+\midrule
+$y(t)=x(t-1)$ & $t-1<t$，恒成立 & 因果\\
+$y(t)=x(t+1)$ & $t+1>t$ & 非因果\\
+$y(t)=x(2t)$ & $t>0$ 时 $2t>t$；$t<0$ 时 $2t<t$，没有恒定的大小关系 & 非因果\\
+$y[n]=x[3-n]$ & $3-n$ 和 $n$ 也没有恒定的大小关系 & 非因果\\
+\bottomrule
+\end{tabular}
+\end{center}
+（注意第三、四行：只要有\textbf{任何一个时刻}出现「括号里的数比 $y$ 的更大」，就是非因果。）
+
+%==================================================================
+\section{记忆与无记忆系统（93:36--97:30）}
+\subsection{定义}
+\textbf{无记忆系统}(memoryless system)：\textbf{$y(t)$ 的值仅仅依赖于 $x(t)$ 的值}（同一个时刻的输入）。离散时把圆括号换成方括号。老师说这个「很简单」。反面是\textbf{记忆系统}(system with memory)。
+
+\begin{note}
+\textbf{一个生活比喻}（补充，课上没有）：无记忆系统像一台\textbf{计算器}：你按下哪个数，立刻给你出结果，只看这一次按键。记忆系统像\textbf{银行账户的余额}：现在的余额取决于你过去存取过的所有记录。
+\end{note}
+
+\subsection{例题}
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+系统 & 结论 & 老师的理由\\
+\midrule
+$y(t)=x(t)^2+e^{x(t)}$ & 无记忆 & $y(t)$ 的值只依赖 $x(t)$\\
+$y(t)=x(t-1)$ & 记忆 & $y(t)$ 依赖 $t-1$ 时刻的值，不仅仅依赖 $x(t)$\\
+$y[n]=x[n]^3$ & 无记忆 & 只依赖同一个 $n$ 的值\\
+$y[n]=x[2n]$ & 记忆 & $n$ 点的输出依赖 $x$ 在 $2n$ 点的值\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{remember}
+\textbf{无记忆的判据}：$x$ 和 $y$ 括号里的数\textbf{完全一样}。（因果的判据是「不大于」，无记忆是「相等」，下面马上用到这一点。）
+\end{remember}
+
+\subsection{一道常考的判断题：无记忆系统一定是因果系统吗？（96:30--97:30）}
+\textbf{对}。老师说这是「经常考到的判断题」。表决：很多人认为对，没有人认为错。理由：因果的判据是「$x$ 括号里的数恒\textbf{小于或等于} $y$ 括号里的数」，无记忆系统两个括号里的数\textbf{恰好相等}，刚好落在「等于」这种情况里，所以一定因果。老师说：「因果系统的定义，大于等于包含了无记忆系统。」
+
+\begin{note}
+\textbf{反过来不成立}（补充）：因果系统不一定无记忆。例如 $y(t)=x(t-1)$ 是因果的，但有记忆（依赖过去的输入）。
+\end{note}
+
+%==================================================================
+\section{可逆系统（97:34--103:31）}
+\subsection{定义}
+\textbf{可逆系统}(invertible system)：\textbf{$x(t)$ 能唯一地写成 $y(t)$ 的形式}。老师用三种等价的说法解释：
+\begin{itemize}[nosep]
+\item 从输出可以\textbf{唯一地}倒推出输入；
+\item $y(t)$ 和 $x(t)$ 是\textbf{一一对应}的映射；
+\item $y=f(x)$ \textbf{有反函数}。
+\end{itemize}
+老师说这和大家学「什么函数有反函数、什么函数没有」时一样，「早就学过」。
+
+\subsection{例题}
+\begin{center}
+\begin{tabular}{@{}p{5.3cm}p{1.5cm}p{7.3cm}@{}}
+\toprule
+系统 & 结论 & 老师的理由\\
+\midrule
+$y(t)=x(t-1)$ & 可逆 & 换一种写法 $x(t)=y(t+1)$，$x$ 能唯一写成 $y$ 的形式\\
+$y(t)=x(t)^2$ & \textbf{不可逆} & $x(t)=\pm\sqrt{y(t)}$，一个 $y$ 对应\textbf{两个}不同的 $x$\\
+$y(t)=x(2t)$ & 可逆 & $x(t)=y(\tfrac12t)$\\
+累加器 $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 可逆 & $x[n]=y[n]-y[n-1]$（两个相邻的累加一减，刚好剩下 $x[n]$）\\
+积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$ & 可逆 & $x(t)=\dfrac{\mathrm{d}y(t)}{\mathrm{d}t}$\\
+微分器 $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & \textbf{不可逆} & $x(t)=\displaystyle\int_{-\infty}^{t}y(\tau)\,\mathrm{d}\tau+C$，这个常数 $C$ 可以取任意值，倒推不唯一\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师说：累加器（他口头叫它「叠加器」，即前面 \S3 的离散积分器）的表决很有意思，「竟然没有人举」手认为可逆，有一位同学认为不可逆；他让同学自己把 $y[n]$ 和 $y[n-1]$ 写出来相减，就看出它可逆。最后总结：\textbf{积分器、累加器可逆，微分器不可逆}。
+
+\begin{note}
+\textbf{为什么微分器不可逆，用大白话说}（补充）：求导会把「常数」丢掉。例如 $x(t)=5$ 和 $x(t)=7$ 求导后都是 $0$，两个不同的输入给出同一个输出，倒推时就说不清原来是 $5$ 还是 $7$，这正是「$+C$」的来源。反过来，积分器每一刻都在累积，信息没有丢，所以可以用求导还原。
+\end{note}
+
+%==================================================================
+%==================================================================
+\section{稳定系统（103:34--112:03）}
+\subsection{定义：有界进，有界出}
+老师说，稳定系统的定义「很简单」：设 $x(t)\to y(t)$，若 $x(t)$ \textbf{有界}，就能推出 $y(t)$ \textbf{有界}，即「输入有界对应着输出有界」，它就是\textbf{稳定系统}(stable system)；如果有界的输入能对应出\textbf{无界}的输出，就是\textbf{非稳定系统}（不稳定系统）。
+
+\begin{remember}
+\textbf{有界}(bounded)的定义（有同学问「什么叫有界」，老师现场写的）：
+\[
+x(t)\ \text{有界}\ \Longleftrightarrow\ \text{存在}\ M,\ \text{对任意的}\ t\ \text{有}\ |x(t)|<M.
+\]
+画出来：从 $-\infty$ 到 $+\infty$，$x(t)$ 始终被「上面 $+M$、下面 $-M$」两条线夹住，不可能向上飞到 $+\infty$，也不可能向下飞到 $-\infty$。
+\end{remember}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.1cm,y=1.1cm,>=stealth]
+  \draw[->] (-3.6,0) -- (3.9,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-1.5) -- (0,1.6) node[above,font=\small] {$x(t)$};
+  \draw[dashed,red!70!black] (-3.5,1.1) -- (3.5,1.1) node[right,font=\scriptsize] {$+M$};
+  \draw[dashed,red!70!black] (-3.5,-1.1) -- (3.5,-1.1) node[right,font=\scriptsize] {$-M$};
+  \draw[very thick,blue!70!black,smooth,samples=120,domain=-3.4:3.4] plot (\x,{0.65*sin(\x*100)+0.3*cos(\x*260)});
+\end{tikzpicture}
+\caption{有界信号：不管 $t$ 取多大多小，波形始终待在两条红色虚线之间。}
+\end{figure}
+
+老师的总结：有界的 $x$ 对应着有界的 $y$，这是稳定。他还用「证明」的方式说明了怎么用这个定义，见下面的例题。
+
+\subsection{稳定的例题（106:00--109:40）}
+\paragraph{例 1：$y(t)=e^{x(t)}$ \hfill 稳定。}
+\emph{（转写听成「$e$ 倍的 $x(t)$」，板书写的是 $e^{x(t)}$。）}表决：有些同学觉得它「好大」，不敢说稳定。老师说：它\textbf{稳定}，因为「只要 $x(t)$ 的界限被限制住，$y$ 一定有一个界线」。证明：设对任意 $t$ 有 $|x(t)|<M$，则
+\[
+|y(t)|=\bigl|e^{x(t)}\bigr|\ \le\ e^{|x(t)|}\ \le\ e^{M}.
+\]
+（第一个不等号为什么成立，老师说「自己回去想」。）$e^M$ 是一个固定的数，用它就把 $|y(t)|$ 夹住了，所以稳定。
+
+\begin{note}
+\textbf{用具体数字感受一下}（补充，课上没做）：设 $M=2$，即 $x(t)$ 一直在 $-2$ 到 $2$ 之间。$x=2$ 时 $y=e^2\approx7.39$，$x=-2$ 时 $y=e^{-2}\approx0.14$。不管 $x$ 怎么变，$y$ 都不会超过 $e^2\approx7.39$。输出很大，但「有一个固定的上限」，这就叫有界。
+\end{note}
+
+\paragraph{例 2：$y(t)=x(t)^3-2x(t)^2+x(t)+1$ \hfill 稳定。}
+老师说：「你要我来证明的话，我又证明给你看。」设 $|x(t)|<M$，则
+\begin{align*}
+|y(t)|&=\bigl|x^3-2x^2+x+1\bigr|\\
+&\le |x|^3+2|x|^2+|x|+1\qquad\text{（减号也要变成加号，不等号才成立）}\\
+&\le M^3+2M^2+M+1.
+\end{align*}
+每一项分别被 $M^3$、$2M^2$、$M$、$1$ 夹住。老师说：「这个数尽管有可能很大，但是它仍然是把 $|y(t)|$ 限制住，它是稳定的。」
+
+\begin{note}
+\textbf{具体数字}（补充）：取 $M=2$，上限是 $8+8+2+1=19$。取 $x=-2$ 时 $y=-8-8-2+1=-17$，$|y|=17\le19$；取 $x=2$ 时 $y=8-8+2+1=3$。都没有超过 $19$。
+\end{note}
+
+老师的结论：哪怕是再复杂的数学表达式，只要能像上面这样用 $M$ 夹住，就仍然稳定。他在这里还举了一个更夸张的表达式（转写听成「1 亿的 $x(t)$」，我听不出具体是什么，见文末「待核对」）\tbc{}，意思是：「复杂」不等于「不稳定」。
+
+\subsection{不稳定的例题（109:40--112:03）}
+老师举了三个不稳定的系统，并留了一个反过来的问题：
+
+\begin{center}
+\begin{tabular}{@{}p{3.3cm}p{1.8cm}p{8.9cm}@{}}
+\toprule
+系统 & 结论 & 老师的反例\\
+\midrule
+微分器 $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & 不稳定 & 取 $x(t)=u(t)$（阶跃，被 $1$ 夹住）。它在 $t=0$ 处一下子升 $1$，一求导，输出是冲激 $\delta(t)$，在 $t=0$ 那里变成\textbf{无穷大}，夹不住\\
+积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$ & 不稳定 & 取 $x(t)\equiv1$（被 $M=1$ 夹住）。从 $-\infty$ 积到 $t$，$y(t)=+\infty$，夹不住\\
+累加器 $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 不稳定 & 同样道理（老师说「同样的道理」，一笔带过）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  % 左：微分器
+  \begin{scope}[shift={(0,0)}]
+    \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
+    \draw[->] (0.6,-0.1) -- (0.6,1.3);
+    \draw[very thick,blue!70!black] (-0.3,0) -- (0.6,0) -- (0.6,0.8) -- (2.3,0.8);
+    \node[font=\scriptsize,blue!70!black] at (1.5,1.1) {$x=u(t)$：有界};
+    \draw[->,gray] (2.9,0.5) -- (3.6,0.5) node[midway,above,font=\tiny,gray] {求导};
+  \end{scope}
+  \begin{scope}[shift={(4.0,0)}]
+    \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
+    \draw[->] (0.6,-0.1) -- (0.6,1.9);
+    \draw[->,very thick,red!75!black] (0.6,0) -- (0.6,1.8);
+    \node[font=\scriptsize,red!75!black,anchor=west] at (0.75,1.55) {$\delta(t)$：$\to\infty$};
+  \end{scope}
+  % 右：积分器
+  \begin{scope}[shift={(8.6,0)}]
+    \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
+    \draw[->] (0.6,-0.1) -- (0.6,1.3);
+    \draw[very thick,blue!70!black] (-0.3,0.8) -- (2.3,0.8);
+    \node[font=\scriptsize,blue!70!black] at (1.5,1.1) {$x\equiv1$：有界};
+    \draw[->,gray] (2.9,0.5) -- (3.6,0.5) node[midway,above,font=\tiny,gray] {积分};
+  \end{scope}
+  \begin{scope}[shift={(12.6,0)}]
+    \draw[->] (-0.3,0) -- (2.2,0) node[right,font=\scriptsize] {$t$};
+    \draw[->] (0.6,-0.1) -- (0.6,1.9);
+    \draw[->,very thick,red!75!black] (-0.2,0.1) -- (2.1,1.8);
+    \node[font=\scriptsize,red!75!black,anchor=west] at (0.1,1.75) {$\to\infty$};
+  \end{scope}
+\end{tikzpicture}
+\caption{左：微分器把一个有界的阶跃变成无穷大的冲激。右：积分器把一个有界的常数 $1$ 越积越大，没有上限。}
+\end{figure}
+
+\paragraph{老师留的思考题。}老师最后说（111:43--112:03）：连续的微分器不稳定，但\textbf{离散的微分器}（差分 $y[n]=x[n]-x[n-1]$）是\textbf{稳定}的，「自己在休息的时候想一想是为什么」，下节课继续。
+
+\begin{skippable}
+\textbf{我的想法}（补充，没有核对书）：设 $|x[n]|<M$，则 $|y[n]|=|x[n]-x[n-1]|\le|x[n]|+|x[n-1]|<2M$，被 $2M$ 夹住，所以稳定。连续微分器不稳定，是因为连续信号可以在一瞬间跳变（跳变处导数无穷大）；离散信号每个点就是一个有限的数，相邻两点相减，差不会无穷大。
+\end{skippable}
+
+\begin{note}
+\textbf{稳定的英文说法}（补充）：英文教材里常把这种稳定叫作 BIBO 稳定（bounded-input bounded-output，有界输入有界输出），课上没有出现这个缩写。
+\end{note}
+
+%==================================================================
+\section{习题复习：教材第 33 页习题 1-16（112:48--121:28）}
+112:03 老师说「我们下节课继续」，之后转写里 112:18--112:48 基本没有内容（应是课间）；112:48 起\textbf{又是新的一堂课}，老师让大家翻书，「相对稍微比较快地复习一下」，做教材第 33 页的习题 1-16（转写听到「33 页 1-16」，没有翻书核对）\tbc{}，并说「我们不全做，挑三个来做」。这一段是把五个性质综合起来用，特别适合检验自己有没有学会。
+
+老师在黑板上画了一张表：行是三个系统，列是五个性质（线性、时不变、无记忆、因果、稳定），逐格判断。最后的表如下（来自画面）：
+
+\begin{center}
+\renewcommand{\arraystretch}{1.35}
+\begin{tabular}{@{}lccccc@{}}
+\toprule
+系统 & 线性 & 时不变 & 无记忆 & 因果 & 稳定\\
+\midrule
+$y(t)=e^{x(t)}$ & $\times$ & $\checkmark$ & $\checkmark$ & $\checkmark$ & $\checkmark$\\
+$y[n]=x[n]\,x[n-1]$ & $\times$ & $\checkmark$ & $\times$ & $\checkmark$ & $\checkmark$\\
+$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\times$ & $\checkmark$ & $\times$\\
+\bottomrule
+\end{tabular}
+\end{center}
+（$\checkmark$ 表示「是」，$\times$ 表示「否」。最后一格在部分画面里被老师挡住，从最后一帧能看到是 $\times$。\tbc{}）下面逐行说老师的理由。
+
+\subsection{第一行 $y(t)=e^{x(t)}$（114:01--114:55）}
+\emph{（转写听成「1 倍的 $x(t)$」，板书是 $e^{x(t)}$。）}
+\begin{itemize}[nosep]
+\item \textbf{线性：否}。看上去「每一项都有 $x$、每一项 $x$ 都是一次」，但老师提醒：$e^{x}=1+x+\dfrac{x^2}{2!}+\cdots$，不是一次的，所以不是线性（和 \S5.1 一样）。
+\item \textbf{时不变：是}。$t$ 只在 $x$ 的括号里，不在括号外，括号里只能是 $t$。
+\item \textbf{无记忆：是}。$y(t)$ 只依赖 $x(t)$。
+\item \textbf{因果：是}。老师说：「无记忆系统一定是因果系统。」
+\item \textbf{稳定：是}。\S13 证过。
+\end{itemize}
+
+\subsection{第二行 $y[n]=x[n]\,x[n-1]$（114:55--116:27）}
+\begin{itemize}[nosep]
+\item \textbf{线性：否}。「这里两个 $x$ 了，有两次了」，不满足「每一项 $x$ 的次数只有一次」。
+\item \textbf{时不变：是}。判据：$n$ 只在 $x$ 的括号里，括号里只能是 $n$（平移 $n$ 与 $n-1$）。老师说：「你不确定，自己回去按照定义再证一遍。」
+\item \textbf{无记忆：否}。$y[n]$ 不仅跟 $x[n]$ 有关，还跟 $x[n-1]$ 有关。
+\item \textbf{因果：是}。判据：$x$ 括号里的数恒小于等于 $y$ 括号里的数：这里 $x$ 括号里是 $n$ 和 $n-1$，都不大于 $y$ 括号里的 $n$。
+\item \textbf{稳定：是}。「如果用 $M$ 限制住了 $x$，那么将以 $M^2$ 限制住 $y$。」（因为 $|x[n]x[n-1]|\le M\cdot M$。）
+\end{itemize}
+
+\subsection{第三行 微分器 $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$（116:28--121:02）}
+\begin{itemize}[nosep]
+\item \textbf{线性：是}，\textbf{时不变：是}，前面都证明过。老师提醒，接下来有两格「每一次都会有特别多的问题」。
+\item \textbf{无记忆：否}。老师说：这里打错，因为要算 $\dfrac{\mathrm{d}x}{\mathrm{d}t}$，必须知道 $t+\Delta t$ 或 $t-\Delta t$ 那么\textbf{一小点}地方的值，不然算不出来。
+\item \textbf{稳定：否}。前面讲过，微分器不稳定。
+\item \textbf{因果：这是争议最大的一格}，见下面单独讲。
+\end{itemize}
+
+\subsubsection*{微分器是因果的吗？（116:56--120:33）}
+老师说他「不考大家了」，直接讲自己的看法：\textbf{考试时写因果或非因果，他都算对，但他个人觉得说它是因果的更对一点}。理由是：导数是一个极限，可以有两种算法。
+
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.8cm}p{5.6cm}p{4.2cm}@{}}
+\toprule
+算法 & 式子（板书） & 按因果的定义\\
+\midrule
+取 $t$ \textbf{右边}一点点 & $\displaystyle\lim_{\Delta t\to0^+}\dfrac{x(t+\Delta t)-x(t)}{\Delta t}$ & 用到了 $t+\Delta t>t$ 的值，\textbf{非因果}\\
+取 $t$ \textbf{左边}一点点 & $\displaystyle\lim_{\Delta t\to0^+}\dfrac{x(t)-x(t-\Delta t)}{\Delta t}$ & 用到的 $t-\Delta t<t$，\textbf{因果}\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师的推理：$y(t)$ 能写成 $\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ 这个形式，本身就有一个\textbf{假设}：左极限和右极限\textbf{相等}（导数存在）。既然已经写成了这个形式，就认为两个极限相等，那么「虽然右边那个算法是非因果的，我们也能用底下这个因果的算法把它算出来」，所以按这个角度它是因果的。他的话大意：你能用因果的方式算出哪怕是这个非因果的极限，前提条件是这个极限存在。
+
+\begin{note}
+\textbf{转写里的两处口误}\tbc{}：转写把第一个式子（$t+\Delta t$ 那个）听成「左极限」，并把 $\Delta t$ 的趋向听成「趋于正无穷大」。按板书和内容，$t+\Delta t$ 是在 $t$ 的\textbf{右边}取点（右极限），$\Delta t$ 应该\textbf{趋于 $0^+$}，我按板书写。这两处也记进了文末「待核对」。
+\end{note}
+
+\begin{skippable}
+\textbf{大白话版}（补充）：导数是「变化有多快」。你要知道 $t$ 这一刻变化多快，既可以「看一眼刚才到现在涨了多少」（只用过去，因果），也可以「偷看一眼马上要涨多少」（用了未来，非因果）。只要这个导数存在，两种看法算出来的数相同，所以老师倾向于答「因果」。
+\end{skippable}
+
+\subsection{老师宣布小测验（121:02--121:28）}
+最后（视频在这里结束，121:33），老师宣布：\textbf{下周五有一个小测验}，题目就是上面这种表，「我把测验的题目都告诉大家，我在这里写几个式子，你在这里打对和错」，要求是\textbf{速度：五分钟做五道题}。
+
+\begin{note}
+\textbf{怎么用这张表练习}（补充）：盖住右边的 $\checkmark/\times$，自己对每个系统逐格判断，用本笔记里的「判据」：线性看「每项有 $x$、一次」；时不变看「$t$ 只在括号里、只是 $t$」；无记忆看「两个括号里的数一样」；因果看「$x$ 括号里的数恒不大于 $y$ 括号里的」；稳定看「能不能用 $M$ 夹住」。
+\end{note}
+
+\section{第二部分一页总结}
+\begin{remember}
+\begin{enumerate}[nosep]
+\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去；否定：举反例，列出「实际」和「希望」比较。判据两句话：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。
+\item \textbf{因果}：输出不依赖未来的输入（以教材定义为准）。判据：\textbf{$x$ 括号里的数恒不大于 $y$ 括号里的数}。$x(t-1)$ 因果；$x(t+1)$、$x(2t)$、$x(\tfrac12t)$、$x[3-n]$ 非因果。
+\item \textbf{无记忆}：$y$ 只依赖同一时刻的 $x$。判据：\textbf{两个括号里的数完全一样}。无记忆\textbf{一定}因果，反过来不一定。
+\item \textbf{可逆}：从 $y$ 能唯一倒推出 $x$。$x(t)^2$（正负根）、微分器（常数丢了）不可逆；平移、缩放、积分器、累加器可逆。
+\item \textbf{稳定}：有界输入一定得到有界输出（用 $M$ 夹住）。$e^{x(t)}$、多项式、$x[n]x[n-1]$ 稳定；微分器、积分器、累加器不稳定；离散差分稳定，连续微分器不稳定。
+\item \textbf{综合判断}（\S14，老师的小测形式）：五个性质逐格判断，限时 5 分钟做 5 道题。
+\end{enumerate}
+\end{remember}
+
+\section*{待核对：转写听不清或口述含糊的地方}
+下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
 \begin{center}
 \begin{tabular}{@{}p{2.4cm}p{6.2cm}p{6.2cm}@{}}
 \toprule
@@ -482,6 +1049,11 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 \midrule
 44:14--44:28 & 老师讲 $e^{x[n]}$ 的泰勒展开，转写把展开式听乱了（出现「1 加上 $x[n]$ 的平方……」之类的片段）。 & 展开式按数学上的 $e^x=1+x+\tfrac{x^2}{2!}+\cdots$ 写，并注明不是逐字照抄；结论（非线性）不受影响。\\
 54:22--54:33 & 思考题的提示「你除非假定这个 $a$ 可以是负数，更好做一点」，不清楚指哪种情形，也不清楚老师说的「特别难」是哪一道。 & 原话保留并注明「我不确定他的原意」；「补充」里给出我自己的看法（未查证），不替老师下结论。\\
+79:53--82:28 & 时不变判据「$t$ 只能是 $t$」，老师没有说明 $x(t-1)$ 里的平移算不算「只是 $t$」。 & 笔记按「括号里是 $t$ 加减常数」读，并标成「补充」，等你核对老师是否这样讲。\\
+109:19--109:38 & 稳定的例题之后，老师举了一个「更复杂的数学表达式」，转写听成「$y(t)$ 等于 1 亿的 $x(t)$」，我听不出具体是什么。 & 正文只写「老师还举了一个更夸张的表达式」，没有写出式子，也不影响结论（能用 $M$ 夹住就稳定）。\\
+112:48--113:08 & 习题编号：转写听到「33 页 1-16」。 & 正文写「教材第 33 页习题 1-16」，并注明没有翻书核对。\\
+116:56--120:33 & 讲微分器因果时，转写把 $t+\Delta t$ 那个式子叫成「左极限」，又把 $\Delta t$ 的趋向听成「趋于正无穷大」。 & 按板书写：$t+\Delta t$ 是右极限，$\Delta t\to0^+$，并在笔记里注明。\\
+54:55、93:36、97:34 & 老师口述教材节号：时不变「1.6.2」、记忆「1.6.4」、可逆「1.6.6」，只听到编号，没有翻书。 & 正文只在时不变处写了「1.6.2」并注明未核对，其余没有写节号。\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -499,6 +1071,14 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但是}�
 太克展开 & 泰勒展开\\
 Y7、YT、XET、XRT、X27 & $y(t)$、$x_1(t)$、$x_2(t)$ 等（据板书）\\
 $n$ 倍的 $x(t)$ & $n\,x[n]$（据板书，是口误）\\
+实不变、十不变、十步变、识变 & 时不变；十变、识变 $\to$ 时变\\
+英国系统 & 因果系统\\
+可立、可利系统 & 可逆系统\\
+叠加器、叠加气 & 累加器（老师口头的叫法，不是转写错误）\\
+「$e$ 倍的 $x(t)$」「1 倍的 $x(t)$」（稳定、习题例题） & $e^{x(t)}$（据板书）\\
+离散微分气、微分期 & 离散微分器、微分器\\
+左极线、右极线 & 左极限、右极限\\
+「$e$ 的 $x(t)$ 加 1」（第一堂课例 2） & $e^{x(t+1)}$（据板书）\\
 \bottomrule
 \end{tabular}
 \end{center}
