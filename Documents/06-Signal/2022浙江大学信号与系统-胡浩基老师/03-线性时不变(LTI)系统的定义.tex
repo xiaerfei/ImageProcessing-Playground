@@ -1,0 +1,361 @@
+% !TeX program = xelatex
+% 编译：xelatex 03-线性时不变(LTI)系统的定义.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
+% 来源：2022 浙江大学《信号与系统》胡浩基老师，第二章「LTI 系统时域分析」开篇，教材第 35 页，视频 00:00--21:22（整段视频；视频在老师讲到「LTI 很简单」的核心句时结束）。
+\documentclass[UTF8,a4paper,11pt]{ctexart}
+\usepackage{amsmath,amssymb}
+\usepackage{geometry}
+\geometry{margin=2.4cm}
+\usepackage{xcolor}
+\usepackage{mdframed}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning,calc}
+\usepackage{float}
+
+\setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
+\setCJKsansfont{PingFang SC}
+% 行内标记：有疑问、等你对着视频核对的地方（对应文末「待核对」）
+\newcommand{\tbc}{\textcolor{red!75!black}{\textbf{【待核对】}}}
+
+\newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
+\newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
+\newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
+\newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
+\newmdenv[backgroundcolor=gray!8,linecolor=gray!60,linewidth=0.8pt,innertopmargin=5pt,innerbottommargin=5pt]{skipbox}
+\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过（补充）}\par\smallskip}{\end{skipbox}}
+
+% ---------------------------------------------------------------- 画图用的小宏
+% 一行「输入 -> 系统 -> 输出」。#1 纵坐标，#2 输入，#3 输出，#4 右侧备注（灰字）
+\newcommand{\sysline}[4]{%
+  \node[anchor=east] at (2.9,#1) {#2};
+  \draw[->,thick] (3.0,#1) -- (3.8,#1);
+  \node[draw,rounded corners=2pt,fill=blue!6,minimum width=1.3cm,minimum height=0.62cm] at (4.45,#1) {\small 系统};
+  \draw[->,thick] (5.1,#1) -- (5.9,#1);
+  \node[anchor=west] at (6.0,#1) {#3};
+  \node[anchor=west,gray!55!black,font=\footnotesize] at (9.4,#1) {#4};}
+
+\title{线性时不变（LTI）系统的定义\\\large 浙江大学 2022《信号与系统》（胡浩基）第二章开篇（教材第 35 页）听课笔记}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\begin{note}
+这份笔记由视频整理而来，来源要分清：
+\begin{itemize}[nosep]
+\item 老师的口述：来自语音转写（whisper 的 large-v3-turbo 模型，加了术语提示词）。转写仍有错字，已按黑板和上下文改正，常见的几处见文末「转写里听错的地方」；
+\item 英文术语、板书上的式子和图：来自画面（黑板）。口述和板书不一致时，以板书为准；
+\item 标注「（补充）」的内容是我自己加的，课上没讲，也没有核对书；
+\item 红色的 \tbc{} 是我拿不准、等你对着视频核对的地方，汇总在文末「待核对」一节；
+\item 这段视频只有 21 分钟，而且\textbf{结束在老师刚写完「LTI 很简单」那句核心话的时候}。老师还没展开「为什么简单」，那部分在后面的视频里，这份笔记不涉及。
+\end{itemize}
+\end{note}
+
+\section*{怎么读这篇}
+\begin{center}
+\begin{tabular}{@{}p{3.2cm}p{11.8cm}@{}}
+\toprule
+你现在的情况 & 读哪里\\
+\midrule
+只有 5 分钟 & \S1（LTI 是什么）、\S5（一页总结）。读完能回答：LTI 是什么，为什么这门课偏偏盯着它。\\
+第一遍学 & \S1 到 \S3 顺着读。\S3 里「线性只是近似」的摩擦力例子是这段最有意思的地方，\S3 最后那句「知道一个就知道全部」是整段的目的地；\S4 是和上一份笔记的对照。\\
+查英文 & \S2 的对照表（线性、时不变、因果、无记忆、可逆、稳定，各自的反面怎么说）。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==================================================================
+\section{LTI 是什么（00:00--05:55）}
+\subsection{开场}
+老师说：第一章讲完了，现在进入\textbf{第二章}，请大家翻到教材第 35 页，标题是「LTI 系统的时域分析」（黑板上写的是「LTI 系统时域分析」）。视频刚开头黑板上还留着上一堂课的那张综合判断表，老师把黑板换到一块新板面，在上面写下「LTI 系统时域分析」，才开始讲新内容。
+
+老师对这本书有个意见：\textbf{它没把「LTI 系统是什么系统」说清楚}。所以他自己先补一下。
+
+\subsection{名字怎么来的}
+\textbf{LTI} 是三个英文词各取首字母：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.2cm,minimum height=1.0cm,align=center] (a) at (0,0) {线性\\{\small \textbf{L}inear}};
+  \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.8cm,minimum height=1.0cm,align=center] (b) at (4.4,0) {时不变\\{\small \textbf{T}ime-\textbf{I}nvariant}};
+  \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.2cm,minimum height=1.0cm,align=center] (c) at (8.8,0) {系统\\{\small \textbf{S}ystem}};
+  \node[font=\Large\bfseries] (lti) at (4.4,-2.0) {L\;T\;I};
+  \draw[->,thick] (a.south) -- ($(lti.north)+(-0.6,0)$);
+  \draw[->,thick] (b.south) -- (lti.north);
+  \draw[->,thick] (c.south) -- ($(lti.north)+(0.6,0)$);
+  \node[anchor=west,gray!55!black,font=\footnotesize,align=left] at (5.4,-2.0) {中文「线性时不变系统」和\\英文 Linear Time-Invariant System\\都叫 LTI 系统};
+\end{tikzpicture}
+\caption{LTI 的字母来源。注意取的是 Linear、Time、Invariant 三个词的首字母，不是三个词的缩写拼在一起。}
+\end{figure}
+
+老师在黑板上把「线性」「时不变」「系统」圈成了三个圈，旁边写：
+\begin{remember}
+\textbf{如果一个系统既线性、又时不变，我们就叫它线性时不变系统（Linear Time-Invariant System，简称 LTI 系统）。}
+\end{remember}
+
+\begin{note}
+线性和时不变各是什么，上一份笔记（《典型的系统》）已经讲过：线性是齐次性加叠加性，时不变是输入平移多少、输出也平移多少。这里的「既……又……」就是两个条件\textbf{同时}满足。只满足一个、或者两个都不满足，就不是 LTI。
+\end{note}
+
+%==================================================================
+\section{六个性质的英文对照（02:19--05:35）}
+老师说，他前面讲的这些性质，书上虽然有中文，但后面看英文资料会碰到，所以他\textbf{「补习英语」}，把每个性质的英文都写在黑板上。下表是黑板上的内容，和老师口头考大家的「反面」：
+
+\begin{center}
+\begin{tabular}{@{}lll@{}}
+\toprule
+性质（中文） & 英文（黑板） & 反面（英文）\\
+\midrule
+线性系统 & Linear System & non-linear\\
+时不变系统 & Time-Invariant System & time-variant\\
+因果系统 & Causal System & 板书写的是 uncausal，老师没把握 \tbc\\
+无记忆系统 & Memoryless System & memory（有记忆）\\
+可逆系统 & Invertible System & 老师说「记不得」，板书没写 \tbc\\
+稳定系统 & Stable System & unstable\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+几处老师自己的说明：
+\begin{itemize}[nosep]
+\item 非线性老师写成 \texttt{non-linear}，时变写成 \texttt{time-variant}。
+\item 因果的反面：老师说「我也不知道是 an 还是 in，自己回去查一下」，板书最后写成 \texttt{uncausal}。（补充：教材和多数英文资料里更常见的写法是 \texttt{non-causal}，我没有翻书核对。）
+\item 不可逆的英文：老师说「这个我记不得，自己回去查一下」，所以黑板上没写。（补充：常用的写法是 \texttt{non-invertible}，也没有核对。）
+\item 老师先写了前五个（线性、时不变、因果、无记忆、可逆），「稳定系统（Stable System）」单独写在了下面一块黑板上，下面一列反面的英文也写在那里。
+\end{itemize}
+
+\begin{note}
+\textbf{一个小提醒}（补充）：「时变」的英文是 time-variant，老师还写过 time-varying。两者在教材里都出现，意思一样。
+\end{note}
+
+%==================================================================
+\section{为什么研究 LTI 系统：总共三个理由（05:55--21:22）}
+接下来老师问了一个问题：\textbf{为什么我们要研究 LTI 系统？}他说\textbf{LTI 系统是《信号与系统》这门课研究和关注的重点}，所以有必要先交代清楚它值得。黑板上写的大纲是：
+
+\begin{center}
+\begin{tabular}{@{}cl@{}}
+\toprule
+编号 & 问题（黑板）\\
+\midrule
+\textcircled{1} & 为什么研究线性系统？\\
+\textcircled{2} & 为什么研究时不变系统？\\
+\textcircled{3} & LTI 很简单。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+老师说：这个问题他用「两个层面」回答，然后再补一个第三点。
+\begin{itemize}[nosep]
+\item 第一个层面：为什么研究\textbf{线性}。
+\item 第二个层面：为什么研究\textbf{时不变}。
+\item 第三点：LTI 本身\textbf{很简单}。
+\end{itemize}
+
+\subsection{理由一：线性（07:04--16:38）}
+\subsubsection{先问：世界上有绝对意义的线性系统吗？（07:04--09:41）}
+老师的答案是：\textbf{没有}。他用「喇叭」来讲。把喇叭当成一个系统：输入是电流，输出是声音。
+
+\paragraph{齐次性做不到。}如果喇叭是绝对意义的线性系统，那么通 1 单位电流，声音是 1 倍大；通 2 单位，声音是 2 倍大；通 3 单位，3 倍大。这都还可以。可是通 100 单位、一万单位呢？声音还能一百倍、一万倍吗？不可能。\textbf{任何用物理材料做出来的系统都有极限}，没有办法无限增大。老师还拿自己举例：他把气提一倍，声音可能大一倍；提两倍，声音可能大两倍；但声音不可能无限大。
+
+\paragraph{叠加性也做不到。}我说一句话，同时你也说一句话，喇叭要原封不动地放出我们两个人一起说话的声音；再加一个人，要放出三个人的声音；以此类推。哪怕喇叭再好，也总有一次叠加不上去。
+
+\begin{remember}
+\textbf{世界上没有绝对意义的线性系统。}齐次性（放大 $a$ 倍就是 $a$ 倍）和叠加性（叠加就是原样叠加）在真实的物理系统里，总会在某个很大的输入上被打破，因为任何东西都有物理上的极限。
+\end{remember}
+
+\subsubsection{那为什么还研究它：线性是合理的近似（09:41--16:38）}
+老师的答案是黑板上那行大字：\textbf{「线性只是对现实问题的近似」}（口述原话是「线性只是对现实问题的合理化的近似」）。
+
+他的解释是：\textbf{与其说世界上有很多线性系统，不如说现实里的系统太复杂了，我们只好用最简单的模型——线性——去近似它}。他说这个道理他「是很久以后才自己悟出来」的。接下来举两个例子。
+
+\subsubsection{例 1：摩擦力公式 $F=\mu N$（10:40--14:57）}
+老师说，中学学过压力 $N$ 和摩擦力 $F$ 的公式（黑板上画了一块木板被拖着走，压力 $N$ 向下，摩擦力向后）：
+\[F=\mu N\qquad(\text{摩擦力公式，黑板上标注「经验公式」}).\]
+他当年看到这个公式的体会是：「物理那种很美好的属性一下子崩溃了」。他问老师为什么是这样，老师只说「它就是这样」。后来他才明白：\textbf{这是一个近似的经验公式}，不像牛顿力学那样是从基本规律推出来的。
+
+\paragraph{老师自己的一个推导（他说「这是我的理解」）。}假设摩擦力 $F$ 是压力 $N$ 的某个函数，记作 $F=S(N)$。把它在 $N=0$ 附近用\textbf{泰勒展开}(Taylor expansion)展开，黑板上写的是：
+\[
+F=S(N)\approx S(0)+S'(0)\,N+\frac{S''(0)}{2!}N^2+\cdots
+\]
+再做两个假设：
+\begin{enumerate}[nosep]
+\item 没有压力就没有摩擦力：$N=0$ 时 $F=0$，所以 $S(0)=0$；
+\item 二次及以上的高次项都近似等于 $0$（板书上把这些项圈起来，旁边写「$\approx 0$」）。
+\end{enumerate}
+于是剩下
+\[F\approx S'(0)\,N,\]
+黑板上把 $S'(0)$ 圈起来，写上「$\mu$」。也就是 \textbf{$\mu$ 就是这样来的，它等于函数在 0 点的斜率}。
+
+老师马上说：「这个假设就非常非常有问题。」为了弥补这个问题，他的中学老师是怎么讲的呢？\textbf{把摩擦力分成静摩擦和动摩擦}。物体不动时，要特别使劲拉，$\mu$ 比较大；物体运动得飞快时，$\mu$ 又会变大；\textbf{只有物体的运动在一个合理的范围里，$\mu$ 才基本是一个恒定的值}。
+
+老师在黑板上把它画成图：横轴 $N$，纵轴 $F$。真实的关系大致是一条弯曲的曲线：$N$ 小的时候陡，中间一段比较平缓，在最右边又陡起来。他在中间那一段取了一小段，说：\textbf{我们只取一个有限的范围，在这里 $\mu$ 是一个相对确定的数}。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \draw[->] (0,0) -- (5.2,0) node[below] {$N$（压力）};
+  \draw[->] (0,0) -- (0,4.4) node[left] {$F$（摩擦力）};
+  % 真实的曲线：起点陡，中间平缓，最后又陡
+  \draw[very thick,blue!60!black] plot[smooth] coordinates {(0,0) (0.25,1.0) (0.7,1.45) (1.6,1.85) (2.6,2.25) (3.4,3.0) (4.0,4.1)};
+  % 中间的线性近似
+  \draw[thick,orange!85!black] (0.9,1.37) -- (3.0,2.45);
+  \fill[orange!85!black] (1.6,1.85) circle (1.8pt);
+  \node[orange!85!black,anchor=west] at (3.05,2.4) {这一小段近似成直线，斜率就是 $\mu$};
+  \node[blue!60!black,anchor=west,font=\small] at (3.35,1.25) {真实关系：弯曲的曲线};
+  \node[gray!55!black,font=\footnotesize,anchor=west] at (0.15,3.6) {$N$ 小：陡（要使劲拉）};
+  \node[gray!55!black,font=\footnotesize,anchor=west] at (3.4,4.3) {$N$ 很大：又陡};
+\end{tikzpicture}
+\caption{摩擦力和压力的关系（我按黑板上的示意图重画的，曲线形状只是示意）。\textbf{只在中间一段，$F$ 才近似正比于 $N$。}}
+\end{figure}
+
+老师预料到有同学会说：「这种近似太不精确了吧？你怎么能武断地说后面这些都等于 0？」他的回答是：\textbf{「不然呢？」}不这样做，我们怎么出考题来考大家，怎么研究摩擦力和压力的关系？这个世界上决定一件事情的因素千变万化，\textbf{我们必须对它做一个最简单的近似，而线性就是最简单的近似。}
+
+\begin{note}
+\textbf{公式在讲什么}（补充）：泰勒展开的意思是，只要函数够光滑，在一个点附近它都可以被「一条直线 + 一个弯 + 更弯的……」一项项逼近。线性近似就是只留第一项（直线），丢掉后面所有「弯」的部分。在离那个点很近的小范围里，丢掉的部分很小，直线足够用；离得远了，丢掉的部分变大，误差就出来了，这和老师说「只在合理范围内 $\mu$ 才是常数」是同一件事。
+\end{note}
+
+\subsubsection{例 2：三极管（15:03--16:38）}
+老师说：再举一个大家可能刚学过的例子。黑板上画了一个三极管：左边一根线标 $I$，上面一根线标 $\beta I$，下面一根线标 $(\beta+1)I$。老师说，我们在电路课里常这样分析三极管——\textbf{可是实际的电流真的是这样吗？不是}（他在黑板上写了「不是」）。
+
+那为什么还这样做？因为\textbf{这样做就能分析三极管}：
+\begin{itemize}[nosep]
+\item 尽管有时候这种分析不那么精确，但如果不这样做，我们没有办法分析；
+\item 也不是完全没有办法，只是做近似的分析。在 PSPICE 或 Protel 这类软件里，三极管的建模没有这么简单，用的是更复杂的\textbf{非线性}函数方程；
+\item 但如果我们只是为了考试，或者只需要得到一个\textbf{感性的认识}，那么线性模型仍然是够用的。
+\end{itemize}
+
+\begin{remember}
+\textbf{研究线性系统的理由：}世界上没有绝对的线性系统，但\textbf{线性模型是最简单的近似}，用它我们才能把复杂的现实问题分析出来。这是工程里经常做的近似。
+\end{remember}
+
+\subsection{理由二：时不变（16:38--19:33）}
+同样先问：世界上有完全时不变的系统吗？
+
+老师先把「时不变」翻译成日常的话：\textbf{今天我输入一个信号，得到那个输出；明天我输入同样的信号，得到同样的输出；后天、大后天，以至于永永远远}（黑板上画了圈圈的 $t_0\in\mathbb{R}$，意思是平移量 $t_0$ 可以是\textbf{任意实数}），都得到同样的输出。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{今天：$x(t)$}{$y(t)$}{原信号}
+  \sysline{-1.0}{明天：$x(t-t_0)$}{$y(t-t_0)$}{同样的信号，晚了 $t_0$ 才送进去}
+  \sysline{-2.0}{后天、大后天……}{同样的输出，也晚了 $t_0$}{$t_0$ 是任意实数，永远如此}
+\end{tikzpicture}
+\caption{时不变的日常版（左边的式子是我根据上一份笔记里的定义补的，老师这一段只讲了「今天、明天、永永远远得到同样的输出」）。注意三行里的「系统」是\textbf{同一台}机器，它的脾气不随日子变。}
+\end{figure}
+
+\paragraph{绝对的时不变不存在。}老师说：如果世界上真有这种系统，我们将会有\textbf{「不老的容颜」}，所有的东西今天、明天、后天都一直保持不变。有一些东西能在比较长的时间内保持不变，但考虑到连整个宇宙都有可能毁灭，\textbf{世界上没有绝对意义的时不变系统}。
+
+\paragraph{那为什么还要假设时不变？}老师连问三句：
+\begin{enumerate}[nosep]
+\item \textbf{你不假设时不变，你又能怎么样呢？}时变就意味着系统随时间\textbf{没有规律}：今天输入得到这个结果，明天输入得到另一个结果，后天又是另一个，没有办法预测。
+\item \textbf{要研究时变系统，也必须先假定它的输出会随时间怎么变化。}不然没有办法研究。所以很多关于时变系统的研究，其实也是在做类似的事：先假定一个变化的规律。
+\item \textbf{哪怕系统是时变的，在很短的一段时间里，我们也要假设它是时不变的。}因为变化不可能完全不需要时间。老师的例子：一块肉放在空气里，隔几天会腐烂，但中间有一小段——几秒、几十秒甚至几个小时——我们可以近似认为它是时不变的。
+\end{enumerate}
+
+\begin{remember}
+\textbf{研究时不变系统的理由：}世界上没有绝对的时不变系统，但\textbf{时不变也是对自然界系统的一个近似的假设}，有时候这个近似是有用的。不假设，连研究都没法开始。
+\end{remember}
+
+老师说：我们这本书核心研究的就是这个 LTI，线性时不变系统。\textbf{「这是我们讲的为什么要研究线性时不变系统，这里有两个理由，还有第三个理由。」}
+
+\subsection{理由三：LTI 很简单（19:33--21:22）}
+老师说：第三个理由很简单，就是 \textbf{LTI 本身很简单}。简单到什么程度？他在黑板上写出了一句话（视频结束前老师写完了整句）：
+
+\begin{remember}
+\textbf{LTI 系统简单到：如果我们知道了 LTI 系统的\emph{一个} $x(t)$ 对应的 $y(t)$，那么我们就知道了\emph{所有} $x(t)$ 对应的 $y(t)$。}
+\end{remember}
+
+老师说，第二章「讲了这么多，有那么多的数学，有那么多的公式，它的核心就是这一句话」，\textbf{它在说 LTI 系统是多么简单}。
+
+\begin{note}
+\textbf{这一句话是整章的目的地。}后面的卷积、冲激响应等等，都是在回答「怎么从那一个推出所有」。这段视频到这里就结束了，老师还没有讲怎么推。
+\end{note}
+
+\begin{skippable}
+\textbf{这句话该怎么读才不会读错}（补充，课上这一段没讲，我自己的理解）：
+
+\begin{itemize}[nosep]
+\item 如果把「一个 $x(t)$」当成\textbf{随便哪一个}信号，这句话是不对的。反例：已知「输入恒为 $0$、输出恒为 $0$」这一对，对任何线性系统都成立，却什么也推不出来。
+\item 所以那「一个」应当是\textbf{挑出来的、有代表性的}信号。后面的课会讲：这个信号就是\textbf{单位冲激}(unit impulse) $\delta(t)$，它对应的输出叫\textbf{冲激响应}(impulse response)。知道了它，用线性和时不变两条性质，就能求任意输入的输出。
+\item 为什么要两条性质都满足？大致是：任意信号可以拆成许多\textbf{冲激}的叠加（要用到\textbf{线性}：叠加性和齐次性），每个冲激只是原来那个冲激\textbf{平移}了一下（要用到\textbf{时不变}）。少一条都推不出来。
+\end{itemize}
+
+以上都是预告，到后面的视频里再对照老师的讲法核对。
+\end{skippable}
+
+%==================================================================
+\section{这一段和前面一份笔记的关系}
+前一份笔记（《典型的系统》）把六个性质一个个拆开讲，讲的是\textbf{「判断一个系统有没有某个性质」}；这一段回到\textbf{「为什么要关心这些性质」}，老师做了三件事：
+
+\begin{center}
+\begin{tabular}{@{}p{3.4cm}p{11.6cm}@{}}
+\toprule
+做了什么 & 一句话\\
+\midrule
+给 LTI 下定义 & 既线性又时不变的系统，就叫 LTI 系统。\\
+补英文 & 六个性质和它们的反面，英文怎么说。\\
+讲三个理由 & 线性、时不变都不是绝对成立的，是\textbf{合理的近似}；而且 LTI \textbf{很简单}：知道一个就能知道全部。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+%==================================================================
+\section{一页总结}
+\begin{remember}
+\begin{enumerate}[nosep]
+\item \textbf{LTI 的含义}：Linear Time-Invariant System，线性时不变系统。既线性、又时不变，两个条件同时满足。
+\item \textbf{英文}：线性 Linear / non-linear；时不变 Time-Invariant / time-variant；因果 Causal / （老师没把握，板书 uncausal，常见写法 non-causal）；无记忆 Memoryless / memory；可逆 Invertible / （老师没写）；稳定 Stable / unstable。
+\item \textbf{LTI 是这门课的重点}，因为有三个理由：
+  \begin{itemize}[nosep]
+  \item 线性：世界上没有绝对的线性系统（喇叭放不出无限大的声音），线性只是对现实的合理近似，摩擦力 $F=\mu N$ 和三极管电流都是例子；
+  \item 时不变：世界上没有绝对的时不变系统（否则人不会老），但不假设就没法研究；短时间内近似不变，也是合理的近似；
+  \item LTI \textbf{很简单}：知道一个 $x(t)$ 对应的 $y(t)$，就知道所有 $x(t)$ 对应的 $y(t)$（那「一个」到底是哪个，后面讲）。
+  \end{itemize}
+\item \textbf{老师的态度}：近似不是缺点。「不然呢？」——不做最简单的近似，复杂的现实问题就没法分析。
+\end{enumerate}
+\end{remember}
+
+%==================================================================
+\section*{待核对：转写听不清或口述含糊的地方}
+下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
+\begin{center}
+\begin{tabular}{@{}p{2.4cm}p{6.2cm}p{6.2cm}@{}}
+\toprule
+视频位置 & 听不清的内容 & 笔记里现在的处理\\
+\midrule
+00:00--00:20 & 老师说「请大家翻到第三十五页」，转写把「时域分析」听成「食欲分析」。 & 按黑板写「LTI 系统时域分析」；页码按口述写 35，没有翻书核对。\\
+04:45--05:05 & 因果的反面：老师说「不知道是 an 还是 in」，转写听成「on-coil-coil」之类，板书写 \texttt{uncausal}。 & 表里照板书写，并注明老师没把握，补充了常见写法 \texttt{non-causal}（没有核对）。\\
+05:11--05:30 & 不可逆的英文：老师说「记不得，自己回去查」。 & 表里写「老师没写」，补充 \texttt{non-invertible}（没有核对）。\\
+13:40--14:20 & 摩擦力的 $F$--$N$ 曲线：老师口述「大致是一个这样的函数」，转写没有说明曲线形状；板书是一条先陡后缓再陡的曲线，中间画了两个点。 & 图是按板书的示意重画的，形状只是示意，没有给数值。\\
+15:03--15:36 & 三极管：转写把三个极听成「原级、三级和漏级」，板书只有三根线上的 $I$、$\beta I$、$(\beta+1)I$ 和「不是」，没有标极名。老师还说「$\beta$ 叫做一个什么参数，我记不得了」。 & 正文只写三根线上的电流标注，没有写哪根线对应基极、集电极、发射极。\\
+19:42--21:22 & 老师写「如果我们知道 LTI 系统的一个 $x(t)$ 对应的 $y(t)$，那么我们就知道所有 $x(t)$ 对应的 $y(t)$」，没有说那「一个」是哪个。 & 正文照板书写，并在「补充」框里写了我的理解（应当是冲激，随便一个不行），等后面的视频核对老师怎么讲。\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\section*{转写里听错的地方（对照用）}
+\begin{center}
+\begin{tabular}{@{}ll@{}}
+\toprule
+转写原文 & 实际应是\\
+\midrule
+食欲分析 & 时域分析\\
+实不变、十不变系统 & 时不变系统\\
+其次性 & 齐次性\\
+英国（「接下来英国」） & 因果\\
+可力、可利、不可利 & 可逆、不可逆\\
+近视（「线性只是对现实问题的近视」） & 近似\\
+刘顿力学 & 牛顿力学\\
+近摩擦力 & 静摩擦力\\
+三级管 & 三极管\\
+原级、三级和漏级 & 三个极（具体哪三个我不确定，见待核对）\\
+我孕育我要讲课 & 我要讲课（口误，前后文是「我把气提升一倍」）\\
+杨杨杀杀杀讲了这么多 & 第二章讲了这么多（据上下文，未核对）\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\end{document}
