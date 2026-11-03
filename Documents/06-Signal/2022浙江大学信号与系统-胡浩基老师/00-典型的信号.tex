@@ -1260,7 +1260,7 @@ $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有
 
 这叫\textbf{弱收敛}：不是「每一点的函数值收敛」，而是「放进每一个探针，输出都收敛」。逐点看，$\delta_\Delta(0)$ 是 $1/\Delta\to\infty$ 的，根本不收敛；但用探针一试，它收敛得很好。这也解释了为什么\textbf{换成三角形、高斯曲线等别的窄脉冲，只要面积是 $1$、宽度趋于 $0$，结果都一样}：探针看到的只是「面积 $1$、集中在 $0$」这件事。
 
-\subsection*{A.5 第五步：广义导数——解释 $\delta(t)=\dfrac{\d u(t)}{\d t}$}\phantomsection\addcontentsline{toc}{subsection}{A.5 第五步：广义导数——解释 δ(t)=du(t)/dt}
+\subsection*{A.6 第五步：广义导数——解释 $\delta(t)=\dfrac{\d u(t)}{\d t}$}\phantomsection\addcontentsline{toc}{subsection}{A.6 第五步：广义导数——解释 δ(t)=du(t)/dt}
 先看普通函数。对光滑的 $f$，用分部积分（探针在两头为 $0$，边界项消失）：
 \[
 \int f'(t)\varphi(t)\d t=-\int f(t)\varphi'(t)\d t .
@@ -1286,21 +1286,21 @@ $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有
 \item 一个信号在 $t_0$ 处有向上跳变 $A$，它的广义导数 $=$ 普通导数（$t\neq t_0$ 处的斜率）$+\ A\,\delta(t-t_0)$。正文里的 $5\delta(t)$、$\delta(t-2)$ 都是它的特例。
 \end{itemize}
 
-\subsection*{A.6 第六步：回答老师留的悬念——为什么 $u(0)$ 可以取任意值}\phantomsection\addcontentsline{toc}{subsection}{A.6 第六步：回答老师留的悬念——为什么 u(0) 可以取任意值}
+\subsection*{A.7 第六步：回答老师留的悬念——为什么 $u(0)$ 可以取任意值}\phantomsection\addcontentsline{toc}{subsection}{A.7 第六步：回答老师留的悬念——为什么 u(0) 可以取任意值}
 广义函数是靠「积分的结果」来识别的。如果两个普通函数只在\textbf{一个点（或有限个点）}上不同，那么对任何探针 $\varphi$，$\int f\varphi\d t$ 的结果完全一样，因为一个点的「宽度」是零，对积分没有贡献。所以这两个函数产生的是\textbf{同一台机器}，也就是同一个广义函数。
 
 $u(0)$ 取 $0$、$\tfrac12$、$1$ 甚至 $-1$，只改变了 $t=0$ 这一个点的值，机器完全不变，所以信号与系统里它是「可以任取」的。\emph{（这是我的解释；老师说第二章会讲，我猜他讲的就是这件事，但没有证据，不能当成老师的原话。）}
 
 反过来，这也说明了一个重要的限制：\textbf{广义函数没有「某一点的值」这回事}。问「$\delta(0)$ 等于几」本身就是没意义的问题，正文里写的「$t=0$ 处为 $+\infty$」只是帮助想象的说法。
 
-\subsection*{A.7 几条要小心的限制}\phantomsection\addcontentsline{toc}{subsection}{A.7 几条要小心的限制}
+\subsection*{A.8 几条要小心的限制}\phantomsection\addcontentsline{toc}{subsection}{A.8 几条要小心的限制}
 \begin{itemize}
 \item \textbf{没有点值}：见上，不能问 $\delta(t_0)$ 是多少。
 \item \textbf{不能随便相乘}：$\delta(t)\cdot\delta(t)$ 没有意义（两个广义函数一般不能相乘）。但「广义函数 $\times$ 光滑函数」是可以的，比如 $f(t)\delta(t)=f(0)\delta(t)$（$f$ 光滑），这是筛选性质的另一种写法。
 \item \textbf{「连续、间断」这类说法用不上}：这是逐点的概念，而广义函数不逐点定义。
 \end{itemize}
 
-\subsection*{A.8 小结}\phantomsection\addcontentsline{toc}{subsection}{A.8 小结}
+\subsection*{A.9 小结}\phantomsection\addcontentsline{toc}{subsection}{A.9 小结}
 \begin{center}
 \begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.3\textwidth}}
 \toprule
