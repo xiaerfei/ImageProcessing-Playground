@@ -11,6 +11,8 @@
 \usepackage{enumitem}
 \usepackage{tikz}
 \usepackage{float}
+\usepackage[hidelinks,unicode,bookmarksnumbered,bookmarksopen=true,bookmarksopenlevel=2,pdftitle={信号的自变量变换}]{hyperref}
+\usepackage{bookmark}% XeTeX 下 hyperref 自带的大纲不生效，用 bookmark 宏包生成 PDF 书签（需编译两遍）
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
@@ -82,6 +84,35 @@
 \newcommand{\stem}[2]{\draw[thick,blue!70!black] (#1,0) -- (#1,#2); \fill[blue!70!black] (#1,#2) circle (1.8pt);}
 \newcommand{\stemzero}[1]{\fill[blue!70!black] (#1,0) circle (1.4pt);}
 
+% ---------------------------------------------------------------- 标题层级
+% 章(section)、小节(subsection)：深蓝；三级标题(subsubsection)、小标题(paragraph)：青色；例题：橙色徽章。
+\definecolor{secblue}{RGB}{31,78,121}
+\definecolor{exorange}{RGB}{190,90,10}
+\definecolor{ptteal}{RGB}{0,110,110}
+\ctexset{
+  section={format=\raggedright\Large\bfseries\color{secblue},
+           beforeskip=3.2ex plus 1ex minus .5ex, afterskip=1.4ex,
+           aftertitle={\par\nobreak\vspace{-1.1ex}\noindent\textcolor{secblue}{\rule{\linewidth}{0.8pt}}\par\nobreak\vspace{0.6ex}}},
+  subsection={format=\raggedright\large\bfseries\color{secblue},
+              beforeskip=2.4ex plus .8ex minus .4ex, afterskip=1.0ex},
+  subsubsection={format=\raggedright\normalsize\bfseries\color{ptteal},
+                 beforeskip=1.8ex plus .5ex minus .3ex, afterskip=0.8ex}
+}
+% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+\newcounter{ex}[section]
+\newcommand{\example}[3]{%
+  \refstepcounter{ex}\phantomsection
+  \addcontentsline{toc}{subsubsection}{例 \theex\ #1（#2）}%
+  \par\addvspace{1.6ex}\noindent
+  {\setlength{\fboxsep}{3pt}%
+   \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
+   \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
+   \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
+  \nopagebreak\addvspace{0.6ex}}
+% 小标题（接着同一段往下写，不进大纲）：青色三角 + 粗体。把原来的黑色粗体 \paragraph 统一换成它，避免被当成章节。
+\newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
+\renewcommand{\paragraph}[1]{\point{#1}}
+
 \title{信号的自变量变换\\\large 浙江大学 2022《信号与系统》（胡浩基）§1.4.2 听课笔记}
 \author{}
 \date{}
@@ -117,7 +148,7 @@
 \end{enumerate}
 \end{remember}
 
-\subsection{例 1：三角波的 $x(3t+6)$ 与 $x(-3t+6)$}
+\subsection{\texorpdfstring{例 1：三角波的 $x(3t+6)$ 与 $x(-3t+6)$}{例 1：三角波的 x(3t+6) 与 x(-3t+6)}}
 题目：已知 $x(t)$ 是下面的三角波：$t\in[0,3]$ 上升、$t\in[3,6]$ 下降，最高点高度为 $1$。画出 $x(3t+6)$ 和 $x(-3t+6)$。老师说这是「高中的知识，只是做得快慢的问题」。
 
 \begin{figure}[H]
@@ -231,7 +262,7 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 一个容易踩的坑（补充）：先化成标准形式，再按「翻转 $\to$ 压缩或拉伸 $\to$ 平移」的顺序做，平移量是 $b/a$，不是 $b$。如果坚持先平移再压缩，平移量就是 $b$（即 $x(t+6)$，再压缩 $3$ 倍），结果相同，但很容易搞错，所以老师把「先化成标准形式」放在第一条。
 \end{note}
 
-\subsection{例 2：$x\bigl(-\tfrac12t+1\bigr)$}
+\subsection{\texorpdfstring{例 2：$x\bigl(-\tfrac12t+1\bigr)$}{例 2：x(-t/2+1)}}
 这是老师抽同学上来做的第二道题。\textbf{注意}：转写里把它听成了「$x(-2t+1)$」，但 PPT 上写的是 $x\bigl(-\tfrac12t+1\bigr)$（画面里能看到分数 $\tfrac12$），所以以画面为准。
 
 已知 $x(t)$ 是一个直角三角形：在 $t=-1$ 处有一条竖直边（高 $2$），斜边向右下落到 $t=0$ 处的 $0$。老师说那位同学的答案和他的完全一样（课堂上没有读出具体数值）。下面是我按四步口诀算出来的：
@@ -262,7 +293,7 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 \caption{$x(-\frac12t+1)$ 的四步。}
 \end{figure}
 
-\subsection{例 3：反过来做——已知 $x(3-2t)$，求 $x(t)$}
+\subsection{\texorpdfstring{例 3：反过来做——已知 $x(3-2t)$，求 $x(t)$}{例 3：反过来做——已知 x(3-2t)，求 x(t)}}
 这道题「反过来了」：给的是变换\emph{之后}的波形，要画\emph{原来}的 $x(t)$。老师说你知道套路就不难。
 
 题目给的 $x(3-2t)$ 的波形（PPT 上）：$t\in[2,3]$ 上高度 $1$，$t\in[3,4]$ 上高度 $2$，其余为 $0$。
@@ -344,7 +375,7 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 
 \paragraph{书上的练习。}老师说书上第 31 页的习题 1-7 和 1-8 都是这类题，也都布置给了大家，回去自己练习。
 
-\subsection{单独看一次：时间尺度变换 $x(at)$}
+\subsection{\texorpdfstring{单独看一次：时间尺度变换 $x(at)$}{单独看一次：时间尺度变换 x(at)}}
 \textbf{（补充：这一节是我把口诀的「第三句」单独拿出来画图说明，课上老师讲的是它的用法，没有专门展开，下面的结论我都用定义验算过。）}
 
 只做「压缩或拉伸」而不翻转、不平移的变换，叫\textbf{时间尺度变换}（time scaling）：$x(t)\to x(at)$，$a>0$。口诀第三句说的就是它：
@@ -477,7 +508,7 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 \item \textbf{离散情形要小心}：$x[2n]$ 会丢掉点，$x[n/2]$ 在奇数处没有定义（前面离散一节提过），所以课上老师说离散里基本只用 $\pm1$。
 \end{enumerate}
 
-\subsection{单独看一次：翻转变换 $x(-t)$}
+\subsection{\texorpdfstring{单独看一次：翻转变换 $x(-t)$}{单独看一次：翻转变换 x(-t)}}
 \textbf{（补充：这一节和上一节一样，是我把口诀第二句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
 
 只把 $t$ 换成 $-t$ 的变换叫\textbf{翻转}（time reversal）：$x(t)\to x(-t)$。口诀第二句「前有负号翻转」说的就是它。要点只有两条：
@@ -582,7 +613,7 @@ x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
 
 \paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(-t)$ 就是\textbf{倒放}（录音从后往前播）。时间上的翻转是一个数学操作；真实世界里的信号不能真的「倒着发生」，但处理已经录好的数据时可以做。我没有核对书，这是我的类比。
 
-\subsection{单独看一次：平移变换 $x(t-t_0)$}
+\subsection{\texorpdfstring{单独看一次：平移变换 $x(t-t_0)$}{单独看一次：平移变换 x(t-t0)}}
 \textbf{（补充：这一节和前两节一样，是我把口诀第四句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
 
 只做平移的变换：$x(t)\to x(t-t_0)$。口诀第四句「加号左移，减号右移」说的就是它：
@@ -720,7 +751,7 @@ y(t)=x(t)+\tfrac12\,x(t-8)
 
 \paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，前面例 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
 
-\subsection{组合变换：翻转、平移、压缩一起出现 $x(at+b)$}
+\subsection{\texorpdfstring{组合变换：翻转、平移、压缩一起出现 $x(at+b)$}{组合变换：翻转、平移、压缩一起出现 x(at+b)}}
 \textbf{（补充：这一节是我把前面三小节合起来画图总结，课上老师是用例题讲的，结论我都用定义验算过。）}
 
 前面把口诀的二、三、四句分别拆开看过了。现在把它们放到一起：一般的自变量变换是 $x(at+b)$，其中 $a$ 可正可负，$b$ 是常数。
@@ -832,7 +863,7 @@ t=\frac{p-b}{a}
 \caption{离散情形不能随便缩放。上：$x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$）。中：$x[2n]$ 取 $x[-2],x[0],x[2]$，放在 $n=-1,0,1$，奇数位置的 $x[-1],x[1],x[3]$ 被丢掉了。下：$x[n/2]$ 把 $x[k]$ 放到 $n=2k$ 处，奇数 $n$ 要读 $x$ 在半整数处的值，没有定义。}
 \end{figure}
 
-\subsection{例：$x[n-3]$ 与 $x[4-n]$}
+\subsection{\texorpdfstring{例：$x[n-3]$ 与 $x[4-n]$}{例：x[n-3] 与 x[4-n]}}
 已知 $x[n]$：$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0]=x[1]=x[2]=x[3]=1$，其余为 $0$。
 
 \textbf{$x[n-3]$}：已经是标准形式；$n$ 前面没有负号，系数是 $1$，不用翻转也不用压缩；减号右移 $3$。形状不变，把坐标改一改：原来 $-2,-1$ 的点移到 $1,2$，原来 $0,1,2,3$ 的点移到 $3,4,5,6$。老师的大意：$x[n-3]$ 就是右移三个单位，形状都不变，把坐标改一改就可以了。
@@ -890,7 +921,7 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 \section{有了变换的概念，再看熟悉的信号}
 老师说：脑子里有了「信号翻转过来翻转过去、放大缩小、移来移去」的概念之后，对信号的看法会不一样。下面是他举的几个例子。
 
-\subsection{$\Sa(\omega t)$ 与 $\dfrac{\sin\omega t}{t}$}
+\subsection{\texorpdfstring{$\Sa(\omega t)$ 与 $\dfrac{\sin\omega t}{t}$}{Sa(ωt) 与 sin(ωt)/t}}
 已知 $\Sa(t)=\dfrac{\sin t}{t}$，画 $\Sa(\omega t)=\dfrac{\sin\omega t}{\omega t}$（$\omega>0$）。只用第三条口诀：系数是 $\omega$，$\omega>1$ 就压缩 $\omega$ 倍。原来的零点 $\pm\pi,\pm2\pi,\dots$ 变成 $\pm\dfrac{\pi}{\omega},\pm\dfrac{2\pi}{\omega},\dots$，峰高仍是 $1$。
 
 老师接着说：前一节课让大家画的是 $\dfrac{\sin\omega t}{t}$，这个式子就是 $\omega\cdot\Sa(\omega t)$，所以只要把 $\Sa(\omega t)$ 再\textbf{乘一个 $\omega$}，峰高就是 $\omega$。这与上一份笔记里「峰高 $\omega$，零点 $\pm k\pi/\omega$」的结论一致。
@@ -917,7 +948,7 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 \caption{取 $\omega=2$。灰：$\Sa(t)$，零点在 $\pm\pi,\pm2\pi,\dots$；红：$\Sa(2t)$，零点向纵轴靠拢到 $\pm\frac\pi2,\pm\pi,\dots$，峰高仍是 $1$；蓝：$\dfrac{\sin2t}{t}=2\Sa(2t)$，零点和红线相同，峰高变成 $2$。}
 \end{figure}
 
-\subsection{第五章的例子：$X(\omega/T)$}
+\subsection{\texorpdfstring{第五章的例子：$X(\omega/T)$}{第五章的例子：X(ω/T)}}
 老师说第五章会碰到一个标准的例子：$X(\omega)$ 是一个带限信号（band-limited signal，只在 $[-\omega_0,\omega_0]$ 上有值，其他地方为 $0$），峰值（$\omega=0$ 处）为 $E$。问：$X\bigl(\tfrac{\omega}{T}\bigr)$ 是什么形状？答案：\textbf{峰值仍是 $E$}，两个端点从 $\pm\omega_0$ 变成 $\pm T\omega_0$。这就是第三条口诀：系数 $\tfrac1T$，$T>1$ 时系数小于 $1$，是拉伸。\emph{（课堂口述把 $X(\omega/T)$ 听成了「$X\omega$ 除以 $T$」，黑板上写的是 $X(\frac{\omega}{T})$，所以我按黑板写。黑板图没有写 $T$ 的具体值。）}
 
 \begin{figure}[H]
@@ -945,7 +976,7 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 \caption{$X(\omega/T)$ 是 $X(\omega)$ 沿 $\omega$ 轴拉伸 $T$ 倍：峰值不变，宽度变成 $T$ 倍。左边的钟形只是示意，黑板上的具体形状同为一个拱形。}
 \end{figure}
 
-\subsection{阶跃函数 $u(t)$ 的自变量变换}
+\subsection{\texorpdfstring{阶跃函数 $u(t)$ 的自变量变换}{阶跃函数 u(t) 的自变量变换}}
 \textbf{（补充：这一节是我为了把口诀用到最简单的信号上写的，课上老师只讲了 $u(t-t_0)$ 的右移，其余几个是我按口诀推的，笔记里的结论我自己都用定义验算过。）}
 
 $u(t)$ 只有一个「跳变」：括号里的数大于 $0$ 时为 $1$，小于 $0$ 时为 $0$。所以对 $u(at+b)$ 有一个最省事的办法，不用画中间步骤：
@@ -994,7 +1025,7 @@ $u(-2t+4)$ & $t=2$ & \textbf{左侧}（$-2t+4>0\iff t<2$） & 标准形式 $u(-2
 
 \paragraph{离散情形的一个区别。}$u[n]$ 在 $n=0$ 处\textbf{有确定的值 $1$}，所以 $u[-n]$ 在 $n\le0$ 上是 $1$（包含 $n=0$），$u[n-3]$ 在 $n\ge3$ 上是 $1$（包含 $n=3$）。连续的 $u(t)$ 跳变点处的值不规定，离散的没有这个问题（前面 $u[n+2]-u[n-3]$ 一题里，边界点的处理就是靠这一点）。
 
-\subsection{单位阶跃序列 $u[n]$ 的自变量变换}
+\subsection{\texorpdfstring{单位阶跃序列 $u[n]$ 的自变量变换}{单位阶跃序列 u[n] 的自变量变换}}
 \textbf{（补充：这一节和上一节一样，是我按口诀推的，课上老师只在窗函数里用到了 $u[n-N]$、$u[n+2]$、$u[n-3]$。结论我都用定义验算过。）}
 
 $u[n]$ 的定义是 $n\ge0$ 时为 $1$，$n<0$ 时为 $0$。所以对 $u[n+b]$ 或 $u[-n+b]$ 也可以用同一个最省事的办法：

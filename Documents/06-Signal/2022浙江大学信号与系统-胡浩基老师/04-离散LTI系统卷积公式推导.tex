@@ -12,6 +12,8 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{float}
+\usepackage[hidelinks,unicode,bookmarksnumbered,bookmarksopen=true,bookmarksopenlevel=2,pdftitle={离散 LTI 系统卷积公式推导}]{hyperref}
+\usepackage{bookmark}% XeTeX 下 hyperref 自带的大纲不生效，用 bookmark 宏包生成 PDF 书签（需编译两遍）
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
@@ -52,6 +54,35 @@
   \node[font=\footnotesize,above] at (7.4,{#1+0.5}) {LTI};
   \stemat{10.6}{#1}{#4}{#5}{#9}
   \node[anchor=west,font=\footnotesize,text width=2.4cm] at (12.9,{#1+0.7}) {#8};}
+
+% ---------------------------------------------------------------- 标题层级
+% 章(section)、小节(subsection)：深蓝；三级标题(subsubsection)、小标题(paragraph)：青色；例题：橙色徽章。
+\definecolor{secblue}{RGB}{31,78,121}
+\definecolor{exorange}{RGB}{190,90,10}
+\definecolor{ptteal}{RGB}{0,110,110}
+\ctexset{
+  section={format=\raggedright\Large\bfseries\color{secblue},
+           beforeskip=3.2ex plus 1ex minus .5ex, afterskip=1.4ex,
+           aftertitle={\par\nobreak\vspace{-1.1ex}\noindent\textcolor{secblue}{\rule{\linewidth}{0.8pt}}\par\nobreak\vspace{0.6ex}}},
+  subsection={format=\raggedright\large\bfseries\color{secblue},
+              beforeskip=2.4ex plus .8ex minus .4ex, afterskip=1.0ex},
+  subsubsection={format=\raggedright\normalsize\bfseries\color{ptteal},
+                 beforeskip=1.8ex plus .5ex minus .3ex, afterskip=0.8ex}
+}
+% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+\newcounter{ex}[section]
+\newcommand{\example}[3]{%
+  \refstepcounter{ex}\phantomsection
+  \addcontentsline{toc}{subsubsection}{例 \theex\ #1（#2）}%
+  \par\addvspace{1.6ex}\noindent
+  {\setlength{\fboxsep}{3pt}%
+   \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
+   \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
+   \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
+  \nopagebreak\addvspace{0.6ex}}
+% 小标题（接着同一段往下写，不进大纲）：青色三角 + 粗体。把原来的黑色粗体 \paragraph 统一换成它，避免被当成章节。
+\newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
+\renewcommand{\paragraph}[1]{\point{#1}}
 
 \title{离散 LTI 系统的卷积公式推导\\\large 浙江大学 2022《信号与系统》（胡浩基）第二章（教材第 45 页 2.2 节）听课笔记}
 \author{}
@@ -278,7 +309,7 @@ $-\delta[n-2]$ 的输出 & $0$ & $0$ & $0$ & $-1$ & $-1$ & $-2$ & $1$\\
 卷积怎么用简便方法算，老师说在书上 45 页的 2.2 节，他会相对详细地讲。
 
 %==================================================================
-\section{两个判断题：$h[n]$ 是 LTI 系统的「唯一标识」（37:00--40:26）}
+\section{\texorpdfstring{两个判断题：$h[n]$ 是 LTI 系统的「唯一标识」（37:00--40:26）}{两个判断题：h[n] 是 LTI 系统的「唯一标识」（37:00--40:26）}}
 在讲怎么算之前，老师出了判断题：
 
 \textbf{题 A}：如果两个 LTI 系统的 $h[n]$（单位脉冲响应）一样，那么这两个 LTI 系统是完全一样的。对还是错？
@@ -306,7 +337,7 @@ $-\delta[n-2]$ 的输出 & $0$ & $0$ & $0$ & $-1$ & $-1$ & $-2$ & $1$\\
 \section{第一种算法：列表法（40:39--50:25）}
 老师说：怎么算 $x[n]\ast h[n]$？有\textbf{两种方法}，先讲第一种，叫\textbf{列表法}。他还是用前面那道题（$x=(3,2,1,-1)$ 在 $n=-1..2$，$h=(1,1,2,-1)$ 在 $n=-1..2$）。黑板上记的步骤是：\ \textcircled{1}确定 $y[n]=x[n]\ast h[n]$ 的取值范围；\ \textcircled{2}列表；\ \textcircled{3}竖着加起来。
 
-\subsection{第一步：确定 $y[n]$ 有值的范围}
+\subsection{\texorpdfstring{第一步：确定 $y[n]$ 有值的范围}{第一步：确定 y[n] 有值的范围}}
 \begin{remember}
 $y[n]$ 的\textbf{最左边} $=$ $x[n]$ 的最左边 $+$ $h[n]$ 的最左边；\\
 $y[n]$ 的\textbf{最右边} $=$ $x[n]$ 的最右边 $+$ $h[n]$ 的最右边。
@@ -490,7 +521,7 @@ x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].
 \end{remember}
 这就是卷积的\textbf{定义式}。老师说：有了它，就有了另一种算卷积的方法，叫\textbf{卷积公式法}（见 \S7）。但他先来\textbf{证明}这个公式。
 
-\subsection{第一步：把 $x[n]$ 写成脉冲的和（81:17--84:50）}
+\subsection{\texorpdfstring{第一步：把 $x[n]$ 写成脉冲的和（81:17--84:50）}{第一步：把 x[n] 写成脉冲的和（81:17--84:50）}}
 老师说：整个证明里最难懂的是这个式子，它在第一章讲过：
 \[
 x[n]=\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k].
@@ -680,7 +711,7 @@ y[n]=(1+a+\cdots+a^n)u[n]=\frac{1-a^{n+1}}{1-a}u[n],
 \end{remember}
 
 %==================================================================
-\section*{待核对：转写听不清或口述含糊的地方}
+\section*{待核对：转写听不清或口述含糊的地方}\phantomsection\addcontentsline{toc}{section}{待核对：转写听不清或口述含糊的地方}
 下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
 \begin{center}
 \begin{tabular}{@{}p{2.4cm}p{6.2cm}p{6.2cm}@{}}
@@ -702,7 +733,7 @@ y[n]=(1+a+\cdots+a^n)u[n]=\frac{1-a^{n+1}}{1-a}u[n],
 \end{tabular}
 \end{center}
 
-\section*{转写里听错的地方（对照用）}
+\section*{转写里听错的地方（对照用）}\phantomsection\addcontentsline{toc}{section}{转写里听错的地方（对照用）}
 \begin{center}
 \begin{tabular}{@{}ll@{}}
 \toprule
