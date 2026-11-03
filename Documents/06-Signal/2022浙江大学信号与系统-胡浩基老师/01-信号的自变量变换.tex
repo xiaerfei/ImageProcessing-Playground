@@ -108,7 +108,7 @@
    \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
    \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
    \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
-  \nopagebreak\addvspace{0.6ex}}
+  \nobreak\vskip0.6ex\relax\csname @afterheading\endcsname}
 % 小标题（接着同一段往下写，不进大纲）：青色三角 + 粗体。把原来的黑色粗体 \paragraph 统一换成它，避免被当成章节。
 \newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
 \renewcommand{\paragraph}[1]{\point{#1}}
@@ -124,7 +124,7 @@
 这份笔记由视频整理而来，来源要分清：
 \begin{itemize}[nosep]
 \item 老师的口述：来自语音转写。这次直接用 whisper 的 large-v3-turbo 模型（关闭上下文复用、加了术语提示词）转写，没有出现复读，错字很少；
-\item 题目里的图和数字：来自画面（PPT 与黑板截图）。个别题目的口述与画面不一致时，以画面为准（见例 2，\S2.3）；
+\item 题目里的图和数字：来自画面（PPT 与黑板截图）。个别题目的口述与画面不一致时，以画面为准（见 \S\ref{sec:ex-teacher} 的例~\ref{ex:half}）；
 \item 标注「（补充）」的内容是我自己加的，课上没讲，或我没有核对书。
 \end{itemize}
 \end{note}
@@ -135,9 +135,12 @@
 
 老师这节课的做法很特别：书上（第 23 页，1.4.2）讲得比较抽象，所以他\textbf{用做题的方式来讲}，并给出\textbf{四句口诀}。这四句口诀是本节要背的核心。
 
-%==================================================================
-\section{四句口诀}
+这份笔记按「概念$\to$证明$\to$例题」重排（课上老师是先做题、再带出口诀的）：先讲四句口诀和三种基本变换（\S\ref{sec:cont}），再证明口诀为什么对，最后是例题；离散信号、阶跃信号、窗、脉冲的和各自成一节。
 
+%==================================================================
+\section{连续信号的自变量变换}\label{sec:cont}
+
+\subsection{概念：四句口诀}
 \begin{remember}
 做这类题目的口诀（课件原文）：
 \begin{enumerate}[nosep]
@@ -148,7 +151,304 @@
 \end{enumerate}
 \end{remember}
 
-\subsection{\texorpdfstring{例 1：三角波的 $x(3t+6)$ 与 $x(-3t+6)$}{例 1：三角波的 x(3t+6) 与 x(-3t+6)}}
+口诀的第一句管起步（化成标准形式），第二、三、四句各管一种基本变换：翻转、压缩或拉伸、平移。下面先把这三种变换逐个看清。
+
+\subsection{\texorpdfstring{概念：翻转变换~$x(-t)$（口诀第二句）}{概念：翻转变换 x(-t)（口诀第二句）}}
+\textbf{（补充：这一节是我把口诀第二句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
+
+只把 $t$ 换成 $-t$ 的变换叫\textbf{翻转}（time reversal）：$x(t)\to x(-t)$。口诀第二句「前有负号翻转」说的就是它。要点只有两条：
+\begin{itemize}[nosep]
+\item \textbf{以纵轴（$t=0$）为对称轴做镜像}：原来在 $t=p$ 处的点，变到 $t=-p$ 处，纵轴的值不变；
+\item \textbf{$t=0$ 处的点不动}（$x(-0)=x(0)$）。
+\end{itemize}
+翻转两次回到原来的信号：$x(-(-t))=x(t)$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.05);
+  \draw[dashed,gray] (0,-0.1) -- (0,1.05);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black]  (-6,0) -- (-3,1) -- (0,0);
+  \foreach \k in {-6,-3,3,6} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  \draw[<->,gray] (-3,1.12) -- (3,1.12);
+  \node[gray,font=\scriptsize,anchor=south] at (0,1.2) {镜像};
+  \node[blue!70!black,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
+  \node[red!70!black,font=\small,anchor=east] at (-4.6,0.85) {$x(-t)$};
+\end{tikzpicture}
+\caption{翻转：蓝色 $x(t)$ 的三个关键点 $0,3,6$ 变成红色 $x(-t)$ 的 $0,-3,-6$，纵轴值不变，整体以纵轴为对称轴镜像。}
+\end{figure}
+
+\paragraph{翻转和「偶、奇信号」是同一回事。}第一份笔记里「偶信号 $x(t)=x(-t)$」「奇信号 $x(t)=-x(-t)$」，用现在的话说就是：\textbf{翻转之后和原信号相同的是偶信号，翻转之后和原信号相差一个负号的是奇信号。}任何信号的偶部和奇部也都是靠翻转造出来的：
+\[
+x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
+\]
+下图用上面的三角波 $x(t)$ 演示：$x(t)$ 本身不是偶的也不是奇的，它的偶部是「$x(t)$ 与翻转后的 $x(-t)$ 取平均」，两个半高度的三角形左右对称；奇部是「相减再除 $2$」，右边是正的、左边是负的，关于原点反对称。
+
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x(t)$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,green!50!black] (-6,0) -- (-3,0.5) -- (0,0) -- (3,0.5) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_e(t)$：偶部（关于纵轴对称）};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.32\textwidth}\centering
+\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
+  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.7) -- (0,1.3);
+  \draw[very thick,orange!85!black] (-6,0) -- (-3,-0.5) -- (0,0) -- (3,0.5) -- (6,0);
+  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_o(t)$：奇部（关于原点反对称）};
+\end{tikzpicture}
+\end{minipage}
+\caption{用翻转造出偶部与奇部：$x(t)=x_e(t)+x_o(t)$。偶部和奇部的峰高都是 $\tfrac12$。（验算：$t=3$ 时 $x_e=\tfrac{1+0}{2}=\tfrac12$，$x_o=\tfrac{1-0}{2}=\tfrac12$，加起来是 $1$；$t=-3$ 时 $x_e=\tfrac12$，$x_o=-\tfrac12$，加起来是 $0$，与 $x(-3)=0$ 一致。）}
+\end{figure}
+
+\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(-t)$ 就是\textbf{倒放}（录音从后往前播）。时间上的翻转是一个数学操作；真实世界里的信号不能真的「倒着发生」，但处理已经录好的数据时可以做。我没有核对书，这是我的类比。
+\subsection{\texorpdfstring{概念：时间尺度变换~$x(at)$（口诀第三句）}{概念：时间尺度变换 x(at)（口诀第三句）}}
+\textbf{（补充：这一节和上一节一样，是我把口诀的「第三句」单独拿出来画图说明，课上老师讲的是它的用法，没有专门展开，下面的结论我都用定义验算过。）}
+
+只做「压缩或拉伸」而不翻转、不平移的变换，叫\textbf{时间尺度变换}（time scaling）：$x(t)\to x(at)$，$a>0$。口诀第三句说的就是它：
+\begin{itemize}[nosep]
+\item $a>1$：\textbf{压缩}，波形沿横轴向\textbf{纵轴}（$t=0$）靠拢，变窄；
+\item $0<a<1$：\textbf{拉伸}，波形离纵轴越来越远，变宽。
+\end{itemize}
+关键点的位置规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p/a$ 处，纵轴的值不变}。因为新信号在 $t$ 处的值是原信号在 $at$ 处的值，要看到原来 $p$ 处的特征，需要 $at=p$。
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & $x(t)$ & $x(2t)$：压缩 & $x(t/2)$：拉伸 \\
+\midrule
+关键点 $t$ 值 & $0,\ 3,\ 6$ & $0,\ 1.5,\ 3$ & $0,\ 6,\ 12$ \\
+峰高 & $1$ & $1$ & $1$ \\
+底边宽度 & $6$ & $3$ & $12$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+（用的是一个三角波 $x(t)$：$t=0$ 为 $0$，$t=3$ 为峰，$t=6$ 为 $0$。\S\ref{sec:ex-teacher} 的例~\ref{ex:tri} 用的也是它。）
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (14,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.4);
+  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black] (0,0) -- (1.5,1) -- (3,0);
+  \draw[very thick,blue!70!black] (0,0) -- (6,1) -- (12,0);
+  \foreach \k in {0,3,6,12} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  % 图例（右上角，避免盖住曲线）
+  \foreach \y/\c/\lab in {1.25/gray/{$x(t)$},1.05/red!70!black/{$x(2t)$：压缩 2 倍},0.85/blue!70!black/{$x(t/2)$：拉伸 2 倍}} {
+    \draw[very thick,\c] (8.6,\y) -- (9.4,\y);
+    \node[anchor=west,font=\small,\c] at (9.5,\y) {\lab};
+  }
+  \draw[dotted,gray] (3,0) -- (3,1); \draw[dotted,red!70!black] (1.5,0) -- (1.5,1); \draw[dotted,blue!70!black] (6,0) -- (6,1);
+\end{tikzpicture}
+\caption{时间尺度变换。灰：$x(t)$；红：$x(2t)$，所有关键点除以 $2$，向纵轴靠拢；蓝：$x(t/2)$，所有关键点乘以 $2$，远离纵轴。三条曲线的峰高都是 $1$，三角形的左端都固定在 $t=0$。}
+\end{figure}
+
+\paragraph{关键：尺度变换是以纵轴为中心的。}上面的三角形左端恰好在 $t=0$，所以看起来像「只是变窄」。如果波形不在原点，压缩的同时\textbf{位置也会变}：关键点 $p\to p/a$，不只是宽度变。下图用一个落在 $[4,8]$ 上的三角形来演示：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (17.4,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.4);
+  \draw[very thick,gray] (4,0) -- (6,1) -- (8,0);
+  \draw[very thick,red!70!black] (2,0) -- (3,1) -- (4,0);
+  \draw[very thick,blue!70!black] (8,0) -- (12,1) -- (16,0);
+  \foreach \k in {2,4,6,8,12,16} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
+  \node[font=\small,gray,anchor=south] at (6,1.02) {$x(t)$};
+  \node[font=\small,red!70!black,anchor=south] at (3,1.02) {$x(2t)$};
+  \node[font=\small,blue!70!black,anchor=south] at (12,1.02) {$x(t/2)$};
+\end{tikzpicture}
+\caption{原来的三角形在 $[4,8]$（峰在 $6$）。$x(2t)$ 的三角形在 $[2,4]$（峰在 $3$），向原点靠拢；$x(t/2)$ 的三角形在 $[8,16]$（峰在 $12$），远离原点。每个点的位置都乘了 $1/a$。}
+\end{figure}
+所以在老师的口诀里，要先做「压缩或拉伸」再做「平移」，这是同一个道理：压缩是围绕原点进行的。
+
+\paragraph{压缩和拉伸改变了什么，没改变什么。}
+\begin{itemize}[nosep]
+\item \textbf{没变}：峰高（纵轴的值）。
+\item \textbf{变了}：宽度变成原来的 $1/a$ 倍；\textbf{面积}也变成原来的 $1/a$ 倍。三角形的底边 $6\to3\to12$，面积 $3\to1.5\to6$。一般公式 $\int_{-\infty}^{+\infty}x(at)\d t=\dfrac{1}{a}\int_{-\infty}^{+\infty}x(t)\d t$（$a>0$，把 $s=at$ 代入即可）。
+\end{itemize}
+这里能解释前面一份笔记里的一个现象：$\Sa(\omega t)$ 的面积是 $\dfrac{\pi}{\omega}$，会随 $\omega$ 变小；而 $\dfrac{\sin\omega t}{t}=\omega\cdot\Sa(\omega t)$ 乘了一个 $\omega$，面积刚好回到 $\pi$。所以「$\sin\omega t/t$ 的积分始终是 $\pi$」的几何原因是：宽度压成 $1/\omega$，高度又乘 $\omega$，两者抵消。
+
+\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(2t)$ 就是用 $2$ 倍速播放：时长缩短为一半，同时音调升高（采样点被更快地播放）。$x(t/2)$ 是半速播放：时长翻倍，音调降低。注意这里说的是「简单地加速或减速播放」；很多播放器的「变速不变调」用的是别的算法，不属于单纯的 $x(at)$。我没有核对书，这是我的类比。
+
+\paragraph{$a<0$ 怎么办。}$x(at)$（$a<0$）就是先翻转再压缩或拉伸：$x(-2t)=x(2(-t))$，先画 $x(-t)$，再按绝对值 $2$ 压缩。老师口诀的第二句和第三句分别处理这两件事。
+
+\paragraph{补充图解：不同的 $a$ 一排看。}把同一个三角波 $x(t)$ 用 $a=3,\,2,\,1,\,\tfrac12,\,\tfrac13$ 各做一次，五行对齐，一眼看出「$a$ 越大越窄、越靠近纵轴，$a$ 越小越宽、越远离纵轴」：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.5cm,y=0.9cm,>=stealth]
+  \draw[->] (0,-5.2) -- (0,1.5);
+  % 每一行：基线 y0，三角形 (0,0)-(p,1)-(2p,0)，p = 3/a
+  \foreach \p/\yy/\lab/\c/\e in {1/0/{$x(3t)$：压缩 $3$ 倍}/red!70!black/2, 1.5/-1.2/{$x(2t)$：压缩 $2$ 倍}/orange!85!black/3, 3/-2.4/{$x(t)$}/gray/6, 6/-3.6/{$x(t/2)$：拉伸 $2$ 倍}/green!50!black/12, 9/-4.8/{$x(t/3)$：拉伸 $3$ 倍}/blue!70!black/18} {
+    \draw[gray!60] (-1,\yy) -- (19.5,\yy);
+    \draw[very thick,\c] (0,\yy) -- (\p,{\yy+0.9}) -- ({2*\p},\yy);
+    \node[anchor=west,font=\scriptsize,\c] at ({2*\p+0.4},{\yy+0.3}) {\lab};
+    \draw ({2*\p},\yy+0.05) -- ({2*\p},\yy-0.05) node[below,font=\tiny] {$\e$};
+  }
+  \node[font=\tiny,anchor=east] at (-0.1,-0.2) {$0$};
+\end{tikzpicture}
+\caption{同一个三角波（原来的底边在 $[0,6]$）经 $x(at)$ 之后，底边的右端点变成 $6/a$：$a=3,2,1,\tfrac12,\tfrac13$ 对应 $2,3,6,12,18$。峰高始终是 $1$，左端固定在 $t=0$。}
+\end{figure}
+
+\paragraph{再强调三点。}
+\begin{enumerate}[nosep]
+\item \textbf{压缩的是时间轴，不是纵轴}：峰高不变，宽度变成 $1/a$。
+\item \textbf{$a>1$ 压缩，$0<a<1$ 拉伸}：这就是口诀第三句，看的是系数的\textbf{绝对值}。
+\item \textbf{离散情形要小心}：$x[2n]$ 会丢掉点，$x[n/2]$ 在奇数处没有定义（\S\ref{sec:disc} 离散一节会讲），所以课上老师说离散里基本只用 $\pm1$。
+\end{enumerate}
+\subsection{\texorpdfstring{概念：平移变换~$x(t-t_0)$（口诀第四句）}{概念：平移变换 x(t-t0)（口诀第四句）}}
+\textbf{（补充：这一节和前两节一样，是我把口诀第四句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
+
+只做平移的变换：$x(t)\to x(t-t_0)$。口诀第四句「加号左移，减号右移」说的就是它：
+\begin{itemize}[nosep]
+\item $x(t-t_0)$（$t_0>0$）：\textbf{右移 $t_0$}，也叫\textbf{延迟}（delay）；
+\item $x(t+t_0)$（$t_0>0$）：\textbf{左移 $t_0$}，也叫\textbf{超前}（advance）。
+\end{itemize}
+关键点规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p+t_0$ 处（对 $x(t-t_0)$），形状和纵轴的值都不变。}理由：新信号在 $t$ 处的值是原信号在 $t-t_0$ 处的值，要看到原来 $p$ 处的特征，需要 $t-t_0=p$，即 $t=p+t_0$。「减号」对应「往大的方向（右）走」，所以减号右移。
+
+\begin{center}
+\begin{tabular}{@{}lccc@{}}
+\toprule
+ & $x(t+2)$：左移 $2$ & $x(t)$ & $x(t-2)$：右移 $2$ \\
+\midrule
+关键点 $t$ 值 & $-2,\ 1,\ 4$ & $0,\ 3,\ 6$ & $2,\ 5,\ 8$ \\
+峰高 & $1$ & $1$ & $1$ \\
+底边宽度 & $6$ & $6$ & $6$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
+  \draw[->] (-4,0) -- (10.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-3.4) -- (0,1.4);
+  % 上：x(t+2)，中：x(t)，下：x(t-2)
+  \draw[very thick,orange!85!black] (-2,0) -- (1,1) -- (4,0);
+  \begin{scope}[yshift=-1.5cm]
+    \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \end{scope}
+  \begin{scope}[yshift=-3cm]
+    \draw[very thick,red!70!black] (2,0) -- (5,1) -- (8,0);
+  \end{scope}
+  % 对齐用虚线：三个峰
+  \draw[dotted,gray] (1,1) -- (1,-3);  \draw[dotted,gray] (3,-0.5) -- (3,-3); \draw[dotted,gray] (5,-2) -- (5,-3);
+  % 基线
+  \draw[gray] (-4,-1.5) -- (10.5,-1.5); \draw[gray] (-4,-3) -- (10.5,-3);
+  \node[orange!70!black,font=\small,anchor=west] at (4.6,0.55) {$x(t+2)$：左移 $2$};
+  \node[blue!70!black,font=\small,anchor=west] at (6.6,-1.0) {$x(t)$};
+  \node[red!70!black,font=\small,anchor=west] at (8.6,-2.5) {$x(t-2)$：右移 $2$};
+  \foreach \k/\yy in {-2/0,1/0,4/0,0/-1.5,3/-1.5,6/-1.5,2/-3,5/-3,8/-3} { \draw (\k,\yy+0.04) -- (\k,\yy-0.04) node[below,font=\tiny] {$\k$}; }
+\end{tikzpicture}
+\caption{平移：三条同样形状的三角形，只是位置不同。竖直点线对齐三个峰（$t=1,3,5$），相邻两个峰之间相差 $2$。形状、峰高、底边都不变。}
+\end{figure}
+
+\paragraph{平移改变了什么，没改变什么。}
+\begin{itemize}[nosep]
+\item \textbf{没变}：形状、峰高、面积（$\int x(t-t_0)\d t=\int x(t)\d t$）、能量。
+\item \textbf{变了}：每个点的位置整体移动 $t_0$。
+\end{itemize}
+对比前面：\textbf{压缩/拉伸}会改变宽度和面积，\textbf{翻转}改变方向，只有\textbf{平移}什么形状上的东西都不改。
+\subsection{\texorpdfstring{概念：合在一起~$x(at+b)$}{概念：合在一起 x(at+b)}}\label{sec:combo}
+\textbf{（补充：这一节是我把前面三小节合起来总结，课上老师是用例题讲的，结论我都用定义验算过。）}
+
+前面把口诀的二、三、四句分别拆开看过了。现在把它们放到一起：一般的自变量变换是 $x(at+b)$，其中 $a$ 可正可负，$b$ 是常数。
+\begin{remember}
+\textbf{一步到位的验算公式}：原来在 $t=p$ 处的点，在 $x(at+b)$ 里变到
+\[
+t=\frac{p-b}{a}
+\]
+处，纵轴值不变。（令 $at+b=p$ 解出 $t$。）画图时可以先用这个公式把三个关键点的新位置算出来，再用口诀检查。
+\end{remember}
+
+\textbf{做法顺序}：先化成标准形式 $x\bigl(a(t+\tfrac ba)\bigr)$，再按「翻转 $\to$ 压缩或拉伸 $\to$ 平移」做，平移量是 $b/a$（不是 $b$）。
+
+\subsection{证明：为什么口诀成立（补充）}\label{sec:proof}
+老师说「大家是高考的能手，自己想一想应该能知道道理」，没有展开。这里把道理写出来，初学者记住这三条就不容易错。\emph{（以下是我（补充）的，没有核对书。）}
+
+\begin{enumerate}
+\item \textbf{为什么要化成 $x(a(t+b/a))$（提出系数）}：因为「平移」平移的是 $t$ 本身。$x(3t+6)$ 里的 $6$ 是对 $3t$ 加的，不是对 $t$ 加的，所以真正平移的距离是 $6/3=2$，不是 $6$。化成标准形式 $x(3(t+2))$ 之后，括号里的 $2$ 才是直接作用在 $t$ 上的平移量。
+\item \textbf{为什么加号左移}：新信号在 $t$ 处的值，是原信号在 $t+2$ 处的值。原信号在 $p$ 处的特征（比如峰），在新信号里要到 $t+2=p$，即 $t=p-2$ 处才看得到，比原来位置\textbf{小}，就是向左。减号反之。
+\item \textbf{为什么系数大于 $1$ 压缩}：$x(3t)$ 在 $t$ 处的值是原信号在 $3t$ 处的值，原信号走完 $3$ 个单位，新信号只用 $1$ 个单位，所以「变快」了，波形被挤窄。系数小于 $1$ 则相反，被拉宽。
+\end{enumerate}
+
+下图把第二条（为什么加号左移）画出来：下排是 $x(t+2)$，上排是 $x(t)$，虚线连接「新信号的点」和「它在原信号里读取的位置」（读取位置是 $t+2$）。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=1.1cm,>=stealth]
+  \draw[->] (-3.5,0) -- (7.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.3);
+  \draw[->] (-3.5,-2) -- (7.6,-2) node[right,font=\small] {$t$};
+  \draw[->] (0,-2.2) -- (0,-0.9);
+  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,orange!85!black] (-2,-2) -- (1,-1) -- (4,-2);
+  \foreach \a/\b in {-2/0, 1/3, 4/6} { \draw[->,dashed,gray] (\a,-2) -- (\b,0); }
+  \foreach \k in {0,3,6} { \draw (\k,0.04)--(\k,-0.04) node[above left,font=\tiny] {$\k$}; }
+  \foreach \k in {-2,1,4} { \draw (\k,-1.96)--(\k,-2.04) node[below,font=\tiny] {$\k$}; }
+  \node[gray,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
+  \node[orange!70!black,font=\small,anchor=west] at (4.6,-1.15) {$x(t+2)$};
+\end{tikzpicture}
+\caption{下排 $x(t+2)$ 在 $t=-2,1,4$ 处的值，是上排 $x(t)$ 在 $\tau=t+2=0,3,6$ 处的值。每个特征（比如峰）在新信号里出现的位置，比原来小 $2$，所以是左移。}
+\end{figure}
+
+\paragraph{补充图解：为什么是「压缩」——从输出倒推到输入。}$x(2t)$ 在 $t$ 处的值，是原信号在 $2t$ 处的值。用具体数字走一遍（三角波：$0\le\tau\le3$ 时 $x(\tau)=\tau/3$，$3\le\tau\le6$ 时 $x(\tau)=(6-\tau)/3$）：
+\begin{center}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+新信号的 $t$ & $0$ & $0.5$ & $1$ & $1.5$ & $2$ & $3$ \\
+要去原信号读的位置 $\tau=2t$ & $0$ & $1$ & $2$ & $3$ & $4$ & $6$ \\
+读到的值 $x(\tau)=x(2t)$ & $0$ & $\tfrac13$ & $\tfrac23$ & $1$ & $\tfrac23$ & $0$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+新信号只走了 $t=0\to3$，已经把原信号从 $\tau=0$ 读到了 $\tau=6$ 的全部内容，所以波形被「压」进了原来一半的时间里。下图把对应关系画出来：下排是 $x(2t)$，上排是 $x(t)$，每条虚线连接「新信号的点」和「它在原信号里读取的位置」。把这些虚线向下延长，它们会交于纵轴上的同一点（图中的「放射中心」），这就是「以纵轴为中心的压缩」。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=1.1cm,>=stealth]
+  \draw[->] (-1,0) -- (7.4,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.3);
+  \draw[->] (-1,-2) -- (7.4,-2) node[right,font=\small] {$t$};
+  \draw[->] (0,-2.2) -- (0,-0.9);
+  % 上排：x(t)；下排：x(2t)（下排的基线在 y=-2）
+  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black] (0,-2) -- (1.5,-1) -- (3,-2);
+  \foreach \a/\b in {0/0, 1.5/3, 3/6} { \draw[dashed,gray] (\a,-2) -- (\b,0); }
+  % 把虚线向下延长：交于纵轴上同一点
+  \draw[dashed,gray!50] (1.5,-2) -- (0,-4); \draw[dashed,gray!50] (3,-2) -- (0,-4);
+  \fill[gray] (0,-4) circle (1.6pt); \node[right,font=\tiny,gray] at (0.1,-4) {放射中心};
+  \fill[red!70!black] (1.5,-1) circle (1.6pt); \fill[gray] (3,1) circle (1.6pt);
+  \draw[dotted,gray] (1.5,-2) -- (1.5,-1); \draw[dotted,gray] (3,0) -- (3,1);
+  \foreach \k in {0,3,6} { \draw (\k,0.04)--(\k,-0.04) node[above left,font=\tiny] {$\k$}; }
+  \foreach \k in {0,1.5,3} { \draw (\k,-1.96)--(\k,-2.04) node[below,font=\tiny] {$\k$}; }
+  \node[gray,font=\small,anchor=west] at (4.5,0.85) {$x(t)$};
+  \node[red!70!black,font=\small,anchor=west] at (4.0,-1.15) {$x(2t)$};
+\end{tikzpicture}
+\caption{压缩 $2$ 倍：下排 $x(2t)$ 上的点 $t=0,1.5,3$，对应它在上排 $x(t)$ 里读取的位置 $\tau=0,3,6$（每个读取位置是 $t$ 的 $2$ 倍）。虚线是对应关系。}
+\end{figure}
+
+\begin{note}
+一个容易踩的坑（补充）：先化成标准形式，再按「翻转 $\to$ 压缩或拉伸 $\to$ 平移」的顺序做，平移量是 $b/a$，不是 $b$。如果坚持先平移再压缩，平移量就是 $b$（即 $x(t+6)$，再压缩 $3$ 倍），结果相同，但很容易搞错，所以老师把「先化成标准形式」放在第一条。
+\end{note}
+\subsection{例题：老师课上的题}\label{sec:ex-teacher}
+\example{\texorpdfstring{三角波的~$x(3t+6)$ 与~$x(-3t+6)$}{三角波的 x(3t+6) 与 x(-3t+6)}}{翻转·压缩·平移}{}\label{ex:tri}
 题目：已知 $x(t)$ 是下面的三角波：$t\in[0,3]$ 上升、$t\in[3,6]$ 下降，最高点高度为 $1$。画出 $x(3t+6)$ 和 $x(-3t+6)$。老师说这是「高中的知识，只是做得快慢的问题」。
 
 \begin{figure}[H]
@@ -157,7 +457,7 @@
 \caption{已知的三角波 $x(t)$：在 $t=0$ 处为 $0$，$t=3$ 处升到 $1$，$t=6$ 处回到 $0$。}
 \end{figure}
 
-\subsubsection*{方法一：固定关键点（老师先讲的，好理解）}
+\point{方法一：固定关键点（老师先讲的，好理解）。}
 把波形上的三个关键点（$t=0,3,6$）固定下来，问：在新信号里，这三个点分别跑到了哪里？思路是：新信号 $x(3t+6)$ 在 $t$ 处的值，等于 $x$ 在「括号里那个数」处的值。所以让括号里的数等于原来的关键点：
 \begin{center}
 \begin{tabular}{@{}cccc@{}}
@@ -176,7 +476,7 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 
 老师说这种方法他\textbf{不是不推荐}，但希望大家牢牢记住下面的口诀，因为到后面你脑子里应该有一幅图：信号「移来移去、翻转过来翻转过去、拉伸缩短」。
 
-\subsubsection*{方法二：四步口诀}
+\point{方法二：四步口诀。}
 \textbf{$x(3t+6)$}：
 \begin{enumerate}[nosep]
 \item \textbf{化成标准形式}：把 $t$ 前面的系数提出来，$x(3t+6)=x\bigl(3(t+2)\bigr)$；
@@ -228,41 +528,7 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 \end{figure}
 
 老师说：这四步希望大家牢牢掌握。
-
-\subsection{为什么口诀成立（补充）}
-老师说「大家是高考的能手，自己想一想应该能知道道理」，没有展开。这里把道理写出来，初学者记住这三条就不容易错。\emph{（以下是我（补充）的，没有核对书。）}
-
-\begin{enumerate}
-\item \textbf{为什么要化成 $x(a(t+b/a))$（提出系数）}：因为「平移」平移的是 $t$ 本身。$x(3t+6)$ 里的 $6$ 是对 $3t$ 加的，不是对 $t$ 加的，所以真正平移的距离是 $6/3=2$，不是 $6$。化成标准形式 $x(3(t+2))$ 之后，括号里的 $2$ 才是直接作用在 $t$ 上的平移量。
-\item \textbf{为什么加号左移}：新信号在 $t$ 处的值，是原信号在 $t+2$ 处的值。原信号在 $p$ 处的特征（比如峰），在新信号里要到 $t+2=p$，即 $t=p-2$ 处才看得到，比原来位置\textbf{小}，就是向左。减号反之。
-\item \textbf{为什么系数大于 $1$ 压缩}：$x(3t)$ 在 $t$ 处的值是原信号在 $3t$ 处的值，原信号走完 $3$ 个单位，新信号只用 $1$ 个单位，所以「变快」了，波形被挤窄。系数小于 $1$ 则相反，被拉宽。
-\end{enumerate}
-
-下图把第二条（为什么加号左移）画出来：下排是 $x(t+2)$，上排是 $x(t)$，虚线连接「新信号的点」和「它在原信号里读取的位置」（读取位置是 $t+2$）。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.8cm,y=1.1cm,>=stealth]
-  \draw[->] (-3.5,0) -- (7.6,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.3);
-  \draw[->] (-3.5,-2) -- (7.6,-2) node[right,font=\small] {$t$};
-  \draw[->] (0,-2.2) -- (0,-0.9);
-  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,orange!85!black] (-2,-2) -- (1,-1) -- (4,-2);
-  \foreach \a/\b in {-2/0, 1/3, 4/6} { \draw[->,dashed,gray] (\a,-2) -- (\b,0); }
-  \foreach \k in {0,3,6} { \draw (\k,0.04)--(\k,-0.04) node[above left,font=\tiny] {$\k$}; }
-  \foreach \k in {-2,1,4} { \draw (\k,-1.96)--(\k,-2.04) node[below,font=\tiny] {$\k$}; }
-  \node[gray,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
-  \node[orange!70!black,font=\small,anchor=west] at (4.6,-1.15) {$x(t+2)$};
-\end{tikzpicture}
-\caption{下排 $x(t+2)$ 在 $t=-2,1,4$ 处的值，是上排 $x(t)$ 在 $\tau=t+2=0,3,6$ 处的值。每个特征（比如峰）在新信号里出现的位置，比原来小 $2$，所以是左移。}
-\end{figure}
-
-\begin{note}
-一个容易踩的坑（补充）：先化成标准形式，再按「翻转 $\to$ 压缩或拉伸 $\to$ 平移」的顺序做，平移量是 $b/a$，不是 $b$。如果坚持先平移再压缩，平移量就是 $b$（即 $x(t+6)$，再压缩 $3$ 倍），结果相同，但很容易搞错，所以老师把「先化成标准形式」放在第一条。
-\end{note}
-
-\subsection{\texorpdfstring{例 2：$x\bigl(-\tfrac12t+1\bigr)$}{例 2：x(-t/2+1)}}
+\example{\texorpdfstring{$x\bigl(-\tfrac12t+1\bigr)$}{x(-t/2+1)}}{翻转·拉伸·平移}{}\label{ex:half}
 这是老师抽同学上来做的第二道题。\textbf{注意}：转写里把它听成了「$x(-2t+1)$」，但 PPT 上写的是 $x\bigl(-\tfrac12t+1\bigr)$（画面里能看到分数 $\tfrac12$），所以以画面为准。
 
 已知 $x(t)$ 是一个直角三角形：在 $t=-1$ 处有一条竖直边（高 $2$），斜边向右下落到 $t=0$ 处的 $0$。老师说那位同学的答案和他的完全一样（课堂上没有读出具体数值）。下面是我按四步口诀算出来的：
@@ -292,8 +558,7 @@ $6$ & $0$ & $3t+6=6$ & $t=0$\\
 \end{minipage}
 \caption{$x(-\frac12t+1)$ 的四步。}
 \end{figure}
-
-\subsection{\texorpdfstring{例 3：反过来做——已知 $x(3-2t)$，求 $x(t)$}{例 3：反过来做——已知 x(3-2t)，求 x(t)}}
+\example{\texorpdfstring{反过来做：已知~$x(3-2t)$，求~$x(t)$}{反过来做：已知 x(3-2t)，求 x(t)}}{变量代换}{}
 这道题「反过来了」：给的是变换\emph{之后}的波形，要画\emph{原来}的 $x(t)$。老师说你知道套路就不难。
 
 题目给的 $x(3-2t)$ 的波形（PPT 上）：$t\in[2,3]$ 上高度 $1$，$t\in[3,4]$ 上高度 $2$，其余为 $0$。
@@ -374,203 +639,67 @@ g\Bigl(\frac{3-t}{2}\Bigr)=g\Bigl(-\frac12\,(t-3)\Bigr),
 \emph{（补充，用上面的变换验算：$x(t)=g\bigl(\tfrac{3-t}{2}\bigr)$。取 $t=-4$：$\tfrac{3-(-4)}{2}=3.5\in[3,4]$，$g=2$；取 $t=-2$：$\tfrac{3-(-2)}{2}=2.5\in[2,3]$，$g=1$。与答案一致。）}
 
 \paragraph{书上的练习。}老师说书上第 31 页的习题 1-7 和 1-8 都是这类题，也都布置给了大家，回去自己练习。
+\subsection{例题：回头看熟悉的信号}
+老师说：脑子里有了「信号翻转过来翻转过去、放大缩小、移来移去」的概念之后，对信号的看法会不一样。他举了几个熟悉的信号作例子：下面两个是尺度变换的例子，阶跃、窗和脉冲的和放在 \S\ref{sec:step}--\S\ref{sec:delta}。
 
-\subsection{\texorpdfstring{单独看一次：时间尺度变换 $x(at)$}{单独看一次：时间尺度变换 x(at)}}
-\textbf{（补充：这一节是我把口诀的「第三句」单独拿出来画图说明，课上老师讲的是它的用法，没有专门展开，下面的结论我都用定义验算过。）}
+\example{\texorpdfstring{$\Sa(\omega t)$ 与~$\frac{\sin\omega t}{t}$}{Sa(ωt) 与 sin(ωt)/t}}{压缩}{}
+已知 $\Sa(t)=\dfrac{\sin t}{t}$，画 $\Sa(\omega t)=\dfrac{\sin\omega t}{\omega t}$（$\omega>0$）。只用第三条口诀：系数是 $\omega$，$\omega>1$ 就压缩 $\omega$ 倍。原来的零点 $\pm\pi,\pm2\pi,\dots$ 变成 $\pm\dfrac{\pi}{\omega},\pm\dfrac{2\pi}{\omega},\dots$，峰高仍是 $1$。
 
-只做「压缩或拉伸」而不翻转、不平移的变换，叫\textbf{时间尺度变换}（time scaling）：$x(t)\to x(at)$，$a>0$。口诀第三句说的就是它：
-\begin{itemize}[nosep]
-\item $a>1$：\textbf{压缩}，波形沿横轴向\textbf{纵轴}（$t=0$）靠拢，变窄；
-\item $0<a<1$：\textbf{拉伸}，波形离纵轴越来越远，变宽。
-\end{itemize}
-关键点的位置规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p/a$ 处，纵轴的值不变}。因为新信号在 $t$ 处的值是原信号在 $at$ 处的值，要看到原来 $p$ 处的特征，需要 $at=p$。
-
-\begin{center}
-\begin{tabular}{@{}lccc@{}}
-\toprule
- & $x(t)$ & $x(2t)$：压缩 & $x(t/2)$：拉伸 \\
-\midrule
-关键点 $t$ 值 & $0,\ 3,\ 6$ & $0,\ 1.5,\ 3$ & $0,\ 6,\ 12$ \\
-峰高 & $1$ & $1$ & $1$ \\
-底边宽度 & $6$ & $3$ & $12$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-（用的还是前面例 1 的三角波 $x(t)$：$t=0$ 为 $0$，$t=3$ 为峰，$t=6$ 为 $0$。）
+老师接着说：前一节课让大家画的是 $\dfrac{\sin\omega t}{t}$，这个式子就是 $\omega\cdot\Sa(\omega t)$，所以只要把 $\Sa(\omega t)$ 再\textbf{乘一个 $\omega$}，峰高就是 $\omega$。这与上一份笔记里「峰高 $\omega$，零点 $\pm k\pi/\omega$」的结论一致。
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
-  \draw[->] (-1,0) -- (14,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.4);
-  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,red!70!black] (0,0) -- (1.5,1) -- (3,0);
-  \draw[very thick,blue!70!black] (0,0) -- (6,1) -- (12,0);
-  \foreach \k in {0,3,6,12} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
-  % 图例（右上角，避免盖住曲线）
-  \foreach \y/\c/\lab in {1.25/gray/{$x(t)$},1.05/red!70!black/{$x(2t)$：压缩 2 倍},0.85/blue!70!black/{$x(t/2)$：拉伸 2 倍}} {
-    \draw[very thick,\c] (8.6,\y) -- (9.4,\y);
-    \node[anchor=west,font=\small,\c] at (9.5,\y) {\lab};
+\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
+  \draw[->] (-10,0) -- (10.6,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.5) -- (0,2.5);
+  \foreach \s in {1,-1} {
+    \draw[very thick,gray,domain=0.001:9.42,samples=120,smooth] plot ({\s*\x},{sin((\x) r)/\x});
+    \draw[very thick,red!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/(2*\x)});
+    \draw[very thick,blue!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/\x});
   }
-  \draw[dotted,gray] (3,0) -- (3,1); \draw[dotted,red!70!black] (1.5,0) -- (1.5,1); \draw[dotted,blue!70!black] (6,0) -- (6,1);
-\end{tikzpicture}
-\caption{时间尺度变换。灰：$x(t)$；红：$x(2t)$，所有关键点除以 $2$，向纵轴靠拢；蓝：$x(t/2)$，所有关键点乘以 $2$，远离纵轴。三条曲线的峰高都是 $1$，三角形的左端都固定在 $t=0$。}
-\end{figure}
-
-\paragraph{关键：尺度变换是以纵轴为中心的。}上面的三角形左端恰好在 $t=0$，所以看起来像「只是变窄」。如果波形不在原点，压缩的同时\textbf{位置也会变}：关键点 $p\to p/a$，不只是宽度变。下图用一个落在 $[4,8]$ 上的三角形来演示：
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
-  \draw[->] (-1,0) -- (17.4,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.4);
-  \draw[very thick,gray] (4,0) -- (6,1) -- (8,0);
-  \draw[very thick,red!70!black] (2,0) -- (3,1) -- (4,0);
-  \draw[very thick,blue!70!black] (8,0) -- (12,1) -- (16,0);
-  \foreach \k in {2,4,6,8,12,16} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
-  \node[font=\small,gray,anchor=south] at (6,1.02) {$x(t)$};
-  \node[font=\small,red!70!black,anchor=south] at (3,1.02) {$x(2t)$};
-  \node[font=\small,blue!70!black,anchor=south] at (12,1.02) {$x(t/2)$};
-\end{tikzpicture}
-\caption{原来的三角形在 $[4,8]$（峰在 $6$）。$x(2t)$ 的三角形在 $[2,4]$（峰在 $3$），向原点靠拢；$x(t/2)$ 的三角形在 $[8,16]$（峰在 $12$），远离原点。每个点的位置都乘了 $1/a$。}
-\end{figure}
-所以在老师的口诀里，要先做「压缩或拉伸」再做「平移」，这是同一个道理：压缩是围绕原点进行的。
-
-\paragraph{压缩和拉伸改变了什么，没改变什么。}
-\begin{itemize}[nosep]
-\item \textbf{没变}：峰高（纵轴的值）。
-\item \textbf{变了}：宽度变成原来的 $1/a$ 倍；\textbf{面积}也变成原来的 $1/a$ 倍。三角形的底边 $6\to3\to12$，面积 $3\to1.5\to6$。一般公式 $\int_{-\infty}^{+\infty}x(at)\d t=\dfrac{1}{a}\int_{-\infty}^{+\infty}x(t)\d t$（$a>0$，把 $s=at$ 代入即可）。
-\end{itemize}
-这里能解释前面一份笔记里的一个现象：$\Sa(\omega t)$ 的面积是 $\dfrac{\pi}{\omega}$，会随 $\omega$ 变小；而 $\dfrac{\sin\omega t}{t}=\omega\cdot\Sa(\omega t)$ 乘了一个 $\omega$，面积刚好回到 $\pi$。所以「$\sin\omega t/t$ 的积分始终是 $\pi$」的几何原因是：宽度压成 $1/\omega$，高度又乘 $\omega$，两者抵消。
-
-\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(2t)$ 就是用 $2$ 倍速播放：时长缩短为一半，同时音调升高（采样点被更快地播放）。$x(t/2)$ 是半速播放：时长翻倍，音调降低。注意这里说的是「简单地加速或减速播放」；很多播放器的「变速不变调」用的是别的算法，不属于单纯的 $x(at)$。我没有核对书，这是我的类比。
-
-\paragraph{$a<0$ 怎么办。}$x(at)$（$a<0$）就是先翻转再压缩或拉伸：$x(-2t)=x(2(-t))$，先画 $x(-t)$，再按绝对值 $2$ 压缩。老师口诀的第二句和第三句分别处理这两件事。
-
-\paragraph{补充图解一：不同的 $a$ 一排看。}把同一个三角波 $x(t)$ 用 $a=3,\,2,\,1,\,\tfrac12,\,\tfrac13$ 各做一次，五行对齐，一眼看出「$a$ 越大越窄、越靠近纵轴，$a$ 越小越宽、越远离纵轴」：
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.5cm,y=0.9cm,>=stealth]
-  \draw[->] (0,-5.2) -- (0,1.5);
-  % 每一行：基线 y0，三角形 (0,0)-(p,1)-(2p,0)，p = 3/a
-  \foreach \p/\yy/\lab/\c/\e in {1/0/{$x(3t)$：压缩 $3$ 倍}/red!70!black/2, 1.5/-1.2/{$x(2t)$：压缩 $2$ 倍}/orange!85!black/3, 3/-2.4/{$x(t)$}/gray/6, 6/-3.6/{$x(t/2)$：拉伸 $2$ 倍}/green!50!black/12, 9/-4.8/{$x(t/3)$：拉伸 $3$ 倍}/blue!70!black/18} {
-    \draw[gray!60] (-1,\yy) -- (19.5,\yy);
-    \draw[very thick,\c] (0,\yy) -- (\p,{\yy+0.9}) -- ({2*\p},\yy);
-    \node[anchor=west,font=\scriptsize,\c] at ({2*\p+0.4},{\yy+0.3}) {\lab};
-    \draw ({2*\p},\yy+0.05) -- ({2*\p},\yy-0.05) node[below,font=\tiny] {$\e$};
+  \node[left,font=\scriptsize] at (0,1) {$1$};
+  \node[left,font=\scriptsize] at (0,2) {$2$};
+  \foreach \k/\lab in {3.1416/{\pi},6.2832/{2\pi},-3.1416/{-\pi},-6.2832/{-2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\lab$}; }
+  \foreach \k/\lab in {1.5708/{\frac\pi2},-1.5708/{-\frac\pi2}} { \draw[red!70!black] (\k,0.04)--(\k,-0.04) node[above,font=\tiny,red!70!black] {$\lab$}; }
+  \foreach \y/\c/\lab in {2.3/gray/{$\Sa(t)$},2.0/red!70!black/{$\Sa(2t)$：压缩，峰高 $1$},1.7/blue!70!black/{$\sin2t/t$：峰高 $2$}} {
+    \draw[very thick,\c] (-9.8,\y) -- (-9.0,\y);
+    \node[anchor=west,font=\scriptsize,\c] at (-8.9,\y) {\lab};
   }
-  \node[font=\tiny,anchor=east] at (-0.1,-0.2) {$0$};
 \end{tikzpicture}
-\caption{同一个三角波（原来的底边在 $[0,6]$）经 $x(at)$ 之后，底边的右端点变成 $6/a$：$a=3,2,1,\tfrac12,\tfrac13$ 对应 $2,3,6,12,18$。峰高始终是 $1$，左端固定在 $t=0$。}
+\caption{取 $\omega=2$。灰：$\Sa(t)$，零点在 $\pm\pi,\pm2\pi,\dots$；红：$\Sa(2t)$，零点向纵轴靠拢到 $\pm\frac\pi2,\pm\pi,\dots$，峰高仍是 $1$；蓝：$\dfrac{\sin2t}{t}=2\Sa(2t)$，零点和红线相同，峰高变成 $2$。}
 \end{figure}
-
-\paragraph{补充图解二：为什么是「压缩」——从输出倒推到输入。}$x(2t)$ 在 $t$ 处的值，是原信号在 $2t$ 处的值。用具体数字走一遍（三角波：$0\le\tau\le3$ 时 $x(\tau)=\tau/3$，$3\le\tau\le6$ 时 $x(\tau)=(6-\tau)/3$）：
-\begin{center}
-\begin{tabular}{@{}lcccccc@{}}
-\toprule
-新信号的 $t$ & $0$ & $0.5$ & $1$ & $1.5$ & $2$ & $3$ \\
-要去原信号读的位置 $\tau=2t$ & $0$ & $1$ & $2$ & $3$ & $4$ & $6$ \\
-读到的值 $x(\tau)=x(2t)$ & $0$ & $\tfrac13$ & $\tfrac23$ & $1$ & $\tfrac23$ & $0$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-新信号只走了 $t=0\to3$，已经把原信号从 $\tau=0$ 读到了 $\tau=6$ 的全部内容，所以波形被「压」进了原来一半的时间里。下图把对应关系画出来：下排是 $x(2t)$，上排是 $x(t)$，每条虚线连接「新信号的点」和「它在原信号里读取的位置」。把这些虚线向下延长，它们会交于纵轴上的同一点（图中的「放射中心」），这就是「以纵轴为中心的压缩」。
+\example{\texorpdfstring{第五章的例子：$X(\omega/T)$}{第五章的例子：X(ω/T)}}{拉伸}{}
+老师说第五章会碰到一个标准的例子：$X(\omega)$ 是一个带限信号（band-limited signal，只在 $[-\omega_0,\omega_0]$ 上有值，其他地方为 $0$），峰值（$\omega=0$ 处）为 $E$。问：$X\bigl(\tfrac{\omega}{T}\bigr)$ 是什么形状？答案：\textbf{峰值仍是 $E$}，两个端点从 $\pm\omega_0$ 变成 $\pm T\omega_0$。这就是第三条口诀：系数 $\tfrac1T$，$T>1$ 时系数小于 $1$，是拉伸。\emph{（课堂口述把 $X(\omega/T)$ 听成了「$X\omega$ 除以 $T$」，黑板上写的是 $X(\frac{\omega}{T})$，所以我按黑板写。黑板图没有写 $T$ 的具体值。）}
 
 \begin{figure}[H]
 \centering
-\begin{tikzpicture}[x=0.8cm,y=1.1cm,>=stealth]
-  \draw[->] (-1,0) -- (7.4,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.3);
-  \draw[->] (-1,-2) -- (7.4,-2) node[right,font=\small] {$t$};
-  \draw[->] (0,-2.2) -- (0,-0.9);
-  % 上排：x(t)；下排：x(2t)（下排的基线在 y=-2）
-  \draw[very thick,gray] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,red!70!black] (0,-2) -- (1.5,-1) -- (3,-2);
-  \foreach \a/\b in {0/0, 1.5/3, 3/6} { \draw[dashed,gray] (\a,-2) -- (\b,0); }
-  % 把虚线向下延长：交于纵轴上同一点
-  \draw[dashed,gray!50] (1.5,-2) -- (0,-4); \draw[dashed,gray!50] (3,-2) -- (0,-4);
-  \fill[gray] (0,-4) circle (1.6pt); \node[right,font=\tiny,gray] at (0.1,-4) {放射中心};
-  \fill[red!70!black] (1.5,-1) circle (1.6pt); \fill[gray] (3,1) circle (1.6pt);
-  \draw[dotted,gray] (1.5,-2) -- (1.5,-1); \draw[dotted,gray] (3,0) -- (3,1);
-  \foreach \k in {0,3,6} { \draw (\k,0.04)--(\k,-0.04) node[above left,font=\tiny] {$\k$}; }
-  \foreach \k in {0,1.5,3} { \draw (\k,-1.96)--(\k,-2.04) node[below,font=\tiny] {$\k$}; }
-  \node[gray,font=\small,anchor=west] at (4.5,0.85) {$x(t)$};
-  \node[red!70!black,font=\small,anchor=west] at (4.0,-1.15) {$x(2t)$};
+\begin{tikzpicture}[x=0.42cm,y=0.8cm,>=stealth]
+  % 左：X(omega)
+  \draw[->] (-4,0) -- (4.4,0) node[right,font=\scriptsize] {$\omega$};
+  \draw[->] (0,-0.2) -- (0,2.8);
+  \draw[very thick,blue!70!black,domain=-2:2,samples=60] plot (\x,{2*(1-(\x/2)^2)});
+  \node[left,font=\scriptsize] at (0,2) {$E$};
+  \node[below,font=\scriptsize] at (-2,0) {$-\omega_0$};
+  \node[below,font=\scriptsize] at (2,0) {$\omega_0$};
+  \node[font=\small] at (0,3.2) {$X(\omega)$};
+  % 右：X(omega/T), 取 T=2
+  \begin{scope}[xshift=7.2cm]
+    \draw[->] (-6.4,0) -- (6.8,0) node[right,font=\scriptsize] {$\omega$};
+    \draw[->] (0,-0.2) -- (0,2.8);
+    \draw[very thick,red!70!black,domain=-4:4,samples=80] plot (\x,{2*(1-(\x/4)^2)});
+    \node[left,font=\scriptsize] at (0,2) {$E$};
+    \node[below,font=\scriptsize] at (-4,0) {$-T\omega_0$};
+    \node[below,font=\scriptsize] at (4,0) {$T\omega_0$};
+    \node[font=\small] at (0,3.2) {$X(\omega/T)$（图中取 $T=2$）};
+  \end{scope}
 \end{tikzpicture}
-\caption{压缩 $2$ 倍：下排 $x(2t)$ 上的点 $t=0,1.5,3$，对应它在上排 $x(t)$ 里读取的位置 $\tau=0,3,6$（每个读取位置是 $t$ 的 $2$ 倍）。虚线是对应关系。}
+\caption{$X(\omega/T)$ 是 $X(\omega)$ 沿 $\omega$ 轴拉伸 $T$ 倍：峰值不变，宽度变成 $T$ 倍。左边的钟形只是示意，黑板上的具体形状同为一个拱形。}
 \end{figure}
+\subsection{例题（补充）：把几种变换组合起来}
+\textbf{（补充：这一节的几道题是我加的，课上老师没有讲；用不同的变换组合把前面的口诀和公式各练一遍，结论我都用定义验算过。）}
 
-\paragraph{再强调三点。}
-\begin{enumerate}[nosep]
-\item \textbf{压缩的是时间轴，不是纵轴}：峰高不变，宽度变成 $1/a$。
-\item \textbf{$a>1$ 压缩，$0<a<1$ 拉伸}：这就是口诀第三句，看的是系数的\textbf{绝对值}。
-\item \textbf{离散情形要小心}：$x[2n]$ 会丢掉点，$x[n/2]$ 在奇数处没有定义（前面离散一节提过），所以课上老师说离散里基本只用 $\pm1$。
-\end{enumerate}
-
-\subsection{\texorpdfstring{单独看一次：翻转变换 $x(-t)$}{单独看一次：翻转变换 x(-t)}}
-\textbf{（补充：这一节和上一节一样，是我把口诀第二句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
-
-只把 $t$ 换成 $-t$ 的变换叫\textbf{翻转}（time reversal）：$x(t)\to x(-t)$。口诀第二句「前有负号翻转」说的就是它。要点只有两条：
-\begin{itemize}[nosep]
-\item \textbf{以纵轴（$t=0$）为对称轴做镜像}：原来在 $t=p$ 处的点，变到 $t=-p$ 处，纵轴的值不变；
-\item \textbf{$t=0$ 处的点不动}（$x(-0)=x(0)$）。
-\end{itemize}
-翻转两次回到原来的信号：$x(-(-t))=x(t)$。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
-  \draw[->] (-8,0) -- (8.6,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.05);
-  \draw[dashed,gray] (0,-0.1) -- (0,1.05);
-  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,red!70!black]  (-6,0) -- (-3,1) -- (0,0);
-  \foreach \k in {-6,-3,3,6} { \draw (\k,0.03) -- (\k,-0.03) node[below,font=\scriptsize] {$\k$}; }
-  \draw[<->,gray] (-3,1.12) -- (3,1.12);
-  \node[gray,font=\scriptsize,anchor=south] at (0,1.2) {镜像};
-  \node[blue!70!black,font=\small,anchor=west] at (4.6,0.85) {$x(t)$};
-  \node[red!70!black,font=\small,anchor=east] at (-4.6,0.85) {$x(-t)$};
-\end{tikzpicture}
-\caption{翻转：蓝色 $x(t)$ 的三个关键点 $0,3,6$ 变成红色 $x(-t)$ 的 $0,-3,-6$，纵轴值不变，整体以纵轴为对称轴镜像。}
-\end{figure}
-
-\paragraph{翻转和「偶、奇信号」是同一回事。}第一份笔记里「偶信号 $x(t)=x(-t)$」「奇信号 $x(t)=-x(-t)$」，用现在的话说就是：\textbf{翻转之后和原信号相同的是偶信号，翻转之后和原信号相差一个负号的是奇信号。}任何信号的偶部和奇部也都是靠翻转造出来的：
-\[
-x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
-\]
-下图用上面的三角波 $x(t)$ 演示：$x(t)$ 本身不是偶的也不是奇的，它的偶部是「$x(t)$ 与翻转后的 $x(-t)$ 取平均」，两个半高度的三角形左右对称；奇部是「相减再除 $2$」，右边是正的、左边是负的，关于原点反对称。
-
-\begin{figure}[H]
-\centering
-\begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
-  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
-  \draw[->] (0,-0.7) -- (0,1.3);
-  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
-  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x(t)$};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
-  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
-  \draw[->] (0,-0.7) -- (0,1.3);
-  \draw[very thick,green!50!black] (-6,0) -- (-3,0.5) -- (0,0) -- (3,0.5) -- (6,0);
-  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_e(t)$：偶部（关于纵轴对称）};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.27cm,y=1.1cm,>=stealth]
-  \draw[->] (-8,0) -- (8.6,0) node[right,font=\scriptsize] {$t$};
-  \draw[->] (0,-0.7) -- (0,1.3);
-  \draw[very thick,orange!85!black] (-6,0) -- (-3,-0.5) -- (0,0) -- (3,0.5) -- (6,0);
-  \node[font=\scriptsize,anchor=south] at (0,1.35) {$x_o(t)$：奇部（关于原点反对称）};
-\end{tikzpicture}
-\end{minipage}
-\caption{用翻转造出偶部与奇部：$x(t)=x_e(t)+x_o(t)$。偶部和奇部的峰高都是 $\tfrac12$。（验算：$t=3$ 时 $x_e=\tfrac{1+0}{2}=\tfrac12$，$x_o=\tfrac{1-0}{2}=\tfrac12$，加起来是 $1$；$t=-3$ 时 $x_e=\tfrac12$，$x_o=-\tfrac12$，加起来是 $0$，与 $x(-3)=0$ 一致。）}
-\end{figure}
-
-\paragraph{翻转加平移：一个常见的坑。}$x(-t+b)$ 的标准形式是 $x(-(t-b))$，括号里是\textbf{减号}，所以是翻转之后\textbf{右移 $b$}，不是左移，哪怕 $b$ 前面看起来是「加号」。下面用直角三角形演示 $x(-t+3)$：
+\example{\texorpdfstring{翻转加平移：$x(-t+3)$}{翻转加平移：x(-t+3)}}{翻转·平移}{}
+$x(-t+b)$ 的标准形式是 $x(-(t-b))$，括号里是\textbf{减号}，所以是翻转之后\textbf{右移 $b$}，不是左移，哪怕 $b$ 前面看起来是「加号」。下面用直角三角形演示 $x(-t+3)$：
 
 \begin{figure}[H]
 \centering
@@ -585,156 +714,8 @@ x_e(t)=\frac{x(t)+x(-t)}{2},\qquad x_o(t)=\frac{x(t)-x(-t)}{2}.
 \rtpanel{0.4cm}{$x(-t+3)=x(-(t-3))$：右移 3}{4}{3}{3,4}
 \caption{翻转再平移。竖直边（高 $2$）从 $t=-1$ 翻到 $t=1$，再右移 $3$ 到 $t=4$，斜边落点从 $0$ 经 $0$ 到 $3$。验算：$t=4$ 时 $x(-4+3)=x(-1)=2$；$t=3$ 时 $x(0)=0$。}
 \end{figure}
-
-\paragraph{离散的翻转。}$x[n]\to x[-n]$，同样以 $n=0$ 为对称轴：$n=p$ 处的值变到 $n=-p$ 处。用后面「离散信号的自变量变换」一节里的 $x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$）：翻转后 $x[-n]$ 在 $n=2$ 处是 $\tfrac12$，$n=1$ 处是 $-\tfrac12$，$n=0,-1,-2,-3$ 处是 $1$。
-
-\begin{figure}[H]
-\centering
-\begin{minipage}{0.48\textwidth}\centering
-\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
-  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
-  \draw[->] (0,-0.8) -- (0,1.4);
-  \stem{-2}{0.5} \stem{-1}{-0.5} \stem{0}{1} \stem{1}{1} \stem{2}{1} \stem{3}{1}
-  \foreach \k in {-2,3} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
-  \node[font=\scriptsize,anchor=south] at (0.5,1.45) {$x[n]$};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{0.48\textwidth}\centering
-\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
-  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
-  \draw[->] (0,-0.8) -- (0,1.4);
-  \stem{2}{0.5} \stem{1}{-0.5} \stem{0}{1} \stem{-1}{1} \stem{-2}{1} \stem{-3}{1}
-  \foreach \k in {-3,2} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
-  \node[font=\scriptsize,anchor=south] at (-0.5,1.45) {$x[-n]$：翻转};
-\end{tikzpicture}
-\end{minipage}
-\caption{离散翻转：每根竖线以 $n=0$ 为轴镜像，高度不变。}
-\end{figure}
-
-\paragraph{和日常经验的对应（补充）。}把 $x(t)$ 想成一段声音，$x(-t)$ 就是\textbf{倒放}（录音从后往前播）。时间上的翻转是一个数学操作；真实世界里的信号不能真的「倒着发生」，但处理已经录好的数据时可以做。我没有核对书，这是我的类比。
-
-\subsection{\texorpdfstring{单独看一次：平移变换 $x(t-t_0)$}{单独看一次：平移变换 x(t-t0)}}
-\textbf{（补充：这一节和前两节一样，是我把口诀第四句单独拿出来画图说明，课上老师讲的是它的用法。结论我都用定义验算过。）}
-
-只做平移的变换：$x(t)\to x(t-t_0)$。口诀第四句「加号左移，减号右移」说的就是它：
-\begin{itemize}[nosep]
-\item $x(t-t_0)$（$t_0>0$）：\textbf{右移 $t_0$}，也叫\textbf{延迟}（delay）；
-\item $x(t+t_0)$（$t_0>0$）：\textbf{左移 $t_0$}，也叫\textbf{超前}（advance）。
-\end{itemize}
-关键点规则：\textbf{原来在 $t=p$ 处的点，变到 $t=p+t_0$ 处（对 $x(t-t_0)$），形状和纵轴的值都不变。}理由：新信号在 $t$ 处的值是原信号在 $t-t_0$ 处的值，要看到原来 $p$ 处的特征，需要 $t-t_0=p$，即 $t=p+t_0$。「减号」对应「往大的方向（右）走」，所以减号右移。
-
-\begin{center}
-\begin{tabular}{@{}lccc@{}}
-\toprule
- & $x(t+2)$：左移 $2$ & $x(t)$ & $x(t-2)$：右移 $2$ \\
-\midrule
-关键点 $t$ 值 & $-2,\ 1,\ 4$ & $0,\ 3,\ 6$ & $2,\ 5,\ 8$ \\
-峰高 & $1$ & $1$ & $1$ \\
-底边宽度 & $6$ & $6$ & $6$ \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
-  \draw[->] (-4,0) -- (10.5,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-3.4) -- (0,1.4);
-  % 上：x(t+2)，中：x(t)，下：x(t-2)
-  \draw[very thick,orange!85!black] (-2,0) -- (1,1) -- (4,0);
-  \begin{scope}[yshift=-1.5cm]
-    \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
-  \end{scope}
-  \begin{scope}[yshift=-3cm]
-    \draw[very thick,red!70!black] (2,0) -- (5,1) -- (8,0);
-  \end{scope}
-  % 对齐用虚线：三个峰
-  \draw[dotted,gray] (1,1) -- (1,-3);  \draw[dotted,gray] (3,-0.5) -- (3,-3); \draw[dotted,gray] (5,-2) -- (5,-3);
-  % 基线
-  \draw[gray] (-4,-1.5) -- (10.5,-1.5); \draw[gray] (-4,-3) -- (10.5,-3);
-  \node[orange!70!black,font=\small,anchor=west] at (4.6,0.55) {$x(t+2)$：左移 $2$};
-  \node[blue!70!black,font=\small,anchor=west] at (6.6,-1.0) {$x(t)$};
-  \node[red!70!black,font=\small,anchor=west] at (8.6,-2.5) {$x(t-2)$：右移 $2$};
-  \foreach \k/\yy in {-2/0,1/0,4/0,0/-1.5,3/-1.5,6/-1.5,2/-3,5/-3,8/-3} { \draw (\k,\yy+0.04) -- (\k,\yy-0.04) node[below,font=\tiny] {$\k$}; }
-\end{tikzpicture}
-\caption{平移：三条同样形状的三角形，只是位置不同。竖直点线对齐三个峰（$t=1,3,5$），相邻两个峰之间相差 $2$。形状、峰高、底边都不变。}
-\end{figure}
-
-\paragraph{平移改变了什么，没改变什么。}
-\begin{itemize}[nosep]
-\item \textbf{没变}：形状、峰高、面积（$\int x(t-t_0)\d t=\int x(t)\d t$）、能量。
-\item \textbf{变了}：每个点的位置整体移动 $t_0$。
-\end{itemize}
-对比前面：\textbf{压缩/拉伸}会改变宽度和面积，\textbf{翻转}改变方向，只有\textbf{平移}什么形状上的东西都不改。
-
-\paragraph{一个应用：回声（补充）。}声音的回声就是「原声加上延迟之后、变小的一份」。设 $x(t)$ 是一个声音片段，则
-\[
-y(t)=x(t)+\tfrac12\,x(t-8)
-\]
-是原声加上延迟 $8$、音量减半的回声。用上面的三角波示意：
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
-  \draw[->] (-1,0) -- (15.5,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.35);
-  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,red!70!black] (8,0) -- (11,0.5) -- (14,0);
-  \foreach \k in {0,3,6,8,11,14} { \draw (\k,0.02) -- (\k,-0.02) node[below,font=\scriptsize] {$\k$}; }
-  \node[blue!70!black,font=\small] at (3,1.15) {$x(t)$：原声};
-  \node[red!70!black,font=\small] at (11,0.65) {$\tfrac12x(t-8)$：回声（延迟 $8$，音量减半）};
-  \draw[<->,gray] (3,-0.35) -- (11,-0.35) node[midway,below,font=\scriptsize] {延迟 $8$};
-\end{tikzpicture}
-\caption{$y(t)=x(t)+\tfrac12x(t-8)$：原声（蓝）与延迟、减半的回声（红）。两个三角形没有重叠，所以相加后就是各自原样。}
-\end{figure}
-我没有核对书，这是我的例子。如果延迟小于信号宽度，两份会重叠，相加就要把重叠部分逐点加起来。下面把延迟改成 $4$（小于底边 $6$）：$y(t)=x(t)+\tfrac12x(t-4)$。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
-  % 上：原声与回声叠在一起
-  \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.2) -- (0,1.3);
-  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
-  \draw[very thick,red!70!black,dashed] (4,0) -- (7,0.5) -- (10,0);
-  \node[blue!70!black,font=\scriptsize,anchor=south] at (3,1.02) {$x(t)$};
-  \node[red!70!black,font=\scriptsize,anchor=south] at (7,0.52) {$\frac12x(t-4)$};
-  \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
-  % 下：相加的结果
-  \begin{scope}[yshift=-2.3cm]
-    \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
-    \draw[->] (0,-0.2) -- (0,1.3);
-    \draw[very thick,black] (0,0) -- (3,1) -- (4,0.6667) -- (6,0.3333) -- (7,0.5) -- (10,0);
-    \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
-    \node[font=\scriptsize,anchor=south] at (7.5,0.8) {$y(t)$：逐点相加};
-    \draw[dotted,gray] (4,0) -- (4,0.6667); \draw[dotted,gray] (6,0) -- (6,0.3333);
-  \end{scope}
-\end{tikzpicture}
-\caption{延迟 $4$ 时两份重叠在 $[4,6]$ 上。上：蓝 $x(t)$ 与红虚线 $\tfrac12x(t-4)$；下：相加后的 $y(t)$，关键点 $(0,0),(3,1),(4,\tfrac23),(6,\tfrac13),(7,\tfrac12),(10,0)$。验算：$t=4$ 时 $x(4)=\tfrac23$，回声刚开始为 $0$，和为 $\tfrac23$；$t=6$ 时 $x(6)=0$，回声 $\tfrac12x(2)=\tfrac13$。}
-\end{figure}
-
-\paragraph{周期信号：平移 $T$ 之后和原来一样。}第一份笔记里周期信号的定义 $x(t)=x(t+mT)$，用现在的话说就是：\textbf{平移任意整数个周期，信号不变}。再举一个熟悉的例子：$\cos t=\sin\bigl(t+\tfrac\pi2\bigr)$，即\textbf{把正弦左移 $\tfrac\pi2$ 就是余弦}。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.78cm,y=1.2cm,>=stealth]
-  \draw[->] (-6.6,0) -- (6.8,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-1.25) -- (0,1.5);
-  \draw[very thick,blue!70!black,domain=-6.28:6.28,samples=200,smooth] plot (\x,{sin(\x r)});
-  \draw[very thick,red!70!black,dashed,domain=-6.28:6.28,samples=200,smooth] plot (\x,{cos(\x r)});
-  \foreach \k/\lab in {-6.2832/{-2\pi},-3.1416/{-\pi},3.1416/{\pi},6.2832/{2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\scriptsize] {$\lab$}; }
-  % 图例放在曲线上方，避免压住曲线
-  \draw[very thick,blue!70!black] (-5.8,1.85) -- (-5.0,1.85);
-  \node[blue!70!black,font=\small,anchor=west] at (-4.9,1.85) {$\sin t$};
-  \draw[very thick,red!70!black,dashed] (-2.4,1.85) -- (-1.6,1.85);
-  \node[red!70!black,font=\small,anchor=west] at (-1.5,1.85) {$\cos t=\sin(t+\tfrac\pi2)$};
-  % 左移 π/2：从正弦的峰（t=π/2）指向余弦的峰（t=0）
-  \draw[->,gray,thick] (1.5708,1.18) -- (0.03,1.18) node[midway,above,font=\tiny] {左移 $\tfrac\pi2$};
-\end{tikzpicture}
-\caption{$\cos t=\sin(t+\tfrac\pi2)$：正弦（蓝）左移 $\tfrac\pi2$ 就得到余弦（红虚线）。再左移 $2\pi$（一个周期）则回到原来的曲线。}
-\end{figure}
-
-\paragraph{平移和压缩一起出现时的顺序（再强调一次）。}$x(2t-4)$ 的标准形式是 $x(2(t-2))$，所以\textbf{先压缩 $2$ 倍，再右移 $2$}，平移量是 $2$ 而不是 $4$。这是前面口诀第一句「化成标准形式」要防的坑。
+\example{\texorpdfstring{平移和压缩一起出现：$x(2t-4)$}{平移和压缩一起出现：x(2t-4)}}{压缩·平移}{}
+$x(2t-4)$ 的标准形式是 $x(2(t-2))$，所以\textbf{先压缩 $2$ 倍，再右移 $2$}，平移量是 $2$ 而不是 $4$。这是前面口诀第一句「化成标准形式」要防的坑。
 
 \begin{figure}[H]
 \centering
@@ -748,22 +729,8 @@ y(t)=x(t)+\tfrac12\,x(t-8)
 \end{tikzpicture}
 \caption{$x(2t-4)=x(2(t-2))$：先压缩得到 $x(2t)$（关键点 $0,3,6\to0,1.5,3$），再右移 $2$ 得到 $2,3.5,5$（蓝）。把 $b=4$ 直接当平移量会得到 $4,5.5,7$（红），整体偏右。验算：$t=3.5$ 时 $x(2\times3.5-4)=x(3)=1$，正是峰。}
 \end{figure}
-
-\paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，前面例 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
-
-\subsection{\texorpdfstring{组合变换：翻转、平移、压缩一起出现 $x(at+b)$}{组合变换：翻转、平移、压缩一起出现 x(at+b)}}
-\textbf{（补充：这一节是我把前面三小节合起来画图总结，课上老师是用例题讲的，结论我都用定义验算过。）}
-
-前面把口诀的二、三、四句分别拆开看过了。现在把它们放到一起：一般的自变量变换是 $x(at+b)$，其中 $a$ 可正可负，$b$ 是常数。
-\begin{remember}
-\textbf{一步到位的验算公式}：原来在 $t=p$ 处的点，在 $x(at+b)$ 里变到
-\[
-t=\frac{p-b}{a}
-\]
-处，纵轴值不变。（令 $at+b=p$ 解出 $t$。）画图时可以先用这个公式把三个关键点的新位置算出来，再用口诀检查。
-\end{remember}
-
-\paragraph{例：用不对称的三角波 $x(t)$ 画 $x(-2t+4)$。}选一个不对称的三角波，避免翻转之后恰好和原图重合：$x(t)$ 在 $t=0$ 为 $0$，$t=2$ 为峰（高 $1$），$t=6$ 回到 $0$。
+\example{\texorpdfstring{不对称三角波的~$x(-2t+4)$}{不对称三角波的 x(-2t+4)}}{翻转·压缩·平移}{}
+选一个不对称的三角波，避免翻转之后恰好和原图重合：$x(t)$ 在 $t=0$ 为 $0$，$t=2$ 为峰（高 $1$），$t=6$ 回到 $0$。
 
 \textbf{一步到位验算}：$a=-2$，$b=4$，$t=\dfrac{p-4}{-2}$：
 \begin{center}
@@ -829,9 +796,77 @@ t=\frac{p-b}{a}
 \item \textbf{左右搞反}：有负号就要翻转，翻转之后左端和右端互换（本例中原来的 $p=0$ 变到右端）。
 \end{enumerate}
 遇到拿不准的时候，用上面「一步到位」公式把三个关键点算一遍，对照就知道哪里错了。
+\example{回声：原声加上延迟、变小的一份}{平移的应用}{}
+声音的回声就是「原声加上延迟之后、变小的一份」。设 $x(t)$ 是一个声音片段，则
+\[
+y(t)=x(t)+\tfrac12\,x(t-8)
+\]
+是原声加上延迟 $8$、音量减半的回声。用上面的三角波示意：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  \draw[->] (-1,0) -- (15.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.35);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black] (8,0) -- (11,0.5) -- (14,0);
+  \foreach \k in {0,3,6,8,11,14} { \draw (\k,0.02) -- (\k,-0.02) node[below,font=\scriptsize] {$\k$}; }
+  \node[blue!70!black,font=\small] at (3,1.15) {$x(t)$：原声};
+  \node[red!70!black,font=\small] at (11,0.65) {$\tfrac12x(t-8)$：回声（延迟 $8$，音量减半）};
+  \draw[<->,gray] (3,-0.35) -- (11,-0.35) node[midway,below,font=\scriptsize] {延迟 $8$};
+\end{tikzpicture}
+\caption{$y(t)=x(t)+\tfrac12x(t-8)$：原声（蓝）与延迟、减半的回声（红）。两个三角形没有重叠，所以相加后就是各自原样。}
+\end{figure}
+我没有核对书，这是我的例子。如果延迟小于信号宽度，两份会重叠，相加就要把重叠部分逐点加起来。下面把延迟改成 $4$（小于底边 $6$）：$y(t)=x(t)+\tfrac12x(t-4)$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.55cm,y=1.6cm,>=stealth]
+  % 上：原声与回声叠在一起
+  \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-0.2) -- (0,1.3);
+  \draw[very thick,blue!70!black] (0,0) -- (3,1) -- (6,0);
+  \draw[very thick,red!70!black,dashed] (4,0) -- (7,0.5) -- (10,0);
+  \node[blue!70!black,font=\scriptsize,anchor=south] at (3,1.02) {$x(t)$};
+  \node[red!70!black,font=\scriptsize,anchor=south] at (7,0.52) {$\frac12x(t-4)$};
+  \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
+  % 下：相加的结果
+  \begin{scope}[yshift=-2.3cm]
+    \draw[->] (-1,0) -- (11.5,0) node[right,font=\small] {$t$};
+    \draw[->] (0,-0.2) -- (0,1.3);
+    \draw[very thick,black] (0,0) -- (3,1) -- (4,0.6667) -- (6,0.3333) -- (7,0.5) -- (10,0);
+    \foreach \k in {3,4,6,7,10} { \draw (\k,0.02)--(\k,-0.02) node[below,font=\tiny] {$\k$}; }
+    \node[font=\scriptsize,anchor=south] at (7.5,0.8) {$y(t)$：逐点相加};
+    \draw[dotted,gray] (4,0) -- (4,0.6667); \draw[dotted,gray] (6,0) -- (6,0.3333);
+  \end{scope}
+\end{tikzpicture}
+\caption{延迟 $4$ 时两份重叠在 $[4,6]$ 上。上：蓝 $x(t)$ 与红虚线 $\tfrac12x(t-4)$；下：相加后的 $y(t)$，关键点 $(0,0),(3,1),(4,\tfrac23),(6,\tfrac13),(7,\tfrac12),(10,0)$。验算：$t=4$ 时 $x(4)=\tfrac23$，回声刚开始为 $0$，和为 $\tfrac23$；$t=6$ 时 $x(6)=0$，回声 $\tfrac12x(2)=\tfrac13$。}
+\end{figure}
+\example{周期信号与「余弦就是左移的正弦」}{平移与周期}{}
+第一份笔记里周期信号的定义 $x(t)=x(t+mT)$，用现在的话说就是：\textbf{平移任意整数个周期，信号不变}。再举一个熟悉的例子：$\cos t=\sin\bigl(t+\tfrac\pi2\bigr)$，即\textbf{把正弦左移 $\tfrac\pi2$ 就是余弦}。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.78cm,y=1.2cm,>=stealth]
+  \draw[->] (-6.6,0) -- (6.8,0) node[right,font=\small] {$t$};
+  \draw[->] (0,-1.25) -- (0,1.5);
+  \draw[very thick,blue!70!black,domain=-6.28:6.28,samples=200,smooth] plot (\x,{sin(\x r)});
+  \draw[very thick,red!70!black,dashed,domain=-6.28:6.28,samples=200,smooth] plot (\x,{cos(\x r)});
+  \foreach \k/\lab in {-6.2832/{-2\pi},-3.1416/{-\pi},3.1416/{\pi},6.2832/{2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\scriptsize] {$\lab$}; }
+  % 图例放在曲线上方，避免压住曲线
+  \draw[very thick,blue!70!black] (-5.8,1.85) -- (-5.0,1.85);
+  \node[blue!70!black,font=\small,anchor=west] at (-4.9,1.85) {$\sin t$};
+  \draw[very thick,red!70!black,dashed] (-2.4,1.85) -- (-1.6,1.85);
+  \node[red!70!black,font=\small,anchor=west] at (-1.5,1.85) {$\cos t=\sin(t+\tfrac\pi2)$};
+  % 左移 π/2：从正弦的峰（t=π/2）指向余弦的峰（t=0）
+  \draw[->,gray,thick] (1.5708,1.18) -- (0.03,1.18) node[midway,above,font=\tiny] {左移 $\tfrac\pi2$};
+\end{tikzpicture}
+\caption{$\cos t=\sin(t+\tfrac\pi2)$：正弦（蓝）左移 $\tfrac\pi2$ 就得到余弦（红虚线）。再左移 $2\pi$（一个周期）则回到原来的曲线。}
+\end{figure}
 
 %==================================================================
-\section{离散信号的自变量变换}
+\section{离散信号的自变量变换}\label{sec:disc}
+\subsection{概念}
 口诀仍然是这四句，但老师说离散的情况 \textbf{$n$ 前面的系数基本只有 $+1$ 或 $-1$}，所以第三句（压缩、拉伸）一般用不上。原因：如果系数是 $2$ 或 $\tfrac12$，定义的时候有歧义，让大家回去自己想一想。\emph{（补充：我的理解是，$x[2n]$ 会把奇数位置的点丢掉，$x[n/2]$ 在 $n$ 为奇数时没有定义，都需要额外约定；老师没有展开，我没有核对书，以后课上讲到再补。）}
 
 \begin{figure}[H]
@@ -862,8 +897,34 @@ t=\frac{p-b}{a}
 \end{tikzpicture}
 \caption{离散情形不能随便缩放。上：$x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$）。中：$x[2n]$ 取 $x[-2],x[0],x[2]$，放在 $n=-1,0,1$，奇数位置的 $x[-1],x[1],x[3]$ 被丢掉了。下：$x[n/2]$ 把 $x[k]$ 放到 $n=2k$ 处，奇数 $n$ 要读 $x$ 在半整数处的值，没有定义。}
 \end{figure}
+\paragraph{离散的翻转。}$x[n]\to x[-n]$，同样以 $n=0$ 为对称轴：$n=p$ 处的值变到 $n=-p$ 处。用一个小序列 $x[n]$（$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0..3]=1$，后面的例题用的也是它）：翻转后 $x[-n]$ 在 $n=2$ 处是 $\tfrac12$，$n=1$ 处是 $-\tfrac12$，$n=0,-1,-2,-3$ 处是 $1$。
 
-\subsection{\texorpdfstring{例：$x[n-3]$ 与 $x[4-n]$}{例：x[n-3] 与 x[4-n]}}
+\begin{figure}[H]
+\centering
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
+  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.8) -- (0,1.4);
+  \stem{-2}{0.5} \stem{-1}{-0.5} \stem{0}{1} \stem{1}{1} \stem{2}{1} \stem{3}{1}
+  \foreach \k in {-2,3} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (0.5,1.45) {$x[n]$};
+\end{tikzpicture}
+\end{minipage}
+\begin{minipage}{0.48\textwidth}\centering
+\begin{tikzpicture}[x=0.38cm,y=1.1cm,>=stealth]
+  \draw[->] (-5,0) -- (6,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.8) -- (0,1.4);
+  \stem{2}{0.5} \stem{1}{-0.5} \stem{0}{1} \stem{-1}{1} \stem{-2}{1} \stem{-3}{1}
+  \foreach \k in {-3,2} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+  \node[font=\scriptsize,anchor=south] at (-0.5,1.45) {$x[-n]$：翻转};
+\end{tikzpicture}
+\end{minipage}
+\caption{离散翻转：每根竖线以 $n=0$ 为轴镜像，高度不变。}
+\end{figure}
+
+\paragraph{离散的平移。}$x[n-k]$（$k$ 为整数）右移 $k$，$x[n+k]$ 左移 $k$，形状不变，后面例题里的 $x[n-3]$ 就是这种。离散的平移量只能是整数（相邻采样点之间没有点可放）。
+\subsection{例题}
+\example{\texorpdfstring{$x[n-3]$ 与~$x[4-n]$}{x[n-3] 与 x[4-n]}}{右移·翻转}{}
 已知 $x[n]$：$x[-2]=\tfrac12$，$x[-1]=-\tfrac12$，$x[0]=x[1]=x[2]=x[3]=1$，其余为 $0$。
 
 \textbf{$x[n-3]$}：已经是标准形式；$n$ 前面没有负号，系数是 $1$，不用翻转也不用压缩；减号右移 $3$。形状不变，把坐标改一改：原来 $-2,-1$ 的点移到 $1,2$，原来 $0,1,2,3$ 的点移到 $3,4,5,6$。老师的大意：$x[n-3]$ 就是右移三个单位，形状都不变，把坐标改一改就可以了。
@@ -918,72 +979,43 @@ $-2$ & $2$ & $6$ & $n=6$ & $\tfrac12$\\
 \end{figure}
 
 %==================================================================
-\section{有了变换的概念，再看熟悉的信号}
-老师说：脑子里有了「信号翻转过来翻转过去、放大缩小、移来移去」的概念之后，对信号的看法会不一样。下面是他举的几个例子。
-
-\subsection{\texorpdfstring{$\Sa(\omega t)$ 与 $\dfrac{\sin\omega t}{t}$}{Sa(ωt) 与 sin(ωt)/t}}
-已知 $\Sa(t)=\dfrac{\sin t}{t}$，画 $\Sa(\omega t)=\dfrac{\sin\omega t}{\omega t}$（$\omega>0$）。只用第三条口诀：系数是 $\omega$，$\omega>1$ 就压缩 $\omega$ 倍。原来的零点 $\pm\pi,\pm2\pi,\dots$ 变成 $\pm\dfrac{\pi}{\omega},\pm\dfrac{2\pi}{\omega},\dots$，峰高仍是 $1$。
-
-老师接着说：前一节课让大家画的是 $\dfrac{\sin\omega t}{t}$，这个式子就是 $\omega\cdot\Sa(\omega t)$，所以只要把 $\Sa(\omega t)$ 再\textbf{乘一个 $\omega$}，峰高就是 $\omega$。这与上一份笔记里「峰高 $\omega$，零点 $\pm k\pi/\omega$」的结论一致。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.55cm,y=1.1cm,>=stealth]
-  \draw[->] (-10,0) -- (10.6,0) node[right,font=\small] {$t$};
-  \draw[->] (0,-0.5) -- (0,2.5);
-  \foreach \s in {1,-1} {
-    \draw[very thick,gray,domain=0.001:9.42,samples=120,smooth] plot ({\s*\x},{sin((\x) r)/\x});
-    \draw[very thick,red!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/(2*\x)});
-    \draw[very thick,blue!70!black,domain=0.001:9.42,samples=160,smooth] plot ({\s*\x},{sin((2*\x) r)/\x});
-  }
-  \node[left,font=\scriptsize] at (0,1) {$1$};
-  \node[left,font=\scriptsize] at (0,2) {$2$};
-  \foreach \k/\lab in {3.1416/{\pi},6.2832/{2\pi},-3.1416/{-\pi},-6.2832/{-2\pi}} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\lab$}; }
-  \foreach \k/\lab in {1.5708/{\frac\pi2},-1.5708/{-\frac\pi2}} { \draw[red!70!black] (\k,0.04)--(\k,-0.04) node[above,font=\tiny,red!70!black] {$\lab$}; }
-  \foreach \y/\c/\lab in {2.3/gray/{$\Sa(t)$},2.0/red!70!black/{$\Sa(2t)$：压缩，峰高 $1$},1.7/blue!70!black/{$\sin2t/t$：峰高 $2$}} {
-    \draw[very thick,\c] (-9.8,\y) -- (-9.0,\y);
-    \node[anchor=west,font=\scriptsize,\c] at (-8.9,\y) {\lab};
-  }
-\end{tikzpicture}
-\caption{取 $\omega=2$。灰：$\Sa(t)$，零点在 $\pm\pi,\pm2\pi,\dots$；红：$\Sa(2t)$，零点向纵轴靠拢到 $\pm\frac\pi2,\pm\pi,\dots$，峰高仍是 $1$；蓝：$\dfrac{\sin2t}{t}=2\Sa(2t)$，零点和红线相同，峰高变成 $2$。}
-\end{figure}
-
-\subsection{\texorpdfstring{第五章的例子：$X(\omega/T)$}{第五章的例子：X(ω/T)}}
-老师说第五章会碰到一个标准的例子：$X(\omega)$ 是一个带限信号（band-limited signal，只在 $[-\omega_0,\omega_0]$ 上有值，其他地方为 $0$），峰值（$\omega=0$ 处）为 $E$。问：$X\bigl(\tfrac{\omega}{T}\bigr)$ 是什么形状？答案：\textbf{峰值仍是 $E$}，两个端点从 $\pm\omega_0$ 变成 $\pm T\omega_0$。这就是第三条口诀：系数 $\tfrac1T$，$T>1$ 时系数小于 $1$，是拉伸。\emph{（课堂口述把 $X(\omega/T)$ 听成了「$X\omega$ 除以 $T$」，黑板上写的是 $X(\frac{\omega}{T})$，所以我按黑板写。黑板图没有写 $T$ 的具体值。）}
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[x=0.42cm,y=0.8cm,>=stealth]
-  % 左：X(omega)
-  \draw[->] (-4,0) -- (4.4,0) node[right,font=\scriptsize] {$\omega$};
-  \draw[->] (0,-0.2) -- (0,2.8);
-  \draw[very thick,blue!70!black,domain=-2:2,samples=60] plot (\x,{2*(1-(\x/2)^2)});
-  \node[left,font=\scriptsize] at (0,2) {$E$};
-  \node[below,font=\scriptsize] at (-2,0) {$-\omega_0$};
-  \node[below,font=\scriptsize] at (2,0) {$\omega_0$};
-  \node[font=\small] at (0,3.2) {$X(\omega)$};
-  % 右：X(omega/T), 取 T=2
-  \begin{scope}[xshift=7.2cm]
-    \draw[->] (-6.4,0) -- (6.8,0) node[right,font=\scriptsize] {$\omega$};
-    \draw[->] (0,-0.2) -- (0,2.8);
-    \draw[very thick,red!70!black,domain=-4:4,samples=80] plot (\x,{2*(1-(\x/4)^2)});
-    \node[left,font=\scriptsize] at (0,2) {$E$};
-    \node[below,font=\scriptsize] at (-4,0) {$-T\omega_0$};
-    \node[below,font=\scriptsize] at (4,0) {$T\omega_0$};
-    \node[font=\small] at (0,3.2) {$X(\omega/T)$（图中取 $T=2$）};
-  \end{scope}
-\end{tikzpicture}
-\caption{$X(\omega/T)$ 是 $X(\omega)$ 沿 $\omega$ 轴拉伸 $T$ 倍：峰值不变，宽度变成 $T$ 倍。左边的钟形只是示意，黑板上的具体形状同为一个拱形。}
-\end{figure}
-
-\subsection{\texorpdfstring{阶跃函数 $u(t)$ 的自变量变换}{阶跃函数 u(t) 的自变量变换}}
+\section{\texorpdfstring{阶跃信号~$u(t)$、$u[n]$~的自变量变换}{阶跃信号 u(t)、u[n] 的自变量变换}}\label{sec:step}
+\subsection{\texorpdfstring{概念：令括号里的式子等于~$0$}{概念：令括号里的式子等于 0}}
 \textbf{（补充：这一节是我为了把口诀用到最简单的信号上写的，课上老师只讲了 $u(t-t_0)$ 的右移，其余几个是我按口诀推的，笔记里的结论我自己都用定义验算过。）}
 
 $u(t)$ 只有一个「跳变」：括号里的数大于 $0$ 时为 $1$，小于 $0$ 时为 $0$。所以对 $u(at+b)$ 有一个最省事的办法，不用画中间步骤：
 \begin{remember}
 \textbf{令括号里的式子 $at+b$ 等于 $0$，解出的 $t$ 就是跳变位置；再看括号里 $>0$ 的那一侧，那一侧取 $1$。}
 \end{remember}
-再用口诀对照检查：
+
+\paragraph{离散：$u[n]$。}\textbf{（补充：离散的这一部分和连续的一样，是我按口诀推的，课上老师只在窗函数里用到了 $u[n-N]$、$u[n+2]$、$u[n-3]$。结论我都用定义验算过。）}
+
+$u[n]$ 的定义是 $n\ge0$ 时为 $1$，$n<0$ 时为 $0$。所以对 $u[n+b]$ 或 $u[-n+b]$ 也可以用同一个最省事的办法：
+\begin{remember}
+\textbf{令括号里的式子 $\ge0$，解出的 $n$ 的范围就是取 $1$ 的那一段；其余是 $0$。}（注意是「$\ge0$」，因为 $u[0]=1$，连续的 $u(t)$ 在边界上不规定值，这里的边界点是\textbf{包含}的。）
+\end{remember}
+
+\paragraph{离散情形的一个区别。}$u[n]$ 在 $n=0$ 处\textbf{有确定的值 $1$}，所以 $u[-n]$ 在 $n\le0$ 上是 $1$（包含 $n=0$），$u[n-3]$ 在 $n\ge3$ 上是 $1$（包含 $n=3$）。连续的 $u(t)$ 跳变点处的值不规定，离散的没有这个问题（\S\ref{sec:window} 里 $u[n+2]-u[n-3]$ 一题，边界点的处理就是靠这一点）。
+
+\paragraph{连续 $u(t)$ 与离散 $u[n]$ 的对比。}
+\begin{center}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+ & 连续 $u(t)$ & 离散 $u[n]$ \\
+\midrule
+跳变（边界）点的值 & 不规定 & 确定为 $1$\\
+取 $1$ 的条件 & 括号里 $>0$ & 括号里 $\ge0$\\
+$u(at)$ 与 $u[an]$（$a>0$）& 都等于原来的阶跃 & $u[2n]=u[n]$，但一般要小心\\
+\bottomrule
+\end{tabular}
+\end{center}
+\subsection{\texorpdfstring{证明：为什么 $u(2t)=u(t)$}{证明：为什么 u(2t)=u(t)}}\label{sec:step-proof}
+\paragraph{连续：压缩对阶跃没有效果。}$2t>0$ 和 $t>0$ 是同一个条件，跳变位置都在 $t=0$（而 $0$ 压缩任意倍还是 $0$）。更一般地，对任意 $a>0$，$u(at)=u(t)$。这是阶跃信号很特殊的地方：\textbf{拉伸压缩都不改变它的图像}，只有平移和翻转才会改变。\emph{（补充：这一点对「冲激信号」就不成立，$\delta(at)$ 与 $\delta(t)$ 差一个系数，那是第二章的内容，这里只提一句，不展开。）}
+
+\paragraph{离散：$u[2n]$ 怎么看（补充）。}$u[2n]$ 是把 $u[n]$ 每隔一个取一个点（$n=\dots,-2,-1,0,1,2,\dots$ 对应 $u$ 的 $\dots,-4,-2,0,2,4,\dots$ 这些位置），取出来的值是：负的 $n$ 全是 $0$，$n\ge0$ 全是 $1$，所以结果仍是 $u[n]$。这与连续的 $u(2t)=u(t)$ 一致。老师说过离散的 $n$ 系数是 $2$ 或 $\tfrac12$ 时「定义的时候有歧义」，所以这里 $u[2n]$ 只是一个特例，一般的离散信号在 $n$ 前面带 $2$ 会丢掉点，不能简单地说成「压缩」。$u[n/2]$ 则在 $n$ 为奇数时没有定义，更需要额外约定，我没有往下写。
+\subsection{例题}
+\example{\texorpdfstring{阶跃函数~$u(t)$ 的五个变换}{阶跃函数 u(t) 的五个变换}}{跳变位置}{}
+按上面的办法算五个，再用口诀对照检查：
 
 \begin{center}
 \begin{tabular}{@{}lllp{5.6cm}@{}}
@@ -1020,19 +1052,7 @@ $u(-2t+4)$ & $t=2$ & \textbf{左侧}（$-2t+4>0\iff t<2$） & 标准形式 $u(-2
 \end{minipage}
 \caption{$u(t)$ 的自变量变换。蓝色粗线是新信号，横轴上方一条线表示取值 $1$，下方（贴着横轴）表示取值 $0$。跳变点处的值不规定（和 $u(0)$ 任取一样）。}
 \end{figure}
-
-\paragraph{为什么 $u(2t)=u(t)$：压缩对阶跃没有效果。}$2t>0$ 和 $t>0$ 是同一个条件，跳变位置都在 $t=0$（而 $0$ 压缩任意倍还是 $0$）。更一般地，对任意 $a>0$，$u(at)=u(t)$。这是阶跃信号很特殊的地方：\textbf{拉伸压缩都不改变它的图像}，只有平移和翻转才会改变。\emph{（补充：这一点对「冲激信号」就不成立，$\delta(at)$ 与 $\delta(t)$ 差一个系数，那是第二章的内容，这里只提一句，不展开。）}
-
-\paragraph{离散情形的一个区别。}$u[n]$ 在 $n=0$ 处\textbf{有确定的值 $1$}，所以 $u[-n]$ 在 $n\le0$ 上是 $1$（包含 $n=0$），$u[n-3]$ 在 $n\ge3$ 上是 $1$（包含 $n=3$）。连续的 $u(t)$ 跳变点处的值不规定，离散的没有这个问题（前面 $u[n+2]-u[n-3]$ 一题里，边界点的处理就是靠这一点）。
-
-\subsection{\texorpdfstring{单位阶跃序列 $u[n]$ 的自变量变换}{单位阶跃序列 u[n] 的自变量变换}}
-\textbf{（补充：这一节和上一节一样，是我按口诀推的，课上老师只在窗函数里用到了 $u[n-N]$、$u[n+2]$、$u[n-3]$。结论我都用定义验算过。）}
-
-$u[n]$ 的定义是 $n\ge0$ 时为 $1$，$n<0$ 时为 $0$。所以对 $u[n+b]$ 或 $u[-n+b]$ 也可以用同一个最省事的办法：
-\begin{remember}
-\textbf{令括号里的式子 $\ge0$，解出的 $n$ 的范围就是取 $1$ 的那一段；其余是 $0$。}（注意是「$\ge0$」，因为 $u[0]=1$，连续的 $u(t)$ 在边界上不规定值，这里的边界点是\textbf{包含}的。）
-\end{remember}
-
+\example{\texorpdfstring{阶跃序列~$u[n]$ 的五个变换}{阶跃序列 u[n] 的五个变换}}{取 1 的范围}{}
 \begin{center}
 \begin{tabular}{@{}lllp{5.0cm}@{}}
 \toprule
@@ -1042,7 +1062,7 @@ $u[n-3]$ & $n-3\ge0$ & $n\ge3$ & 减号右移 $3$\\
 $u[n+2]$ & $n+2\ge0$ & $n\ge-2$ & 加号左移 $2$\\
 $u[-n]$ & $-n\ge0$ & $n\le0$ & 前有负号翻转\\
 $u[-n+4]$ & $-n+4\ge0$ & $n\le4$ & 标准形式 $u[-(n-4)]$：翻转，减号右移 $4$\\
-$u[2n]$ & $2n\ge0$ & $n\ge0$ & 与 $u[n]$ 的图相同（见下）\\
+$u[2n]$ & $2n\ge0$ & $n\ge0$ & 与 $u[n]$ 的图相同（见 \S\ref{sec:step-proof}）\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -1069,22 +1089,9 @@ $u[2n]$ & $2n\ge0$ & $n\ge0$ & 与 $u[n]$ 的图相同（见下）\\
 \caption{$u[n]$ 的自变量变换。每根竖线高 $1$，横轴上的小圆点表示取值 $0$；边界点 $n_0$ 处的值是确定的 $1$，所以 $u[n-3]$ 的第一根线在 $n=3$，$u[-n]$ 的最后一根线在 $n=0$。}
 \end{figure}
 
-\paragraph{$u[2n]$ 怎么看（补充）。}$u[2n]$ 是把 $u[n]$ 每隔一个取一个点（$n=\dots,-2,-1,0,1,2,\dots$ 对应 $u$ 的 $\dots,-4,-2,0,2,4,\dots$ 这些位置），取出来的值是：负的 $n$ 全是 $0$，$n\ge0$ 全是 $1$，所以结果仍是 $u[n]$。这与连续的 $u(2t)=u(t)$ 一致。老师说过离散的 $n$ 系数是 $2$ 或 $\tfrac12$ 时「定义的时候有歧义」，所以这里 $u[2n]$ 只是一个特例，一般的离散信号在 $n$ 前面带 $2$ 会丢掉点，不能简单地说成「压缩」。$u[n/2]$ 则在 $n$ 为奇数时没有定义，更需要额外约定，我没有往下写。
-
-\paragraph{和上一节连续的对比。}
-\begin{center}
-\begin{tabular}{@{}lcc@{}}
-\toprule
- & 连续 $u(t)$ & 离散 $u[n]$ \\
-\midrule
-跳变（边界）点的值 & 不规定 & 确定为 $1$\\
-取 $1$ 的条件 & 括号里 $>0$ & 括号里 $\ge0$\\
-$u(at)$ 与 $u[an]$（$a>0$）& 都等于原来的阶跃 & $u[2n]=u[n]$，但一般要小心\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\subsection{用阶跃函数平移、做减法，表示各种「窗」}
+%==================================================================
+\section{用阶跃信号表示「窗」}\label{sec:window}
+\subsection{概念：两个阶跃相减}
 \begin{enumerate}
 \item $u(t-t_0)$：阶跃函数 $u(t)$ 的自变量减 $t_0$，\textbf{减号右移 $t_0$}：从 $t=t_0$ 开始等于 $1$。
 \item 方波 $g(t)$：在 $0<t<t_0$ 上为 $1$，其他地方为 $0$。老师的写法：
@@ -1092,7 +1099,6 @@ $u(at)$ 与 $u[an]$（$a>0$）& 都等于原来的阶跃 & $u[2n]=u[n]$，但一
 g(t)=u(t)-u(t-t_0).
 \]
 理由：$u(t)$ 从 $0$ 开始是 $1$，$u(t-t_0)$ 从 $t_0$ 开始是 $1$，两个相减：$t<0$ 时都是 $0$，$t>t_0$ 时是 $1-1=0$，只在 $0<t<t_0$ 一段 $1-0=1$。
-\item 请大家画 $u(t+3)-u(t-3)$：加号左移 $3$，从 $t=-3$ 开始是 $1$；减号右移 $3$，从 $t=3$ 开始是 $1$；相减后 \textbf{在 $-3<t<3$ 上等于 $1$}，其他为 $0$。老师说这类题考察的核心就是「加号左移、减号右移」熟不熟。
 \end{enumerate}
 
 \begin{figure}[H]
@@ -1127,6 +1133,26 @@ g(t)=u(t)-u(t-t_0).
 \caption{用两个阶跃相减得到方波：$g(t)=u(t)-u(t-t_0)$。}
 \end{figure}
 
+\paragraph{离散的版本。}$g_N[n]$：在 $n=0,1,\dots,N-1$ 上为 $1$，其余为 $0$。写法：$g_N[n]=u[n]-u[n-N]$。理由：$u[n]$ 从 $0$ 开始是 $1$，$u[n-N]$ 从 $N$ 开始是 $1$，相减后只在 $0\le n\le N-1$ 上是 $1$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.38cm,y=0.9cm,>=stealth]
+  \draw[->] (-1,0) -- (10,0) node[right,font=\scriptsize] {$n$};
+  \draw[->] (0,-0.2) -- (0,1.5);
+  \foreach \k in {0,1,2,3} { \stem{\k}{1} }
+  \foreach \k in {-1} { \stemzero{\k} }
+  \foreach \k in {4,5,6} { \stemzero{\k} }
+  \foreach \k in {0,3} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
+  \node[below,font=\tiny] at (4,-0.04) {$N$};
+  \node[font=\scriptsize,anchor=south] at (4,1.55) {$g_N[n]=u[n]-u[n-N]$（图中 $N=4$）};
+\end{tikzpicture}
+\caption{离散的「窗」$g_N[n]=u[n]-u[n-N]$（图中 $N=4$）：在 $n=0,1,\dots,N-1$ 上为 $1$。}
+\end{figure}
+\subsection{例题}
+\example{\texorpdfstring{$u(t+3)-u(t-3)$}{u(t+3)-u(t-3)}}{方波}{}
+请大家画 $u(t+3)-u(t-3)$：加号左移 $3$，从 $t=-3$ 开始是 $1$；减号右移 $3$，从 $t=3$ 开始是 $1$；相减后 \textbf{在 $-3<t<3$ 上等于 $1$}，其他为 $0$。老师说这类题考察的核心就是「加号左移、减号右移」熟不熟。
+
 \begin{figure}[H]
 \centering
 \begin{minipage}{0.32\textwidth}\centering
@@ -1159,30 +1185,13 @@ g(t)=u(t)-u(t-t_0).
 \end{minipage}
 \caption{$u(t+3)-u(t-3)$ 在 $-3<t<3$ 上等于 $1$。}
 \end{figure}
-
-\subsubsection*{离散的版本}
-\begin{enumerate}
-\item $g_N[n]$：在 $n=0,1,\dots,N-1$ 上为 $1$，其余为 $0$。写法：$g_N[n]=u[n]-u[n-N]$。理由：$u[n]$ 从 $0$ 开始是 $1$，$u[n-N]$ 从 $N$ 开始是 $1$，相减后只在 $0\le n\le N-1$ 上是 $1$。
-\item 请画 $u[n+2]-u[n-3]$：$u[n+2]$ 从 $n=-2$ 开始是 $1$，$u[n-3]$ 从 $n=3$ 开始是 $1$，相减后\textbf{在 $n=-2,-1,0,1,2$（共 5 个点）上是 $1$，其余为 $0$}。
-\end{enumerate}
+\example{\texorpdfstring{$u[n+2]-u[n-3]$}{u[n+2]-u[n-3]}}{5 个点}{}
+请画 $u[n+2]-u[n-3]$：$u[n+2]$ 从 $n=-2$ 开始是 $1$，$u[n-3]$ 从 $n=3$ 开始是 $1$，相减后\textbf{在 $n=-2,-1,0,1,2$（共 5 个点）上是 $1$，其余为 $0$}。
 老师特别提醒：离散的这类题比连续的\textbf{稍微烧脑}，难点是「\textbf{在边界处哪里开始等于零}」要算清楚：右边在 $n=3$ 处，两个阶跃都是 $1$，相减等于 $0$，所以右端点是 $n=2$ 而不是 $n=3$。
 \emph{（转写里老师口述的区间听起来是「负二到二」，板书我没有找到这一道题的画面，上面的结果是我按定义算的。）}
 
 \begin{figure}[H]
 \centering
-\begin{minipage}{0.48\textwidth}\centering
-\begin{tikzpicture}[x=0.38cm,y=0.9cm,>=stealth]
-  \draw[->] (-1,0) -- (10,0) node[right,font=\scriptsize] {$n$};
-  \draw[->] (0,-0.2) -- (0,1.5);
-  \foreach \k in {0,1,2,3} { \stem{\k}{1} }
-  \foreach \k in {-1} { \stemzero{\k} }
-  \foreach \k in {4,5,6} { \stemzero{\k} }
-  \foreach \k in {0,3} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
-  \node[below,font=\tiny] at (4,-0.04) {$N$};
-  \node[font=\scriptsize,anchor=south] at (4,1.55) {$g_N[n]=u[n]-u[n-N]$（图中 $N=4$）};
-\end{tikzpicture}
-\end{minipage}
-\begin{minipage}{0.48\textwidth}\centering
 \begin{tikzpicture}[x=0.38cm,y=0.9cm,>=stealth]
   \draw[->] (-4,0) -- (6,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-0.2) -- (0,1.5);
@@ -1191,11 +1200,32 @@ g(t)=u(t)-u(t-t_0).
   \foreach \k in {-2,2} { \draw (\k,0.04)--(\k,-0.04) node[below,font=\tiny] {$\k$}; }
   \node[font=\scriptsize,anchor=south] at (1,1.55) {$u[n+2]-u[n-3]$};
 \end{tikzpicture}
-\end{minipage}
-\caption{离散的「窗」：左，$g_N[n]$（$N=4$）；右，$u[n+2]-u[n-3]$ 在 $n=-2,\dots,2$ 上为 $1$。}
+\caption{$u[n+2]-u[n-3]$ 在 $n=-2,\dots,2$ 上为 $1$。}
 \end{figure}
 
-\subsection{把序列写成冲激的和}
+%==================================================================
+\section{把序列写成冲激的和}\label{sec:delta}
+\subsection{概念}
+\paragraph{一个著名的公式（书第 45 页，式 2-28）：序列等于平移并加权的单位脉冲之和。}
+\begin{remember}
+\[
+x[n]=\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k]
+\]
+\end{remember}
+
+老师是做完 \S\ref{sec:ex-delta} 的例题之后把它写在黑板上的，说「你通过做刚才的题，对这个公式会觉得它好像是对的」。
+
+\subsection{证明：为什么成立（老师的解释）}
+老师的解释：
+\begin{itemize}[nosep]
+\item $x[k]$ 是 $x[n]$ 在 $n=k$ 处的值（一个数）；
+\item $\delta[n-k]$ 是在 $n=k$ 处为 $1$、其他处为 $0$ 的信号；
+\item 两者相乘，得到「只在 $n=k$ 处等于 $x[k]$，其余处为 $0$」的信号；
+\item 对每一个不同的 $k$ 都这样做，再全部加起来，每个位置 $n$ 上都取到了正确的值。
+\end{itemize}
+老师说这个公式「稍微有点抽象」，第二章还会再讲；他认为只要脑子里有「一来一去」（移来移去）的概念，这个公式应该是能理解的。下面例题里的五项相加，就是它的一个具体实例（只有 $k=-2,\dots,2$ 这五项非零）。
+\subsection{例题}\label{sec:ex-delta}
+\example{\texorpdfstring{把~$x[-2..2]=1,2,1,-1,-2$ 写成脉冲的和}{把 x[-2..2]=1,2,1,-1,-2 写成脉冲的和}}{五项之和}{}
 老师给的例子：$x[n]$ 在 $n=-2,-1,0,1,2$ 处分别是 $1,2,1,-1,-2$，其余为 $0$。问：能看出它等于下面这个式子吗？
 \[
 x[n]=\delta[n+2]+2\,\delta[n+1]+\delta[n]-\delta[n-1]-2\,\delta[n-2].
@@ -1265,21 +1295,6 @@ x[n]=\delta[n+2]+2\,\delta[n+1]+\delta[n]-\delta[n-1]-2\,\delta[n-2].
 \end{minipage}
 \caption{把 $x[n]$ 拆成五个平移并加权的单位脉冲：五个分量相加就是左上角的 $x[n]$。（数据来自黑板：$x[-2..2]=1,2,1,-1,-2$。）}
 \end{figure}
-
-\subsubsection*{一个著名的公式（书第 45 页，式 2-28）}
-\begin{remember}
-\[
-x[n]=\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k]
-\]
-\end{remember}
-老师先写在黑板上，说「你通过做刚才的题，对这个公式会觉得它好像是对的」，并解释：
-\begin{itemize}[nosep]
-\item $x[k]$ 是 $x[n]$ 在 $n=k$ 处的值（一个数）；
-\item $\delta[n-k]$ 是在 $n=k$ 处为 $1$、其他处为 $0$ 的信号；
-\item 两者相乘，得到「只在 $n=k$ 处等于 $x[k]$，其余处为 $0$」的信号；
-\item 对每一个不同的 $k$ 都这样做，再全部加起来，每个位置 $n$ 上都取到了正确的值。
-\end{itemize}
-老师说这个公式「稍微有点抽象」，第二章还会再讲；他认为只要脑子里有「一来一去」（移来移去）的概念，这个公式应该是能理解的。上面例子里的五项相加，就是它的一个具体实例（只有 $k=-2,\dots,2$ 这五项非零）。
 
 %==================================================================
 \section{本节要记住的清单}

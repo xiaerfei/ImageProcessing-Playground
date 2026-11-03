@@ -1,6 +1,7 @@
 % !TeX program = xelatex
 % 编译：xelatex 典型的信号.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
 % 来源：2022 浙江大学《信号与系统》胡浩基老师，第 1 章前两节课（视频约 59 分钟）。
+% 体例：有证明的主题（偶奇分解、δ 与 u 的关系、Sa 的积分公式）按老师的讲法组织——概念 → 证明 → 例题；纯概念的小节（分类、基本信号的定义）保持原样。
 \documentclass[UTF8,a4paper,11pt]{ctexart}
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
@@ -17,7 +18,7 @@
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
 
-\newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
+\newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt,nobreak=true]{rememberbox}
 \newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
 \newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
@@ -48,7 +49,7 @@
    \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
    \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
    \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
-  \nopagebreak\addvspace{0.6ex}}
+  \nobreak\vskip0.6ex\relax\csname @afterheading\endcsname}
 % 小标题（接着同一段往下写，不进大纲）：青色三角 + 粗体。把原来的黑色粗体 \paragraph 统一换成它，避免被当成章节。
 \newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
 \renewcommand{\paragraph}[1]{\point{#1}}
@@ -216,7 +217,8 @@ x[n]=x[n+mN],\quad m\in\mathbb{Z},\ N\ \text{为正整数}
 \caption{偶、奇信号。左：偶信号关于纵轴对称，$t$ 与 $-t$ 两点等高（红点，取 $t=1.2$，值都是 $\cos1.2\approx0.36$）；右：奇信号关于原点对称，两点高度相反（$\sin(\pm1.2)=\pm0.93$），两点的连线穿过原点。}
 \end{figure}
 
-\subsubsection*{本课第一个真正的新知识：任何信号都能唯一分解成「偶 $+$ 奇」}
+\subsection{\texorpdfstring{偶奇分解（本课第一个真正的新知识）：任何信号都能唯一分解成「偶 $+$ 奇」}{偶奇分解（本课第一个真正的新知识）：任何信号都能唯一分解成「偶 + 奇」}}
+\subsubsection*{概念：定理}\phantomsection\addcontentsline{toc}{subsubsection}{概念：定理}
 \begin{remember}
 \textbf{定理。}对任意信号 $x(t)$（定义域关于原点对称，如 $t\in\mathbb{R}$），存在\textbf{唯一}的一对信号 $x_e(t)$、$x_o(t)$，其中 $x_e$ 是偶信号、$x_o$ 是奇信号，使得
 \[
@@ -224,7 +226,14 @@ x(t)=x_e(t)+x_o(t),\qquad\text{并且}\quad
 x_e(t)=\frac{x(t)+x(-t)}{2},\quad x_o(t)=\frac{x(t)-x(-t)}{2}.
 \]
 \end{remember}
-这里 $e$ 是 even，$o$ 是 odd，下标是这么来的。要证明的有两件事：\textbf{存在}（至少有一种拆法）和\textbf{唯一}（至多有一种拆法）。
+这里 $e$ 是 even，$o$ 是 odd，下标是这么来的。
+
+\textbf{离散的版本}：把 $(t)$ 全换成 $[n]$ 即可：
+$x_e[n]=\dfrac{x[n]+x[-n]}{2}$，$x_o[n]=\dfrac{x[n]-x[-n]}{2}$。
+老师借此再次强调：连续和离散只是自变量换了写法，道理完全一样，后面很多地方只讲其中之一。
+
+\subsubsection*{证明}\phantomsection\addcontentsline{toc}{subsubsection}{证明：存在性与唯一性}
+要证明的有两件事：\textbf{存在}（至少有一种拆法）和\textbf{唯一}（至多有一种拆法）。
 
 \paragraph{证明一：存在性。}直接把上面的 $x_e,x_o$ 定义出来，验三条：
 \begin{enumerate}[nosep]
@@ -296,7 +305,8 @@ e(t)=\frac{x(t)+x(-t)}{2},\quad o(t)=\frac{x(t)-x(-t)}{2}
 
 存在性 $+$ 唯一性，定理得证。$\blacksquare$
 
-\paragraph{一个例子。}$x(t)=e^{t}$：$x(-t)=e^{-t}$，所以
+\example{\texorpdfstring{$e^{t}$}{exp(t)}~的偶奇分解}{偶部 cosh、奇部 sinh}{}
+$x(t)=e^{t}$：$x(-t)=e^{-t}$，所以
 \[
 x_e(t)=\frac{e^{t}+e^{-t}}{2}=\cosh t,\qquad x_o(t)=\frac{e^{t}-e^{-t}}{2}=\sinh t,
 \]
@@ -320,10 +330,6 @@ x_e(t)=\frac{e^{t}+e^{-t}}{2}=\cosh t,\qquad x_o(t)=\frac{e^{t}-e^{-t}}{2}=\sinh
 \end{figure}
 
 \emph{（说明：第一节课老师把唯一性留作思考题，说下节课会证；第二节课开头（约 37:11）他说，已经把「奇、偶信号分解是唯一的」的严格证明发在\textbf{课程群}里了，课上没有再讲。所以视频里没有他的证明，以上写法是我（补充）的，其中验算存在性那一段对应他第一节课「自己验证一下」的要求。）}
-
-\textbf{离散的版本}：把 $(t)$ 全换成 $[n]$ 即可：
-$x_e[n]=\dfrac{x[n]+x[-n]}{2}$，$x_o[n]=\dfrac{x[n]-x[-n]}{2}$。
-老师借此再次强调：连续和离散只是自变量换了写法，道理完全一样，后面很多地方只讲其中之一。
 
 \subsection{能量信号与功率信号}
 \textbf{离散}：能量是所有取值的模的平方求和，功率是在有限区间上把能量取平均。
@@ -402,6 +408,7 @@ u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 \textbf{$u(0)$ 等于几？} 学生有人答「没定义」，也有答 $0$、$1$、$\tfrac12$。老师说：\textbf{都可以}，取任意值都行，哪怕 $u(0)=-1$ 也可以；不是随口一说，第二章会严格讲，背后有深刻的数学道理。\emph{（补充：根据我对后续内容的理解，这与「一个点的值不影响积分」有关，但课上没展开，我不替老师下结论。）}
 
 \subsection{\texorpdfstring{冲激信号 $\delta(t)$（书上第 12 页）}{冲激信号 δ(t)（书上第 12 页）}}
+\subsubsection*{概念：定义与强度}\phantomsection\addcontentsline{toc}{subsubsection}{概念：定义与强度}
 \[
 \delta(t)=\begin{cases}+\infty,&t=0\\0,&t\neq 0\end{cases}
 \qquad\text{且人为规定}\qquad
@@ -411,7 +418,7 @@ u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 
 课件上还写了它想描述的物理现象：时间极短、物理量取值极大，比如雷电、冲击力、电容经小电阻充电。
 
-\subsubsection*{先分清「幅度」和「强度」（课件图上那个箭头旁边的 1 是什么）}
+\point{先分清「幅度」和「强度」（课件图上那个箭头旁边的 1 是什么）}\par
 课件把 $\delta(t)$ 画成一根带箭头的竖线，旁边标着 \textbf{1}。这个 1 \textbf{不是高度}：$\delta(t)$ 在 $0$ 处的高度是无穷大，没有一个有限数值。这个 1 是\textbf{强度}（strength，也叫权值），即 $\int_{-\infty}^{+\infty}\delta(t)\d t$，也就是脉冲「面积」的大小。
 
 \begin{remember}
@@ -475,7 +482,7 @@ u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 \caption{宽 $\Delta$、高 $\frac1\Delta$ 的矩形脉冲：$\Delta$ 越小，脉冲越窄越高，但面积（宽 $\times$ 高）始终是 $1$。$\Delta\to0$ 时高度趋于无穷，面积仍是 $1$，这就是 $\delta(t)$。}
 \end{figure}
 
-\subsubsection*{$\delta(t)=\dfrac{\d u(t)}{\d t}$ 到底怎么理解}
+\subsubsection*{$\delta(t)=\dfrac{\d u(t)}{\d t}$ 到底怎么理解（直观说明）}\phantomsection\addcontentsline{toc}{subsubsection}{δ(t)=du(t)/dt 到底怎么理解（直观说明）}
 老师给的联系：
 \[
 u(t)=\int_{-\infty}^{t}\delta(\tau)\d\tau,\qquad \delta(t)=\frac{\d u(t)}{\d t}
@@ -483,14 +490,10 @@ u(t)=\int_{-\infty}^{t}\delta(\tau)\d\tau,\qquad \delta(t)=\frac{\d u(t)}{\d t}
 \begin{itemize}[nosep]
 \item \textbf{积分式好理解}：$t<0$ 时，积分区间 $(-\infty,t)$ 碰不到冲激，结果 $0$；$t>0$ 时，积分区间把整个冲激包了进去，结果是它的强度 $1$。正好就是 $u(t)$。
 \item \textbf{求导式要小心}：$u(t)$ 在 $t\neq0$ 处是常数，导数为 $0$；在 $t=0$ 处\textbf{不连续}，按高等数学的规则，不连续点\textbf{普通导数不存在}。所以课件在这里特意写：\emph{由于 $u(t)$ 在跳变点 $t=0$ 处无定义，故上述式不能作为定义式}。也就是说：不能用「阶跃求导」来定义 $\delta(t)$，这个式子只是 $\delta(t)$ 与 $u(t)$ 之间的\textbf{关系}。
-\item 工程上放心写这个式子，意思是\textbf{广义导数}（分布意义下的导数）：一个信号在某点有大小为 $A$ 的向上跳变，它的导数在该点带出一个强度为 $A$ 的冲激，即
-\[
-x(t)=\begin{cases}0,&t<0\\5,&t>0\end{cases}\ \Longrightarrow\ \frac{\d x(t)}{\d t}=5\,\delta(t),\qquad
-u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
-\]
-对应前面的窄脉冲图像：把阶跃的跳变拉成一小段斜坡，斜坡的斜率是（跳变量）$/\Delta$，斜率就是窄脉冲的高度，面积就是跳变量。
+\item 工程上放心写这个式子，意思是\textbf{广义导数}（分布意义下的导数）：一个信号在某点有大小为 $A$ 的向上跳变，它的导数在该点带出一个强度为 $A$ 的冲激（例子见下面两道例题）。
+\item 这个规则的直观理由，对应前面的窄脉冲图像：把阶跃的跳变拉成一小段斜坡，斜坡的斜率是（跳变量）$/\Delta$，斜率就是窄脉冲的高度，面积就是跳变量。
 \end{itemize}
-老师明确说：现在有个印象就行，学完第二章才会真正理解。
+老师明确说：现在有个印象就行，学完第二章才会真正理解。严格的证明（广义函数）见附录 A.6，那是我补的预习材料，课上没讲。
 
 \newcommand{\rampcol}[3]{%
 \begin{tikzpicture}[x=0.75cm,y=0.7cm,>=stealth]
@@ -515,7 +518,17 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \caption{把阶跃的跳变拉成宽 $\Delta$ 的斜坡。上排（蓝）：斜坡，在 $[0,\Delta]$ 上从 $0$ 升到 $1$；下排（红）：它的导数，在 $[0,\Delta]$ 上等于斜率 $\frac1\Delta$，其余处为 $0$。$\Delta$ 越小，导数越窄越高，面积（跳变量 $1$）不变，极限就是 $\delta(t)$。}
 \end{figure}
 
-\textbf{关于「不连续所以不能求导」的两个常见误解}（来自我和豆包的对话，我核对后保留）：
+\example{跳变量为 5 的阶跃}{导数是强度 5 的冲激}{}
+\[
+x(t)=\begin{cases}0,&t<0\\5,&t>0\end{cases}\ \Longrightarrow\ \frac{\d x(t)}{\d t}=5\,\delta(t).
+\]
+
+\example{\texorpdfstring{$u(t-2)$}{u(t-2)}~的导数}{平移后的单位冲激}{}
+\[
+u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
+\]
+
+\point{关于「不连续所以不能求导」的两个常见误解}（来自我和豆包的对话，我核对后保留）：
 \begin{itemize}[nosep]
 \item 不是「$\delta$ 不连续所以没法求导」：$\delta(t)$ 根本不是普通函数，「连续、间断」这类逐点的说法都用不上它；它是靠「对别的函数做积分的结果」来定义的（第二章的筛选性质）。
 \item 反而是：在广义函数的体系里，间断点也能求导（得到 $\delta$），$\delta$ 本身还能继续求导，$\delta'(t)$ 叫冲激偶，后面会学。
@@ -523,6 +536,7 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \emph{（来源说明：这一小节是我读你和豆包的对话，并对照课件截图后整理的，不是老师课上讲的内容。其中「广义导数」「冲激偶」是课程第二章才系统讲的，这里只作提前说明；我没有查教材，数学上的陈述是我按标准结论核对过的。）}
 
 \subsection{\texorpdfstring{抽样函数 $\Sa(t)$（书上第 14 页，式 1.2.3）}{抽样函数 Sa(t)（书上第 14 页，式 1.2.3）}}
+\subsubsection*{概念：定义与形状}\phantomsection\addcontentsline{toc}{subsubsection}{概念：定义与形状}
 \[
 \Sa(t)=\frac{\sin t}{t}\ (t\neq0),\qquad \Sa(0)=1
 \]
@@ -600,7 +614,7 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \caption{$\dfrac{\sin\omega t}{t}$（$\omega>0$）：$\omega$ 变大，峰高按 $\omega$ 倍升高，零点按 $1/\omega$ 向里压缩。}
 \end{figure}
 
-\subsubsection*{图解 $\Sa(t)$ 的几个关键性质}
+\subsubsection*{概念：图解 $\Sa(t)$ 的几个关键性质}\phantomsection\addcontentsline{toc}{subsubsection}{概念：图解 Sa(t) 的几个关键性质}
 上面列了几条性质，这里每条配一张图，一条一张。
 
 \paragraph{性质 1：$\Sa(0)=1$（为什么在 $0$ 处要「补一个值」）。}
@@ -733,6 +747,7 @@ $\Sa(t)$ 的波瓣分两类：
 \item 峰值被 $\pm\frac1{|t|}$ 夹住（虚线），所以越往外越小，衰减得很慢（反比于 $|t|$），不是指数衰减。
 \end{itemize}
 
+\subsubsection*{结论：三个必须背的积分公式}\phantomsection\addcontentsline{toc}{subsubsection}{结论：三个必须背的积分公式}
 \begin{remember}
 \[
 \int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=\pi,\qquad
@@ -742,7 +757,7 @@ $\Sa(t)$ 的波瓣分两类：
 \end{remember}
 老师说：这三个公式第三章推傅里叶变换要用，必须背。
 
-\subsubsection*{图解三个公式}
+\point{图解三个公式}\par
 \textbf{公式 1：整条线上的面积是 $\pi$。}积分的几何意义是「曲线和横轴之间的面积」，横轴上方的部分算正，下方的部分算负。$\Sa(t)$ 的波瓣一正一负交替出现，所以总面积是「正面积减去负面积」。
 
 \begin{figure}[H]
@@ -873,7 +888,7 @@ $\Sa(t)$ 的波瓣越往外越小，但并不是「小到可以忽略」。看�
 \end{figure}
 这也是下面「三个公式之间的关系」里用变量代换证明的几何版本：横轴压缩 $\omega$ 倍，纵轴拉高 $\omega$ 倍，面积不变。\emph{（这个几何解释是我（补充）的，课上老师做的是变量代换。）}
 
-\subsubsection*{三个公式之间的关系}
+\subsubsection*{证明：三个公式之间的关系}\phantomsection\addcontentsline{toc}{subsubsection}{证明：三个公式之间的关系}
 \begin{enumerate}
 \item \textbf{整条线 $\leftrightarrow$ 半条线}：$\frac{\sin t}{t}$ 是偶函数，图像关于纵轴对称，所以 $0$ 右边和 $0$ 左边的积分相等，各占一半：$\pi/2$。
 \item \textbf{$\omega$ 的版本}：令 $s=\omega t$（$\omega>0$ 保证积分上下限不变号），则 $t=s/\omega$，$\d t=\d s/\omega$：
@@ -885,7 +900,7 @@ $\Sa(t)$ 的波瓣越往外越小，但并不是「小到可以忽略」。看�
 $\omega$ 约掉了。（这是老师 33:30--35:00 在黑板上做的变量代换；40:44 他又说「这个变种上次课证明过」。）
 \end{enumerate}
 
-\subsubsection*{证明 $\displaystyle\int_0^{+\infty}\frac{\sin t}{t}\d t=\frac{\pi}{2}$（板书约 43--54 分钟，参数求导法）}
+\subsubsection*{证明 $\displaystyle\int_0^{+\infty}\frac{\sin t}{t}\d t=\frac{\pi}{2}$（板书约 43--54 分钟，参数求导法）}\phantomsection\addcontentsline{toc}{subsubsection}{证明：∫(0→+∞) sin t / t dt = π/2（板书约 43--54 分钟，参数求导法）}
 \begin{note}
 这一段是 44:16--53:00，老师说这是「超越书上内容」的补充：书上的证明要用复变函数，他给的是不用复变函数的初等证明；目的有两个，一是严谨，二是让大家记住那三个公式（它们在第三章开始不断用到）。下面的步骤与理由按老师的讲解整理，我对照了板书；各步的措辞是我的，数学上我自己代入验算过（见第 3 步）。
 \end{note}
@@ -965,7 +980,7 @@ I(0)=\int_0^{+\infty}\frac{\sin t}{t}\d t=-\arctan 0+\frac{\pi}{2}=\frac{\pi}{2}
 
 \emph{（补充：第 2 步「求导进积分号」和第 6 步「$a\to0^{+}$ 时 $I(a)\to I(0)$」严格来说需要论证收敛性，重转写里老师没有展开，他是直接把 $a=0$ 代入的，这一点是我看出来的，不是他说的。完整的论证见下面「收敛性与严格性」。）}\par\smallskip\textbf{老师在第 5 步的原话要点}：$a\to+\infty$ 时 $e^{-at}$ 趋于 0，被积函数每一点都趋于 0，所以 $I(+\infty)=0$；第 6 步「最后一步很有趣」：令 $a=0$，$e^{-0\cdot t}=1$，$I(0)$ 就是要求的积分。
 
-\subsubsection*{收敛性与严格性（补充）}
+\subsubsection*{收敛性与严格性（补充）}\phantomsection\addcontentsline{toc}{subsubsection}{收敛性与严格性（补充）}
 \begin{note}
 这一小节\textbf{不是老师课上讲的}，是我为了回答「证明里每一步为什么可以这样做」补的，用的是微积分里的标准做法，我自己核对过每一步。初学时可以先跳过，知道「证明里有这几个需要检查的地方」就够了。
 \end{note}

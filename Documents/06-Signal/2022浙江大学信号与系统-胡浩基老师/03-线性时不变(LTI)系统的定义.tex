@@ -22,7 +22,7 @@
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
 \newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
-\newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
+\newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt,nobreak=true]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
 \newmdenv[backgroundcolor=gray!8,linecolor=gray!60,linewidth=0.8pt,innertopmargin=5pt,innerbottommargin=5pt]{skipbox}
 \newenvironment{skippable}{\begin{skipbox}\textbf{可跳过（补充）}\par\smallskip}{\end{skipbox}}
@@ -61,7 +61,7 @@
    \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
    \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
    \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
-  \nopagebreak\addvspace{0.6ex}}
+  \nobreak\vskip0.6ex\relax\csname @afterheading\endcsname}
 % 小标题（接着同一段往下写，不进大纲）：青色三角 + 粗体。把原来的黑色粗体 \paragraph 统一换成它，避免被当成章节。
 \newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
 \renewcommand{\paragraph}[1]{\point{#1}}
@@ -200,7 +200,13 @@
 \subsubsection{那为什么还研究它：线性是合理的近似（09:41--16:38）}
 老师的答案是黑板上那行大字：\textbf{「线性只是对现实问题的近似」}（口述原话是「线性只是对现实问题的合理化的近似」）。
 
-他的解释是：\textbf{与其说世界上有很多线性系统，不如说现实里的系统太复杂了，我们只好用最简单的模型——线性——去近似它}。他说这个道理他「是很久以后才自己悟出来」的。接下来举两个例子。
+他的解释是：\textbf{与其说世界上有很多线性系统，不如说现实里的系统太复杂了，我们只好用最简单的模型——线性——去近似它}。他说这个道理他「是很久以后才自己悟出来」的。
+
+\begin{remember}
+\textbf{研究线性系统的理由：}世界上没有绝对的线性系统，但\textbf{线性模型是最简单的近似}，用它我们才能把复杂的现实问题分析出来。这是工程里经常做的近似。
+\end{remember}
+
+接下来举两个例子体会这个近似。
 
 \example{摩擦力公式~\texorpdfstring{$F=\mu N$}{F=μN}}{线性近似}{10:40--14:57}
 老师说，中学学过压力 $N$ 和摩擦力 $F$ 的公式（黑板上画了一块木板被拖着走，压力 $N$ 向下，摩擦力向后）：
@@ -257,10 +263,6 @@ F=S(N)\approx S(0)+S'(0)\,N+\frac{S''(0)}{2!}N^2+\cdots
 \item 也不是完全没有办法，只是做近似的分析。在 PSPICE 或 Protel 这类软件里，三极管的建模没有这么简单，用的是更复杂的\textbf{非线性}函数方程；
 \item 但如果我们只是为了考试，或者只需要得到一个\textbf{感性的认识}，那么线性模型仍然是够用的。
 \end{itemize}
-
-\begin{remember}
-\textbf{研究线性系统的理由：}世界上没有绝对的线性系统，但\textbf{线性模型是最简单的近似}，用它我们才能把复杂的现实问题分析出来。这是工程里经常做的近似。
-\end{remember}
 
 \subsection{理由二：时不变（16:38--19:33）}
 同样先问：世界上有完全时不变的系统吗？

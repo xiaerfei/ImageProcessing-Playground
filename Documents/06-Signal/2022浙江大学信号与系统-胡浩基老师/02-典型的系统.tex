@@ -50,7 +50,7 @@
    \colorbox{exorange}{\textcolor{white}{\textbf{例~\theex}}}\ %
    \textcolor{exorange}{\textbf{#1}}\ {\footnotesize\textcolor{gray!70!black}{#3}}%
    \hfill\colorbox{exorange!12}{\small\textcolor{exorange}{#2}}\par}%
-  \nopagebreak\addvspace{0.6ex}}
+  \nobreak\vskip0.6ex\relax\csname @afterheading\endcsname}
 % 小标题（不是章节也不是例题）：青色三角 + 粗体，接着同一段往下写，不进大纲。
 \newcommand{\point}[1]{\par\addvspace{1ex}\noindent\textcolor{ptteal}{$\blacktriangleright$\,\textbf{#1}}\ }
 
