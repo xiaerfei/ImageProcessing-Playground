@@ -29,3 +29,5 @@ Documents/_archive/原文-*/
 
 # 笔记的 LaTeX 编译产物,只在本地看
 Documents/06-Signal/**/*.pdf
+# hyperref 书签中间文件(只忽略笔记目录,避免误伤 C 程序的 a.out)
+Documents/06-Signal/**/*.out
