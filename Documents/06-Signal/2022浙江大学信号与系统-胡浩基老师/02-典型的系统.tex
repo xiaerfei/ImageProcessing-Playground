@@ -13,6 +13,7 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{float}
+\usepackage{needspace}% 例题标题后紧跟表格时，避免标题被留在页底
 \usepackage[hidelinks,unicode,bookmarksnumbered,bookmarksopen=true,bookmarksopenlevel=2,pdftitle={典型的系统：线性、时不变、因果、无记忆、可逆、稳定}]{hyperref}
 \usepackage{bookmark}% XeTeX 下 hyperref 自带的大纲不生效，用 bookmark 宏包生成 PDF 书签（需编译两遍）
 
@@ -154,40 +155,53 @@
 取最简单的输入（如 $x\equiv0$ 或 $x\equiv1$，$\equiv$ 表示恒等于）和 $a=2$：\textbf{实际}是把 $a\,x$ 送进系统得到的输出；\textbf{希望}是「若齐次性成立，应得 $a\,y$」。两者不等，就矛盾，说明系统不是线性的。
 
 \subsection{例题：证明是线性}
-老师每道题先让同学举手表决，再证明。下面按课上顺序，每道都分齐次、叠加两步。
+下面按课上顺序，每题都按定义分\textbf{齐次性}、\textbf{叠加性}两步，写成证明。
 
 \example{放大器~\texorpdfstring{$y(t)=3x(t)$}{y(t)=3x(t)}}{线性}{09:19--15:09}
-进来任何信号都放大 3 倍。大白话：它是个只会「乘 3」的工人，递给他什么信号，一律乘 3。规矩：送进去 $f$，出来 $3f$。
+\textbf{系统}：$x(t)\to y(t)=3x(t)$，即输入乘 $3$。
+
+\textbf{证明}。
 \begin{align*}
-\text{齐次性：}&f=a\,x(t)\ \Rightarrow\ 3\cdot a\,x(t)=a\cdot3x(t)=a\,y(t),\\
-\text{叠加性：}&f=x_1+x_2\ \Rightarrow\ 3(x_1+x_2)=3x_1+3x_2=y_1(t)+y_2(t).
+\text{齐次性：}\quad & a\,x(t)\ \to\ 3\cdot a\,x(t)=a\cdot 3x(t)=a\,y(t),\\
+\text{叠加性：}\quad & x_1(t)+x_2(t)\ \to\ 3\bigl(x_1(t)+x_2(t)\bigr)=3x_1(t)+3x_2(t)=y_1(t)+y_2(t).
 \end{align*}
-老师说：「当你要说『是』的时候，你的责任很重大，你要依次证明它满足一，满足二。」
+两式对任意输入、任意实数 $a$ 均成立，故 $y(t)=3x(t)$ 为线性系统。\hfill$\blacksquare$
 
 \example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{线性}{18:20--20:17}
-规矩：送进去 $f(t)$，出来 $t\,f(t)$。
+\textbf{系统}：$x(t)\to y(t)=t\,x(t)$。$t$ 是每个时刻的乘数，不随输入改变。
+
+\textbf{证明}。
 \begin{align*}
-\text{齐次性：}&f=a\,x(t)\ \Rightarrow\ t\cdot a\,x(t)=a\bigl(t\,x(t)\bigr)=a\,y(t),\\
-\text{叠加性：}&f=x_1+x_2\ \Rightarrow\ t\,x_1(t)+t\,x_2(t)=y_1(t)+y_2(t).
+\text{齐次性：}\quad & a\,x(t)\ \to\ t\cdot a\,x(t)=a\bigl(t\,x(t)\bigr)=a\,y(t),\\
+\text{叠加性：}\quad & x_1(t)+x_2(t)\ \to\ t\bigl(x_1(t)+x_2(t)\bigr)=t\,x_1(t)+t\,x_2(t)=y_1(t)+y_2(t).
 \end{align*}
-大家容易投错，是因为 $t$ 会随时间变。但线性只问「放大或相加时，输出是不是跟着放大或相加」，$t$ 只是每个时刻的乘数，不影响这件事；它的影响出在「时不变」上。
+两式对任意输入、任意实数 $a$ 均成立，故 $y(t)=t\,x(t)$ 为线性系统。\hfill$\blacksquare$
+
+\textbf{注}：$t$ 随时间变化不影响线性——线性只问「放大或相加时，输出是否跟着放大或相加」，$t$ 只是逐点的系数；它的影响体现在时不变性上（见下一节的 $y(t)=t\,x(t)$）。
 
 \example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}}{线性}{20:26--22:39}
-输入一个函数，输出它的导数。直接用微分自己的性质，不绕：
-\[
-\frac{\mathrm{d}[a\,x(t)]}{\mathrm{d}t}=a\frac{\mathrm{d}x}{\mathrm{d}t}=a\,y(t),\qquad
-\frac{\mathrm{d}[x_1+x_2]}{\mathrm{d}t}=\frac{\mathrm{d}x_1}{\mathrm{d}t}+\frac{\mathrm{d}x_2}{\mathrm{d}t}=y_1+y_2.
-\]
+\textbf{系统}：$x(t)\to y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$。
+
+\textbf{证明}。用微分的线性：
+\begin{align*}
+\text{齐次性：}\quad & \frac{\mathrm{d}}{\mathrm{d}t}\bigl[a\,x(t)\bigr]=a\frac{\mathrm{d}x(t)}{\mathrm{d}t}=a\,y(t),\\
+\text{叠加性：}\quad & \frac{\mathrm{d}}{\mathrm{d}t}\bigl[x_1(t)+x_2(t)\bigr]=\frac{\mathrm{d}x_1(t)}{\mathrm{d}t}+\frac{\mathrm{d}x_2(t)}{\mathrm{d}t}=y_1(t)+y_2(t).
+\end{align*}
+故微分器为线性系统。\hfill$\blacksquare$
 
 \example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}}{线性}{22:41--24:46}
-把输入从 $-\infty$ 一直累加到 $t$。积分自己有线性（常数可提出，和的积分等于积分的和）：
-\begin{align*}
-\int_{-\infty}^{t}a\,x(\tau)\,\mathrm{d}\tau&=a\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau=a\,y(t),\\
-\int_{-\infty}^{t}\bigl[x_1+x_2\bigr]\mathrm{d}\tau&=\int_{-\infty}^{t}x_1\,\mathrm{d}\tau+\int_{-\infty}^{t}x_2\,\mathrm{d}\tau=y_1(t)+y_2(t).
-\end{align*}
+\textbf{系统}：$x(t)\to y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$。
 
+\textbf{证明}。用积分的线性（常数可提出，和的积分等于积分的和）：
+\begin{align*}
+\text{齐次性：}\quad & \int_{-\infty}^{t}a\,x(\tau)\,\mathrm{d}\tau=a\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau=a\,y(t),\\
+\text{叠加性：}\quad & \int_{-\infty}^{t}\bigl[x_1(\tau)+x_2(\tau)\bigr]\mathrm{d}\tau=\int_{-\infty}^{t}x_1(\tau)\,\mathrm{d}\tau+\int_{-\infty}^{t}x_2(\tau)\,\mathrm{d}\tau=y_1(t)+y_2(t).
+\end{align*}
+故积分器为线性系统。\hfill$\blacksquare$
+
+\needspace{6cm}
 \example{离散的四个系统}{线性}{32:11--40:41}
-老师把前面几个改成离散形式：
+把前面几个系统改写成离散形式：
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
@@ -196,27 +210,30 @@
 $y[n]=2x[n]$ & 每个数乘 2 & 线性，证法同 $3x(t)$\\
 $y[n]=n\,x[n]$ & 第 $n$ 个数乘 $n$ & 线性，证法同 $t\,x(t)$\\
 $y[n]=x[n]-x[n-1]$ & 当前值减前一个值（\textbf{差分}） & 线性，下面完整证\\
-$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{累加}） & 线性，留作业（「其实就是繁琐而已」）\\
+$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{累加}） & 线性，留作练习\\
 \bottomrule
 \end{tabular}
 \end{center}
 差分(difference)就是离散的微分器（离散信号没法求导，「后一个减前一个」就是近似的求导）；累加(accumulator)就是离散的积分器，老师口头叫它「叠加器」。
 
-\point{差分的证明。}规矩：送进去 $f[n]$，出来 $f[n]-f[n-1]$（$f[n-1]$ 就是把 $f$ 里所有的 $n$ 换成 $n-1$）。
+\point{差分 $y[n]=x[n]-x[n-1]$ 的证明。}
 \begin{itemize}[nosep]
-\item 齐次性：$f[n]=a\,x[n]$，$f[n-1]=a\,x[n-1]$，输出 $a\,x[n]-a\,x[n-1]=a\bigl(x[n]-x[n-1]\bigr)=a\,y[n]$。
-\item 叠加性：$f[n]=x_1[n]+x_2[n]$，输出 $\bigl(x_1[n]-x_1[n-1]\bigr)+\bigl(x_2[n]-x_2[n-1]\bigr)=y_1[n]+y_2[n]$。
+\item 齐次性：输入 $a\,x[n]$，输出 $a\,x[n]-a\,x[n-1]=a\bigl(x[n]-x[n-1]\bigr)=a\,y[n]$；
+\item 叠加性：输入 $x_1[n]+x_2[n]$，输出 $\bigl(x_1[n]-x_1[n-1]\bigr)+\bigl(x_2[n]-x_2[n-1]\bigr)=y_1[n]+y_2[n]$。
 \end{itemize}
+故差分为线性系统。\hfill$\blacksquare$
 
 \subsection{例题：证明不是线性（24:47--32:10）}
 \example{\texorpdfstring{$y(t)=x(t)+1$}{y(t)=x(t)+1}}{非线性}{}
-进来一个信号，加常数 1 再输出。反例：
-\begin{enumerate}[nosep]
-\item 取 $x(t)\equiv0$，实际输出 $0+1=1$；
-\item 取 $a=2$，则 $2x(t)\equiv0$，和原输入\textbf{是同一个信号}，实际输出仍是 $1$；
-\item 但若是线性系统，齐次性\textbf{希望}得到 $2y(t)=2\times1=2$；
-\item 实际 $1\neq$ 希望 $2$，矛盾，所以不是线性系统。
-\end{enumerate}
+\textbf{系统}：$x(t)\to y(t)=x(t)+1$。
+
+\textbf{证明}（举反例）。取 $x(t)\equiv0$、$a=2$：
+\begin{itemize}[nosep]
+\item 输入 $x(t)\equiv0$，输出 $y(t)=0+1=1$；
+\item 输入 $2x(t)\equiv0$，与原输入是\textbf{同一个信号}，实际输出仍为 $1$；
+\item 若齐次性成立，应有 $a\,y(t)=2\times1=2$。
+\end{itemize}
+实际输出 $1\neq$ 期望值 $2$，故齐次性不成立，$y(t)=x(t)+1$ 为非线性系统。\hfill$\blacksquare$
 
 \begin{figure}[H]
 \centering
@@ -230,7 +247,14 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
 \end{figure}
 
 \example{\texorpdfstring{$y(t)=x(t)^2$}{y(t)=x(t)的平方}}{非线性}{}
-取 $x(t)\equiv1$，输出 $1^2=1$；取 $a=2$，输入变成 $2x(t)\equiv2$，实际输出 $2^2=4$；希望 $2\times1=2$。实际 $4\neq$ 希望 $2$，非线性。老师说：「反例有很多个，你只要举一个就可以了。」
+\textbf{系统}：$x(t)\to y(t)=x(t)^2$。
+
+\textbf{证明}（举反例）。取 $x(t)\equiv1$、$a=2$：
+\begin{align*}
+\text{实际：}\quad & x(t)\equiv1\ \to\ y(t)=1^2=1,\qquad 2x(t)\equiv2\ \to\ 2^2=4;\\
+\text{期望：}\quad & a\,y(t)=2\times1=2.
+\end{align*}
+实际输出 $4\neq$ 期望值 $2$，故齐次性不成立，$y(t)=x(t)^2$ 为非线性系统。\hfill$\blacksquare$
 
 \begin{figure}[H]
 \centering
@@ -416,27 +440,35 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 
 \subsection{例题：证明时不变（57:54--62:28）}
 \example{\texorpdfstring{$y(t)=x(t-1)$}{y(t)=x(t-1)}}{时不变}{}
-这个系统做的事是「把信号右移 1 个单位」。规矩：送进去 $f(t)$，出来 $f(t-1)$。
-\begin{enumerate}[nosep]
-\item 实际：送进去 $f(t)=x(t-t_0)$，出来 $f(t-1)=x\bigl((t-1)-t_0\bigr)=x(t-1-t_0)$（把 $f$ 里所有的 $t$ 换成 $t-1$）；
-\item 希望：$y(t-t_0)=x\bigl((t-t_0)-1\bigr)=x(t-1-t_0)$；
-\item 两边相等，所以时不变。
-\end{enumerate}
-老师说：稍微有点绕，希望大家不要被绕迷糊。
+\textbf{系统}：$x(t)\to y(t)=x(t-1)$，即输入右移 $1$ 个单位。
+
+\textbf{证明}。任取 $t_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f(t)=x(t-t_0)$，输出 $f(t-1)=x\bigl((t-1)-t_0\bigr)=x(t-1-t_0)$；
+\item 期望：$y(t-t_0)=x\bigl((t-t_0)-1\bigr)=x(t-1-t_0)$。
+\end{itemize}
+实际 $=$ 期望，对任意 $t_0$ 成立，故 $y(t)=x(t-1)$ 为时不变系统。\hfill$\blacksquare$
 
 \example{\texorpdfstring{$y(t)=e^{x(t+1)}$}{y(t)=exp(x(t+1))}}{时不变}{}
-规矩：送进去 $f(t)$，出来 $e^{f(t+1)}$。实际：$f(t)=x(t-t_0)$，出来 $e^{x(t+1-t_0)}$；希望：$y(t-t_0)=e^{x((t-t_0)+1)}=e^{x(t+1-t_0)}$。相等，时不变。老师说：「我觉得比线性那里要简单一点。」
+\textbf{系统}：$f(t)\to e^{f(t+1)}$。
+
+\textbf{证明}。任取 $t_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f(t)=x(t-t_0)$，输出 $e^{f(t+1)}=e^{x(t+1-t_0)}$；
+\item 期望：$y(t-t_0)=e^{x((t-t_0)+1)}=e^{x(t+1-t_0)}$。
+\end{itemize}
+实际 $=$ 期望，对任意 $t_0$ 成立，故 $y(t)=e^{x(t+1)}$ 为时不变系统。\hfill$\blacksquare$
 
 \subsection{例题：证明时变（反例）}
 \example{\texorpdfstring{$y(t)=x(2t)$}{y(t)=x(2t)}}{时变}{62:29--65:36}
-\begin{enumerate}[nosep]
-\item 取 $x(t)$：在 $0\le t\le1$ 上等于 $1$，其他地方为 $0$；
-\item 系数 $2>1$，把波形\textbf{压缩 2 倍}，输出在 $0\le t\le0.5$ 上等于 $1$；
-\item 取 $t_0=1$，输入 $x(t-1)$ 在 $1\le t\le2$ 上等于 $1$；
-\item \textbf{实际}：对这个输入压缩 2 倍，得到在 $0.5\le t\le1$ 上等于 $1$ 的波形；
-\item \textbf{希望}（若时不变）：$y(t-1)$，即第 2 步的输出右移 1，在 $1\le t\le1.5$ 上等于 $1$；
-\item 实际 $\neq$ 希望，所以时变。
-\end{enumerate}
+\textbf{系统}：$x(t)\to y(t)=x(2t)$，即波形沿时间轴压缩 $2$ 倍。
+
+\textbf{证明}（举反例）。取 $x(t)=1$（$0\le t\le1$），其余为 $0$；取 $t_0=1$。
+\begin{itemize}[nosep]
+\item 实际：输入 $x(t-1)$ 在 $1\le t\le2$ 上为 $1$，经系统压缩后在 $0.5\le t\le1$ 上为 $1$；
+\item 期望：若时不变，输出应为 $y(t-1)$，即 $y(t)$ 右移 $1$，在 $1\le t\le1.5$ 上为 $1$。
+\end{itemize}
+实际 $\neq$ 期望，故 $y(t)=x(2t)$ 为时变系统。\hfill$\blacksquare$
 
 \begin{figure}[H]
 \centering
@@ -462,13 +494,14 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{figure}
 
 \example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{时变}{70:49--75:11}
-直观上 $t$ 在外面，「肯定会随着时间变化」，但严格说还要举反例：
-\begin{enumerate}[nosep]
-\item 取 $x(t)=u(t)$（单位阶跃(unit step)：$t>0$ 为 $1$，$t<0$ 为 $0$），$y(t)=t\,u(t)$，是从原点起向上的斜线；
-\item 取 $t_0=1$，输入 $u(t-1)$。\textbf{实际}：$t\,u(t-1)$，$t<1$ 时为 $0$，$t=1$ 时跳到 $1$，之后等于 $t$；
-\item \textbf{希望}：$y(t-1)=(t-1)\,u(t-1)$，在 $t=1$ 处是 $0$，$t=2$ 时是 $1$；
-\item 实际 $\neq$ 希望，所以时变。
-\end{enumerate}
+\textbf{系统}：$x(t)\to y(t)=t\,x(t)$。
+
+\textbf{证明}（举反例）。取 $x(t)=u(t)$（单位阶跃：$t>0$ 为 $1$，$t<0$ 为 $0$），$t_0=1$。
+\begin{itemize}[nosep]
+\item 实际：输入 $u(t-1)$，输出 $t\,u(t-1)$：$t<1$ 时为 $0$，$t\ge1$ 时等于 $t$；
+\item 期望：$y(t-1)=(t-1)\,u(t-1)$：$t<1$ 时为 $0$，$t\ge1$ 时等于 $t-1$。
+\end{itemize}
+$t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故 $y(t)=t\,x(t)$ 为时变系统。\hfill$\blacksquare$
 
 \begin{figure}[H]
 \centering
@@ -488,14 +521,15 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{figure}
 
 \example{\texorpdfstring{$y[n]=x[3-n]$}{y[n]=x[3-n]}}{时变}{75:38--79:47}
-老师说关键在于 $n$ 前面有\textbf{一个负号}。反例：
-\begin{enumerate}[nosep]
-\item 取 $x[n]=\delta[n]$（单位脉冲：只在 $n=0$ 处为 $1$）。输出 $\delta[3-n]=\delta[-(n-3)]$：先翻转，再右移 3 格，脉冲落在 $n=3$；
-\item 取右移 1 格的输入 $\delta[n-1]$（脉冲在 $n=1$）。\textbf{实际}：$\delta[(3-n)-1]=\delta[2-n]$，脉冲落在 $n=2$；
-\item \textbf{希望}：把第 1 步的输出右移 1，脉冲应落在 $n=4$；
-\item 实际（$n=2$）$\neq$ 希望（$n=4$），所以时变。
-\end{enumerate}
-（补充：输入向右移，实际输出的脉冲却向左移，方向正好相反。）
+\textbf{系统}：$x[n]\to y[n]=x[3-n]$。$n$ 前的负号把平移变成了反向平移。
+
+\textbf{证明}（举反例）。取 $x[n]=\delta[n]$（单位脉冲：只在 $n=0$ 处为 $1$）。
+\begin{itemize}[nosep]
+\item 输入 $\delta[n]$，输出 $y[n]=\delta[3-n]$，脉冲在 $n=3$；
+\item 输入 $\delta[n-1]$（右移 $1$），实际输出 $y[n]=\delta[(3-n)-1]=\delta[2-n]$，脉冲在 $n=2$；
+\item 期望：若时不变，输出应是第 1 步结果的右移 $1$，脉冲在 $n=4$。
+\end{itemize}
+实际（$n=2$）$\neq$ 期望（$n=4$），故 $y[n]=x[3-n]$ 为时变系统。\hfill$\blacksquare$
 
 \begin{figure}[H]
 \centering
@@ -638,7 +672,7 @@ $x(\tfrac12t)$ 这一题要换到 $t<0$：取 $t>0$ 时 $\tfrac12t<t$，用到�
 \begin{center}
 \begin{tabular}{@{}lll@{}}
 \toprule
-系统 & 结论 & 老师的理由\\
+系统 & 结论 & 理由\\
 \midrule
 $y(t)=x(t)^2+e^{x(t)}$ & 无记忆 & $y(t)$ 只依赖 $x(t)$\\
 $y(t)=x(t-1)$ & 记忆 & $y(t)$ 依赖 $t-1$ 时刻的值\\
@@ -671,7 +705,7 @@ $y[n]=x[2n]$ & 记忆 & $n$ 点的输出依赖 $x$ 在 $2n$ 点的值\\
 \begin{center}
 \begin{tabular}{@{}p{5.3cm}p{1.5cm}p{7.3cm}@{}}
 \toprule
-系统 & 结论 & 老师的理由\\
+系统 & 结论 & 理由\\
 \midrule
 $y(t)=x(t-1)$ & 可逆 & $x(t)=y(t+1)$\\
 $y(t)=x(t)^2$ & \textbf{不可逆} & $x(t)=\pm\sqrt{y(t)}$，一个 $y$ 对应\textbf{两个}不同的 $x$\\
@@ -682,7 +716,7 @@ $y(t)=x(2t)$ & 可逆 & $x(t)=y(\tfrac12t)$\\
 \bottomrule
 \end{tabular}
 \end{center}
-累加器那题，老师让同学自己把 $y[n]$ 和 $y[n-1]$ 写出来相减。结论：\textbf{积分器、累加器可逆，微分器不可逆}。
+累加器的逆：把 $y[n]$ 与 $y[n-1]$ 相减，只剩 $x[n]$。结论：\textbf{积分器、累加器可逆，微分器不可逆}。
 
 \textbf{微分器为什么不可逆}（补充）：求导会把常数丢掉。$x(t)=5$ 和 $x(t)=7$ 求导后都是 $0$，倒推时说不清原来是 $5$ 还是 $7$，这就是「$+C$」的来源。积分器每一刻都在累积，信息没有丢，所以可以求导还原。
 
@@ -720,30 +754,36 @@ x(t)\ \text{有界}\ \Longleftrightarrow\ \text{存在}\ M,\ \text{对任意的}
 
 \subsection{例题：稳定（106:00--109:40）}
 \example{\texorpdfstring{$y(t)=e^{x(t)}$}{y(t)=exp(x(t))}}{稳定}{}
-有些同学觉得它「好大」，不敢说稳定。老师说：「只要 $x(t)$ 的界限被限制住，$y$ 一定有一个界线。」设 $|x(t)|<M$，则
+\textbf{系统}：$x(t)\to y(t)=e^{x(t)}$。
+
+\textbf{证明}。设输入有界：$|x(t)|<M$。则
 \[
-|y(t)|=\bigl|e^{x(t)}\bigr|\ \le\ e^{|x(t)|}\ \le\ e^{M}.
+|y(t)|=\bigl|e^{x(t)}\bigr|=e^{x(t)}\ \le\ e^{|x(t)|}\ \le\ e^{M},
 \]
-（第一个不等号为什么成立，老师说「自己回去想」。）$e^M$ 是固定的数，把 $|y(t)|$ 夹住了，所以稳定。
+其中第一处不等号用到 $x(t)\le|x(t)|$ 及 $e^{u}$ 单调递增。$e^{M}$ 是与 $t$ 无关的固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blacksquare$
 
 \example{\texorpdfstring{$y(t)=x(t)^3-2x(t)^2+x(t)+1$}{y(t)=x(t)的3次-2倍x(t)的平方+x(t)+1}}{稳定}{}
-设 $|x(t)|<M$，则
+\textbf{系统}：$x(t)\to y(t)=x(t)^3-2x(t)^2+x(t)+1$。
+
+\textbf{证明}。设 $|x(t)|<M$。由三角不等式 $|a+b+c+d|\le|a|+|b|+|c|+|d|$（并注意 $|-2x^2|=2|x|^2$），
 \begin{align*}
 |y(t)|&=\bigl|x^3-2x^2+x+1\bigr|\\
-&\le |x|^3+2|x|^2+|x|+1\qquad\text{（减号也要变成加号，不等号才成立）}\\
+&\le |x|^3+2|x|^2+|x|+1\\
 &\le M^3+2M^2+M+1.
 \end{align*}
-老师说：「这个数尽管有可能很大，但是它仍然是把 $|y(t)|$ 限制住，它是稳定的。」再复杂的表达式，只要能这样用 $M$ 夹住，就仍然稳定。老师还举了一个更夸张的表达式（转写听成「1 亿的 $x(t)$」，听不出具体是什么）\tbc{}，意思是「复杂」不等于「不稳定」。
+$M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blacksquare$
+
+多项式型系统都可用同一办法：把每一项的 $|x|$ 换成 $M$，得到的数只要固定，系统就稳定——与表达式看起来多「大」无关。
 
 \subsection{例题：不稳定（109:40--112:03）}
 \begin{center}
-\begin{tabular}{@{}p{3.3cm}p{1.8cm}p{8.9cm}@{}}
+\begin{tabular}{@{}p{3.9cm}p{1.5cm}p{8.6cm}@{}}
 \toprule
-系统 & 结论 & 老师的反例\\
+系统 & 结论 & 反例\\
 \midrule
-微分器 $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & 不稳定 & 取 $x(t)=u(t)$（阶跃，被 $1$ 夹住）。它在 $t=0$ 处一下子升 $1$，求导得冲激 $\delta(t)$，在 $t=0$ 变成\textbf{无穷大}，夹不住\\
-积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$ & 不稳定 & 取 $x(t)\equiv1$（被 $M=1$ 夹住）。从 $-\infty$ 积到 $t$，$y(t)=+\infty$，夹不住\\
-累加器 $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 不稳定 & 同样道理（老师一笔带过）\\
+微分器\newline $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & 不稳定 & 取 $x(t)=u(t)$（阶跃，被 $1$ 夹住）。它在 $t=0$ 处一下子升 $1$，求导得冲激 $\delta(t)$，在 $t=0$ 变成\textbf{无穷大}，夹不住\\
+积分器\newline $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$ & 不稳定 & 取 $x(t)\equiv1$（被 $M=1$ 夹住）。从 $-\infty$ 积到 $t$，$y(t)=+\infty$，夹不住\\
+累加器\newline $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 不稳定 & 同样道理\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -886,7 +926,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 \midrule
 44:14--44:28 & 老师讲 $e^{x[n]}$ 的泰勒展开，转写把展开式听乱了（出现「1 加上 $x[n]$ 的平方……」之类的片段）。 & 展开式按数学上的 $e^x=1+x+\tfrac{x^2}{2!}+\cdots$ 写，并注明不是逐字照抄；结论（非线性）不受影响。\\
 79:53--82:28 & 时不变判据「$t$ 只能是 $t$」，老师没有说明 $x(t-1)$ 里的平移算不算「只是 $t$」。 & 笔记按「括号里是 $t$ 加减常数」读，并标成「补充」，等你核对老师是否这样讲。\\
-109:19--109:38 & 稳定的例题之后，老师举了一个「更复杂的数学表达式」，转写听成「$y(t)$ 等于 1 亿的 $x(t)$」，我听不出具体是什么。 & 正文只写「老师还举了一个更夸张的表达式」，没有写出式子，也不影响结论（能用 $M$ 夹住就稳定）。\\
+109:19--109:38 & 稳定的例题之后，老师举了一个「更复杂的数学表达式」，转写听成「$y(t)$ 等于 1 亿的 $x(t)$」，我听不出具体是什么。 & 例题按证明格式重写，没有收入这个式子；结论不受影响（能用 $M$ 夹住就稳定）。\\
 112:48--113:08 & 习题编号：转写听到「33 页 1-16」。 & 正文写「教材第 33 页习题 1-16」，并注明没有翻书核对。\\
 116:56--120:33 & 讲微分器因果时，转写把 $t+\Delta t$ 那个式子叫成「左极限」，又把 $\Delta t$ 的趋向听成「趋于正无穷大」。 & 按板书写：$t+\Delta t$ 是右极限，$\Delta t\to0^+$，并在笔记里注明。\\
 \bottomrule
