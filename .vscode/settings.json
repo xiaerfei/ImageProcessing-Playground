@@ -1,9 +1,10 @@
 {
-  // LaTeX Workshop 默认配方用 latexmk，本机 TeX Live basic 没装；这里改成 xelatex 跑两遍（第二遍填目录和交叉引用）
+  // LaTeX Workshop 默认配方用 latexmk，这里改成 xelatex 跑两遍（第二遍填目录和交叉引用）
+  // command 用绝对路径：BasicTeX 的二进制在 /Library/TeX/texbin，IDE 进程启动时可能还没继承该 PATH
   "latex-workshop.latex.tools": [
     {
       "name": "xelatex",
-      "command": "xelatex",
+      "command": "/Library/TeX/texbin/xelatex",
       "args": ["-synctex=1", "-interaction=nonstopmode", "-file-line-error", "%DOC%"]
     }
   ],
