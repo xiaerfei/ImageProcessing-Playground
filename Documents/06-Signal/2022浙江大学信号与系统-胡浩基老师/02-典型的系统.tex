@@ -441,7 +441,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \subsection{做题步骤（补充）：固定写两行}
 \textbf{（补充，整理自我和豆包的对话，不是老师的讲法。用来在大题里按部就班，不容易代错。）}
 \begin{enumerate}[nosep]
-\item \textbf{先用口诀预判}（半分钟）：$x$ 括号外有没有随 $t$ 变的项？括号里是不是只有 $t$ 加减常数？两条都过，多半时不变；有一条不过，多半时变。带积分的系统口诀不灵，直接走下面几步。
+\item \textbf{先用口诀预判}（半分钟）：$x$ 括号外有没有随 $t$ 变的项？括号里是不是只有 $t$ 加减常数？两条都过，多半时不变；有一条不过，多半时变。带积分或求和的系统口诀不灵，直接走下面几步（积分要换元，例子见例~\ref{ex:int}）。
 \item \textbf{写出系统规矩}：用中间变量 $f$ 表示「送进来的任意信号」，把系统写成 $f(t)\to\cdots$。例：$x(2t)$ 写成 $f(t)\to f(2t)$；$t\,x(t)$ 写成 $f(t)\to t\,f(t)$。
 \item \textbf{第一行，写「实际」}（先移输入，再过系统）：令 $f(t)=x(t-t_0)$，先写出它的入口规则 $f(\square)=x(\square-t_0)$，再把系统规矩里要的东西填进 $\square$。系统自带的东西（$2t$ 里的 $2$、$\cos t$、单独的 $t$）\textbf{原样保留，不跟着 $t_0$ 动}。
 \item \textbf{第二行，写「期望」}（先过系统，再移输出）：先写出 $y(\square)$ 的规则，再把 $\square$ 换成 $t-t_0$：$y(t)$ 里\textbf{所有}的 $t$ 一起换。
@@ -489,8 +489,70 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{itemize}
 实际 $=$ 期望，对任意 $t_0$ 成立，故 $y(t)=e^{x(t+1)}$ 为时不变系统。\hfill$\blacksquare$
 
+\example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}（补充）}{时不变}{}\label{ex:diff}
+\textbf{系统}：$f(t)\to\dfrac{\mathrm{d}f(t)}{\mathrm{d}t}$。老师在综合习题里把它判为时不变（「前面都证明过」），但本章笔记里没有它的证明，这里补上。$x'$ 表示 $x$ 的导函数。
+
+\textbf{证明}。任取 $t_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f(t)=x(t-t_0)$，输出 $\dfrac{\mathrm{d}}{\mathrm{d}t}\,x(t-t_0)=x'(t-t_0)$（括号里的 $t-t_0$ 对 $t$ 的导数是 $1$，不会多出系数）；
+\item 期望：$y(t)=x'(t)$，故 $y(t-t_0)=x'(t-t_0)$。
+\end{itemize}
+实际 $=$ 期望，对任意 $t_0$ 成立，故微分器为时不变系统。\hfill$\blacksquare$
+
+数字看一眼：取 $x(t)=t^2$，$t_0=1$。输入 $(t-1)^2$ 的导数是 $2(t-1)$，$y(t-1)=2(t-1)$，两边一样。直觉：曲线整体右移，每一点附近的变化率也跟着右移，形状不变。
+
+\needspace{5cm}
+\example{差分~\texorpdfstring{$y[n]=x[n]-x[n-1]$}{y[n]=x[n]-x[n-1]}（补充）}{时不变}{}\label{ex:diffn}
+\textbf{系统}：$f[n]\to f[n]-f[n-1]$（当前值减前一个值）。离散信号的时不变，是对任意\textbf{整数} $n_0$：输入 $x[n-n_0]$ 时，输出 $y[n-n_0]$。
+
+\textbf{证明}。任取整数 $n_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f[n]=x[n-n_0]$，则 $f[n-1]=x\bigl[(n-1)-n_0\bigr]$，输出 $f[n]-f[n-1]=x[n-n_0]-x[n-1-n_0]$；
+\item 期望：$y[n]=x[n]-x[n-1]$，故 $y[n-n_0]=x[n-n_0]-x\bigl[(n-n_0)-1\bigr]=x[n-n_0]-x[n-1-n_0]$。
+\end{itemize}
+实际 $=$ 期望，对任意整数 $n_0$ 成立，故差分为时不变系统。\hfill$\blacksquare$
+
+数字看一眼：输入单位脉冲 $\delta[n]$，输出 $\delta[n]-\delta[n-1]$（$n=0$ 处为 $1$，$n=1$ 处为 $-1$）。输入右移 $2$ 变成 $\delta[n-2]$，输出 $\delta[n-2]-\delta[n-3]$（$n=2$ 处为 $1$，$n=3$ 处为 $-1$），正好是原输出右移 $2$。口诀也直接过：$n$ 只在括号里，只是 $n$ 和 $n-1$。
+
+\needspace{8cm}
+\example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}（补充）}{时不变}{}\label{ex:int}
+\textbf{系统}：$f(t)\to\displaystyle\int_{-\infty}^{t}f(\tau)\,\mathrm{d}\tau$。$t$ 在积分上限，口诀按字面会判成时变，所以必须回到定义。
+
+\textbf{证明}。任取 $t_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f(\tau)=x(\tau-t_0)$，输出 $\displaystyle\int_{-\infty}^{t}x(\tau-t_0)\,\mathrm{d}\tau$。令 $s=\tau-t_0$（为什么这样令，见下面的补充），则 $\mathrm{d}\tau=\mathrm{d}s$；$\tau=-\infty$ 时 $s=-\infty$，$\tau=t$ 时 $s=t-t_0$。于是输出 $=\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s$；
+\item 期望：$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$，把所有 $t$ 换成 $t-t_0$，$y(t-t_0)=\displaystyle\int_{-\infty}^{t-t_0}x(\tau)\,\mathrm{d}\tau$。积分变量只是计数的名字（哑变量，dummy variable），写成 $\tau$ 还是 $s$ 结果一样，故 $=\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s$。
+\end{itemize}
+实际 $=$ 期望，对任意 $t_0$ 成立，故积分器为时不变系统。\hfill$\blacksquare$
+
+数字看一眼：取 $x$ 为 $[0,1]$ 上等于 $1$ 的矩形，$t_0=1$。原输出：$t<0$ 为 $0$，$0\le t\le1$ 为 $t$（斜坡），$t>1$ 停在 $1$。输入右移 $1$ 变成 $[1,2]$ 上的矩形，实际输出：$t<1$ 为 $0$，$1\le t\le2$ 为 $t-1$，$t>2$ 停在 $1$，正好是原输出右移 $1$。
+
+\begin{skippable}
+\textbf{为什么要令 $s=\tau-t_0$}（补充）。
+\begin{enumerate}[nosep]
+\item \textbf{目的}：「实际」那行里被积的是\textbf{挪过的} $x(\tau-t_0)$，而 $y$ 的定义只会算「$x$ 本人」的积分，两边长得不一样，没法比。把 $\tau-t_0$ 整个起个新名字 $s$，被积函数还原成 $x(s)$，才能和「期望」对上。
+\item \textbf{代价}：积分范围也要用新名字重算：上限 $t$ 变成 $t-t_0$，下限 $-\infty$ 不变；$\mathrm{d}\tau$ 变成 $\mathrm{d}s$（$t_0$ 是常数）。
+\item \textbf{效果}：平移从被积函数里「搬」到了积分上限里。直觉：曲线右移 $t_0$ 再累计到 $t$，等于曲线不动，只累计到 $t-t_0$。
+\end{enumerate}
+\end{skippable}
+
+\needspace{6cm}
+\example{累加器~\texorpdfstring{$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$}{y[n]=Σx[k]}（补充）}{时不变}{}\label{ex:acc}
+\textbf{系统}：$f[n]\to\displaystyle\sum_{k=-\infty}^{n}f[k]$。它是离散的积分器，$n$ 同样在求和上限，口诀不适用。证法和积分器一样，只是把积分换成求和、$\tau$ 换成 $k$。
+
+\textbf{证明}。任取整数 $n_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f[k]=x[k-n_0]$，输出 $\displaystyle\sum_{k=-\infty}^{n}x[k-n_0]$。令 $m=k-n_0$：$k=-\infty$ 时 $m=-\infty$，$k=n$ 时 $m=n-n_0$。于是输出 $=\displaystyle\sum_{m=-\infty}^{n-n_0}x[m]$；
+\item 期望：$y[n-n_0]=\displaystyle\sum_{k=-\infty}^{n-n_0}x[k]=\sum_{m=-\infty}^{n-n_0}x[m]$（求和下标 $k$、$m$ 只是计数的名字，叫什么都一样）。
+\end{itemize}
+实际 $=$ 期望，对任意整数 $n_0$ 成立，故累加器为时不变系统。\hfill$\blacksquare$
+
+数字看一眼：输入 $\delta[n]$，输出从 $n=0$ 起全为 $1$（$n<0$ 为 $0$）。输入右移 $2$ 变成 $\delta[n-2]$，输出从 $n=2$ 起全为 $1$，正好是原输出右移 $2$。
+
+（补充）微分器、积分器、差分、累加器这四个都是时不变。它们的规则只看「相对位置」（和前一刻比，或从最早累积到现在），不看「几点钟」；输入整体挪了，「现在」跟着挪，输出也就只是整体跟着挪。
+
 \subsection{例题：证明时变（反例）}
-\example{\texorpdfstring{$y(t)=x(2t)$}{y(t)=x(2t)}}{时变}{62:29--65:36}
+\example{\texorpdfstring{$y(t)=x(2t)$}{y(t)=x(2t)}}{时变}{62:29--65:36}\label{ex:x2t}
 \textbf{系统}：$x(t)\to y(t)=x(2t)$，即波形沿时间轴压缩 $2$ 倍。
 
 \textbf{证明}（举反例）。取 $x(t)=1$（$0\le t\le1$），其余为 $0$；取 $t_0=1$。
@@ -574,7 +636,7 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 \caption{$y(t)=t\,x(t)$ 的反例，输入 $u(t-1)$：实际输出（红）在 $t=1$ 处直接跳到 $1$，而希望的输出（绿虚线）是从 $0$ 开始爬。两条线上下错开了整整 $1$。}
 \end{figure}
 
-\example{\texorpdfstring{$y[n]=x[3-n]$}{y[n]=x[3-n]}}{时变}{75:38--79:47}
+\example{\texorpdfstring{$y[n]=x[3-n]$}{y[n]=x[3-n]}}{时变}{75:38--79:47}\label{ex:x3n}
 \textbf{系统}：$x[n]\to y[n]=x[3-n]$。$n$ 前的负号把平移变成了反向平移。
 
 \textbf{证明}（举反例）。取 $x[n]=\delta[n]$（单位脉冲：只在 $n=0$ 处为 $1$）。
@@ -667,7 +729,7 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 \textbf{口诀的两处提醒}（补充，我自己加的，课上没讲）。
 \begin{enumerate}[nosep]
 \item 第 1 条的「括号外不能有 $t$」，\textbf{乘和加都算}：$t\,x(t)$、$x(t)\cos t$、$x(t)+\cos t$ 都是时变。括号外是\textbf{常数}不算：$3x(t)$、$x(t)+5$ 仍是时不变。
-\item 口诀只是筛查，不是定义；带积分的系统要回到定义。例如积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$：$t$ 在积分上限，跑到了 $x$ 的括号外面，口诀按字面会判成时变，但它其实是时不变。证：实际 $\displaystyle\int_{-\infty}^{t}x(\tau-t_0)\,\mathrm{d}\tau$，令 $s=\tau-t_0$，得 $\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s=y(t-t_0)$，等于期望。
+\item 口诀只是筛查，不是定义；带积分的系统要回到定义。例如积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$：$t$ 在积分上限，跑到了 $x$ 的括号外面，口诀按字面会判成时变，但它其实是时不变（证明见例~\ref{ex:int}），离散的累加器同理（例~\ref{ex:acc}）。
 \end{enumerate}
 \end{skippable}
 
@@ -688,7 +750,7 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 \item 实际：输出 $f(2t)+3=x(2t-t_0)+3$；
 \item 期望：$y(t-t_0)=x\bigl(2(t-t_0)\bigr)+3=x(2t-2t_0)+3$。
 \end{itemize}
-取例 3 的矩形（$0\le t\le1$ 为 $1$）和 $t_0=1$：实际在 $0.5\le t\le1$ 上比 $3$ 高 $1$，期望在 $1\le t\le1.5$ 上比 $3$ 高 $1$，位置不同。$+3$ 无害，问题出在 $2t$。
+取例~\ref{ex:x2t} 的矩形（$0\le t\le1$ 为 $1$）和 $t_0=1$：实际在 $0.5\le t\le1$ 上比 $3$ 高 $1$，期望在 $1\le t\le1.5$ 上比 $3$ 高 $1$，位置不同。$+3$ 无害，问题出在 $2t$。
 
 \point{练习~3\quad$y(t)=x(t)\cos 2t$：时变}
 \begin{itemize}[nosep]
@@ -711,7 +773,7 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 \item 实际：输出 $f(t)f(-t)=x(t-t_0)\,x(-t-t_0)$；
 \item 期望：$y(t-t_0)=x(t-t_0)\,x\bigl(-(t-t_0)\bigr)=x(t-t_0)\,x(t_0-t)$。
 \end{itemize}
-取 $x$ 为 $[-1,1]$ 上等于 $1$ 的矩形，$t_0=1$：原输出在 $[-1,1]$ 为 $1$，期望是它右移 $1$，在 $[0,2]$ 为 $1$。实际：输入右移后在 $[0,2]$，$f(-t)$ 在 $[-2,0]$，两段只在 $t=0$ 一点相遇，输出除这一点外全为 $0$。原因是 $x(-t)$ 把方向反了：输入向右挪，这一项在输出里向左挪，和例 5 的 $x[3-n]$ 同一类。
+取 $x$ 为 $[-1,1]$ 上等于 $1$ 的矩形，$t_0=1$：原输出在 $[-1,1]$ 为 $1$，期望是它右移 $1$，在 $[0,2]$ 为 $1$。实际：输入右移后在 $[0,2]$，$f(-t)$ 在 $[-2,0]$，两段只在 $t=0$ 一点相遇，输出除这一点外全为 $0$。原因是 $x(-t)$ 把方向反了：输入向右挪，这一项在输出里向左挪，和例~\ref{ex:x3n} 的 $x[3-n]$ 同一类。
 
 %==================================================================
 \section{因果系统（83:44--92:29）}
@@ -982,7 +1044,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 
 \subsection{第三行 微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}（116:28--121:02）}
 \begin{itemize}[nosep]
-\item 线性\textbf{是}，时不变\textbf{是}：前面都证明过。老师提醒，接下来有两格「每一次都会有特别多的问题」；
+\item 线性\textbf{是}，时不变\textbf{是}：前面都证明过（时不变的证明见「时不变系统」一章的例~\ref{ex:diff}，补充）。老师提醒，接下来有两格「每一次都会有特别多的问题」；
 \item 无记忆\textbf{否}：要算 $\dfrac{\mathrm{d}x}{\mathrm{d}t}$，必须知道 $t\pm\Delta t$ 那么\textbf{一小点}地方的值；
 \item 稳定\textbf{否}：前面讲过，微分器不稳定；
 \item 因果：争议最大的一格，见下。
@@ -1022,7 +1084,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 \begin{remember}
 \begin{enumerate}[nosep]
 \item \textbf{线性} = 齐次性 + 叠加性，缺一不可，对\textbf{任意}输入、任意 $a$ 成立。证：设中间变量，把 $a\,x(t)$、$x_1+x_2$ 当「一包」送进去；否定：举一个反例（$x\equiv0$ 或常数，$a=2$，对照「实际」和「希望」）。判据：每一项都有 $x$，每一项的 $x$ 都是一次；警惕 $e^{x}$ 这类套了函数的写法。书上（$a,b$ 合并写）和老师（分两条）的定义等价。
-\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去，与 $y(t-t_0)$ 比；否定：举反例。判据：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。（补充）$x(2t)$ 的「实际」输出是 $x(2t-t_0)$：输入右移 $t_0$，输出只右移 $t_0/2$；括号外随 $t$ 变的项乘和加都算；带积分的系统（如积分器）口诀不适用，回到定义。固定两行的写法见「做题步骤」。
+\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去，与 $y(t-t_0)$ 比；否定：举反例。判据：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。（补充）$x(2t)$ 的「实际」输出是 $x(2t-t_0)$：输入右移 $t_0$，输出只右移 $t_0/2$；括号外随 $t$ 变的项乘和加都算；带积分或求和的系统（积分器、累加器）口诀不适用，回到定义；微分器、积分器、差分、累加器都是时不变。固定两行的写法见「做题步骤」。
 \item \textbf{因果}：输出不依赖未来的输入（以教材定义为准）。判据：\textbf{$x$ 括号里的数恒不大于 $y$ 括号里的数}。$x(t-1)$ 因果；$x(t+1)$、$x(2t)$、$x(\tfrac12t)$、$x[3-n]$ 非因果。
 \item \textbf{无记忆}：$y$ 只依赖同一时刻的 $x$。判据：\textbf{两个括号里的数完全一样}。无记忆\textbf{一定}因果，反过来不一定。
 \item \textbf{可逆}：从 $y$ 能唯一倒推出 $x$。$x(t)^2$（正负根）、微分器（常数丢了）不可逆；平移、缩放、积分器、累加器可逆。
