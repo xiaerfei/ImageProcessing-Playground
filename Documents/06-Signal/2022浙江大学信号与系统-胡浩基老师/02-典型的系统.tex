@@ -438,6 +438,36 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \textbf{证}时变：举一个反例，列出「实际」和「希望」，二者不等即可。
 \end{remember}
 
+\subsection{做题步骤（补充）：固定写两行}
+\textbf{（补充，整理自我和豆包的对话，不是老师的讲法。用来在大题里按部就班，不容易代错。）}
+\begin{enumerate}[nosep]
+\item \textbf{先用口诀预判}（半分钟）：$x$ 括号外有没有随 $t$ 变的项？括号里是不是只有 $t$ 加减常数？两条都过，多半时不变；有一条不过，多半时变。带积分的系统口诀不灵，直接走下面几步。
+\item \textbf{写出系统规矩}：用中间变量 $f$ 表示「送进来的任意信号」，把系统写成 $f(t)\to\cdots$。例：$x(2t)$ 写成 $f(t)\to f(2t)$；$t\,x(t)$ 写成 $f(t)\to t\,f(t)$。
+\item \textbf{第一行，写「实际」}（先移输入，再过系统）：令 $f(t)=x(t-t_0)$，先写出它的入口规则 $f(\square)=x(\square-t_0)$，再把系统规矩里要的东西填进 $\square$。系统自带的东西（$2t$ 里的 $2$、$\cos t$、单独的 $t$）\textbf{原样保留，不跟着 $t_0$ 动}。
+\item \textbf{第二行，写「期望」}（先过系统，再移输出）：先写出 $y(\square)$ 的规则，再把 $\square$ 换成 $t-t_0$：$y(t)$ 里\textbf{所有}的 $t$ 一起换。
+\item \textbf{比较两行}。对任意 $t_0$ 都相等，是时不变，$\blacksquare$；不等，是时变。证时变时再取一个具体的 $x$（矩形脉冲、阶跃、单位脉冲）和一个具体的 $t_0$（如 $1$），算出两个不同的结果，$\blacksquare$。
+\end{enumerate}
+
+\textbf{时变的两种来源}（看到哪一种，就知道「实际」和「期望」会在哪里分家）：
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{3.6cm}p{3.6cm}p{7.2cm}@{}}
+\toprule
+类型 & 例子 & 为什么「实际」$\neq$「期望」\\
+\midrule
+对 $t$ 缩放或反转 & $x(2t)$、$x(-t)$、$x[3-n]$ & 「实际」里输入的平移被系统打折（$x(2t)$：$t_0$ 变成 $t_0/2$）或反向；「期望」是原样平移\\
+括号外挂着随 $t$ 变的项（乘或加都算） & $t\,x(t)$、$x(t)\cos t$、$x(t)+\cos t$ & 这一项是系统自带的，钉在时间轴上：输入挪了它不动；而「期望」是整个输出一起平移，它跟着挪\\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\textbf{三个最容易犯的错}：
+\begin{enumerate}[nosep]
+\item 把 $y(t-t_0)$ 当成「延时输入之后的输出」。它是先过系统再延时，是「期望」；
+\item 算「实际」时把系统里的 $2$ 也乘到 $t_0$ 上，写成 $x\bigl(2(t-t_0)\bigr)$；
+\item 以为 $\cos t$、$t$ 这类系统自带的项会跟着输入一起延时。
+\end{enumerate}
+
 \subsection{例题：证明时不变（57:54--62:28）}
 \example{\texorpdfstring{$y(t)=x(t-1)$}{y(t)=x(t-1)}}{时不变}{}
 \textbf{系统}：$x(t)\to y(t)=x(t-1)$，即输入右移 $1$ 个单位。
@@ -492,6 +522,30 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{tikzpicture}
 \caption{$y(t)=x(2t)$ 的反例：第二行红色（实际）和绿色虚线（希望）不在同一位置，所以是时变系统。}
 \end{figure}
+
+\begin{skippable}
+\textbf{为什么「实际」是 $x(2t-t_0)$，而不是 $x\bigl(2(t-t_0)\bigr)$}（补充，课上没讲，是我自己的整理）。这是最容易绕晕的一步，关键是看清\textbf{入口 $\square$ 里填的是什么}。把函数当成一台机器，括号里的 $\square$ 是入口：
+\begin{itemize}[nosep]
+\item $y$ 这台机器（$y(t)=x(2t)$）：\textbf{进去一个数，先乘 $2$，再交给 $x$}，即 $y(\square)=x(2\square)$；
+\item $f$ 这台机器（$f(t)=x(t-t_0)$）：\textbf{进去一个数，先减 $t_0$，再交给 $x$}，即 $f(\square)=x(\square-t_0)$。
+\end{itemize}
+\begin{center}
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{@{}p{4.6cm}p{5.4cm}l@{}}
+\toprule
+路线 & 把什么填进哪台机器 & 结果\\
+\midrule
+实际：先移输入，再过系统 & 系统规矩 $f(t)\to f(2t)$：把 $2t$ 填进 $f$（先减 $t_0$） & $x(2t-t_0)$\\
+期望：先过系统，再移输出 & 把 $t-t_0$ 填进 $y$（先乘 $2$） & $x\bigl(2(t-t_0)\bigr)=x(2t-2t_0)$\\
+\bottomrule
+\end{tabular}
+\end{center}
+两条路里「乘 $2$」和「减 $t_0$」的先后次序相反，所以结果不同。注意：$y(t-t_0)$ 是「先过系统，再延时输出」，那是\textbf{期望}，不是延时输入之后的输出。
+
+\textbf{代数字看}：取 $t_0=1$、看 $t=3$ 这一刻，实际取 $x(2\cdot3-1)=x(5)$，期望取 $x(2\cdot3-2)=x(4)$，两边读的是 $x$ 在不同位置的值。用上面的矩形（$0\le t\le1$ 为 $1$）：实际 $x(2t-1)$ 在 $0.5\le t\le1$ 为 $1$，期望 $x(2t-2)$ 在 $1\le t\le1.5$ 为 $1$，正是图里的红色和绿色虚线。
+
+\textbf{换个写法}：$x(2t-t_0)=x\bigl(2(t-\tfrac{t_0}{2})\bigr)$。输入右移了 $t_0$，输出却只右移 $\tfrac{t_0}{2}$（延迟被压缩打了对折）；时不变要求输出也右移 $t_0$，对不上。推广：$x(at)$ 的输入右移 $t_0$，输出只右移 $t_0/a$，只要 $a\neq1$ 就是时变。
+\end{skippable}
 
 \example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{时变}{70:49--75:11}
 \textbf{系统}：$x(t)\to y(t)=t\,x(t)$。
@@ -567,6 +621,18 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 \caption{$y[n]=x[3-n]$ 的反例：输入右移 1，实际输出的脉冲不是右移到 $4$，而是左移到 $2$。}
 \end{figure}
 
+\example{\texorpdfstring{$y(t)=x(t)+\cos t$}{y(t)=x(t)+cos t}（补充）}{时变}{}
+\textbf{系统}：$f(t)\to f(t)+\cos t$。式子里的 $\cos t$ 是\textbf{系统自带}的，不是输入的一部分：输入右移，它不动；把整个输出右移，它才跟着一起动。
+
+\textbf{证明}。任取 $t_0$。
+\begin{itemize}[nosep]
+\item 实际：输入 $f(t)=x(t-t_0)$，输出 $f(t)+\cos t=x(t-t_0)+\cos t$；
+\item 期望：$y(t-t_0)=x(t-t_0)+\cos(t-t_0)$。
+\end{itemize}
+两者相差 $\cos t-\cos(t-t_0)$。取 $x(t)\equiv0$、$t_0=\dfrac{\pi}{2}$、$t=0$：实际 $=\cos0=1$，期望 $=\cos\bigl(-\dfrac{\pi}{2}\bigr)=0$，不等，故 $y(t)=x(t)+\cos t$ 为时变系统。\hfill$\blacksquare$
+
+对照：$y(t)=x(t)+5$ 加的是常数，实际 $x(t-t_0)+5=$ 期望 $x(t-t_0)+5$，是时不变。
+
 \subsection{应付考试的判据：两句话（79:53--82:28）}
 老师说这个办法能解决 80\% 以上的题。
 
@@ -597,7 +663,55 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 \textbf{一处要留意}（补充）\tbc{}。板书写「$t$ 只能是 $t$」，但老师紧接着把 $x(t-1)$ 判成时不变。所以这句话应读成「括号里是 $t$ 加减一个\textbf{常数}（只平移）」；乘系数（$2t$）、取反（$-t$、$3-n$）、平方（$t^2$）才算「其他函数」。这是我对老师的理解，课上没有逐字这样说。
 \end{skippable}
 
+\begin{skippable}
+\textbf{口诀的两处提醒}（补充，我自己加的，课上没讲）。
+\begin{enumerate}[nosep]
+\item 第 1 条的「括号外不能有 $t$」，\textbf{乘和加都算}：$t\,x(t)$、$x(t)\cos t$、$x(t)+\cos t$ 都是时变。括号外是\textbf{常数}不算：$3x(t)$、$x(t)+5$ 仍是时不变。
+\item 口诀只是筛查，不是定义；带积分的系统要回到定义。例如积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$：$t$ 在积分上限，跑到了 $x$ 的括号外面，口诀按字面会判成时变，但它其实是时不变。证：实际 $\displaystyle\int_{-\infty}^{t}x(\tau-t_0)\,\mathrm{d}\tau$，令 $s=\tau-t_0$，得 $\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s=y(t-t_0)$，等于期望。
+\end{enumerate}
+\end{skippable}
+
 老师在这一段末尾（82:50）说：线性和时不变讲完，「这一章最核心的内容已经基本上讲完了」，后面四个系统相对简单。
+
+\subsection{练习（补充）：五道}
+\textbf{（补充，是我和豆包一起做的练习，不是老师的题。先盖住结论自己判，再对答案。）}每题先用口诀预判，再按「做题步骤」写两行；证时变要取具体的 $x$ 和 $t_0$。
+
+\point{练习~1\quad$y(t)=x(t-1)+2$：时不变}
+\begin{itemize}[nosep]
+\item 实际：$f(t)=x(t-t_0)$，输出 $f(t-1)+2=x(t-1-t_0)+2$；
+\item 期望：$y(t-t_0)=x\bigl((t-t_0)-1\bigr)+2=x(t-1-t_0)+2$。
+\end{itemize}
+相等，时不变。$+2$ 是常数，不随 $t$ 变，不影响。
+
+\point{练习~2\quad$y(t)=x(2t)+3$：时变}
+\begin{itemize}[nosep]
+\item 实际：输出 $f(2t)+3=x(2t-t_0)+3$；
+\item 期望：$y(t-t_0)=x\bigl(2(t-t_0)\bigr)+3=x(2t-2t_0)+3$。
+\end{itemize}
+取例 3 的矩形（$0\le t\le1$ 为 $1$）和 $t_0=1$：实际在 $0.5\le t\le1$ 上比 $3$ 高 $1$，期望在 $1\le t\le1.5$ 上比 $3$ 高 $1$，位置不同。$+3$ 无害，问题出在 $2t$。
+
+\point{练习~3\quad$y(t)=x(t)\cos 2t$：时变}
+\begin{itemize}[nosep]
+\item 实际：$x(t-t_0)\cos2t$（系统自带的 $\cos2t$ 不动）；
+\item 期望：$x(t-t_0)\cos\bigl(2(t-t_0)\bigr)$。
+\end{itemize}
+取 $x(t)\equiv1$、$t_0=\dfrac{\pi}{4}$、$t=0$：实际 $=\cos0=1$，期望 $=\cos\bigl(-\dfrac{\pi}{2}\bigr)=0$，不等。\textbf{$t_0$ 不能乱取}：$\cos2t$ 的周期是 $\pi$，取 $t_0=\pi$ 时两行恰好相等。时不变要求对\textbf{任意} $t_0$ 成立，所以证时变时要挑一个不相等的 $t_0$。
+
+\point{练习~4\quad$y(t)=x(t+1)\,x(t-1)$：时不变（易错：非线性不等于时变）}
+\begin{itemize}[nosep]
+\item 实际：输出 $f(t+1)f(t-1)=x(t+1-t_0)\,x(t-1-t_0)$；
+\item 期望：$y(t-t_0)=x\bigl((t-t_0)+1\bigr)\,x\bigl((t-t_0)-1\bigr)=x(t+1-t_0)\,x(t-1-t_0)$。
+\end{itemize}
+相等，时不变。数字看一眼：取 $x$ 为 $[0,3]$ 上等于 $1$ 的矩形，$t_0=1$。原输出在 $[1,2]$ 为 $1$；输入右移 $1$ 后，实际输出在 $[2,3]$ 为 $1$，正是原输出右移 $1$。
+
+两个 $x$ 相乘是非线性，但时不变只看「括号外有没有随 $t$ 变的项、括号里是不是只有 $t$ 加减常数」，和线性无关。两个括号里的数不一样（$t+1$、$t-1$）只说明系统有记忆，是另一对性质。
+
+\point{练习~5\quad$y(t)=x(t)\,x(-t)$：时变}
+\begin{itemize}[nosep]
+\item 实际：输出 $f(t)f(-t)=x(t-t_0)\,x(-t-t_0)$；
+\item 期望：$y(t-t_0)=x(t-t_0)\,x\bigl(-(t-t_0)\bigr)=x(t-t_0)\,x(t_0-t)$。
+\end{itemize}
+取 $x$ 为 $[-1,1]$ 上等于 $1$ 的矩形，$t_0=1$：原输出在 $[-1,1]$ 为 $1$，期望是它右移 $1$，在 $[0,2]$ 为 $1$。实际：输入右移后在 $[0,2]$，$f(-t)$ 在 $[-2,0]$，两段只在 $t=0$ 一点相遇，输出除这一点外全为 $0$。原因是 $x(-t)$ 把方向反了：输入向右挪，这一项在输出里向左挪，和例 5 的 $x[3-n]$ 同一类。
 
 %==================================================================
 \section{因果系统（83:44--92:29）}
@@ -908,7 +1022,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 \begin{remember}
 \begin{enumerate}[nosep]
 \item \textbf{线性} = 齐次性 + 叠加性，缺一不可，对\textbf{任意}输入、任意 $a$ 成立。证：设中间变量，把 $a\,x(t)$、$x_1+x_2$ 当「一包」送进去；否定：举一个反例（$x\equiv0$ 或常数，$a=2$，对照「实际」和「希望」）。判据：每一项都有 $x$，每一项的 $x$ 都是一次；警惕 $e^{x}$ 这类套了函数的写法。书上（$a,b$ 合并写）和老师（分两条）的定义等价。
-\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去，与 $y(t-t_0)$ 比；否定：举反例。判据：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。
+\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去，与 $y(t-t_0)$ 比；否定：举反例。判据：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。（补充）$x(2t)$ 的「实际」输出是 $x(2t-t_0)$：输入右移 $t_0$，输出只右移 $t_0/2$；括号外随 $t$ 变的项乘和加都算；带积分的系统（如积分器）口诀不适用，回到定义。固定两行的写法见「做题步骤」。
 \item \textbf{因果}：输出不依赖未来的输入（以教材定义为准）。判据：\textbf{$x$ 括号里的数恒不大于 $y$ 括号里的数}。$x(t-1)$ 因果；$x(t+1)$、$x(2t)$、$x(\tfrac12t)$、$x[3-n]$ 非因果。
 \item \textbf{无记忆}：$y$ 只依赖同一时刻的 $x$。判据：\textbf{两个括号里的数完全一样}。无记忆\textbf{一定}因果，反过来不一定。
 \item \textbf{可逆}：从 $y$ 能唯一倒推出 $x$。$x(t)^2$（正负根）、微分器（常数丢了）不可逆；平移、缩放、积分器、累加器可逆。
