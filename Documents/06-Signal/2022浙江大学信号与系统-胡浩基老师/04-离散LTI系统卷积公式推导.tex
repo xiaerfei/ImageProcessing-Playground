@@ -1,7 +1,7 @@
 % !TeX program = xelatex
 % 编译：xelatex 04-离散LTI系统卷积公式推导.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
 % 来源：2022 浙江大学《信号与系统》胡浩基老师，第二章「LTI 系统时域分析」，教材第 45 页 2.2 节，视频 00:00--107:46（整段视频）。
-% 体例：按主题组织——概念 → 证明 → 例题。视频是按课堂顺序讲的，这里已重排，标题里的括号是视频时刻。
+% 体例：从画图题出发逐步加难度，推广出卷积公式，再讲两种算法。标题里的括号是视频时刻。
 \documentclass[UTF8,a4paper,11pt]{ctexart}
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
@@ -9,6 +9,7 @@
 \usepackage{xcolor}
 \usepackage{mdframed}
 \usepackage{booktabs}
+\usepackage{needspace}
 \usepackage{array}
 \usepackage{longtable}
 \usepackage{enumitem}
@@ -20,8 +21,6 @@
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
-% 行内标记：有疑问、等你对着视频核对的地方（对应文末「待核对」）
-\newcommand{\tbc}{\textcolor{red!75!black}{\textbf{【待核对】}}}
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
 \newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
@@ -32,31 +31,41 @@
 
 % ---------------------------------------------------------------- 画图用的小宏
 % 火柴杆图(stem plot)：在当前 tikzpicture 里、平移 (#1,#2) 处画一个离散序列。
-% #3 起始下标，#4 从起始下标开始的取值列表（整数，逗号分隔），#5 纵向缩放(cm/单位)。
-% 横轴固定显示 n=-3..5，纵轴固定向上画 1.9cm、向下画 0.45cm。
-\newcommand{\stemat}[5]{%
+% #3 起始下标，#4 从起始下标开始的取值列表（整数，逗号分隔），#5 纵向缩放(cm/单位)，
+% #6、#7 横轴显示的下标范围。纵轴固定向上画 1.9cm、向下画 0.45cm。
+\newcommand{\stemr}[7]{%
   \begin{scope}[shift={(#1,#2)},x=0.38cm,y=#5 cm]
-    \draw[->] (-3.5,0) -- (5.7,0);
+    \draw[->] ({#6-0.5},0) -- ({#7+0.7},0) node[right,font=\tiny] {$n$};
     \draw[->] (0,{-0.45/#5}) -- (0,{1.9/#5});
-    \foreach \t in {-3,...,5}{%
+    \foreach \t in {#6,...,#7}{%
       \draw (\t,0) -- (\t,{-0.09/#5});
       \node[font=\tiny,gray!60!black,anchor=north] at (\t,{-0.09/#5}) {\t};}
     \foreach \v [count=\k from 0] in {#4}{%
       \pgfmathtruncatemacro{\nn}{#3+\k}
       \draw[thick,blue!60!black] (\nn,0) -- (\nn,\v);
       \node[circle,fill=blue!60!black,inner sep=1.1pt] at (\nn,\v) {};
-      \ifnum\v>0 \node[font=\scriptsize,anchor=south,inner sep=1.5pt] at (\nn,\v) {\v};\fi
-      \ifnum\v<0 \node[font=\scriptsize,anchor=north,inner sep=1.5pt] at (\nn,\v) {\v};\fi}%
+      \ifnum\v>0 \node[font=\scriptsize,anchor=south west,inner sep=1pt] at (\nn,\v) {\v};\fi
+      \ifnum\v<0 \node[font=\scriptsize,anchor=north west,inner sep=1pt] at (\nn,\v) {\v};\fi}%
   \end{scope}}
+% 横轴固定 n=-3..5 的简写。
+\newcommand{\stemat}[5]{\stemr{#1}{#2}{#3}{#4}{#5}{-3}{5}}
 % 一行「输入序列 -> LTI -> 输出序列」。#1 纵坐标，#2 输入起点，#3 输入取值，#4 输出起点，#5 输出取值，
 % #6 输入纵向缩放，#7 左侧标签，#8 右侧标签，#9 输出纵向缩放。
 \newcommand{\ltirow}[9]{%
-  \node[anchor=east,font=\footnotesize,text width=2.9cm,align=right] at (2.9,{#1+0.7}) {#7};
+  \node[anchor=east,font=\footnotesize] at (2.9,{#1+0.7}) {#7};
   \stemat{4.6}{#1}{#2}{#3}{#6}
   \draw[->,thick] (6.9,{#1+0.5}) -- (7.9,{#1+0.5});
   \node[font=\footnotesize,above] at (7.4,{#1+0.5}) {LTI};
   \stemat{10.6}{#1}{#4}{#5}{#9}
   \node[anchor=west,font=\footnotesize,text width=2.4cm] at (12.9,{#1+0.7}) {#8};}
+% 和 \ltirow 一样，但输出还不知道，画成问号（黑板上出题时就是这样）。#1 纵坐标，#2 输入起点，#3 输入取值，
+% #4 输入纵向缩放，#5 左侧标签。
+\newcommand{\ltiq}[5]{%
+  \node[anchor=east,font=\footnotesize] at (2.9,{#1+0.7}) {#5};
+  \stemat{4.6}{#1}{#2}{#3}{#4}
+  \draw[->,thick] (6.9,{#1+0.5}) -- (7.9,{#1+0.5});
+  \node[font=\footnotesize,above] at (7.4,{#1+0.5}) {LTI};
+  \node[font=\large] at (9.4,{#1+0.5}) {$y[n]=\,?$};}
 
 % ---------------------------------------------------------------- 标题层级
 % 章(section)、小节(subsection)：深蓝；例题：橙色徽章；小标题(\point，由原来的 \paragraph 改来)：青色三角。
@@ -92,23 +101,11 @@
 \begin{document}
 \maketitle
 
-\begin{note}
-这份笔记由视频整理而来，来源要分清：
-\begin{itemize}[nosep]
-\item 课堂口述：来自语音转写（whisper 的 large-v3-turbo 模型，加了术语提示词，分三段转写）。转写仍有错字和「卡住重复」，已按黑板和上下文改正，常见的几处见文末「转写里听错的地方」；
-\item 题目、式子和每一步推导：来自画面（黑板板书）。口述和板书不一致时，以板书为准；
-\item 标注「（补充）」的内容是我自己加的，课上没讲，也没有核对书；
-\item 红色的 \tbc{} 是我拿不准、等你对着视频核对的地方，汇总在文末「待核对」一节；
-\item 视频总长约 107 分钟，中间（约 99:57）有「大家休息一下」的停顿，视频直接接到「我们开始上课」。\textbf{注意：视频实际由两堂课接起来}。前约 15 分钟（00:00--约 14:50）是上一堂课的尾声，以课堂练习为主；约 15:00 起是下一堂课（换了外套和黑板），先把「上次的题」抄回黑板重做一遍，之后才讲新内容。
-\item 笔记已按「概念→证明→例题」重排，和视频里的先后顺序不同；各节标题后的括号是视频时刻，对照视频时按时刻找。
-\end{itemize}
-\end{note}
-
 %==================================================================
-\section{单位脉冲响应与卷积}\label{sec:def}
-\subsection{概念}
-\point{先复习两个定义（00:00--02:15）。}用\textbf{离散}的写法复习。
+\section{从一道画图题出发：已知一对，推另一对（00:00--29:55）}\label{sec:draw}
+已知 $\delta[n]$ 通过 LTI 系统的输出，求别的输入的输出。难度逐步增加：乘 $2$、右移一格、两者相加、输入有四个数；每一步只用一条性质。把同样的做法推广到任意输入，就得到卷积（第 \ref{sec:derive} 节）。
 
+\subsection{先复习两个定义（00:00--02:15）}
 \begin{remember}
 \begin{enumerate}[nosep]
 \item \textbf{线性系统}（对\textbf{任意}输入）：
@@ -120,8 +117,183 @@
 \end{enumerate}
 \end{remember}
 
-\point{单位脉冲序列和单位脉冲响应（30:00--36:35）。}讲简便方法之前，先\textbf{定义几个概念}，并记住它们的名字。
+\subsection{画图题：每次只用一条性质（02:22--13:12）}
+设一个 LTI 系统：$x[n]\to\boxed{\text{LTI}}\to y[n]$。已知输入单位脉冲 $x[n]=\delta[n]$（只在 $n=0$ 处为 $1$）时的输出 $y[n]$：
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{0}{1}{-1}{1,1,2,-1}{0.7}{如果 $x[n]=\delta[n]$}{已知}{0.6}
+\end{tikzpicture}
+\caption{已知条件（02:22--04:00）：输出在 $n=-1,0,1,2$ 处分别是 $1,1,2,-1$，其他位置都是 $0$。}
+\end{figure}
+这个输出后面起名叫\textbf{单位脉冲响应} $h[n]$（第 \ref{sec:derive} 节）。
+
+下面三道题，每题用一条性质，从已知推到未知。
+
+\example{输入扩大两倍}{齐次性}{03:43--06:58}
+\textbf{题目}：输入 $x[n]=2\delta[n]$（在 $n=0$ 处为 $2$），送进\textbf{同一个} LTI，输出是什么？
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltiq{0}{0}{2}{0.6}{那么 $x[n]=2\delta[n]$}
+\end{tikzpicture}
+\end{figure}
+
+\textbf{解}：\textbf{每个值都乘 $2$}，下标不变。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{0}{2}{-1}{2,2,4,-2}{0.6}{$x[n]=2\delta[n]$}{每个值乘 2}{0.36}
+\end{tikzpicture}
+\end{figure}
+
+\textbf{依据}：\textbf{齐次性}。定义里的 $x[n]$ 是\textbf{任意}的，当然包含 $\delta[n]$ 这一种；现在输入乘了 $2$（即齐次性里的 $a=2$），输出也乘 $2$。
+
+注意：不是线性系统就没有这个结论。
+
+\example{输入右移一格}{时不变性}{07:00--10:05}
+\textbf{题目}：输入 $x[n]=\delta[n-1]$（只在 $n=1$ 处为 $1$，也就是把 $\delta[n]$ 向右挪了一格），送进同一个 LTI，输出是什么？
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltiq{0}{1}{1}{0.6}{那么 $x[n]=\delta[n-1]$}
+\end{tikzpicture}
+\end{figure}
+
+\textbf{解}：\textbf{输出也整体右移一格}。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{1}{1}{0}{1,1,2,-1}{0.6}{$x[n]=\delta[n-1]$}{整体右移一格}{0.6}
+\end{tikzpicture}
+\end{figure}
+
+\textbf{依据}：\textbf{时不变性}——输入相对原来右移一个单位，输出也右移一个单位。
+
+\example{自己出一道题}{叠加性}{10:05--13:12}
+\textbf{题目}：自己出一道题并做出来。提示：例 1 用了齐次性，例 2 用了时不变性，\textbf{叠加性还没有被用}——想想怎么用它。（这道题容易加错。）
+
+\textbf{解}：\textbf{把例 1 和例 2 的输入加起来}，即 $x[n]=2\delta[n]+\delta[n-1]$（$n=0$ 处为 $2$，$n=1$ 处为 $1$，别处为 $0$）：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltiq{0}{0}{2,1}{0.6}{$x[n]=2\delta[n]+\delta[n-1]$}
+\end{tikzpicture}
+\end{figure}
+
+由叠加性，输出就是前两道题输出的\textbf{和}。逐位相加：
+
+\begin{center}
+\begin{tabular}{@{}c|ccccc@{}}
+\toprule
+$n$ & $-1$ & $0$ & $1$ & $2$ & $3$\\
+\midrule
+例 1 的输出 $2h$ & $2$ & $2$ & $4$ & $-2$ & $0$\\
+例 2 的输出（右移一格） & $0$ & $1$ & $1$ & $2$ & $-1$\\
+\midrule
+相加 & $2$ & $3$ & $5$ & $0$ & $-1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+答案：$n=-1,0,1,2,3$ 处依次为 $2,3,5,0,-1$（范围 $-1$ 到 $3$）。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{0}{2,1}{-1}{2,3,5,0,-1}{0.6}{$x[n]=2\delta[n]+\delta[n-1]$}{两行输出相加}{0.3}
+\end{tikzpicture}
+\end{figure}
+
+\begin{remember}
+\textbf{三道题用三条性质：}\\
+\textbf{例 1}：输入乘 $a$，输出也乘 $a$ $\Rightarrow$ 齐次性。\\
+\textbf{例 2}：输入右移 $n_0$，输出也右移 $n_0$ $\Rightarrow$ 时不变性。\\
+\textbf{例 3}：输入相加，输出也相加 $\Rightarrow$ 叠加性。
+\end{remember}
+
+\subsection{加难度：输入有四个数（13:15--29:55）}
+\example{考试水平的题：输入有四个数}{拆成脉冲再相加}{13:15--14:50；18:10--29:55}
+\label{ex:four}以上是帮助理解的简单题，下面是\textbf{考试水平}的题。
+
+这道题不难，难在\textbf{很快做对}：\textbf{怎么快速做这样的题}，是下一堂课的核心。
+
+\textbf{题目}：$x[n]$ 在 $n=-1,0,1,2$ 处分别是 $3,2,1,-1$，送进\textbf{同一个} LTI 系统（$\delta[n]$ 的输出是 $n=-1..2$ 处的 $1,1,2,-1$），输出 $y[n]$ 是什么？
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltiq{0}{-1}{3,2,1,-1}{0.4}{$x[n]$（四个数）}
+\end{tikzpicture}
+\end{figure}
+
+这道题上次结尾问过；它只是\textbf{繁琐}，先自己做两三分钟。
+
+\point{做法：把输入拆成四个脉冲（21:17--29:55）。}\textbf{输入有四个非零的数，把它拆成四个脉冲的和}：
+\[x[n]=3\,\delta[n+1]+2\,\delta[n]+1\,\delta[n-1]-1\,\delta[n-2].\]
+然后\textbf{每一个脉冲单独过 LTI}（用齐次性和时不变性），最后把四个输出\textbf{加起来}（用叠加性）：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{-1}{3}{-2}{3,3,6,-3}{0.4}{$3\,\delta[n+1]$}{左移一格，再乘 3}{0.22}
+  \ltirow{-2.4}{0}{2}{-1}{2,2,4,-2}{0.4}{$2\,\delta[n]$}{例 1 已做}{0.3}
+  \ltirow{-4.8}{1}{1}{0}{1,1,2,-1}{0.4}{$\delta[n-1]$}{例 2 已做}{0.5}
+  \ltirow{-7.2}{2}{-1}{1}{-1,-1,-2,1}{0.4}{$-\delta[n-2]$}{右移两格，再乘 $-1$}{0.5}
+\end{tikzpicture}
+\caption{四个脉冲各自通过同一个 LTI 的输出（各行纵向缩放不同）。}
+\end{figure}
+
+其中 $2\delta[n]$ 和 $\delta[n-1]$ 已有现成结果（例 1、例 2），直接引用；要新做的是另外两个。
+
+\paragraph{确定范围。}四个输出加起来，最左边有值的地方是四个最左边里的最小值：$-1,\,-1\,(\text{来自}2\delta),\,0,\,1$ 以及新做的 $-2$，所以最左是 $n=-2$；最右边是 $1,2,3,4$ 里最大的，所以最右是 $n=4$。因此 $y[n]$ \textbf{只在 $n=-2$ 到 $4$ 有值}。
+
+\paragraph{逐点相加。}
+
+\begin{center}
+\begin{tabular}{@{}c|ccccccc@{}}
+\toprule
+$n$ & $-2$ & $-1$ & $0$ & $1$ & $2$ & $3$ & $4$\\
+\midrule
+$3\delta[n+1]$ 的输出 & $3$ & $3$ & $6$ & $-3$ & $0$ & $0$ & $0$\\
+$2\delta[n]$ 的输出 & $0$ & $2$ & $2$ & $4$ & $-2$ & $0$ & $0$\\
+$\delta[n-1]$ 的输出 & $0$ & $0$ & $1$ & $1$ & $2$ & $-1$ & $0$\\
+$-\delta[n-2]$ 的输出 & $0$ & $0$ & $0$ & $-1$ & $-1$ & $-2$ & $1$\\
+\midrule
+\textbf{相加 $y[n]$} & $\mathbf{3}$ & $\mathbf{5}$ & $\mathbf{9}$ & $\mathbf{1}$ & $\mathbf{-1}$ & $\mathbf{-3}$ & $\mathbf{1}$\\
+\bottomrule
+\end{tabular}
+\end{center}
+结果是 $3,5,9,1,-1,-3,1$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{-1}{3,2,1,-1}{-2}{3,5,9,1,-1,-3,1}{0.5}{$x[n]$（四个数）}{最终答案}{0.19}
+\end{tikzpicture}
+\caption{这道题的输入（左）和最后的输出（右）。输入只有 4 个点，输出有 7 个点，两端各\textbf{变长}了。}
+\end{figure}
+
+\begin{note}
+\textbf{三个值得记下来的观察}：
+\begin{enumerate}[nosep]
+\item 输入有 4 个点、$h[n]$ 也有 4 个点，输出却有 $4+4-1=7$ 个点。这个规律在列表法一节总结为「最左边相加、最右边相加」（见第 \ref{sec:list} 节）。
+\item 这样算肯定能做出来，只是复杂，而且\textbf{很容易犯错}。第 \ref{sec:list}、\ref{sec:conv} 节讲不容易犯错的简单方法。
+\item \textbf{做法只有三步}：拆成脉冲 $\to$ 每个脉冲单独过系统 $\to$ 加起来。把这三步推广到任意输入，就是卷积（第 \ref{sec:derive} 节）。
+\end{enumerate}
+\end{note}
+
+%==================================================================
+\section{从这道题推广到卷积}\label{sec:derive}
+例~\ref{ex:four} 的做法只有三步：\textbf{拆成脉冲 $\to$ 每个脉冲单独过系统 $\to$ 加起来}。下面把这三步推广到任意输入。
+
+\subsection{\texorpdfstring{第一步：单位脉冲响应 $h[n]$（30:00--32:00）}{第一步：单位脉冲响应 h[n]（30:00--32:00）}}
+先定义两个名字：
 \begin{itemize}
 \item $x[n]=\delta[n]$ 叫\textbf{单位脉冲序列}(unit impulse sequence，第一章学过)。
 \item 把它输入 LTI 系统，得到的输出 $y[n]$ 有\textbf{专门的名字}：
@@ -136,42 +308,11 @@
 
 这就回答了上一份笔记结尾那句话（「知道一个 $x(t)$ 对应的 $y(t)$，就知道所有」）：\textbf{那「一个」就是 $\delta$ 对应的 $h$}。
 
-\point{卷积。}对于任意输入 $x[n]$，输出 $y[n]$ 要写成：
-\[y[n]=x[n]\ast h[n].\]
-符号 $\ast$ 叫\textbf{卷积}(convolution)。$y[n]$ 就是用那套较复杂的算法（把输入拆成脉冲、逐个过系统、再加起来，见本节例~\ref{ex:four}）算出来的，写成 $x[n]\ast h[n]$。
-
-\point{两种出题方式。}同一道题有两种问法，数据就是本节例~\ref{ex:four} 那道：
-
-\begin{center}
-\begin{tabular}{@{}p{3.2cm}p{11.3cm}@{}}
-\toprule
- & 写法\\
-\midrule
-第一种（原始的） & 已知：输入 $\delta[n]$、输出 $h[n]=(1,1,2,-1)$（$n=-1..2$）。再给一个输入 $x[n]=(3,2,1,-1)$（$n=-1..2$），问：输出是什么？要画三张图。\\
-第二种（有了新名词） & 直接问：$x[n]\ast h[n]$ 等于什么？其中 $x$ 是 $(3,2,1,-1)$，$h$ 是 $(1,1,2,-1)$，下标都是 $n=-1..2$。\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\textbf{两种出题方式完全一样}。看到第二种写法，应当想到：它的意思是——如果 $\delta[n]$ 的响应是 $h[n]$，那么 $x[n]$ 的响应是什么？答案是 $y[n]=x[n]\ast h[n]$。后面会用第二种出题方式，但\textbf{第一种才是这个问题的本质}。
-
-卷积的简便算法在书上 45 页 2.2 节，下面详细讲。
-
-\point{卷积的计算公式（79:55--88:12）。}接下来是一个更重要的问题：\textbf{卷积计算公式}，书上 47 页，公式 2-32。
-
-\begin{remember}
+\subsection{第二步：任意输入都能拆成脉冲的和（81:17--84:50）}
 \[
-x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].
+x[n]=\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k]\qquad(\text{书上 45 页式 2-28}).
 \]
-\end{remember}
-这就是卷积的\textbf{定义式}。有了它，就有了另一种算卷积的方法，叫\textbf{卷积公式法}（见第 \ref{sec:conv} 节）。先来\textbf{证明}这个公式，见下一小节。
-
-\subsection{证明：卷积公式从哪来（81:17--88:08）}
-\point{第一步：把 $x[n]$ 写成脉冲的和（81:17--84:50）。}整个证明里最难懂的是这个式子（第一章讲过）：
-\[
-x[n]=\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k].
-\]
-用\textbf{例子}来讲：取书上 79 页那道题的 $x[n]$（第 \ref{sec:list} 节的例~\ref{ex:p79} 会完整做它），$n=-1,0,1,2$ 处分别是 $1,2,1,1$，它等于
+例~\ref{ex:four} 的输入就是这样拆的：$x[n]=3\delta[n+1]+2\delta[n]+\delta[n-1]-\delta[n-2]$。再看一个例子：取书上 79 页那道题的 $x[n]$（第 \ref{sec:list} 节的例~\ref{ex:p79} 会完整做它），$n=-1,0,1,2$ 处分别是 $1,2,1,1$，它等于
 \[
 x[n]=1\cdot\delta[n+1]+2\cdot\delta[n]+1\cdot\delta[n-1]+1\cdot\delta[n-2].
 \]
@@ -207,11 +348,15 @@ $2$ & $\delta[n-2]$ & $x[2]$ & $1$\\
   \stemat{11.8}{-1.6}{2}{1}{0.6}
   \node[font=\Large] at (9.8,1.4) {$+$};
 \end{tikzpicture}
-\caption{把 $x[n]$ 拆成脉冲的和：左边是 $x[n]$，右边是四个单独的脉冲（每个脉冲的高度就是 $x[k]$）。把右边四张图\textbf{相加}，就得到左边。（图是我重画的。）}
+\caption{把 $x[n]$ 拆成脉冲的和：左边是 $x[n]$，右边是四个单独的脉冲（每个脉冲的高度就是 $x[k]$）。把右边四张图\textbf{相加}，就得到左边。}
 \end{figure}
 
-\point{第二步：三行证明（84:55--88:08）。}证明只有三行：
+\subsection{第三步：三行推导，得到卷积（32:00--33:00，84:55--88:08）}
+\point{卷积。}\[y[n]=x[n]\ast h[n].\]
+符号 $\ast$ 叫\textbf{卷积}(convolution)。$y[n]$ 就是用那套较复杂的算法（把输入拆成脉冲、逐个过系统、再加起来，即例~\ref{ex:four} 的做法）算出来的，写成 $x[n]\ast h[n]$。
 
+\needspace{9\baselineskip}
+\point{三行推导。}
 \begin{center}
 \begin{tabular}{@{}p{3.7cm}p{3.7cm}p{7.6cm}@{}}
 \toprule
@@ -225,22 +370,63 @@ $\displaystyle\sum_{k=-\infty}^{+\infty}x[k]\,\delta[n-k]$ & $\displaystyle\sum_
 \end{tabular}
 \end{center}
 
-最后一行的左边，由第一步，\textbf{就是 $x[n]$}。再根据卷积的定义（$\delta[n]$ 的输出是 $h[n]$，则 $x[n]$ 通过同一个 LTI，输出是 $x[n]\ast h[n]$），所以
+最后一行的左边，由第二步，\textbf{就是 $x[n]$}。再根据卷积的定义（$\delta[n]$ 的输出是 $h[n]$，则 $x[n]$ 通过同一个 LTI，输出是 $x[n]\ast h[n]$），所以
 \[
 x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].
 \]
 证毕。
 
 \begin{remember}
-\textbf{这个证明就是本节后面例~1--3 那三道题的「一般化」}：时不变性（右挪）$+$ 齐次性（乘系数）$+$ 叠加性（相加）。这一步相对于上一步，仅仅是把所有的 $k$ 加在了一起。
+\textbf{这个证明就是第 \ref{sec:draw} 节例~1--3 那三道题的「一般化」}：时不变性（右挪）$+$ 齐次性（乘系数）$+$ 叠加性（相加）。这一步相对于上一步，仅仅是把所有的 $k$ 加在了一起。
 \end{remember}
 
+\point{卷积公式。}上面推出的式子就是\textbf{卷积计算公式}，书上 47 页，公式 2-32：
+
+\begin{remember}
+\[
+x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].
+\]
+\end{remember}
+这就是卷积的\textbf{定义式}。有了它，就有了另一种算卷积的方法，叫\textbf{卷积公式法}（见第 \ref{sec:conv} 节）。
+
 \begin{note}
-关于「为什么叫卷积」，\textbf{这段视频里没有讲}。\tbc{} 视频在 107:46 结束，可能放在后面的课里。
+「为什么叫卷积」这段视频没有讲：32:43 提到「待会讲」，之后没有展开。
 \end{note}
 
+\subsection{同一道题的两种问法（33:00--36:35）}
+同一道题有两种问法，数据就是例~\ref{ex:four} 那道。
+
+\textbf{第一种}（原始问法，要画三张图）：如果 $\delta[n]$ 通过 LTI 的输出是 $h[n]$，那么这个 $x[n]$ 通过同一个 LTI，输出是什么？
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \ltirow{0}{0}{1}{-1}{1,1,2,-1}{0.7}{如果 $\delta[n]$}{输出是 $h[n]$}{0.6}
+  \ltiq{-2.9}{-1}{3,2,1,-1}{0.4}{那么 $x[n]$}
+\end{tikzpicture}
+\end{figure}
+
+\textbf{第二种}（有了新名词以后）：直接问 $x[n]\ast h[n]$ 等于什么。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[font=\footnotesize] at (0.3,2.1) {$x[n]$};
+  \stemat{0.6}{0}{-1}{3,2,1,-1}{0.4}
+  \node[font=\large] at (3.6,0.5) {$\ast$};
+  \node[font=\footnotesize] at (4.6,2.1) {$h[n]$};
+  \stemat{4.9}{0}{-1}{1,1,2,-1}{0.6}
+  \node[font=\large] at (8.3,0.5) {$=\ ?$};
+\end{tikzpicture}
+\caption{同一道题的两种问法（33:00--36:35）。上面两行是第一种，下面一行是第二种。}
+\end{figure}
+
+\textbf{两种出题方式完全一样}。看到第二种写法，应当想到：它的意思是——如果 $\delta[n]$ 的响应是 $h[n]$，那么 $x[n]$ 的响应是什么？答案是 $y[n]=x[n]\ast h[n]$。后面会用第二种出题方式，但\textbf{第一种才是这个问题的本质}。
+
+卷积的简便算法在书上 45 页 2.2 节，下面详细讲。
+
 \subsection{\texorpdfstring{推论：$h[n]$ 是 LTI 系统唯一的标识（37:00--40:26）}{推论：h[n] 是 LTI 系统唯一的标识（37:00--40:26）}}
-在讲怎么算之前，先看两道判断题。
+有了 $h[n]$ 和卷积这两个名字，先看两道判断题。
 
 \point{判断题 A。}如果两个 LTI 系统的 $h[n]$（单位脉冲响应）一样，那么这两个 LTI 系统是完全一样的。对还是错？
 
@@ -263,153 +449,10 @@ x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].
 \end{itemize}
 这三条都是 LTI 系统才有的。\textbf{如果不是 LTI，这些推导全是错的，这个题就做不出来。}对一个不是 LTI 的系统，$h[n]$ 不过就是「$\delta[n]$ 这个输入对应的输出」，没有什么特殊地位，只是一个普通的输入对应的输出。\textbf{只有在 LTI 系统里，$h[n]$ 才特殊。}
 
-\subsection{例题：已知一对，推另一对（02:22--14:50，18:10--29:55）}
-设一个 LTI 系统（线性时不变系统，板书写 LTI），输入 $x[n]=\delta[n]$（单位脉冲：$n=0$ 时为 $1$，其他地方为 $0$）时，输出为序列 $y[n]$：
-
-\begin{center}
-\begin{tabular}{@{}c|cccc@{}}
-\toprule
-$n$ & $-1$ & $0$ & $1$ & $2$\\
-\midrule
-$y[n]$ & $1$ & $1$ & $2$ & $-1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-（其他位置都是 $0$。这个序列就是前面定义的单位脉冲响应 $h[n]$，后面反复出现；课上是做完这几道题以后才给它起名字的。）
-
-下面三道题，每题用一条性质，从已知推到未知。
-
-\example{输入扩大两倍}{齐次性}{03:43--06:58}
-\textbf{题目}：输入 $x[n]=2\delta[n]$（在 $n=0$ 处为 $2$），送进\textbf{同一个} LTI，输出是什么？
-
-\textbf{解}：\textbf{每个值都乘 $2$}，即 $(2,2,4,-2)$，下标不变。
-
-\textbf{依据}：\textbf{齐次性}。定义里的 $x[n]$ 是\textbf{任意}的，当然包含 $\delta[n]$ 这一种；现在输入乘了 $2$（即齐次性里的 $a=2$），输出也乘 $2$。
-
-注意：不是线性系统就没有这个结论。
-
-\example{输入右移一格}{时不变性}{07:00--10:05}
-\textbf{题目}：输入 $x[n]=\delta[n-1]$（只在 $n=1$ 处为 $1$，也就是把 $\delta[n]$ 向右挪了一格），送进同一个 LTI，输出是什么？
-
-\textbf{解}：\textbf{输出也整体右移一格}，即在 $n=0,1,2,3$ 处分别是 $(1,1,2,-1)$。
-
-\textbf{依据}：\textbf{时不变性}——输入相对原来右移一个单位，输出也右移一个单位。
-
-\example{自己出一道题}{叠加性}{10:05--13:12}
-\textbf{题目}：自己出一道题并做出来。提示：例 1 用了齐次性，例 2 用了时不变性，\textbf{叠加性还没有被用}——想想怎么用它。（这道题容易加错。）
-
-\textbf{解}：\textbf{把例 1 和例 2 的输入加起来}，即 $x[n]=2\delta[n]+\delta[n-1]$（$n=0$ 处为 $2$，$n=1$ 处为 $1$，别处为 $0$）。由叠加性，输出就是前两道题输出的\textbf{和}。逐位相加：
-
-\begin{center}
-\begin{tabular}{@{}c|ccccc@{}}
-\toprule
-$n$ & $-1$ & $0$ & $1$ & $2$ & $3$\\
-\midrule
-例 1 的输出 $2h$ & $2$ & $2$ & $4$ & $-2$ & $0$\\
-例 2 的输出（右移一格） & $0$ & $1$ & $1$ & $2$ & $-1$\\
-\midrule
-相加 & $2$ & $3$ & $5$ & $0$ & $-1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-答案：$n=-1,0,1,2,3$ 处依次为 $2,3,5,0,-1$（范围 $-1$ 到 $3$）。
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[>=stealth]
-  \ltirow{0}{0}{1}{-1}{1,1,2,-1}{0.7}{$\delta[n]$}{已知}{0.7}
-  \ltirow{-2.7}{0}{2}{-1}{2,2,4,-2}{0.7}{$2\delta[n]$}{例 1：齐次性}{0.42}
-  \ltirow{-5.4}{1}{1}{0}{1,1,2,-1}{0.7}{$\delta[n-1]$}{例 2：时不变性}{0.7}
-  \ltirow{-8.1}{0}{2,1}{-1}{2,3,5,0,-1}{0.7}{$2\delta[n]+\delta[n-1]$}{例 3：叠加性}{0.32}
-\end{tikzpicture}
-\caption{三道题的图。每一行是同一个 LTI 系统。注意例 3 的输入是例 1 和例 2 的输入\textbf{相加}（在 $n=0$ 处 $2$，在 $n=1$ 处 $1$），输出就是两行输出\textbf{相加}。（图是我按黑板内容重画的，每行输入和输出的纵向缩放不同。）}
-\end{figure}
-
-\begin{remember}
-\textbf{三道题用三条性质：}\\
-\textbf{例 1}：输入乘 $a$，输出也乘 $a$ $\Rightarrow$ 齐次性。\\
-\textbf{例 2}：输入右移 $n_0$，输出也右移 $n_0$ $\Rightarrow$ 时不变性。\\
-\textbf{例 3}：输入相加，输出也相加 $\Rightarrow$ 叠加性。
-\end{remember}
-
-\example{考试水平的题：输入有四个数}{拆成脉冲再相加}{13:15--14:50；18:10--29:55}
-\label{ex:four}以上是帮助理解的简单题，下面是\textbf{考试水平}的题。
-
-这道题不难，难在\textbf{很快做对}：\textbf{怎么快速做这样的题}，是下一堂课的核心。第一次课到此结束。
-
-（视频在 14:50 前后接上下一堂课：约 15:00--18:05 重抄上一堂课的三道题，18:10 起讲这道题。）题目（板书）：
-
-\begin{center}
-\begin{tabular}{@{}c|cccc@{}}
-\toprule
-$n$ & $-1$ & $0$ & $1$ & $2$\\
-\midrule
-$x[n]$ & $3$ & $2$ & $1$ & $-1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-把它送进\textbf{同一个} LTI 系统（上一堂课那一个：$\delta[n]\to(1,1,2,-1)$ 在 $n=-1..2$），输出 $y[n]$ 是什么？
-
-这道题上次结尾问过；它只是\textbf{繁琐}，先自己做两三分钟。
-
-\point{做法：把输入拆成四个脉冲（21:17--29:55）。}\textbf{输入有四个非零的数，把它拆成四个脉冲的和}：
-\[x[n]=3\,\delta[n+1]+2\,\delta[n]+1\,\delta[n-1]-1\,\delta[n-2].\]
-然后\textbf{每一个脉冲单独过 LTI}（用齐次性和时不变性），最后把四个输出\textbf{加起来}（用叠加性）：
-
-\begin{center}
-\begin{tabular}{@{}lll@{}}
-\toprule
-这一块输入 & 怎么得到输出 & 输出\\
-\midrule
-$3\,\delta[n+1]$ & 脉冲\textbf{左移一格}，输出也左移一格；再\textbf{乘 $3$} & $n=-2..1$：$3,3,6,-3$\\
-$2\,\delta[n]$ & 乘 $2$（例 1 已做） & $n=-1..2$：$2,2,4,-2$\\
-$1\,\delta[n-1]$ & 右移一格（例 2 已做） & $n=0..3$：$1,1,2,-1$\\
-$-1\,\delta[n-2]$ & 右移两格；再\textbf{乘 $-1$} & $n=1..4$：$-1,-1,-2,1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-其中 $2\delta[n]$ 和 $\delta[n-1]$ 已有现成结果（例 1、例 2），直接引用；要新做的是另外两个。
-
-\paragraph{确定范围。}四个输出加起来，最左边有值的地方是四个最左边里的最小值：$-1,\,-1\,(\text{来自}2\delta),\,0,\,1$ 以及新做的 $-2$，所以最左是 $n=-2$；最右边是 $1,2,3,4$ 里最大的，所以最右是 $n=4$。因此 $y[n]$ \textbf{只在 $n=-2$ 到 $4$ 有值}。
-
-\paragraph{逐点相加。}
-
-\begin{center}
-\begin{tabular}{@{}c|ccccccc@{}}
-\toprule
-$n$ & $-2$ & $-1$ & $0$ & $1$ & $2$ & $3$ & $4$\\
-\midrule
-$3\delta[n+1]$ 的输出 & $3$ & $3$ & $6$ & $-3$ & $0$ & $0$ & $0$\\
-$2\delta[n]$ 的输出 & $0$ & $2$ & $2$ & $4$ & $-2$ & $0$ & $0$\\
-$\delta[n-1]$ 的输出 & $0$ & $0$ & $1$ & $1$ & $2$ & $-1$ & $0$\\
-$-\delta[n-2]$ 的输出 & $0$ & $0$ & $0$ & $-1$ & $-1$ & $-2$ & $1$\\
-\midrule
-\textbf{相加 $y[n]$} & $\mathbf{3}$ & $\mathbf{5}$ & $\mathbf{9}$ & $\mathbf{1}$ & $\mathbf{-1}$ & $\mathbf{-3}$ & $\mathbf{1}$\\
-\bottomrule
-\end{tabular}
-\end{center}
-结果与板书的 $3,5,9,1,-1,-3,1$ 一致。（板书过程中在 $n=0,1$ 处曾看反一次，已改正；最终答案以上表为准。）
-
-\begin{figure}[H]
-\centering
-\begin{tikzpicture}[>=stealth]
-  \ltirow{0}{-1}{3,2,1,-1}{-2}{3,5,9,1,-1,-3,1}{0.5}{$x[n]$（四个数）}{最终答案}{0.19}
-\end{tikzpicture}
-\caption{这道题的输入（左）和最后的输出（右）。输入只有 4 个点，输出有 7 个点，两端各\textbf{变长}了。（图是我重画的。）}
-\end{figure}
-
-\begin{note}
-\textbf{两个值得记下来的观察}：
-\begin{enumerate}[nosep]
-\item 输入有 4 个点、$h[n]$ 也有 4 个点，输出却有 $4+4-1=7$ 个点。这个规律在列表法一节总结为「最左边相加、最右边相加」（见第 \ref{sec:list} 节）。
-\item 这样算肯定能做出来，只是复杂，而且\textbf{很容易犯错}。下面要讲的，就是不容易犯错的简单方法。
-\end{enumerate}
-\end{note}
 
 %==================================================================
 \section{第一种算法：列表法（40:39--50:25）}\label{sec:list}
-算 $x[n]\ast h[n]$ 有\textbf{两种方法}，先讲第一种：\textbf{列表法}。仍用前面那道题（第 \ref{sec:def} 节的例~\ref{ex:four}：$x=(3,2,1,-1)$ 在 $n=-1..2$，$h=(1,1,2,-1)$ 在 $n=-1..2$）。板书步骤：\ \textcircled{1}确定 $y[n]=x[n]\ast h[n]$ 的取值范围；\ \textcircled{2}列表；\ \textcircled{3}竖着加。
+算 $x[n]\ast h[n]$ 有\textbf{两种方法}，先讲第一种：\textbf{列表法}。仍用前面那道题（第 \ref{sec:draw} 节的例~\ref{ex:four}：$x=(3,2,1,-1)$ 在 $n=-1..2$，$h=(1,1,2,-1)$ 在 $n=-1..2$）。步骤：\ \textcircled{1}确定 $y[n]=x[n]\ast h[n]$ 的取值范围；\ \textcircled{2}列表；\ \textcircled{3}竖着加。
 
 \subsection{方法：三步}
 \point{第一步：确定 $y[n]$ 有值的范围。}
@@ -419,7 +462,7 @@ $y[n]$ 的\textbf{最右边} $=$ $x[n]$ 的最右边 $+$ $h[n]$ 的最右边。
 \end{remember}
 这道题里：最左边 $(-1)+(-1)=-2$，最右边 $2+2=4$，所以 $y[n]$ \textbf{只在 $n=-2$ 到 $4$ 有值}。为什么这样，见下一小节「证明」。
 
-\point{第二步：列表。}做法（整理成表）：
+\point{第二步：列表。}表格最上面一行写 $h[n]$ 的值 $1,1,2,-1$，最左边一列竖着写 $x[n]$ 的值 $3,2,1,-1$，格子里填乘积：
 \begin{enumerate}[nosep]
 \item 把 $h[n]$ \textbf{从左抄到右}写在最上面一行：$1,1,2,-1$。
 \item 拿 $x$ 最左边的数 $3$，去乘上面 $h$ 的\textbf{每一个}：$3\times(1,1,2,-1)=(3,3,6,-3)$，写在下面一行，\textbf{和 $h$ 的位置对齐}。
@@ -450,7 +493,7 @@ $-1\times h$（右挪 3 位） & & & & $-1$ & $-1$ & $-2$ & $1$\\
 
 \subsection{证明：为什么这样做是对的}
 \begin{note}
-\textbf{这一张表和第 \ref{sec:def} 节例~\ref{ex:four} 里的「拆成四个脉冲」是同一件事。}那道例题里四个输出行，每行是「$x$ 的某个值 $\times$ $h$（平移过的）」；这里的四行一模一样，只是\textbf{摆成了表格}。表格只是把那套复杂算法用简洁的形式重做了一遍，每一步都与拆脉冲的做法一一对应。
+\textbf{这一张表和第 \ref{sec:draw} 节例~\ref{ex:four} 里的「拆成四个脉冲」是同一件事。}那道例题里四个输出行，每行是「$x$ 的某个值 $\times$ $h$（平移过的）」；这里的四行一模一样，只是\textbf{摆成了表格}。表格只是把那套复杂算法用简洁的形式重做了一遍，每一步都与拆脉冲的做法一一对应。
 \end{note}
 
 \point{范围规则为什么是对的（48:00--50:25）。}列表法唯一需要解释的是第一步：为什么 $y$ 的最左边是 $x$ 的最左边加 $h$ 的最左边？
@@ -465,6 +508,21 @@ $-1\times h$（右挪 3 位） & & & & $-1$ & $-1$ & $-2$ & $1$\\
 \example{书上 48 页例 2-7：两个五点全 1 序列}{结果像座小山}{50:55--54:44}
 \textbf{题目}：$x[n]$ 在 $n=0..4$ 都是 $1$，$h[n]$ 也在 $n=0..4$ 都是 $1$，求 $y[n]=x[n]\ast h[n]$。
 
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[font=\footnotesize] at (0.5,2.1) {$x[n]$};
+  \stemr{0}{0}{0}{1,1,1,1,1}{0.8}{-1}{5}
+  \node[font=\large] at (3.0,0.5) {$\ast$};
+  \node[font=\footnotesize] at (4.4,2.1) {$h[n]$};
+  \stemr{3.9}{0}{0}{1,1,1,1,1}{0.8}{-1}{5}
+  \node[font=\large] at (7.0,0.5) {$=$};
+  \node[font=\footnotesize] at (8.6,2.1) {$y[n]=x[n]\ast h[n]$};
+  \stemr{8.0}{0}{0}{1,2,3,4,5,4,3,2,1}{0.32}{-1}{9}
+\end{tikzpicture}
+\caption{例 2-7 的题目和答案（50:55--54:44；右边是答案，纵向缩放和左边不同）。}
+\end{figure}
+
 \textbf{做法}：
 \begin{enumerate}[nosep]
 \item 范围：最左边 $0+0=0$，最右边 $4+4=8$，所以 $n=0..8$ 有值；
@@ -474,32 +532,31 @@ $-1\times h$（右挪 3 位） & & & & $-1$ & $-1$ & $-2$ & $1$\\
 结果形状像一座小山。
 
 \example{书上 79 页那道题}{结果 9 个点}{54:44--59:35}
-\label{ex:p79}\textbf{题目}（书上 79 页最上面一排三张图的中间那道）：
+\label{ex:p79}\textbf{题目}（书上 79 页最上面一排三张图的中间那道）：$x[n]$ 在 $n=-1,0,1,2$ 处分别是 $1,2,1,1$；$h[n]$ 在 $n=0,1,2,3,4,5$ 处分别是 $1,-1,0,0,-1,1$。求 $y[n]=x[n]\ast h[n]$。
 
-\begin{center}
-\begin{tabular}{@{}c|ccccccc@{}}
-\toprule
-$n$ & $-1$ & $0$ & $1$ & $2$ & $3$ & $4$ & $5$\\
-\midrule
-$x[n]$ & $1$ & $2$ & $1$ & $1$ & & & \\
-$h[n]$ & & $1$ & $-1$ & $0$ & $0$ & $-1$ & $1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-求 $y[n]=x[n]\ast h[n]$。
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[font=\footnotesize] at (0.3,2.1) {$x[n]$};
+  \stemr{0.6}{0}{-1}{1,2,1,1}{0.7}{-2}{5}
+  \node[font=\large] at (3.6,0.5) {$\ast$};
+  \node[font=\footnotesize] at (4.9,2.1) {$h[n]$};
+  \stemr{4.6}{0}{0}{1,-1,0,0,-1,1}{0.9}{-1}{6}
+  \node[font=\large] at (7.8,0.5) {$=\ ?$};
+\end{tikzpicture}
+\caption{书上 79 页那道题（54:44）。$h[n]$ 在 $n=2,3$ 处是 $0$。}
+\end{figure}
 
-先自己做，再对答案（板书由同学上台完成）。最后答案（按板书整理并核算过）：范围 $n=-1..7$，
+答案（已核算）：范围 $n=-1..7$，依次是 $1$、$1$、$-1$、$0$、$-2$、$-1$、$1$、$0$、$1$。
 
-\begin{center}
-\begin{tabular}{@{}c|ccccccccc@{}}
-\toprule
-$n$ & $-1$ & $0$ & $1$ & $2$ & $3$ & $4$ & $5$ & $6$ & $7$\\
-\midrule
-$y[n]$ & $1$ & $1$ & $-1$ & $0$ & $-2$ & $-1$ & $1$ & $0$ & $1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-与板书答案一致。
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[font=\footnotesize] at (0.6,2.1) {$y[n]=x[n]\ast h[n]$};
+  \stemr{1.0}{0}{-1}{1,1,-1,0,-2,-1,1,0,1}{0.6}{-2}{8}
+\end{tikzpicture}
+\caption{79 页那道题的答案。}
+\end{figure}
 
 \point{换一种出题方式：把序列写成脉冲的和（59:39--61:00）。}同一道题也可能写成脉冲和的形式：
 \begin{align*}
@@ -539,21 +596,21 @@ $x$ 和 $h$ 都是无限长时，列表法\textbf{仍然可以用}：把前几�
 \item \textbf{用等比数列求和公式化简}（分子分母同乘 $1-a$，$(1-a)(1+a+\cdots+a^n)=1-a^{n+1}$）：
   \[y[n]=\frac{1-a^{n+1}}{1-a}\,u[n].\]
 \end{enumerate}
-写到上一步（还没化简）即可。学完第 4 章和第 7 章之后，\textbf{用傅里叶变换和 $z$ 变换会非常快}；用找规律的办法也不难。与书上答案完全一致。\tbc
+写到上一步（还没化简）即可。学完第 4 章和第 7 章之后，\textbf{用傅里叶变换和 $z$ 变换会非常快}；用找规律的办法也不难。与书上答案完全一致。
 
-\point{两个「脑筋急转弯」（70:10--79:55）。}\textbf{这一段在转写的第一遍里被一长串「嗯」占满了，我重新转写后才听到内容；板书能对上。}
+\point{两个「脑筋急转弯」（70:10--79:55）。}
 
 \example{卷积后序列有多长？}{\texorpdfstring{$N_1+N_2-1$}{N1+N2-1}}{70:10--73:46}
-\textbf{题目}（板书）：若 $x[n]$ 的长度是 $N_1$（「就是它不为 $0$ 的数有 $N_1$ 个，连着的」），$h[n]$ 的长度是 $N_2$，问 $y[n]=x[n]\ast h[n]$ 的长度是多少？
+\textbf{题目}：若 $x[n]$ 的长度是 $N_1$（「就是它不为 $0$ 的数有 $N_1$ 个，连着的」），$h[n]$ 的长度是 $N_2$，问 $y[n]=x[n]\ast h[n]$ 的长度是多少？
 
 提示：举个例子即可。设 $x[n]$ 在 $0$ 到 $N_1-1$ 有值（长度正好是 $N_1$），$h[n]$ 在 $0$ 到 $N_2-1$ 有值，用「最左加最左，最右加最右」，$y[n]$ 在 $0$ 到 $(N_1-1)+(N_2-1)=N_1+N_2-2$ 有值，所以长度是
 \begin{remember}
 长度 $N_1$ 的序列和长度 $N_2$ 的序列卷积，结果的长度是 \textbf{$N_1+N_2-1$}。
 \end{remember}
-起点不一定是 $0$，换别的起点长度也一样。检查：第 \ref{sec:def} 节例~\ref{ex:four} 那道题 $4+4-1=7$，正好是 $n=-2..4$ 共 7 个点；例 2-7 是 $5+5-1=9$ 个点。
+起点不一定是 $0$，换别的起点长度也一样。检查：第 \ref{sec:draw} 节例~\ref{ex:four} 那道题 $4+4-1=7$，正好是 $n=-2..4$ 共 7 个点；例 2-7 是 $5+5-1=9$ 个点。
 
 \example{列表法要算多少次加法、多少次乘法？}{\texorpdfstring{$O(N^2)$}{O(N的平方)}}{73:46--79:55}
-\textbf{题目}（板书）：$x[n]$ 长度为 $N$，$h[n]$ 长度也为 $N$，用列表法算 $y[n]=x[n]\ast h[n]$，需要多少次\textbf{加法}、多少次\textbf{乘法}？
+\textbf{题目}：$x[n]$ 长度为 $N$，$h[n]$ 长度也为 $N$，用列表法算 $y[n]=x[n]\ast h[n]$，需要多少次\textbf{加法}、多少次\textbf{乘法}？
 
 用 $N=4$ 的那张表来数：
 \begin{itemize}[nosep]
@@ -564,7 +621,7 @@ $x$ 和 $h$ 都是无限长时，列表法\textbf{仍然可以用}：把前几�
 \end{itemize}
 所以用列表法做卷积，\textbf{计算复杂度是 $O(N^2)$}（加法和乘法的次数大致正比于 $N^2$）。
 
-\paragraph{能不能把加法和乘法的次数减少？}19xx 年代，两位美国的数学家和计算机学家提出一种方法，把卷积的计算复杂度从 $O(N^2)$ 降到 $O(N\log N)$，叫\textbf{快速傅里叶变换}(fast Fourier transform，FFT)，第四章会学。\tbc{} 这个结果初看很反直觉：加法和乘法从哪里省下来，并不明显。
+\paragraph{能不能把加法和乘法的次数减少？}两位美国的数学家和计算机学家提出一种方法，把卷积的计算复杂度从 $O(N^2)$ 降到 $O(N\log N)$，叫\textbf{快速傅里叶变换}(fast Fourier transform，FFT)，第四章会学。这是信号处理领域非常重要的发现，初看却很反直觉：加法和乘法从哪里省下来，并不明显。（补充：通常指 Cooley 和 Tukey 1965 年的论文；课上口述为「一九七几年」。）
 
 \paragraph{差距有多大。}实际用卷积时，序列常有几万、几十万甚至几百万长。取 $N=10^5$：
 \begin{center}
@@ -577,14 +634,14 @@ FFT & $N\log N$ & $10^5\log10^5=5\times10^5$\\
 \bottomrule
 \end{tabular}
 \end{center}
-$N$ 越大，差距越大。（补充：这里 $\log$ 取以 $10$ 为底才有 $\log10^5=5$，板书就是这样算的；常见的 $O(N\log N)$ 里底数不影响数量级。）
+$N$ 越大，差距越大。（补充：这里 $\log$ 取以 $10$ 为底才有 $\log10^5=5$；常见的 $O(N\log N)$ 里底数不影响数量级。）
 
-接下来还会布置第一次编程作业：用计算机算法把卷积编出来（这段视频里没有看到作业的具体内容。\tbc）。
+接下来还会布置第一次编程作业：用计算机算法把卷积编出来（作业的具体内容不在这段视频里）。
 
 %==================================================================
 \section{第二种算法：卷积公式法（88:12--99:45）}\label{sec:conv}
 \subsection{概念}
-用卷积公式还有另一种算法，叫\textbf{卷积公式法}。分\textbf{四步}（书上 47 页写的是五步，板书为四步）：
+用卷积公式还有另一种算法，叫\textbf{卷积公式法}。分\textbf{四步}（书上 47 页分五步，这里合为四步）：
 \begin{center}
 \textbf{翻转 \;\; 平移 \;\; 相乘 \;\; 求和}
 \end{center}
@@ -592,7 +649,7 @@ $N$ 越大，差距越大。（补充：这里 $\log$ 取以 $10$ 为底才有 $
 \point{用卷积公式法要注意的两点（98:30--99:45）。}
 \begin{remember}
 \begin{enumerate}[nosep]
-\item 板书\textbf{翻转 $h[n]$}。也可以翻转 $x[n]$，因为\textbf{卷积具有交换性}（后面证明）。
+\item 这里\textbf{翻转 $h[n]$}。也可以翻转 $x[n]$，因为\textbf{卷积具有交换性}（后面证明）。
 \item \textbf{翻转谁，就平移谁，不要反过来。}翻转 $h$ 就平移 $h$；翻转 $x$ 就平移 $x$。若翻转 $h$ 却去平移 $x$，就错了。
 \end{enumerate}
 \end{remember}
@@ -645,12 +702,14 @@ $4$ & $-1$ 和 $-1$ & $(-1)\times(-1)$ & $1$\\
 \end{center}
 （这张表是整理出来的，原过程是边挪边念。第 $n=-2$ 个位置：翻转的 $h$ 最右边的 $1$ 和 $x$ 最左边的 $3$ 对上；每挪一格，多一个数重合，直到 4 个全重合，再逐渐退出。）
 
-结果是 $3,5,9,1,-1,-3,1$，\textbf{和列表法、和第 \ref{sec:def} 节例~\ref{ex:four} 的蛮力法完全一样}，正是公式所描述的内容。
+结果是 $3,5,9,1,-1,-3,1$，\textbf{和列表法、和第 \ref{sec:draw} 节例~\ref{ex:four} 的蛮力法完全一样}，正是公式所描述的内容。
 
-\point{再做一遍（99:47--105:52）。}把刚才几道题用卷积公式法再做一遍。视频在「大家休息一下」处直接接到休息之后（不确定中间有无内容被剪掉，见「待核对」）。休息后先自己做，再示范两道：
+\point{再做一遍（99:47--105:52）。}把刚才几道题用卷积公式法再做一遍。先自己做，再看两道示范：
 
 \example{书上例 2-7（再做）}{与列表法一致}{100:42--103:12}
-$x$ 和 $h$ 都是 $n=0..4$ 的 5 个 $1$。
+这次题目写成
+\[x[n]=u[n]-u[n-5],\qquad h[n]=u[n]-u[n-5],\qquad\text{求 }x[n]\ast h[n].\]
+$u[n]$ 从 $0$ 起一直是 $1$，$u[n-5]$ 从 $5$ 起一直是 $1$，相减只剩 $n=0..4$ 的 5 个 $1$——就是例 2-7。
 \begin{enumerate}[nosep]
 \item 范围 $n=0..8$；
 \item $h$ 翻转后还是 5 个 $1$（所以 $h[-n]$ 也是 5 个 1）；
@@ -685,10 +744,10 @@ y[n]=(1+a+\cdots+a^n)u[n]=\frac{1-a^{n+1}}{1-a}u[n],
 \section{一页总结}
 \begin{remember}
 \begin{enumerate}[nosep]
+\item \textbf{从画图题出发}：已知 $\delta[n]$ 的输出 $h[n]$，三条性质一条一条用：乘 $a$（齐次性）、右移（时不变性）、相加（叠加性）。把 $x$ 拆成脉冲 $\sum x[k]\delta[n-k]$，每个脉冲的输出是 $x[k]h[n-k]$，加起来就是卷积公式
+  \[x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].\]
 \item \textbf{单位脉冲响应 $h[n]$}：$\delta[n]$ 通过 LTI 系统的输出。\textbf{$h[n]$ 是 LTI 系统唯一的标识}（对一般系统不成立）。知道 $h[n]$，就能算任意输入的输出。
 \item \textbf{卷积}：$y[n]=x[n]\ast h[n]$。出题的两种方式是一回事：「$\delta[n]\to h[n]$，那 $x[n]\to$ ？」$=$「$x[n]\ast h[n]$ 是什么」。
-\item \textbf{三条性质一条一条用}：乘 $a$（齐次性）、右移（时不变性）、相加（叠加性）。把 $x$ 拆成脉冲 $\sum x[k]\delta[n-k]$，每个脉冲的输出是 $x[k]h[n-k]$，加起来就是卷积公式
-  \[x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\,h[n-k].\]
 \item \textbf{范围规则}：$y$ 的最左（右）边 $=x$ 的最左（右）边 $+$ $h$ 的最左（右）边。长度 $N_1$ 和 $N_2$ 的序列卷积，长度是 $N_1+N_2-1$。
 \item \textbf{列表法}：把 $x$ 的每个数乘 $h$，一行一行写，每一行比前一行右挪一格，最后竖着加（别把抄下来的 $h$ 那一行加进去）。无限长序列：先算前几项，找规律，再写统一式。
 \item \textbf{卷积公式法}：翻转（$h[n]\to h[-n]$）、平移（右移 $n$）、相乘、求和。\textbf{翻转谁就平移谁}。
@@ -696,59 +755,5 @@ y[n]=(1+a+\cdots+a^n)u[n]=\frac{1-a^{n+1}}{1-a}u[n],
 \item \textbf{选哪种方法}：都行。列表法快，但一错全错；卷积公式法一个一个算，错了不一定牵连。\textbf{在计算机眼里是同一个方法。}
 \end{enumerate}
 \end{remember}
-
-%==================================================================
-\section*{待核对：转写听不清或口述含糊的地方}\phantomsection\addcontentsline{toc}{section}{待核对：转写听不清或口述含糊的地方}
-下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
-{\small
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.6cm}>{\raggedright\arraybackslash}p{6.1cm}>{\raggedright\arraybackslash}p{6.1cm}@{}}
-\toprule
-视频位置 & 听不清的内容 & 笔记里现在的处理\\
-\midrule
-\endfirsthead
-\toprule
-视频位置 & 听不清的内容 & 笔记里现在的处理\\
-\midrule
-\endhead
-\bottomrule
-\endfoot
-\bottomrule
-\endlastfoot
-约 14:50--15:00 & 视频中间接上了下一堂课（换了衣服和黑板），具体接缝位置我只定到 14:40--15:05 之间。 & 笔记按「前 15 分钟是上一堂课的尾声，约 15:00 起是下一堂课」写。\\
-约 15:00--18:05 & 抄题时几乎没有话；转写出现「请不吝点赞」这类不存在的句子，是幻听。 & 笔记只写「抄回三道题并重写答案」，答案由 17:27--18:04 的数字对上了前面那道题的答案 $2,3,5,0,-1$。\\
-09:00--09:12 & 例 2 的这一段转写变成一串重复的字（「我和你一道教育」），没听清。 & 按板书和之后的复述（09:35--09:50）写。\\
-47:00--47:55 & 列表法读结果时数字比较多，转写没有错，但我整理成表格时，把「先抄 $h$」的那一行对齐到了第一行（$n=-2..1$）。 & 按我理解的方式画表，等你核对板书（2880 秒处的帧）。\\
-61:25--70:02 & 例 2-6：$x[n]=a^nu[n]$。书上的页码和例号（47 页例 2-6、48 页例 2-7）按口述写，没有翻书。 & 正文照写，并没有查书。\\
-约 69:13--69:50 & 口述「学了第 4 章和第 7 章以后，用离散的傅里叶变换和 $z$ 变换会非常快」，转写听成「离散的负列变换和 J 变换」。 & 我写成「傅里叶变换和 $z$ 变换」，没有写「离散时间」，因为不确定指的是 DTFT 还是别的。\\
-77:20--77:50 & FFT 发明的年份：转写听成「1977 几年」，我听不清具体是哪一年。 & 正文写「19xx 年代」，没有写具体年份，也没写人名。\\
-79:40--79:55 & 编程作业的内容：口述「待会布置」，这段视频里没有看到作业的具体要求。 & 只写了「用计算机算法把卷积编出来」。\\
-约 84:20--84:40 & 「为什么叫卷积」口述「待会来讲」，视频里没有听到。 & 正文注明「这段视频里没听到」。\\
-约 99:57--100:01 & 口述「大家休息一下」，随后「我们开始上课」，中间视频是直接接上的。 & 笔记按「接上休息之后」写，不确定中间有没有内容被剪掉。\\
-约 105:50--107:46 & 视频结尾那句「顺序」没说完。 & 按「说了一半」写。\\
-\end{longtable}}
-
-\section*{转写里听错的地方（对照用）}\phantomsection\addcontentsline{toc}{section}{转写里听错的地方（对照用）}
-\begin{center}
-\begin{tabular}{@{}ll@{}}
-\toprule
-转写原文 & 实际应是\\
-\midrule
-初题考大家 & 出题考大家\\
-其次性 & 齐次性\\
-实不变系统、十不变 & 时不变系统\\
-xn、yn、hn、dn（带 n，没有括号） & $x[n]$、$y[n]$、$h[n]$、$\delta[n]$\\
-卷介、卷移、卷阶 & 卷积\\
-操（「从右操到左」） & 抄（「从右抄到左」）\\
-取值范围写成「曲子范围」「曲直范围」 & 取值范围\\
-负列变换（「离散的负列变换」） & 傅里叶变换\\
-J 变换 & $z$ 变换\\
-快速复裂变换 & 快速傅里叶变换\\
-脑筋极转弯、脑筋局状弯 & 脑筋急转弯\\
-不可同意而已 & 不可同日而语\\
-凡负数字人 & 凡夫俗子\\
-我和你一道教育（09:00 附近，重复） & 幻听（具体说了什么没听清）\\
-\bottomrule
-\end{tabular}
-\end{center}
 
 \end{document}

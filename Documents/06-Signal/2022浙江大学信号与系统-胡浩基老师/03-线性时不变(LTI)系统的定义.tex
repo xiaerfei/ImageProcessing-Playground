@@ -132,6 +132,7 @@
 \begin{itemize}[nosep]
 \item 因果的反面：板书作 \texttt{uncausal}（口述不确定是 an 还是 in），常见写法 \texttt{non-causal}\tbc。
 \item 不可逆的反面：板书未写，常用写法 \texttt{non-invertible}\tbc；时变也写作 \texttt{time-varying}。
+\item 可逆的拼写是 \texttt{Invertible}（-ible 结尾），不是 \texttt{Invertable}。
 \end{itemize}
 
 %==================================================================
@@ -177,17 +178,18 @@ F\approx S'(0)\,N.
 \begin{tikzpicture}[>=stealth,x=0.92cm,y=0.78cm]
   \draw[->] (0,0) -- (5.2,0) node[below] {$N$（压力）};
   \draw[->] (0,0) -- (0,4.4) node[left] {$F$（摩擦力）};
-  % 真实的曲线：起点陡，中间平缓，最后又陡
-  \draw[very thick,blue!60!black] plot[smooth] coordinates {(0,0) (0.25,1.0) (0.7,1.45) (1.6,1.85) (2.6,2.25) (3.4,3.0) (4.0,4.1)};
-  % 中间的线性近似
-  \draw[thick,orange!85!black] (0.9,1.37) -- (3.0,2.45);
-  \fill[orange!85!black] (1.6,1.85) circle (1.8pt);
-  \node[orange!85!black,anchor=west] at (3.05,2.4) {这一小段近似成直线，斜率就是 $\mu$};
-  \node[blue!60!black,anchor=west,font=\small] at (3.35,1.25) {真实关系：弯曲的曲线};
+  % 真实的曲线：从原点几乎竖直上冲，拐弯后是平缓的长坡，过了右边的点又往上翘
+  \draw[very thick,blue!60!black] plot[smooth] coordinates {(0,0) (0.1,0.8) (0.3,1.35) (0.7,1.6) (1.6,1.8) (2.6,2.05) (3.3,2.5) (4.0,3.9)};
+  % 中间那一点的切线，斜率记作 μ
+  \draw[thick,orange!85!black] (0.6,1.58) -- (3.4,2.22) node[right] {$\mu$};
+  \fill[orange!85!black] (1.6,1.8) circle (1.8pt);
+  \fill[blue!60!black] (3.3,2.5) circle (1.8pt);
+  \node[orange!85!black,anchor=west,font=\small] at (2.2,1.45) {只在这一小段近似成直线，斜率就是 $\mu$};
+  \node[blue!60!black,anchor=west,font=\small] at (2.2,0.85) {真实关系：弯曲的曲线};
   \node[gray!55!black,font=\footnotesize,anchor=west] at (0.15,3.6) {$N$ 小：陡（要使劲拉）};
   \node[gray!55!black,font=\footnotesize,anchor=west] at (3.4,4.3) {$N$ 很大：又陡};
 \end{tikzpicture}
-\caption{摩擦力和压力的关系（我按黑板上的示意图重画的，曲线形状只是示意）。\textbf{只在中间一段，$F$ 才近似正比于 $N$。}}
+\caption{摩擦力和压力的关系（13:40--14:20，形状示意，无数值）：从原点几乎竖直上冲，拐弯后平缓，过了右边的点又往上翘。\textbf{只在中间一段，$F$ 才近似正比于 $N$。}}
 \end{figure}
 
 这样近似并不精确，但不这样做就无法分析摩擦力与压力的关系：决定因素很多，只能取最简单的模型。
@@ -198,6 +200,26 @@ F\approx S'(0)\,N.
 I,\qquad \beta I,\qquad (\beta+1)I,
 \]
 即看成电流按固定比例 $\beta$ 联系的线性器件。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth,thick]
+  \draw (0,-0.55) -- (0,0.55);
+  \draw[->] (-1.5,0) -- (0,0) node[pos=0.35,above] {$I$};
+  \draw[->] (0.6,1.8) -- (0.6,1.1);
+  \draw (0.6,1.15) -- (0.6,0.65) -- (0,0.22);
+  \node[right] at (0.7,1.35) {$\beta I$};
+  \draw (0,-0.22) -- (0.6,-0.65) -- (0.6,-1.2);
+  \draw[->] (0,-0.22) -- (0.45,-0.54);
+  \draw[->] (0.6,-1.15) -- (0.6,-1.8);
+  \node[right] at (0.7,-1.35) {$(\beta+1)I$};
+  \node[red!70!black,font=\bfseries] at (3.2,0.2) {不是};
+  \node[anchor=west,gray!55!black,font=\footnotesize,align=left] at (3.9,0) {实际电流并不严格\\是这样的比例};
+\end{tikzpicture}
+\caption{三极管的线性模型（15:03--15:40）：进去 $I$，上面 $\beta I$，下面 $(\beta+1)I$。}
+\end{figure}
+
+（补充：按 NPN 三极管的标准符号，进线是\textbf{基极}(base)，上面是\textbf{集电极}(collector)，下面带箭头的是\textbf{发射极}(emitter)；$\beta$ 是\textbf{电流放大系数}(current gain)，$I_C=\beta I_B$ 正是一个线性关系，真实三极管只在放大区近似如此。）
 
 \textbf{实际}：真实三极管并不严格满足这组线性关系。
 
@@ -276,8 +298,7 @@ I,\qquad \beta I,\qquad (\beta+1)I,
 00:00--00:20 & 口述「请大家翻到第三十五页」，转写把「时域分析」听成「食欲分析」。 & 按黑板写「LTI 系统时域分析」；页码按口述写 35，没有翻书核对。\\
 04:45--05:05 & 因果的反面：口述「不知道是 an 还是 in」，转写听成「on-coil-coil」之类，板书作 \texttt{uncausal}。 & 表里照板书写，并补注常见写法 \texttt{non-causal}（没有核对）。\\
 05:11--05:30 & 不可逆的英文：口述「记不得，自己回去查」。 & 表里写「板书未写」，补充 \texttt{non-invertible}（没有核对）。\\
-13:40--14:20 & 摩擦力的 $F$--$N$ 曲线：口述「大致是一个这样的函数」，转写没有说明曲线形状；板书是一条先陡后缓再陡的曲线，中间画了两个点。 & 图是按板书的示意重画的，形状只是示意，没有给数值。\\
-15:03--15:36 & 三极管：转写把三个极听成「原级、三级和漏级」，板书只有三根线上的 $I$、$\beta I$、$(\beta+1)I$ 和「不是」，没有标极名。口述还说「$\beta$ 叫做一个什么参数，我记不得了」。 & 正文只写三根引线上的电流，没有写哪根对应基极、集电极、发射极。\\
+15:11--15:17 & 三极管的三个极：两次转写都是「原极、三极和漏极」，听着像「源极、栅极、漏极」（场效应管的叫法），和画的三极管对不上，疑为口误；板书没有标极名。 & 正文写电流标注；极名按标准符号补充（推断）。\\
 19:42--21:22 & 板书「如果我们知道 LTI 系统的一个 $x(t)$ 对应的 $y(t)$，那么我们就知道所有 $x(t)$ 对应的 $y(t)$」，没有说那「一个」是哪个。 & 正文照板书写，并在「补充」框里写了我的理解（应当是冲激，随便一个不行），等后面的视频核对。\\
 \end{longtable}}
 
@@ -296,9 +317,10 @@ I,\qquad \beta I,\qquad (\beta+1)I,
 刘顿力学 & 牛顿力学\\
 近摩擦力 & 静摩擦力\\
 三级管 & 三极管\\
-原级、三级和漏级 & 三个极（具体哪三个我不确定，见待核对）\\
+原级、三级和漏级 / 原极、三极和陋极 & 疑似「源极、栅极、漏极」（口误，见待核对）\\
+C-SPICE & PSPICE\\
 我孕育我要讲课 & 我要讲课（口误，前后文是「我把气提升一倍」）\\
-杨杨杀杀杀讲了这么多 & 第二章讲了这么多（据上下文，未核对）\\
+杨杨杀杀、杨阳莎莎讲了这么多 & 洋洋洒洒讲了这么多\\
 \bottomrule
 \end{tabular}
 \end{center}
