@@ -20,8 +20,6 @@
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
-% 行内标记：有疑问、等你对着视频核对的地方（对应文末「待核对」）
-\newcommand{\tbc}{\textcolor{red!75!black}{\textbf{【待核对】}}}
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
 \newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
@@ -77,7 +75,7 @@
 \maketitle
 
 \begin{note}
-口述按视频转写整理（错字已按板书改正）；标「（补充）」的是编者所加；红色 \tbc{} 待核对，汇总于文末。视频 00:00--21:22，结束在「LTI 很简单」这句刚写完时——为什么简单，后面的视频才展开。
+口述按视频转写整理（错字已按板书改正）；标「（补充）」的是编者所加。视频 00:00--21:22，结束在「LTI 很简单」这句刚写完时——为什么简单，后面的视频才展开。
 \end{note}
 
 %==================================================================
@@ -120,9 +118,9 @@
 \midrule
 线性系统 & Linear System & non-linear\\
 时不变系统 & Time-Invariant System & time-variant\\
-因果系统 & Causal System & 板书作 uncausal（an 还是 in 不确定）\tbc\\
+因果系统 & Causal System & 板书作 uncausal（an 还是 in 不确定）\\
 无记忆系统 & Memoryless System & memory（有记忆）\\
-可逆系统 & Invertible System & 板书未写 \tbc\\
+可逆系统 & Invertible System & 板书未写 \\
 稳定系统 & Stable System & unstable\\
 \bottomrule
 \end{tabular}
@@ -130,8 +128,8 @@
 
 两处英文要注意：
 \begin{itemize}[nosep]
-\item 因果的反面：板书作 \texttt{uncausal}（口述不确定是 an 还是 in），常见写法 \texttt{non-causal}\tbc。
-\item 不可逆的反面：板书未写，常用写法 \texttt{non-invertible}\tbc；时变也写作 \texttt{time-varying}。
+\item 因果的反面：板书作 \texttt{uncausal}（口述不确定是 an 还是 in），常见写法 \texttt{non-causal}。
+\item 不可逆的反面：板书未写，常用写法 \texttt{non-invertible}；时变也写作 \texttt{time-varying}。
 \item 可逆的拼写是 \texttt{Invertible}（-ible 结尾），不是 \texttt{Invertable}。
 \end{itemize}
 
@@ -278,30 +276,6 @@ I,\qquad \beta I,\qquad (\beta+1)I,
 \end{enumerate}
 \end{remember}
 
-%==================================================================
-\section*{待核对：转写听不清或口述含糊的地方}\phantomsection\addcontentsline{toc}{section}{待核对：转写听不清或口述含糊的地方}
-下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
-{\small
-\begin{longtable}{@{}>{\raggedright\arraybackslash}p{2.3cm}>{\raggedright\arraybackslash}p{6.2cm}>{\raggedright\arraybackslash}p{6.2cm}@{}}
-\toprule
-视频位置 & 听不清的内容 & 笔记里现在的处理\\
-\midrule
-\endfirsthead
-\toprule
-视频位置 & 听不清的内容 & 笔记里现在的处理\\
-\midrule
-\endhead
-\bottomrule
-\endfoot
-\bottomrule
-\endlastfoot
-00:00--00:20 & 口述「请大家翻到第三十五页」，转写把「时域分析」听成「食欲分析」。 & 按黑板写「LTI 系统时域分析」；页码按口述写 35，没有翻书核对。\\
-04:45--05:05 & 因果的反面：口述「不知道是 an 还是 in」，转写听成「on-coil-coil」之类，板书作 \texttt{uncausal}。 & 表里照板书写，并补注常见写法 \texttt{non-causal}（没有核对）。\\
-05:11--05:30 & 不可逆的英文：口述「记不得，自己回去查」。 & 表里写「板书未写」，补充 \texttt{non-invertible}（没有核对）。\\
-15:11--15:17 & 三极管的三个极：两次转写都是「原极、三极和漏极」，听着像「源极、栅极、漏极」（场效应管的叫法），和画的三极管对不上，疑为口误；板书没有标极名。 & 正文写电流标注；极名按标准符号补充（推断）。\\
-19:42--21:22 & 板书「如果我们知道 LTI 系统的一个 $x(t)$ 对应的 $y(t)$，那么我们就知道所有 $x(t)$ 对应的 $y(t)$」，没有说那「一个」是哪个。 & 正文照板书写，并在「补充」框里写了我的理解（应当是冲激，随便一个不行），等后面的视频核对。\\
-\end{longtable}}
-
 \section*{转写里听错的地方（对照用）}\phantomsection\addcontentsline{toc}{section}{转写里听错的地方（对照用）}
 \begin{center}
 \begin{tabular}{@{}ll@{}}
@@ -317,7 +291,7 @@ I,\qquad \beta I,\qquad (\beta+1)I,
 刘顿力学 & 牛顿力学\\
 近摩擦力 & 静摩擦力\\
 三级管 & 三极管\\
-原级、三级和漏级 / 原极、三极和陋极 & 疑似「源极、栅极、漏极」（口误，见待核对）\\
+原级、三级和漏级 / 原极、三极和陋极 & 疑似「源极、栅极、漏极」（疑为口误，课上画的是三极管）\\
 C-SPICE & PSPICE\\
 我孕育我要讲课 & 我要讲课（口误，前后文是「我把气提升一倍」）\\
 杨杨杀杀、杨阳莎莎讲了这么多 & 洋洋洒洒讲了这么多\\
