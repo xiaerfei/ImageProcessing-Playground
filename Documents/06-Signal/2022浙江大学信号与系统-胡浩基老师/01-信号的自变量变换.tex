@@ -1235,26 +1235,34 @@ x[n]=\delta[n+2]+2\,\delta[n+1]+\delta[n]-\delta[n-1]-2\,\delta[n-2].
 \begin{figure}[H]
 \centering
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{-2}{1} \stem{-1}{2} \stem{0}{1} \stem{1}{-1} \stem{2}{-2}
-  \foreach \k in {-2,-1,1,2} { \node[font=\tiny,above] at (\k,0) {}; }
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$x[n]$};
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{-2}{1}
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$\delta[n+2]$};
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{-1}{2}
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$2\delta[n+1]$};
 \end{tikzpicture}
@@ -1262,42 +1270,39 @@ x[n]=\delta[n+2]+2\,\delta[n+1]+\delta[n]-\delta[n-1]-2\,\delta[n-2].
 
 \medskip
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{0}{1}
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$\delta[n]$};
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{1}{-1}
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$-\delta[n-1]$};
 \end{tikzpicture}
 \end{minipage}
 \begin{minipage}{0.32\textwidth}\centering
-\begin{tikzpicture}[x=0.34cm,y=0.5cm,>=stealth]
+\begin{tikzpicture}[x=0.5cm,y=0.5cm,>=stealth]
   \draw[->] (-4,0) -- (4.5,0) node[right,font=\scriptsize] {$n$};
   \draw[->] (0,-2.8) -- (0,3);
+  \foreach \k in {-2,-1,1,2} { \draw (\k,0.12) -- (\k,-0.12) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
+  \node[below,font=\tiny,fill=white,inner sep=1pt] at (0,0) {$0$};
+  \foreach \y in {-2,-1,1,2} { \draw (0.2,\y) -- (-0.2,\y) node[left,font=\tiny,fill=white,inner sep=1pt] {$\y$}; }
   \stem{2}{-2}
   \node[font=\scriptsize,anchor=south] at (0,3.1) {$-2\delta[n-2]$};
 \end{tikzpicture}
 \end{minipage}
 \caption{把 $x[n]$ 拆成五个平移并加权的单位脉冲：五个分量相加就是左上角的 $x[n]$（$x[-2..2]=1,2,1,-1,-2$）。}
 \end{figure}
-
-%==================================================================
-\section{本节要记住的清单}
-\begin{enumerate}[nosep]
-\item 四句口诀：\textbf{化成标准形式；前有负号翻转；系数绝对值大于 $1$ 压缩、小于 $1$ 拉伸；加号左移、减号右移}。
-\item 标准形式：把 $t$ 前面的系数提出去，$x(at+b)=x\bigl(a(t+\tfrac ba)\bigr)$，平移量是 $b/a$。
-\item 做法顺序：翻转 $\to$ 压缩或拉伸 $\to$ 平移。验算：取一两个关键点代入。
-\item 反过来的题（已知变换后的，求原来的）：先把「要求的」写成关于已知函数的自变量变换，再套口诀。
-\item 离散：$n$ 的系数基本是 $\pm1$，只用「翻转」和「平移」。
-\item 窗函数：$u(t-t_0)$ 右移；$u(t)-u(t-t_0)$ 是 $(0,t_0)$ 上的方波；$u[n]-u[n-N]$ 是 $0\le n\le N-1$ 上的窗。
-\item $x[n]=\sum_kx[k]\,\delta[n-k]$：序列等于平移并加权的单位脉冲之和。
-\end{enumerate}
 
 \end{document}
