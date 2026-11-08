@@ -1,7 +1,7 @@
 % !TeX program = xelatex
 % 编译：xelatex 02-典型的系统.tex（VS Code 的 LaTeX Workshop 会读上一行，自动用 xelatex）
 % 来源：2022 浙江大学《信号与系统》胡浩基老师，教材第 28 页「系统的基本性质」一节课及后两堂课，视频 00:00--121:33（线性、时不变、因果、无记忆、可逆、稳定，加最后的习题复习）。
-% 体例：每个性质按老师的讲法组织——概念 → 证明（方法/判据）→ 例题。
+% 体例：每个性质按「概念 → 证明（方法/判据）→ 例题」组织。
 \documentclass[UTF8,a4paper,11pt]{ctexart}
 \usepackage{amsmath,amssymb}
 \usepackage{geometry}
@@ -13,21 +13,26 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{float}
+\usepackage{fancyhdr}
+% 页眉页脚清空，只在右下角保留页号（含首页）
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}}
 \usepackage{needspace}% 例题标题后紧跟表格时，避免标题被留在页底
 \usepackage[hidelinks,unicode,bookmarksnumbered,bookmarksopen=true,bookmarksopenlevel=2,pdftitle={典型的系统：线性、时不变、因果、无记忆、可逆、稳定}]{hyperref}
 \usepackage{bookmark}% XeTeX 下 hyperref 自带的大纲不生效，用 bookmark 宏包生成 PDF 书签（需编译两遍）
 
 \setCJKmainfont{Songti SC}[BoldFont={Songti SC Bold}]
 \setCJKsansfont{PingFang SC}
-% 行内标记：有疑问、等你对着视频核对的地方（对应文末「待核对」）
-\newcommand{\tbc}{\textcolor{red!75!black}{\textbf{【待核对】}}}
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
-\newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
+\newenvironment{remember}{\begin{rememberbox}\textbf{重点}\par\smallskip}{\end{rememberbox}}
 \newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
 \newmdenv[backgroundcolor=gray!8,linecolor=gray!60,linewidth=0.8pt,innertopmargin=5pt,innerbottommargin=5pt]{skipbox}
-\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过（补充）}\par\smallskip}{\end{skipbox}}
+\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过}\par\smallskip}{\end{skipbox}}
 
 % ---------------------------------------------------------------- 标题层级
 % 章(section)、小节(subsection)：深蓝；例题：橙色徽章；小标题：青色三角。三者颜色和形状都不同，一眼能分清。
@@ -70,29 +75,30 @@
 \date{}
 
 \begin{document}
+\pagestyle{plain}
 \maketitle
 
 %==================================================================
 \section{概览：6 对性质}
-一个\textbf{系统}(system)是一台机器：信号 $x(t)$ 进去，信号 $y(t)$ 出来。后面所有性质，都是在问「这台机器有什么脾气」。老师列了 6 对性质，每一对都\textbf{非此即彼}（不是线性就是非线性，以此类推），所以只要把正面的定义写严格就够了。
+一个\textbf{系统}(system)是一台机器：信号 $x(t)$ 进去，信号 $y(t)$ 出来。后面所有性质，都是在问「这台机器有什么脾气」。6 对性质每一对都\textbf{非此即彼}（不是线性就是非线性，以此类推），所以只要把正面的定义写严格就够了。
 
 \begin{center}
-\begin{tabular}{@{}llll@{}}
+\begin{tabular}{@{}ll@{}}
 \toprule
-性质 & 反面 & 老师的难度评价\\
+性质 & 反面\\
 \midrule
-线性系统(linear system) & 非线性系统(nonlinear system) & 难，重点\\
-时不变系统(time-invariant system) & 时变系统(time-varying system) & 难，重点\\
-因果系统(causal system) & 非因果系统(non-causal system) & 简单\\
-无记忆系统(memoryless system) & 记忆系统(system with memory) & 很简单\\
-可逆系统(invertible system) & 不可逆系统 & 很简单\\
-稳定系统(stable system) & 不稳定系统 & 简单\\
+线性系统(linear system) & 非线性系统(nonlinear system)\\
+时不变系统(time-invariant system) & 时变系统(time-varying system)\\
+因果系统(causal system) & 非因果系统(non-causal system)\\
+无记忆系统(memoryless system) & 记忆系统(system with memory)\\
+可逆系统(invertible system) & 不可逆系统\\
+稳定系统(stable system) & 不稳定系统\\
 \bottomrule
 \end{tabular}
 \end{center}
 
 %==================================================================
-\section{线性系统（00:00--54:47）}
+\section{线性系统}
 \subsection{概念}
 \begin{remember}
 一个系统，如果\textbf{同时}满足下面两条，它就是线性系统；否则（只满足一条，或两条都不满足）就是非线性系统。
@@ -123,9 +129,9 @@
 两点要记住：
 \begin{itemize}[nosep]
 \item \textbf{缺一不可}：只有齐次性和叠加性同时满足才是线性（见本节末的思考题）。
-\item \textbf{「任意」是定义的灵魂}：$x(t)$、$x_1(t)$、$x_2(t)$、$a$ 都是任意的（板书写成 $\forall$）。老师说后面所有难点，都出在没有真正理解这个「任意」。例如 $y(t)=3x(t)$ 的意思是：这台机器对\textbf{任意}输入都乘 3。
+\item \textbf{「任意」是定义的灵魂}：$x(t)$、$x_1(t)$、$x_2(t)$、$a$ 都是任意的（记作 $\forall$）。后面所有难点，都出在没有真正理解这个「任意」。例如 $y(t)=3x(t)$ 的意思是：这台机器对\textbf{任意}输入都乘 3。
 \end{itemize}
-离散线性系统的定义只需把圆括号 $(t)$ 换成方括号 $[n]$：$x[n]\to y[n]$，$a\,x[n]\to a\,y[n]$，$x_1[n]+x_2[n]\to y_1[n]+y_2[n]$。老师说连续和离散道理完全一样，这次两个都讲，之后只讲一个。
+离散线性系统的定义只需把圆括号 $(t)$ 换成方括号 $[n]$：$x[n]\to y[n]$，$a\,x[n]\to a\,y[n]$，$x_1[n]+x_2[n]\to y_1[n]+y_2[n]$。
 
 \subsection{证明}
 \begin{remember}
@@ -137,7 +143,7 @@
 \end{remember}
 
 \point{证线性：设中间变量，打成「一包」。}
-先看清这台机器的规矩：「送进去信号 $f$，出来 $F[f]$」（例如放大器：送进去 $f$，出来 $3f$）。因为 $x(t)$ 是任意信号，所以 $a\,x(t)$ 也\textbf{只是又一个信号}，把它打成一包 $f(t)=a\,x(t)$ 当整体送进去即可。老师的话：「当你看不清楚的时候，你设一个中间变量，把它拿过去，然后再做这样的代换。」步骤：
+先看清这台机器的规矩：「送进去信号 $f$，出来 $F[f]$」（例如放大器：送进去 $f$，出来 $3f$）。因为 $x(t)$ 是任意信号，所以 $a\,x(t)$ 也\textbf{只是又一个信号}；设中间变量 $f(t)=a\,x(t)$，把它当成一包整体送进去，再做代换。步骤：
 \begin{enumerate}[nosep]
 \item 齐次性：令 $f=a\,x(t)$，算出 $F[f]$，化成 $a\,y(t)$；
 \item 叠加性：令 $f=x_1(t)+x_2(t)$，算出 $F[f]$，化成 $y_1(t)+y_2(t)$。
@@ -147,9 +153,9 @@
 取最简单的输入（如 $x\equiv0$ 或 $x\equiv1$，$\equiv$ 表示恒等于）和 $a=2$：\textbf{实际}是把 $a\,x$ 送进系统得到的输出；\textbf{希望}是「若齐次性成立，应得 $a\,y$」。两者不等，就矛盾，说明系统不是线性的。
 
 \subsection{例题：证明是线性}
-下面按课上顺序，每题都按定义分\textbf{齐次性}、\textbf{叠加性}两步，写成证明。
+下面每题都按定义分\textbf{齐次性}、\textbf{叠加性}两步，写成证明。
 
-\example{放大器~\texorpdfstring{$y(t)=3x(t)$}{y(t)=3x(t)}}{线性}{09:19--15:09}
+\example{放大器~\texorpdfstring{$y(t)=3x(t)$}{y(t)=3x(t)}}{线性}{}
 \textbf{系统}：$x(t)\to y(t)=3x(t)$，即输入乘 $3$。
 
 \textbf{证明}。
@@ -159,7 +165,7 @@
 \end{align*}
 两式对任意输入、任意实数 $a$ 均成立，故 $y(t)=3x(t)$ 为线性系统。\hfill$\blacksquare$
 
-\example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{线性}{18:20--20:17}
+\example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{线性}{}
 \textbf{系统}：$x(t)\to y(t)=t\,x(t)$。$t$ 是每个时刻的乘数，不随输入改变。
 
 \textbf{证明}。
@@ -171,7 +177,7 @@
 
 \textbf{注}：$t$ 随时间变化不影响线性——线性只问「放大或相加时，输出是否跟着放大或相加」，$t$ 只是逐点的系数；它的影响体现在时不变性上（见下一节的 $y(t)=t\,x(t)$）。
 
-\example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}}{线性}{20:26--22:39}
+\example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}}{线性}{}
 \textbf{系统}：$x(t)\to y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$。
 
 \textbf{证明}。用微分的线性：
@@ -181,7 +187,7 @@
 \end{align*}
 故微分器为线性系统。\hfill$\blacksquare$
 
-\example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}}{线性}{22:41--24:46}
+\example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}}{线性}{}
 \textbf{系统}：$x(t)\to y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$。
 
 \textbf{证明}。用积分的线性（常数可提出，和的积分等于积分的和）：
@@ -192,7 +198,7 @@
 故积分器为线性系统。\hfill$\blacksquare$
 
 \needspace{6cm}
-\example{离散的四个系统}{线性}{32:11--40:41}
+\example{离散的四个系统}{线性}{}
 把前面几个系统改写成离散形式：
 \begin{center}
 \begin{tabular}{@{}lll@{}}
@@ -206,7 +212,7 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
 \bottomrule
 \end{tabular}
 \end{center}
-差分(difference)就是离散的微分器（离散信号没法求导，「后一个减前一个」就是近似的求导）；累加(accumulator)就是离散的积分器，老师口头叫它「叠加器」。
+差分(difference)就是离散的微分器（离散信号没法求导，「后一个减前一个」就是近似的求导）；累加(accumulator)就是离散的积分器。
 
 \point{差分 $y[n]=x[n]-x[n-1]$ 的证明。}
 \begin{itemize}[nosep]
@@ -215,7 +221,7 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
 \end{itemize}
 故差分为线性系统。\hfill$\blacksquare$
 
-\subsection{例题：证明不是线性（24:47--32:10）}
+\subsection{例题：证明不是线性}
 \example{\texorpdfstring{$y(t)=x(t)+1$}{y(t)=x(t)+1}}{非线性}{}
 \textbf{系统}：$x(t)\to y(t)=x(t)+1$。
 
@@ -260,11 +266,11 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
 \end{figure}
 
 \begin{skippable}
-\textbf{快速检查：全零输入必须得到全零输出}（补充）。齐次性里 $a$ 可取 $0$，所以线性系统对零输入一定给零输出；$y(t)=x(t)+1$ 就栽在这里。反过来\textbf{不成立}：$y(t)=x(t)^2$ 对零输入给零，却不是线性的。所以这个检查只能「判死刑」，不能「判线性」。
+\textbf{快速检查：全零输入必须得到全零输出}。齐次性里 $a$ 可取 $0$，所以线性系统对零输入一定给零输出；$y(t)=x(t)+1$ 就栽在这里。反过来\textbf{不成立}：$y(t)=x(t)^2$ 对零输入给零，却不是线性的。所以这个检查只能「判死刑」，不能「判线性」。
 \end{skippable}
 
-\subsection{应付考试的判据：两句话（40:51--45:00）}
-老师说这个办法不能覆盖所有系统，但能覆盖 70\%--80\% 以上。
+\subsection{应付考试的判据：两句话}
+这个办法不能覆盖所有系统，但能覆盖 70\%--80\% 以上。
 
 \begin{remember}
 线性系统的判据：
@@ -292,7 +298,7 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
   \draw[->] (c) -- node[right,no] {有一项不是一次} (f);
   \draw[->] (c) -| node[above,pos=0.2,yes] {都是一次} (d);
 \end{tikzpicture}
-\caption{老师的两句话判断法。}
+\caption{线性系统的两句话判断法。}
 \end{figure}
 
 \begin{center}
@@ -309,14 +315,14 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但要�
 \end{center}
 
 \point{为什么 $e^{x[n]}$ 看起来像线性却不是。}
-老师说：「你不要只看它的样子，你要看到它是\textbf{泰勒展开}(Taylor expansion)的。」$e^{x}=1+x+\dfrac{x^2}{2!}+\cdots$，里面有常数项 $1$（没有 $x$）、有 $x^2$（不是一次），两句话都不满足，所以非线性。两句话要看\textbf{展开以后}每一项的样子，不是看表面写法。\tbc{}（转写把老师口述的展开式听乱了，这里按数学上的 $e^x$ 泰勒展开写，不是逐字照抄。）
+$e^{x}=1+x+\dfrac{x^2}{2!}+\cdots$（泰勒展开，Taylor expansion），里面有常数项 $1$（没有 $x$）、有 $x^2$（不是一次），两句话都不满足，所以非线性。两句话要看\textbf{展开以后}每一项的样子，不是看表面写法。
 
 \begin{skippable}
-\textbf{两句话的边界}（补充）：$x$ 被套在函数里，如 $|x(t)|$、$\sin x(t)$，和 $e^{x}$ 是同一类陷阱；两个 $x$ 相乘，如 $x(t)\,x(t-1)$，「一次」就不满足；真要严格证明，还是回到齐次 + 叠加。
+\textbf{两句话的边界}：$x$ 被套在函数里，如 $|x(t)|$、$\sin x(t)$，和 $e^{x}$ 是同一类陷阱；两个 $x$ 相乘，如 $x(t)\,x(t-1)$，「一次」就不满足；真要严格证明，还是回到齐次 + 叠加。
 \end{skippable}
 
-\subsection{书上的定义和老师的等价（45:03--52:29）}
-书上把两条合成一条（教材第 28 页，式 1-89、1-90）。老师说两种定义\textbf{完全等价}，现场证明：「关键是你要理解，这全都是任意。」
+\subsection{与教材定义的等价}
+教材把两条合成一条（教材第 28 页，式 1-89、1-90）。两种定义\textbf{完全等价}，关键在「任意」。
 
 \begin{center}
 \renewcommand{\arraystretch}{1.3}
@@ -324,8 +330,8 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但要�
 \toprule
  & 内容\\
 \midrule
-老师的定义 & 两条分开写：齐次性 $x(t)\to y(t)\Rightarrow a\,x(t)\to a\,y(t)$；叠加性 $x_1\to y_1,\ x_2\to y_2\Rightarrow x_1+x_2\to y_1+y_2$。\\
-书上的定义 & 一条合起来写：对任意 $x_1\to y_1$、$x_2\to y_2$ 和任意实数 $a,b$，都有 $a\,x_1(t)+b\,x_2(t)\to a\,y_1(t)+b\,y_2(t)$。\\
+分开写 & 两条分开写：齐次性 $x(t)\to y(t)\Rightarrow a\,x(t)\to a\,y(t)$；叠加性 $x_1\to y_1,\ x_2\to y_2\Rightarrow x_1+x_2\to y_1+y_2$。\\
+合并写 & 一条合起来写：对任意 $x_1\to y_1$、$x_2\to y_2$ 和任意实数 $a,b$，都有 $a\,x_1(t)+b\,x_2(t)\to a\,y_1(t)+b\,y_2(t)$。\\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -335,18 +341,18 @@ $y[n]=e^{x[n]}$ & 看起来「有 $x$，也只出现一次」，\textbf{但要�
 \begin{tikzpicture}[>=stealth,
   box/.style={draw,rounded corners=4pt,align=center,minimum width=5.4cm,minimum height=1.6cm,inner sep=6pt}]
   \node[box,fill=blue!6] (L) at (0,0) {\textbf{书上定义}\\ $a\,x_1+b\,x_2\to a\,y_1+b\,y_2$\\ 对任意 $a,b$};
-  \node[box,fill=green!8] (R) at (9.2,0) {\textbf{老师的定义}\\ 齐次性 + 叠加性};
+  \node[box,fill=green!8] (R) at (9.2,0) {\textbf{分开写}\\ 齐次性 + 叠加性};
   \draw[->,thick,bend left=22] (L.north east) to node[above,align=center,font=\footnotesize] {特殊情况：取 $a=1,b=0$ 得齐次性\\ 取 $a=b=1$ 得叠加性} (R.north west);
   \draw[->,thick,bend left=22] (R.south west) to node[below,align=center,font=\footnotesize] {先对 $x_1$ 用齐次，对 $x_2$ 用齐次\\ 再把两个「包」用叠加加起来} (L.south east);
 \end{tikzpicture}
 \caption{两个定义互相推得出对方，所以说它们等价。}
 \end{figure}
 
-\point{书上 $\Rightarrow$ 老师（简单）。}
-取 $b=0$（$a$ 任意），$x_1=x$：$a\,x+0\to a\,y+0$，即齐次性 $a\,x\to a\,y$。取 $a=b=1$：直接得到叠加性。老师说：「书上的定义非常容易推出我的定义。」
+\point{合并写 $\Rightarrow$ 分开写（简单）。}
+取 $b=0$（$a$ 任意），$x_1=x$：$a\,x+0\to a\,y+0$，即齐次性 $a\,x\to a\,y$。取 $a=b=1$：直接得到叠加性。
 
-\point{老师 $\Rightarrow$ 书上（稍难）。}
-\textbf{已知}（老师的定义，对\textbf{任意}输入都成立）。为避免和后面的 $a,b$ 混淆，齐次性里的倍数换用字母 $c$：
+\point{分开写 $\Rightarrow$ 合并写（稍难）。}
+\textbf{已知}（分开写的定义，对\textbf{任意}输入都成立）。为避免和后面的 $a,b$ 混淆，齐次性里的倍数换用字母 $c$：
 \begin{itemize}[nosep]
 \item[(H)] 齐次性：若 $x\to y$，则对任意实数 $c$，有 $c\,x\to c\,y$；
 \item[(S)] 叠加性：若 $x_A\to y_A$、$x_B\to y_B$，则 $x_A+x_B\to y_A+y_B$。
@@ -383,7 +389,7 @@ $x_1,x_2,a,b$ 都是任取的，所以书上的定义对\textbf{任意}输入、
   \draw[gray!50,dashed] (0.3,-3.45) -- (13.3,-3.45);
   \sysline{-4.0}{$a\,x_1+b\,x_2$}{$a\,y_1+b\,y_2$}{第 3 步：(S)，把 $a\,x_1$、$b\,x_2$ 当两个输入}
 \end{tikzpicture}
-\caption{老师的定义 $\Rightarrow$ 书上的定义：先用齐次性分别把 $x_1$、$x_2$ 放大成 $a\,x_1$、$b\,x_2$，再用叠加性把两个放大后的信号加起来。每一行的「系统」仍是\textbf{同一台}机器。}
+\caption{分开写 $\Rightarrow$ 合并写：先用齐次性分别把 $x_1$、$x_2$ 放大成 $a\,x_1$、$b\,x_2$，再用叠加性把两个放大后的信号加起来。每一行的「系统」仍是\textbf{同一台}机器。}
 \end{figure}
 
 \point{几个容易卡住的地方}
@@ -392,23 +398,23 @@ $x_1,x_2,a,b$ 都是任取的，所以书上的定义对\textbf{任意}输入、
 \item \textbf{第 1 步的输出 $a\,y_1$ 是 (H) 保证的}，不是我们自己去算 $a\,x_1$ 经过系统得到的；我们根本不知道系统内部怎么算，只知道 (H)。
 \item \textbf{第 3 步为什么不是「直接相加」}：$a\,x_1$ 和 $b\,x_2$ 的输出 $a\,y_1$、$b\,y_2$ 是第 1、2 步得到的结论；要把「两个输入的和」对应到「两个输出的和」，靠的是 (S)，不能省。(S) 只管「两个输入相加」，所以要先用 (H) 把 $a,b$ 吸收进信号里，凑成 (S) 的形状。
 \end{itemize}
-若觉得绕、烧脑，核心是没有理解「任意」。日常用哪个都行：老师的分开写更适合入门证明，书上的合并写更适合推别的结论。
+若觉得绕、烧脑，核心是没有理解「任意」。日常用哪个都行：分开写更适合入门证明，合并写更适合推别的结论。
 
-\subsection{课后思考题：缺一不可（52:32--54:47）}
+\subsection{课后思考题：缺一不可}
 \begin{remember}
 \begin{enumerate}[nosep]
 \item 请举一个系统，\textbf{满足齐次性，不满足叠加性}；
 \item 请再举一个系统，\textbf{满足叠加性，不满足齐次性}。
 \end{enumerate}
 \end{remember}
-这是第一次作业里一道「非常难的思考题」。老师说两道里\textbf{有一道特别难}，提示「你除非假定这个 $a$ 可以是负数，更好做一点」，并说「你如果做出来了，那你真的是天才」。
+这是第一次作业里的一道思考题，两道里\textbf{有一道特别难}（提示：$a$ 可取负数）。
 
 \begin{skippable}
-\textbf{我的看法}（补充，没有核对书）。第 1 道较好举：$y(t)=\dfrac{x(t)^2}{x(t-1)}$（分母为 $0$ 时约定输出 $0$）满足齐次性：$\dfrac{a^2x(t)^2}{a\,x(t-1)}=a\cdot\dfrac{x(t)^2}{x(t-1)}$；但取某一时刻 $(x_1(t),x_1(t-1))=(1,1)$、$(x_2(t),x_2(t-1))=(1,2)$，则 $y_1=1$、$y_2=\tfrac12$，而和的输出是 $\tfrac{2^2}{3}=\tfrac43\neq\tfrac32$，叠加性不成立。第 2 道据我所知很难：$a$ 取任意实数时，叠加性已能推出整数、分数的齐次性，反例只能靠「病态」函数（柯西函数方程的非线性解，要借助选择公理），所以课上说超出现在的水平。
+\textbf{第 1 道}：$y(t)=\dfrac{x(t)^2}{x(t-1)}$（分母为 $0$ 时约定输出 $0$）满足齐次性：$\dfrac{a^2x(t)^2}{a\,x(t-1)}=a\cdot\dfrac{x(t)^2}{x(t-1)}$；但取某一时刻 $(x_1(t),x_1(t-1))=(1,1)$、$(x_2(t),x_2(t-1))=(1,2)$，则 $y_1=1$、$y_2=\tfrac12$，而和的输出是 $\tfrac{2^2}{3}=\tfrac43\neq\tfrac32$，叠加性不成立。第 2 道很难：$a$ 取任意实数时，叠加性已能推出整数、分数的齐次性，反例只能靠「病态」函数（柯西函数方程的非线性解，需借助选择公理）。
 \end{skippable}
 
 %==================================================================
-\section{时不变系统（54:53--82:28）}
+\section{时不变系统}
 \subsection{概念}
 \begin{remember}
 假设对\textbf{任意}输入 $x(t)$，系统给出输出 $y(t)$。如果对\textbf{任意实数} $t_0$，都有
@@ -421,7 +427,23 @@ x(t-t_0)\ \to\ y(t-t_0),
 \end{remember}
 $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移）。
 
-老师的比喻：今天给小孩一颗糖他笑得很灿烂，明天、后天再给，笑得一模一样，这就是时不变；今天给糖他哭、明天给糖他笑，就是时变。系统的输出不会随着时间的变化而改变。
+时不变：同样的输入无论何时送入，输出都一样；若输出随送入时刻改变，就是时变。系统的输出不随输入送入的时刻而改变。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=1.2cm,y=1.0cm,>=stealth]
+  \draw[->] (-0.6,0) -- (4.6,0) node[right,font=\scriptsize] {$t$};
+  \draw[->] (0,-0.3) -- (0,1.8);
+  \foreach \k in {0,1,2,3} { \draw (\k,0.06) -- (\k,-0.06) node[below,font=\tiny] {$\k$}; }
+  \draw (0.06,1) -- (-0.06,1) node[left,font=\tiny] {$1$};
+  \draw[very thick,blue!70!black] (0,0) -- (0,1) -- (1,1) -- (1,0);
+  \draw[very thick,red!75!black] (2,0) -- (2,1) -- (3,1) -- (3,0);
+  \draw[<->,gray] (0,1.4) -- (2,1.4) node[midway,above,font=\scriptsize] {$t_0$};
+  \node[font=\scriptsize,blue!70!black,anchor=south] at (0.5,1.05) {$x(t)$};
+  \node[font=\scriptsize,red!75!black,anchor=south] at (2.5,1.05) {$x(t-t_0)$};
+\end{tikzpicture}
+\caption{时不变：输入整体右移 $t_0$，输出也只是同样右移 $t_0$，形状不变，即 $x(t-t_0)\to y(t-t_0)$。}
+\end{figure}
 
 \subsection{证明}
 \begin{remember}
@@ -430,10 +452,10 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \textbf{证}时变：举一个反例，列出「实际」和「希望」，二者不等即可。
 \end{remember}
 
-\subsection{做题步骤（补充）：固定写两行}
-\textbf{（补充，整理自我和豆包的对话，不是老师的讲法。用来在大题里按部就班，不容易代错。）}
+\subsection{做题步骤：固定写两行}
+\textbf{固定写两行，按部就班不容易代错。}
 \begin{enumerate}[nosep]
-\item \textbf{先用口诀预判}（半分钟）：$x$ 括号外有没有随 $t$ 变的项？括号里是不是只有 $t$ 加减常数？两条都过，多半时不变；有一条不过，多半时变。带积分或求和的系统口诀不灵，直接走下面几步（积分要换元，例子见例~\ref{ex:int}）。
+\item \textbf{先用口诀预判}：$x$ 括号外有没有随 $t$ 变的项？括号里是不是只有 $t$ 加减常数？两条都过，多半时不变；有一条不过，多半时变。带积分或求和的系统口诀不灵，直接走下面几步（积分要换元，例子见例~\ref{ex:int}）。
 \item \textbf{写出系统规矩}：用中间变量 $f$ 表示「送进来的任意信号」，把系统写成 $f(t)\to\cdots$。例：$x(2t)$ 写成 $f(t)\to f(2t)$；$t\,x(t)$ 写成 $f(t)\to t\,f(t)$。
 \item \textbf{第一行，写「实际」}（先移输入，再过系统）：令 $f(t)=x(t-t_0)$，先写出它的入口规则 $f(\square)=x(\square-t_0)$，再把系统规矩里要的东西填进 $\square$。系统自带的东西（$2t$ 里的 $2$、$\cos t$、单独的 $t$）\textbf{原样保留，不跟着 $t_0$ 动}。
 \item \textbf{第二行，写「期望」}（先过系统，再移输出）：先写出 $y(\square)$ 的规则，再把 $\square$ 换成 $t-t_0$：$y(t)$ 里\textbf{所有}的 $t$ 一起换。
@@ -460,7 +482,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \item 以为 $\cos t$、$t$ 这类系统自带的项会跟着输入一起延时。
 \end{enumerate}
 
-\subsection{例题：证明时不变（57:54--62:28）}
+\subsection{例题：证明时不变}
 \example{\texorpdfstring{$y(t)=x(t-1)$}{y(t)=x(t-1)}}{时不变}{}
 \textbf{系统}：$x(t)\to y(t)=x(t-1)$，即输入右移 $1$ 个单位。
 
@@ -481,8 +503,8 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{itemize}
 实际 $=$ 期望，对任意 $t_0$ 成立，故 $y(t)=e^{x(t+1)}$ 为时不变系统。\hfill$\blacksquare$
 
-\example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}（补充）}{时不变}{}\label{ex:diff}
-\textbf{系统}：$f(t)\to\dfrac{\mathrm{d}f(t)}{\mathrm{d}t}$。老师在综合习题里把它判为时不变（「前面都证明过」），但本章笔记里没有它的证明，这里补上。$x'$ 表示 $x$ 的导函数。
+\example{微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}}{时不变}{}\label{ex:diff}
+\textbf{系统}：$f(t)\to\dfrac{\mathrm{d}f(t)}{\mathrm{d}t}$。$x'$ 表示 $x$ 的导函数。
 
 \textbf{证明}。任取 $t_0$。
 \begin{itemize}[nosep]
@@ -494,7 +516,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 数字看一眼：取 $x(t)=t^2$，$t_0=1$。输入 $(t-1)^2$ 的导数是 $2(t-1)$，$y(t-1)=2(t-1)$，两边一样。直觉：曲线整体右移，每一点附近的变化率也跟着右移，形状不变。
 
 \needspace{5cm}
-\example{差分~\texorpdfstring{$y[n]=x[n]-x[n-1]$}{y[n]=x[n]-x[n-1]}（补充）}{时不变}{}\label{ex:diffn}
+\example{差分~\texorpdfstring{$y[n]=x[n]-x[n-1]$}{y[n]=x[n]-x[n-1]}}{时不变}{}\label{ex:diffn}
 \textbf{系统}：$f[n]\to f[n]-f[n-1]$（当前值减前一个值）。离散信号的时不变，是对任意\textbf{整数} $n_0$：输入 $x[n-n_0]$ 时，输出 $y[n-n_0]$。
 
 \textbf{证明}。任取整数 $n_0$。
@@ -507,12 +529,12 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 数字看一眼：输入单位脉冲 $\delta[n]$，输出 $\delta[n]-\delta[n-1]$（$n=0$ 处为 $1$，$n=1$ 处为 $-1$）。输入右移 $2$ 变成 $\delta[n-2]$，输出 $\delta[n-2]-\delta[n-3]$（$n=2$ 处为 $1$，$n=3$ 处为 $-1$），正好是原输出右移 $2$。口诀也直接过：$n$ 只在括号里，只是 $n$ 和 $n-1$。
 
 \needspace{8cm}
-\example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}（补充）}{时不变}{}\label{ex:int}
+\example{积分器~\texorpdfstring{$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$}{y(t)=∫x(τ)dτ}}{时不变}{}\label{ex:int}
 \textbf{系统}：$f(t)\to\displaystyle\int_{-\infty}^{t}f(\tau)\,\mathrm{d}\tau$。$t$ 在积分上限，口诀按字面会判成时变，所以必须回到定义。
 
 \textbf{证明}。任取 $t_0$。
 \begin{itemize}[nosep]
-\item 实际：输入 $f(\tau)=x(\tau-t_0)$，输出 $\displaystyle\int_{-\infty}^{t}x(\tau-t_0)\,\mathrm{d}\tau$。令 $s=\tau-t_0$（为什么这样令，见下面的补充），则 $\mathrm{d}\tau=\mathrm{d}s$；$\tau=-\infty$ 时 $s=-\infty$，$\tau=t$ 时 $s=t-t_0$。于是输出 $=\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s$；
+\item 实际：输入 $f(\tau)=x(\tau-t_0)$，输出 $\displaystyle\int_{-\infty}^{t}x(\tau-t_0)\,\mathrm{d}\tau$。令 $s=\tau-t_0$（理由见下文），则 $\mathrm{d}\tau=\mathrm{d}s$；$\tau=-\infty$ 时 $s=-\infty$，$\tau=t$ 时 $s=t-t_0$。于是输出 $=\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s$；
 \item 期望：$y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$，把所有 $t$ 换成 $t-t_0$，$y(t-t_0)=\displaystyle\int_{-\infty}^{t-t_0}x(\tau)\,\mathrm{d}\tau$。积分变量只是计数的名字（哑变量，dummy variable），写成 $\tau$ 还是 $s$ 结果一样，故 $=\displaystyle\int_{-\infty}^{t-t_0}x(s)\,\mathrm{d}s$。
 \end{itemize}
 实际 $=$ 期望，对任意 $t_0$ 成立，故积分器为时不变系统。\hfill$\blacksquare$
@@ -520,7 +542,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 数字看一眼：取 $x$ 为 $[0,1]$ 上等于 $1$ 的矩形，$t_0=1$。原输出：$t<0$ 为 $0$，$0\le t\le1$ 为 $t$（斜坡），$t>1$ 停在 $1$。输入右移 $1$ 变成 $[1,2]$ 上的矩形，实际输出：$t<1$ 为 $0$，$1\le t\le2$ 为 $t-1$，$t>2$ 停在 $1$，正好是原输出右移 $1$。
 
 \begin{skippable}
-\textbf{为什么要令 $s=\tau-t_0$}（补充）。
+\textbf{为什么要令 $s=\tau-t_0$}。
 \begin{enumerate}[nosep]
 \item \textbf{目的}：「实际」那行里被积的是\textbf{挪过的} $x(\tau-t_0)$，而 $y$ 的定义只会算「$x$ 本人」的积分，两边长得不一样，没法比。把 $\tau-t_0$ 整个起个新名字 $s$，被积函数还原成 $x(s)$，才能和「期望」对上。
 \item \textbf{代价}：积分范围也要用新名字重算：上限 $t$ 变成 $t-t_0$，下限 $-\infty$ 不变；$\mathrm{d}\tau$ 变成 $\mathrm{d}s$（$t_0$ 是常数）。
@@ -529,7 +551,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{skippable}
 
 \needspace{6cm}
-\example{累加器~\texorpdfstring{$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$}{y[n]=Σx[k]}（补充）}{时不变}{}\label{ex:acc}
+\example{累加器~\texorpdfstring{$y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$}{y[n]=Σx[k]}}{时不变}{}\label{ex:acc}
 \textbf{系统}：$f[n]\to\displaystyle\sum_{k=-\infty}^{n}f[k]$。它是离散的积分器，$n$ 同样在求和上限，口诀不适用。证法和积分器一样，只是把积分换成求和、$\tau$ 换成 $k$。
 
 \textbf{证明}。任取整数 $n_0$。
@@ -541,10 +563,10 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 
 数字看一眼：输入 $\delta[n]$，输出从 $n=0$ 起全为 $1$（$n<0$ 为 $0$）。输入右移 $2$ 变成 $\delta[n-2]$，输出从 $n=2$ 起全为 $1$，正好是原输出右移 $2$。
 
-（补充）微分器、积分器、差分、累加器这四个都是时不变。它们的规则只看「相对位置」（和前一刻比，或从最早累积到现在），不看「几点钟」；输入整体挪了，「现在」跟着挪，输出也就只是整体跟着挪。
+微分器、积分器、差分、累加器这四个都是时不变。它们的规则只看「相对位置」（和前一刻比，或从最早累积到现在），不看「几点钟」；输入整体挪了，「现在」跟着挪，输出也就只是整体跟着挪。
 
 \subsection{例题：证明时变（反例）}
-\example{\texorpdfstring{$y(t)=x(2t)$}{y(t)=x(2t)}}{时变}{62:29--65:36}\label{ex:x2t}
+\example{\texorpdfstring{$y(t)=x(2t)$}{y(t)=x(2t)}}{时变}{}\label{ex:x2t}
 \textbf{系统}：$x(t)\to y(t)=x(2t)$，即波形沿时间轴压缩 $2$ 倍。
 
 \textbf{证明}（举反例）。取 $x(t)=1$（$0\le t\le1$），其余为 $0$；取 $t_0=1$。
@@ -560,6 +582,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
   \begin{scope}[shift={(#1,#2)}]
     \draw[->] (-0.4,0) -- (3.6,0) node[right,font=\scriptsize] {$t$};
     \draw[->] (0,-0.15) -- (0,1.2);
+    \draw (0.06,0.8) -- (-0.06,0.8) node[left,font=\tiny] {$1$};
     \foreach \k in {0,0.5,1,1.5,2} { \draw (\k*1.4,0.04) -- (\k*1.4,-0.04) node[below,font=\tiny] {$\k$}; }
     \draw[very thick,#5] (#3*1.4,0) -- (#3*1.4,0.8) -- (#4*1.4,0.8) -- (#4*1.4,0);
     \node[font=\scriptsize,anchor=south west] at (-0.3,1.0) {#6};
@@ -578,7 +601,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \end{figure}
 
 \begin{skippable}
-\textbf{为什么「实际」是 $x(2t-t_0)$，而不是 $x\bigl(2(t-t_0)\bigr)$}（补充，课上没讲，是我自己的整理）。这是最容易绕晕的一步，关键是看清\textbf{入口 $\square$ 里填的是什么}。把函数当成一台机器，括号里的 $\square$ 是入口：
+\textbf{为什么「实际」是 $x(2t-t_0)$，而不是 $x\bigl(2(t-t_0)\bigr)$}。这是最容易绕晕的一步，关键是看清\textbf{入口 $\square$ 里填的是什么}。把函数当成一台机器，括号里的 $\square$ 是入口：
 \begin{itemize}[nosep]
 \item $y$ 这台机器（$y(t)=x(2t)$）：\textbf{进去一个数，先乘 $2$，再交给 $x$}，即 $y(\square)=x(2\square)$；
 \item $f$ 这台机器（$f(t)=x(t-t_0)$）：\textbf{进去一个数，先减 $t_0$，再交给 $x$}，即 $f(\square)=x(\square-t_0)$。
@@ -601,7 +624,7 @@ $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移
 \textbf{换个写法}：$x(2t-t_0)=x\bigl(2(t-\tfrac{t_0}{2})\bigr)$。输入右移了 $t_0$，输出却只右移 $\tfrac{t_0}{2}$（延迟被压缩打了对折）；时不变要求输出也右移 $t_0$，对不上。推广：$x(at)$ 的输入右移 $t_0$，输出只右移 $t_0/a$，只要 $a\neq1$ 就是时变。
 \end{skippable}
 
-\example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{时变}{70:49--75:11}
+\example{\texorpdfstring{$y(t)=t\,x(t)$}{y(t)=t x(t)}}{时变}{}
 \textbf{系统}：$x(t)\to y(t)=t\,x(t)$。
 
 \textbf{证明}（举反例）。取 $x(t)=u(t)$（单位阶跃：$t>0$ 为 $1$，$t<0$ 为 $0$），$t_0=1$。
@@ -628,7 +651,7 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 \caption{$y(t)=t\,x(t)$ 的反例，输入 $u(t-1)$：实际输出（红）在 $t=1$ 处直接跳到 $1$，而希望的输出（绿虚线）是从 $0$ 开始爬。两条线上下错开了整整 $1$。}
 \end{figure}
 
-\example{\texorpdfstring{$y[n]=x[3-n]$}{y[n]=x[3-n]}}{时变}{75:38--79:47}\label{ex:x3n}
+\example{\texorpdfstring{$y[n]=x[3-n]$}{y[n]=x[3-n]}}{时变}{}\label{ex:x3n}
 \textbf{系统}：$x[n]\to y[n]=x[3-n]$。$n$ 前的负号把平移变成了反向平移。
 
 \textbf{证明}（举反例）。取 $x[n]=\delta[n]$（单位脉冲：只在 $n=0$ 处为 $1$）。
@@ -675,7 +698,7 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 \caption{$y[n]=x[3-n]$ 的反例：输入右移 1，实际输出的脉冲不是右移到 $4$，而是左移到 $2$。}
 \end{figure}
 
-\example{\texorpdfstring{$y(t)=x(t)+\cos t$}{y(t)=x(t)+cos t}（补充）}{时变}{}
+\example{\texorpdfstring{$y(t)=x(t)+\cos t$}{y(t)=x(t)+cos t}}{时变}{}
 \textbf{系统}：$f(t)\to f(t)+\cos t$。式子里的 $\cos t$ 是\textbf{系统自带}的，不是输入的一部分：输入右移，它不动；把整个输出右移，它才跟着一起动。
 
 \textbf{证明}。任取 $t_0$。
@@ -687,11 +710,11 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 
 对照：$y(t)=x(t)+5$ 加的是常数，实际 $x(t-t_0)+5=$ 期望 $x(t-t_0)+5$，是时不变。
 
-\subsection{应付考试的判据：两句话（79:53--82:28）}
-老师说这个办法能解决 80\% 以上的题。
+\subsection{应付考试的判据：两句话}
+这个办法能解决 80\% 以上的题。
 
 \begin{remember}
-时不变系统的判据（板书）：
+时不变系统的判据：
 \begin{enumerate}[nosep]
 \item \textbf{$t$ 只在 $x$ 的括号里}（括号外面不能再有 $t$）；
 \item \textbf{$t$ 只能是 $t$}，不能是 $2t$、$-2t$、$t^2$ 等其他函数。
@@ -714,21 +737,20 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 \end{center}
 
 \begin{skippable}
-\textbf{一处要留意}（补充）\tbc{}。板书写「$t$ 只能是 $t$」，但老师紧接着把 $x(t-1)$ 判成时不变。所以这句话应读成「括号里是 $t$ 加减一个\textbf{常数}（只平移）」；乘系数（$2t$）、取反（$-t$、$3-n$）、平方（$t^2$）才算「其他函数」。这是我对老师的理解，课上没有逐字这样说。
+\textbf{一处要留意}：第 2 句应读成「括号里是 $t$ 加减一个\textbf{常数}（只平移）」；乘系数（$2t$）、取反（$-t$、$3-n$）、平方（$t^2$）才算「其他函数」。
 \end{skippable}
 
 \begin{skippable}
-\textbf{口诀的两处提醒}（补充，我自己加的，课上没讲）。
+\textbf{口诀的两处提醒}。
 \begin{enumerate}[nosep]
 \item 第 1 条的「括号外不能有 $t$」，\textbf{乘和加都算}：$t\,x(t)$、$x(t)\cos t$、$x(t)+\cos t$ 都是时变。括号外是\textbf{常数}不算：$3x(t)$、$x(t)+5$ 仍是时不变。
 \item 口诀只是筛查，不是定义；带积分的系统要回到定义。例如积分器 $y(t)=\displaystyle\int_{-\infty}^{t}x(\tau)\,\mathrm{d}\tau$：$t$ 在积分上限，跑到了 $x$ 的括号外面，口诀按字面会判成时变，但它其实是时不变（证明见例~\ref{ex:int}），离散的累加器同理（例~\ref{ex:acc}）。
 \end{enumerate}
 \end{skippable}
 
-老师在这一段末尾（82:50）说：线性和时不变讲完，「这一章最核心的内容已经基本上讲完了」，后面四个系统相对简单。
 
-\subsection{练习（补充）：五道}
-\textbf{（补充，是我和豆包一起做的练习，不是老师的题。先盖住结论自己判，再对答案。）}每题先用口诀预判，再按「做题步骤」写两行；证时变要取具体的 $x$ 和 $t_0$。
+\subsection{练习：五道}
+先盖住结论自己判，再对答案。每题先用口诀预判，再按「做题步骤」写两行；证时变要取具体的 $x$ 和 $t_0$。
 
 \point{练习~1\quad$y(t)=x(t-1)+2$：时不变}
 \begin{itemize}[nosep]
@@ -768,12 +790,12 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 取 $x$ 为 $[-1,1]$ 上等于 $1$ 的矩形，$t_0=1$：原输出在 $[-1,1]$ 为 $1$，期望是它右移 $1$，在 $[0,2]$ 为 $1$。实际：输入右移后在 $[0,2]$，$f(-t)$ 在 $[-2,0]$，两段只在 $t=0$ 一点相遇，输出除这一点外全为 $0$。原因是 $x(-t)$ 把方向反了：输入向右挪，这一项在输出里向左挪，和例~\ref{ex:x3n} 的 $x[3-n]$ 同一类。
 
 %==================================================================
-\section{因果系统（83:44--92:29）}
+\section{因果系统}
 \subsection{概念}
 \begin{remember}
 \textbf{因果系统}(causal system)：任何时刻的输出，只取决于\textbf{现在和过去}的输入，不取决于未来的输入（教材 P29 的定义）。
 \end{remember}
-老师课上的形象说法是「输出 $y(t)$ 在输入 $x(t)$ 之后发生」，画法如下：输入 $x$ \textbf{从 $t_0$ 才开始有值}，输出 $y$ \textbf{从 $t_1$ 才开始有值}，则\textbf{系统是因果的，当且仅当 $t_1\ge t_0$}（老师特意纠正：「包含了等于这一项」）。若 $t_1<t_0$，输入还没来，输出就「未卜先知」地出来了，是\textbf{非因果系统}(non-causal system)。
+形象地说，输出 $y(t)$ 在输入 $x(t)$ 之后发生：输入 $x$ \textbf{从 $t_0$ 才开始有值}，输出 $y$ \textbf{从 $t_1$ 才开始有值}，则\textbf{系统是因果的，当且仅当 $t_1\ge t_0$}。若 $t_1<t_0$，输入还没来，输出就「未卜先知」地出来了，是\textbf{非因果系统}(non-causal system)。
 
 \begin{figure}[H]
 \centering
@@ -795,19 +817,19 @@ $y[n]=x[3-n]$ & 括号里是 $3-n$，$n$ 前面有\textbf{负号} & 时变\\
 
 \begin{note}
 \begin{itemize}[nosep]
-\item 画面下方叠了一条黄色字幕（\textbf{视频制作者加的，不是老师说的}）：「课上因果系统定义和教材有细微区别，请以教材定义为准：如果一个系统任何时刻输出只决定于现在和过去的输入，就称该系统为因果系统。（P29）」所以「输出在输入之后」只是形象说法，\textbf{答题请以教材定义为准}。
-\item 现实的系统没有未卜先知的能力，所以非因果系统\textbf{物理上难以实现}。老师特意写「难以」而不是「不可」，因为量子系统里可能有非因果的处理方式。
+\item 教材定义（P29）为准：「输出在输入之后」只是形象说法。
+\item 现实系统不具备预知能力，所以非因果系统\textbf{物理上难以实现}。
 \end{itemize}
 \end{note}
 
 \subsection{证明：判据}
 \begin{remember}
-\textbf{因果的判据}：$x$ 括号里的数，\textbf{恒}不大于 $y$ 括号里的数。（老师口述和板书写的是「恒小于」，但他前面的定义明确包含「等于」，所以应读作「小于或等于」。）\tbc{}
+\textbf{因果的判据}：$x$ 括号里的数，\textbf{恒}不大于 $y$ 括号里的数。
 
 只要有\textbf{任何一个时刻}，$x$ 括号里的数比 $y$ 的更大，就是非因果。
 \end{remember}
 
-\subsection{例题（88:21--92:29）}
+\subsection{例题}
 \begin{center}
 \begin{tabular}{@{}lp{6.6cm}l@{}}
 \toprule
@@ -824,12 +846,21 @@ $y[n]=x[3-n]$ & $3-n$ 和 $n$ 没有恒定的大小关系 & 非因果\\
 $x(\tfrac12t)$ 这一题要换到 $t<0$：取 $t>0$ 时 $\tfrac12t<t$，用到的是过去的输入，看不出问题；但\textbf{只要有一处时刻}用到未来，就是非因果。
 
 %==================================================================
-\section{记忆与无记忆系统（93:36--97:30）}
+\section{记忆与无记忆系统}
 \subsection{概念}
 \begin{remember}
 \textbf{无记忆系统}(memoryless system)：\textbf{$y(t)$ 的值仅仅依赖于 $x(t)$ 的值}（同一时刻的输入）。离散时把圆括号换成方括号。反面是\textbf{记忆系统}(system with memory)。
 \end{remember}
-大白话（补充）：无记忆像\textbf{计算器}，按下哪个数立刻出结果，只看这一次按键；记忆像\textbf{银行余额}，取决于过去所有的存取记录。
+直观理解：无记忆像\textbf{计算器}，按下哪个数立刻出结果，只看这一次按键；记忆像\textbf{银行余额}，取决于过去所有的存取记录。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{$x(t)$}{$y(t)=x(t)^2$}{无记忆：只看同一时刻}
+  \sysline{-1.3}{$x(t),\,x(t-1),\dots$}{$y(t)=x(t-1)$}{有记忆：用到过去的值}
+\end{tikzpicture}
+\caption{无记忆：$y(t)$ 只由同一时刻的 $x(t)$ 决定；有记忆：还要用到其它时刻的输入。}
+\end{figure}
 
 \subsection{证明：判据}
 \begin{remember}
@@ -850,11 +881,11 @@ $y[n]=x[2n]$ & 记忆 & $n$ 点的输出依赖 $x$ 在 $2n$ 点的值\\
 \end{tabular}
 \end{center}
 
-\point{一道常考的判断题：无记忆系统一定是因果系统吗？（96:30--97:30）}
-\textbf{对}。老师说这是「经常考到的判断题」。因果判据是「$x$ 括号里的数恒小于或等于 $y$ 括号里的数」，无记忆两个括号里的数\textbf{恰好相等}，落在「等于」这一种情况里，所以一定因果。老师说：「因果系统的定义，大于等于包含了无记忆系统。」反过来不成立：$y(t)=x(t-1)$ 因果但有记忆。
+\point{一道常考的判断题：无记忆系统一定是因果系统吗？}
+\textbf{对}。这是常考的判断题。因果判据是「$x$ 括号里的数恒小于或等于 $y$ 括号里的数」，无记忆两个括号里的数\textbf{恰好相等}，落在「等于」这一种情况里，所以一定因果；反过来不成立：$y(t)=x(t-1)$ 因果但有记忆。
 
 %==================================================================
-\section{可逆系统（97:34--103:31）}
+\section{可逆系统}
 \subsection{概念}
 \begin{remember}
 \textbf{可逆系统}(invertible system)：\textbf{$x(t)$ 能唯一地写成 $y(t)$ 的形式}。三种等价的说法：
@@ -864,7 +895,16 @@ $y[n]=x[2n]$ & 记忆 & $n$ 点的输出依赖 $x$ 在 $2n$ 点的值\\
 \item $y=f(x)$ \textbf{有反函数}。
 \end{itemize}
 \end{remember}
-这和学「什么函数有反函数」时一样，老师说「早就学过」。
+这与「什么函数有反函数」同理。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \sysline{0}{$x(t)$}{$y(t)$}{系统 $T$}
+  \sysline{-1.3}{$y(t)$}{$x(t)$}{逆系统 $T^{-1}$：唯一还原}
+\end{tikzpicture}
+\caption{可逆：存在逆系统把输出唯一地还原成输入；两个不同输入给出同一输出时不可逆。}
+\end{figure}
 
 \subsection{证明：判据}
 能把 $x$ 用 $y$ 写出来（写得出逆），就可逆；若有两个不同的输入给出同一个输出（或倒推时出现多个解），就不可逆。
@@ -886,15 +926,15 @@ $y(t)=x(2t)$ & 可逆 & $x(t)=y(\tfrac12t)$\\
 \end{center}
 累加器的逆：把 $y[n]$ 与 $y[n-1]$ 相减，只剩 $x[n]$。结论：\textbf{积分器、累加器可逆，微分器不可逆}。
 
-\textbf{微分器为什么不可逆}（补充）：求导会把常数丢掉。$x(t)=5$ 和 $x(t)=7$ 求导后都是 $0$，倒推时说不清原来是 $5$ 还是 $7$，这就是「$+C$」的来源。积分器每一刻都在累积，信息没有丢，所以可以求导还原。
+\textbf{微分器为什么不可逆}：求导会把常数丢掉。$x(t)=5$ 和 $x(t)=7$ 求导后都是 $0$，倒推时说不清原来是 $5$ 还是 $7$，这就是「$+C$」的来源。积分器每一刻都在累积，信息没有丢，所以可以求导还原。
 
 %==================================================================
-\section{稳定系统（103:34--112:03）}
+\section{稳定系统}
 \subsection{概念：有界进，有界出}
-设 $x(t)\to y(t)$。若 $x(t)$ \textbf{有界}就能推出 $y(t)$ \textbf{有界}，即「输入有界对应着输出有界」，就是\textbf{稳定系统}(stable system)；若有界的输入能对应出\textbf{无界}的输出，就是不稳定系统。（英文教材里常叫 BIBO 稳定，bounded-input bounded-output，课上没提。）
+设 $x(t)\to y(t)$。若 $x(t)$ \textbf{有界}就能推出 $y(t)$ \textbf{有界}，即「输入有界对应着输出有界」，就是\textbf{稳定系统}(stable system)；若有界的输入能对应出\textbf{无界}的输出，就是不稳定系统。（英文教材常称 BIBO 稳定，bounded-input bounded-output。）
 
 \begin{remember}
-\textbf{有界}(bounded)的定义（有同学问「什么叫有界」，老师现场写的）：
+\textbf{有界}(bounded)的定义：
 \[
 x(t)\ \text{有界}\ \Longleftrightarrow\ \text{存在}\ M,\ \text{对任意的}\ t\ \text{有}\ |x(t)|<M.
 \]
@@ -920,7 +960,7 @@ x(t)\ \text{有界}\ \Longleftrightarrow\ \text{存在}\ M,\ \text{对任意的}
 \textbf{证}不稳定：举一个有界的输入，让输出变成无界。
 \end{remember}
 
-\subsection{例题：稳定（106:00--109:40）}
+\subsection{例题：稳定}
 \example{\texorpdfstring{$y(t)=e^{x(t)}$}{y(t)=exp(x(t))}}{稳定}{}
 \textbf{系统}：$x(t)\to y(t)=e^{x(t)}$。
 
@@ -943,7 +983,7 @@ $M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blac
 
 多项式型系统都可用同一办法：把每一项的 $|x|$ 换成 $M$，得到的数只要固定，系统就稳定——与表达式看起来多「大」无关。
 
-\subsection{例题：不稳定（109:40--112:03）}
+\subsection{例题：不稳定}
 \begin{center}
 \begin{tabular}{@{}p{3.9cm}p{1.5cm}p{8.6cm}@{}}
 \toprule
@@ -991,16 +1031,16 @@ $M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blac
 \caption{左：微分器把一个有界的阶跃变成无穷大的冲激。右：积分器把一个有界的常数 $1$ 越积越大，没有上限。}
 \end{figure}
 
-\point{老师留的思考题（111:43--112:03）。}
-连续的微分器不稳定，但\textbf{离散的微分器}（差分 $y[n]=x[n]-x[n-1]$）是\textbf{稳定}的，「自己在休息的时候想一想是为什么」。
+\point{思考题。}
+连续的微分器不稳定，但\textbf{离散的微分器}（差分 $y[n]=x[n]-x[n-1]$）是\textbf{稳定}的，想一想为什么。
 
 \begin{skippable}
-\textbf{我的想法}（补充，没有核对书）：设 $|x[n]|<M$，则 $|y[n]|\le|x[n]|+|x[n-1]|<2M$，被 $2M$ 夹住，所以稳定。连续微分器不稳定，是因为连续信号可以在一瞬间跳变（跳变处导数无穷大）；离散信号每个点都是有限的数，相邻两点相减，差不会无穷大。
+\textbf{解答}：设 $|x[n]|<M$，则 $|y[n]|\le|x[n]|+|x[n-1]|<2M$，被 $2M$ 夹住，所以稳定。连续微分器不稳定，是因为连续信号可以在一瞬间跳变（跳变处导数无穷大）；离散信号每个点都是有限的数，相邻两点相减，差不会无穷大。
 \end{skippable}
 
 %==================================================================
-\section{综合习题：教材第 33 页习题 1-16（112:48--121:28）}
-这是又一堂新课。老师让大家翻书，「相对稍微比较快地复习一下」，做教材第 33 页习题 1-16（转写听到「33 页 1-16」，没有翻书核对）\tbc{}，「不全做，挑三个来做」，把五个性质综合起来用。老师在黑板上画的表（来自画面）：
+\section{综合习题：教材第 33 页习题 1-16}
+做教材第 33 页习题 1-16，把五个性质综合起来用：
 
 \begin{center}
 \renewcommand{\arraystretch}{1.35}
@@ -1014,116 +1054,58 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 \bottomrule
 \end{tabular}
 \end{center}
-（$\checkmark$ 表示「是」，$\times$ 表示「否」。最后一格在部分画面里被老师挡住，从最后一帧能看到是 $\times$。\tbc{}）
+（$\checkmark$ 表示「是」，$\times$ 表示「否」；最后一格为 $\times$。）
 
-\subsection{第一行~\texorpdfstring{$y(t)=e^{x(t)}$}{y(t)=exp(x(t))}（114:01--114:55）}
+\subsection{第一行~\texorpdfstring{$y(t)=e^{x(t)}$}{y(t)=exp(x(t))}}
 \begin{itemize}[nosep]
 \item 线性\textbf{否}：看上去「每项有 $x$、$x$ 一次」，但 $e^{x}=1+x+\tfrac{x^2}{2!}+\cdots$ 不是一次；
 \item 时不变\textbf{是}：$t$ 只在 $x$ 括号里，括号里只是 $t$；
 \item 无记忆\textbf{是}：$y(t)$ 只依赖 $x(t)$；
-\item 因果\textbf{是}：老师说「无记忆系统一定是因果系统」；
+\item 因果\textbf{是}：无记忆系统一定因果；
 \item 稳定\textbf{是}：前面例 1 证过。
 \end{itemize}
 
-\subsection{第二行~\texorpdfstring{$y[n]=x[n]\,x[n-1]$}{y[n]=x[n]x[n-1]}（114:55--116:27）}
+\subsection{第二行~\texorpdfstring{$y[n]=x[n]\,x[n-1]$}{y[n]=x[n]x[n-1]}}
 \begin{itemize}[nosep]
 \item 线性\textbf{否}：「这里两个 $x$ 了」，$x$ 不是一次；
-\item 时不变\textbf{是}：$n$ 只在 $x$ 括号里，括号里是 $n$ 和 $n-1$（只平移）。老师说：「你不确定，自己回去按照定义再证一遍。」
+\item 时不变\textbf{是}：$n$ 只在 $x$ 括号里，括号里是 $n$ 和 $n-1$（只平移）。
 \item 无记忆\textbf{否}：$y[n]$ 还跟 $x[n-1]$ 有关；
 \item 因果\textbf{是}：$x$ 括号里是 $n$ 和 $n-1$，都不大于 $y$ 括号里的 $n$；
 \item 稳定\textbf{是}：$|x[n]x[n-1]|\le M\cdot M$，被 $M^2$ 夹住。
 \end{itemize}
 
-\subsection{第三行 微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}（116:28--121:02）}
+\subsection{第三行 微分器~\texorpdfstring{$y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$}{y(t)=dx(t)/dt}}
 \begin{itemize}[nosep]
-\item 线性\textbf{是}，时不变\textbf{是}：前面都证明过（时不变的证明见「时不变系统」一章的例~\ref{ex:diff}，补充）。老师提醒，接下来有两格「每一次都会有特别多的问题」；
+\item 线性\textbf{是}，时不变\textbf{是}：前面都证明过（时不变的证明见例~\ref{ex:diff}）。
 \item 无记忆\textbf{否}：要算 $\dfrac{\mathrm{d}x}{\mathrm{d}t}$，必须知道 $t\pm\Delta t$ 那么\textbf{一小点}地方的值；
 \item 稳定\textbf{否}：前面讲过，微分器不稳定；
 \item 因果：争议最大的一格，见下。
 \end{itemize}
 
-\point{微分器是因果的吗？（116:56--120:33）}
-老师说「不考大家了」，直接讲自己的看法：\textbf{考试时写因果或非因果，他都算对，但个人觉得说它因果更对一点}。理由是导数是一个极限，可以有两种算法：
+\point{微分器是因果的吗？}
+这一格有争议：\textbf{写因果或非因果都有依据，按导数的两种等价算法可判为因果}。理由是导数是一个极限，可以有两种算法：
 
 \begin{center}
 \renewcommand{\arraystretch}{1.3}
 \begin{tabular}{@{}p{3.8cm}p{5.6cm}p{4.2cm}@{}}
 \toprule
-算法 & 式子（板书） & 按因果的定义\\
+算法 & 式子 & 按因果的定义\\
 \midrule
 取 $t$ \textbf{右边}一点点 & $\displaystyle\lim_{\Delta t\to0^+}\dfrac{x(t+\Delta t)-x(t)}{\Delta t}$ & 用到了 $t+\Delta t>t$ 的值，\textbf{非因果}\\
 取 $t$ \textbf{左边}一点点 & $\displaystyle\lim_{\Delta t\to0^+}\dfrac{x(t)-x(t-\Delta t)}{\Delta t}$ & 用到的 $t-\Delta t<t$，\textbf{因果}\\
 \bottomrule
 \end{tabular}
 \end{center}
-老师的推理：把 $y(t)$ 写成 $\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ 本身就有一个\textbf{假设}：左极限和右极限\textbf{相等}（导数存在）。既然如此，「虽然右边那个算法是非因果的，我们也能用底下这个因果的算法把它算出来」，所以按这个角度它是因果的。
+推理：把 $y(t)$ 写成 $\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ 本身就有一个\textbf{假设}：左极限和右极限\textbf{相等}（导数存在）。既然如此，虽然右边那个算法是非因果的，也能用底下这个因果的算法算出来，所以按这个角度它是因果的。
 
-\begin{note}
-\tbc{} 转写把第一个式子（$t+\Delta t$ 那个）听成「左极限」，并把 $\Delta t$ 的趋向听成「趋于正无穷大」。按板书，$t+\Delta t$ 是在 $t$ 的\textbf{右边}取点（右极限），$\Delta t$ 应\textbf{趋于 $0^+$}，这里按板书写。
-\end{note}
 
 \begin{skippable}
-\textbf{大白话}（补充）：导数是「变化有多快」。要知道 $t$ 这一刻变化多快，既可以「看一眼刚才到现在涨了多少」（只用过去，因果），也可以「偷看一眼马上要涨多少」（用了未来，非因果）。导数存在时两种看法算出的数相同，所以老师倾向答「因果」。
+\textbf{直观理解}：导数是「变化有多快」。要知道 $t$ 这一刻变化多快，既可以「看一眼刚才到现在涨了多少」（只用过去，因果），也可以「偷看一眼马上要涨多少」（用了未来，非因果）。导数存在时两种看法算出的数相同，因此可判为因果。
 \end{skippable}
 
-\subsection{小测验（121:02--121:28）}
-最后（视频在 121:33 结束），老师宣布\textbf{下周五有一个小测验}，题目就是上面这种表：「我在这里写几个式子，你在这里打对和错」，要求\textbf{速度}：五分钟做五道题。
+\subsection{小测验}
+\textbf{小测验}：五分钟做五道题，逐格判断。
 
 练习方法：盖住 $\checkmark/\times$，对每个系统逐格判断，用各节的判据：线性看「每项有 $x$、一次」；时不变看「$t$ 只在括号里、只是 $t$」；无记忆看「两个括号里的数一样」；因果看「$x$ 括号里的数恒不大于 $y$ 括号里的」；稳定看「能不能用 $M$ 夹住」。
-
-%==================================================================
-\section{一页总结}
-\begin{remember}
-\begin{enumerate}[nosep]
-\item \textbf{线性} = 齐次性 + 叠加性，缺一不可，对\textbf{任意}输入、任意 $a$ 成立。证：设中间变量，把 $a\,x(t)$、$x_1+x_2$ 当「一包」送进去；否定：举一个反例（$x\equiv0$ 或常数，$a=2$，对照「实际」和「希望」）。判据：每一项都有 $x$，每一项的 $x$ 都是一次；警惕 $e^{x}$ 这类套了函数的写法。书上（$a,b$ 合并写）和老师（分两条）的定义等价。
-\item \textbf{时不变}：输入右移 $t_0$，输出也右移 $t_0$（对任意 $t_0$）。证：设 $f(t)=x(t-t_0)$ 代进去，与 $y(t-t_0)$ 比；否定：举反例。判据：\textbf{$t$ 只在 $x$ 括号里，且只是 $t$（可平移）}。$x(2t)$、$t\,x(t)$、$x[3-n]$ 都是时变。（补充）$x(2t)$ 的「实际」输出是 $x(2t-t_0)$：输入右移 $t_0$，输出只右移 $t_0/2$；括号外随 $t$ 变的项乘和加都算；带积分或求和的系统（积分器、累加器）口诀不适用，回到定义；微分器、积分器、差分、累加器都是时不变。固定两行的写法见「做题步骤」。
-\item \textbf{因果}：输出不依赖未来的输入（以教材定义为准）。判据：\textbf{$x$ 括号里的数恒不大于 $y$ 括号里的数}。$x(t-1)$ 因果；$x(t+1)$、$x(2t)$、$x(\tfrac12t)$、$x[3-n]$ 非因果。
-\item \textbf{无记忆}：$y$ 只依赖同一时刻的 $x$。判据：\textbf{两个括号里的数完全一样}。无记忆\textbf{一定}因果，反过来不一定。
-\item \textbf{可逆}：从 $y$ 能唯一倒推出 $x$。$x(t)^2$（正负根）、微分器（常数丢了）不可逆；平移、缩放、积分器、累加器可逆。
-\item \textbf{稳定}：有界输入一定得到有界输出（用 $M$ 夹住）。$e^{x(t)}$、多项式、$x[n]x[n-1]$ 稳定；微分器、积分器、累加器不稳定；离散差分稳定，连续微分器不稳定。
-\item \textbf{综合判断}：五个性质逐格判断，限时 5 分钟做 5 道题。
-\end{enumerate}
-\end{remember}
-
-\section*{待核对：转写听不清或口述含糊的地方}\phantomsection\addcontentsline{toc}{section}{待核对：转写听不清或口述含糊的地方}
-下面几处转写听不清或口述含糊，笔记里已按「不确定」处理，等对着视频核对后再改。核对完把结论补在这里。
-\begin{center}
-\begin{tabular}{@{}p{2.4cm}p{6.2cm}p{6.2cm}@{}}
-\toprule
-视频位置 & 听不清的内容 & 笔记里现在的处理\\
-\midrule
-44:14--44:28 & 老师讲 $e^{x[n]}$ 的泰勒展开，转写把展开式听乱了（出现「1 加上 $x[n]$ 的平方……」之类的片段）。 & 展开式按数学上的 $e^x=1+x+\tfrac{x^2}{2!}+\cdots$ 写，并注明不是逐字照抄；结论（非线性）不受影响。\\
-79:53--82:28 & 时不变判据「$t$ 只能是 $t$」，老师没有说明 $x(t-1)$ 里的平移算不算「只是 $t$」。 & 笔记按「括号里是 $t$ 加减常数」读，并标成「补充」，等你核对老师是否这样讲。\\
-109:19--109:38 & 稳定的例题之后，老师举了一个「更复杂的数学表达式」，转写听成「$y(t)$ 等于 1 亿的 $x(t)$」，我听不出具体是什么。 & 例题按证明格式重写，没有收入这个式子；结论不受影响（能用 $M$ 夹住就稳定）。\\
-112:48--113:08 & 习题编号：转写听到「33 页 1-16」。 & 正文写「教材第 33 页习题 1-16」，并注明没有翻书核对。\\
-116:56--120:33 & 讲微分器因果时，转写把 $t+\Delta t$ 那个式子叫成「左极限」，又把 $\Delta t$ 的趋向听成「趋于正无穷大」。 & 按板书写：$t+\Delta t$ 是右极限，$\Delta t\to0^+$，并在笔记里注明。\\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\section*{转写里听错的地方（对照用）}\phantomsection\addcontentsline{toc}{section}{转写里听错的地方（对照用）}
-\begin{center}
-\begin{tabular}{@{}ll@{}}
-\toprule
-转写原文 & 实际应是\\
-\midrule
-其次性 & 齐次性\\
-实不变系统、十不变系统 & 时不变系统\\
-可力系统、可利系统 & 可逆系统\\
-微分期、积分期 & 微分器、积分器\\
-太克展开 & 泰勒展开\\
-Y7、YT、XET、XRT、X27 & $y(t)$、$x_1(t)$、$x_2(t)$ 等（据板书）\\
-$n$ 倍的 $x(t)$ & $n\,x[n]$（据板书，是口误）\\
-实不变、十不变、十步变、识变 & 时不变；十变、识变 $\to$ 时变\\
-英国系统 & 因果系统\\
-可立、可利系统 & 可逆系统\\
-叠加器、叠加气 & 累加器（老师口头的叫法，不是转写错误）\\
-「$e$ 倍的 $x(t)$」「1 倍的 $x(t)$」（稳定、习题例题） & $e^{x(t)}$（据板书）\\
-离散微分气、微分期 & 离散微分器、微分器\\
-左极线、右极线 & 左极限、右极限\\
-「$e$ 的 $x(t)$ 加 1」（第一堂课例 2） & $e^{x(t+1)}$（据板书）\\
-\bottomrule
-\end{tabular}
-\end{center}
 
 \end{document}
