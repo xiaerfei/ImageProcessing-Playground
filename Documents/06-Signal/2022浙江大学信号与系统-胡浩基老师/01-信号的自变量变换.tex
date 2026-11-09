@@ -105,7 +105,7 @@
   subsubsection={format=\raggedright\normalsize\bfseries\color{ptteal},
                  beforeskip=1.8ex plus .5ex minus .3ex, afterskip=0.8ex}
 }
-% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+% 例题标题：\example{标题}{结论}{备注，可留空}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
 \newcounter{ex}[section]
 \newcommand{\example}[3]{%
   \refstepcounter{ex}\phantomsection
@@ -132,9 +132,7 @@
 \section{自变量变换}
 \textbf{自变量变换}(transformation of the independent variable)：把信号 $x(t)$ 的「$t$」换成「$at+b$」，得到新信号 $x(at+b)$。从图像上看，就是把波形沿横轴\textbf{平移}、\textbf{翻转}、\textbf{压缩或拉伸}，纵轴的值不变。
 
-教材（第 23 页，1.4.2）讲得比较抽象，本节\textbf{用做题的方式}讲，核心是下面\textbf{四句口诀}。
-
-本节按「概念 $\to$ 证明 $\to$ 例题」组织：先讲四句口诀和三种基本变换（\S\ref{sec:cont}），再证明口诀，最后是例题；离散信号、阶跃信号、窗、脉冲的和各自成一节。
+做这类题的核心是\textbf{四句口诀}（\S\ref{sec:cont}），它对应翻转、压缩或拉伸、平移三种基本变换。
 
 %==================================================================
 \section{连续信号的自变量变换}\label{sec:cont}
