@@ -46,7 +46,7 @@
   subsubsection={format=\raggedright\normalsize\bfseries\color{ptteal},
                  beforeskip=1.8ex plus .5ex minus .3ex, afterskip=0.8ex}
 }
-% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+% 例题标题：\example{标题}{结论}{附注}（附注一般留空）。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
 \newcounter{ex}[section]
 \newcommand{\example}[3]{%
   \refstepcounter{ex}\phantomsection
@@ -345,7 +345,7 @@ P=\lim_{t_0\to-\infty,\ t_1\to+\infty}\frac{1}{t_1-t_0}\int_{t_0}^{t_1}|x(t)|^2\
 %==================================================================
 \section{基本的连续时间信号}
 
-\subsection{\texorpdfstring{单位阶跃信号 $u(t)$（书上第 10 页）}{单位阶跃信号 u(t)（书上第 10 页）}}
+\subsection{\texorpdfstring{单位阶跃信号 $u(t)$（教材第 10 页）}{单位阶跃信号 u(t)（教材第 10 页）}}
 \[
 u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 \]
@@ -373,16 +373,16 @@ u(t)=\begin{cases}1,&t>0\\0,&t<0\end{cases}
 \caption{单位阶跃信号 $u(t)$：$t<0$ 为 $0$，$t>0$ 为 $1$，在 $t=0$ 处跳变。两个空心圆表示该点的值不作规定（见下面的 $u(0)$）。}
 \end{figure}
 
-\textbf{$u(0)$ 可以任取}：$0$、$1$、$\tfrac12$ 乃至 $-1$ 都行。单个点上的取值不影响积分，因而也不影响后续对 $u(t)$ 的使用（严格理由见附录 A.7）。
+\textbf{$u(0)$ 可以任取}：$0$、$1$、$\tfrac12$ 乃至 $-1$ 都行。单个点上的取值不影响积分，因而也不影响后续对 $u(t)$ 的使用（严格理由见附录 A.6）。
 
-\subsection{\texorpdfstring{冲激信号 $\delta(t)$（书上第 12 页）}{冲激信号 δ(t)（书上第 12 页）}}
+\subsection{\texorpdfstring{冲激信号 $\delta(t)$（教材第 12 页）}{冲激信号 δ(t)（教材第 12 页）}}
 \subsubsection*{概念：定义与强度}\phantomsection\addcontentsline{toc}{subsubsection}{概念：定义与强度}
 \[
 \delta(t)=\begin{cases}+\infty,&t=0\\0,&t\neq 0\end{cases}
 \qquad\text{且人为规定}\qquad
 \int_{-\infty}^{+\infty}\delta(t)\d t=1
 \]
-$\delta(t)$ 是\textbf{奇异信号}（singular signal）：不是普通函数，严格定义见附录 A.4。它描述时间极短、物理量取值极大的现象：雷电、冲击力、电容经小电阻充电。
+$\delta(t)$ 是\textbf{奇异信号}（singular signal）：不是普通函数，严格定义见附录 A.3。它描述时间极短、物理量取值极大的现象：雷电、冲击力、电容经小电阻充电。
 
 \begin{figure}[H]
 \centering
@@ -485,7 +485,7 @@ u(t)=\int_{-\infty}^{t}\delta(\tau)\d\tau,\qquad \delta(t)=\frac{\d u(t)}{\d t}
 \item 这个式子应按\textbf{广义导数}（分布意义下的导数）理解：信号在某点有大小为 $A$ 的向上跳变，其导数就在该点带出强度为 $A$ 的冲激（见下面两道例题）。
 \item 直观理由：把阶跃的跳变拉成一小段斜坡，斜坡的斜率是（跳变量）$/\Delta$，也就是窄脉冲的高度，面积正是跳变量。
 \end{itemize}
-严格证明（广义函数意义）见附录 A.6。
+严格证明（广义函数意义）见附录 A.5。
 
 \newcommand{\rampcol}[3]{%
 \begin{tikzpicture}[x=0.75cm,y=0.7cm,>=stealth]
@@ -522,11 +522,11 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 
 \point{两个常见误解}
 \begin{itemize}[nosep]
-\item $\delta(t)$ 不是普通函数，「连续、间断」这类逐点说法用不上它；它由「对别的函数做积分的结果」定义（筛选性质见附录 A.4）。
+\item $\delta(t)$ 不是普通函数，「连续、间断」这类逐点说法用不上它；它由「对别的函数做积分的结果」定义（筛选性质见附录 A.3）。
 \item 广义函数体系下间断点也能求导（得到 $\delta$），$\delta$ 本身还能继续求导，$\delta'(t)$ 称为\textbf{冲激偶}。
 \end{itemize}
 
-\subsection{\texorpdfstring{抽样函数 $\Sa(t)$（书上第 14 页，式 1.2.3）}{抽样函数 Sa(t)（书上第 14 页，式 1.2.3）}}
+\subsection{\texorpdfstring{抽样函数 $\Sa(t)$（教材第 14 页，式 1.2.3）}{抽样函数 Sa(t)（教材第 14 页，式 1.2.3）}}
 \subsubsection*{概念：定义与形状}\phantomsection\addcontentsline{toc}{subsubsection}{概念：定义与形状}
 \[
 \Sa(t)=\frac{\sin t}{t}\ (t\neq0),\qquad \Sa(0)=1
@@ -561,7 +561,7 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
   \node[font=\small,anchor=west] at (5.0,1.0) {主峰高度 $1$，偶函数};
   \node[font=\small,anchor=west,gray] at (5.0,0.78) {虚线：包络 $\pm1/|t|$};
 \end{tikzpicture}
-\caption{$\mathrm{Sa}(t)=\dfrac{\sin t}{t}$：中间主峰高 $1$，零点在 $\pm\pi,\pm2\pi,\dots$，两边振荡衰减（图 1-31 对应的形状）。}
+\caption{$\mathrm{Sa}(t)=\dfrac{\sin t}{t}$：中间主峰高 $1$，零点在 $\pm\pi,\pm2\pi,\dots$，两边振荡衰减（对应教材图 1-31）。}
 \end{figure}
 
 \begin{itemize}[nosep]
@@ -606,7 +606,7 @@ u(t-2)\ \Longrightarrow\ \frac{\d u(t-2)}{\d t}=\delta(t-2).
 \end{figure}
 
 \subsubsection*{概念：图解 $\Sa(t)$ 的几个关键性质}\phantomsection\addcontentsline{toc}{subsubsection}{概念：图解 Sa(t) 的几个关键性质}
-上面列了几条性质，这里每条配一张图，一条一张。
+下面给前面列出的性质逐条配图。
 
 \paragraph{性质 1：$\Sa(0)=1$（为什么在 $0$ 处要「补一个值」）。}
 $t=0$ 时 $\frac{\sin t}{t}=\frac00$，没有意义。办法是看 $t\to0$ 时它趋于什么。左图画出 $\sin t$（蓝）和直线 $y=t$（灰虚线）：在 $0$ 附近两条线几乎重合（$y=t$ 就是 $\sin t$ 在 $0$ 处的切线），所以两者之比 $\frac{\sin t}{t}\to1$。右图画 $\Sa(t)$：曲线逼近 $(0,1)$，在这一点补上 $\Sa(0)=1$（实心点），曲线就连成一条连续的线。
@@ -893,7 +893,7 @@ $\omega$ 约掉了。
 
 \subsubsection*{证明 $\displaystyle\int_0^{+\infty}\frac{\sin t}{t}\d t=\frac{\pi}{2}$（参数求导法）}\phantomsection\addcontentsline{toc}{subsubsection}{证明：∫(0→+∞) sin t / t dt = π/2（参数求导法）}
 \begin{note}
-书上的证明要用复变函数；这里给一个不用复变函数的初等证明，既补足严谨性，也把第三章会反复用到的三个积分公式再推一遍。
+教材上的证明要用复变函数；下面给出一个不用复变函数的初等证明。
 \end{note}
 
 \textbf{思路}：直接积 $\frac{\sin t}{t}$ 积不出来（原函数不是初等函数）。于是在积分里人为添一个衰减因子 $e^{-at}$，把问题变成「含参数 $a$ 的积分」，对 $a$ 求导，导数是好积的，最后让 $a\to0$ 把因子去掉。
@@ -973,7 +973,7 @@ I(0)=\int_0^{+\infty}\frac{\sin t}{t}\d t=-\arctan 0+\frac{\pi}{2}=\frac{\pi}{2}
 
 \subsubsection*{收敛性与严格性}\phantomsection\addcontentsline{toc}{subsubsection}{收敛性与严格性}
 \begin{note}
-下面逐项检查证明中每一步的合法性，用的是微积分里的标准做法。初学时可以先跳过，知道「证明里有这几个需要检查的地方」就够了。
+下面逐项检查上面证明中每一步的合法性，用的是微积分里的标准做法。
 \end{note}
 
 证明里用到五件事，逐个检查。记 $F(t)=\displaystyle\int_t^{+\infty}\frac{\sin s}{s}\d s$（尾巴）。
@@ -1021,16 +1021,16 @@ I(a)=\int_0^\infty\bigl(-F'(t)\bigr)e^{-at}\d t=F(0)-a\int_0^\infty F(t)\,e^{-at
 \paragraph{合起来。}
 $I(0)=\lim_{a\to0^+}I(a)=\lim_{a\to0^+}\bigl(\frac\pi2-\arctan a\bigr)=\frac\pi2$。证明因此是严格的。五个检查点里，（1）（5）是真正需要费力的，因为这个积分只是条件收敛；（2）（3）（4）都靠 $e^{-at}$ 的衰减，这也是「人为加入衰减因子」这一做法有效的原因：它让积分在 $a>0$ 时变成绝对收敛，把棘手的部分推到了最后一步 $a\to0^+$。
 
-\subsection{\texorpdfstring{预习：$\Sa(t)$ 的傅里叶变换（第三章才正式讲）}{预习：Sa(t) 的傅里叶变换（第三章才正式讲）}}
+\subsection{\texorpdfstring{$\Sa(t)$ 的傅里叶变换}{Sa(t) 的傅里叶变换}}
 \begin{note}
-傅里叶变换在第三章才正式讲。这里先给出 $\Sa(t)$ 的频谱，说明前面三个积分公式的用途。符号约定（不同教材 $2\pi$ 的位置可能不同）：
+傅里叶变换属于第三章的内容，这里先给出 $\Sa(t)$ 的频谱，说明前面三个积分公式的用途。符号约定（不同教材 $2\pi$ 的位置可能不同）：
 \[
 X(\omega)=\int_{-\infty}^{+\infty}x(t)\,e^{-j\omega t}\d t,\qquad
 x(t)=\frac{1}{2\pi}\int_{-\infty}^{+\infty}X(\omega)\,e^{j\omega t}\d\omega .
 \]
 \end{note}
 
-\paragraph{一句话主干。}傅里叶变换把一个信号拆成「各个频率的成分各有多少」。$\Sa(t)$ 的拆法特别规整：\textbf{频率低于 $1$ 的成分一样多（高度 $\pi$），频率高于 $1$ 的成分一点也没有}。画出来是一个方方正正的矩形。
+\paragraph{直观含义。}傅里叶变换把一个信号拆成「各个频率的成分各有多少」。$\Sa(t)$ 的拆法特别规整：\textbf{频率低于 $1$ 的成分一样多（高度 $\pi$），频率高于 $1$ 的成分一点也没有}。画出来是一个方方正正的矩形。
 
 \paragraph{结论。}
 \[
@@ -1068,7 +1068,7 @@ X(\omega)=\begin{cases}\pi,&|\omega|<1\\[2pt]0,&|\omega|>1\end{cases}
 \caption{$\Sa(t)$ 与它的傅里叶变换。左边是一串振荡衰减的波，右边是方方正正的矩形（高 $\pi$、宽 $2$）。矩形的两条边 $\omega=\pm1$ 处的值取多少不影响结果（通常取中点 $\pi/2$），原因和 $u(0)$ 可以任取一样。}
 \end{figure}
 
-\paragraph{怎么验算（不用算傅里叶积分）。}反过来做：已知频谱是上面的矩形，用逆变换把它变回时域，看是不是 $\Sa(t)$。
+\paragraph{验算：用逆变换（不必计算傅里叶积分）。}反过来做：已知频谱是上面的矩形，用逆变换把它变回时域，看是不是 $\Sa(t)$。
 \[
 \frac{1}{2\pi}\int_{-1}^{1}\pi\,e^{j\omega t}\d\omega
 =\frac12\cdot\frac{e^{jt}-e^{-jt}}{jt}
@@ -1077,7 +1077,7 @@ X(\omega)=\begin{cases}\pi,&|\omega|<1\\[2pt]0,&|\omega|>1\end{cases}
 \]
 用到了欧拉公式 $e^{jt}-e^{-jt}=2j\sin t$。得到 $\Sa(t)$，说明这个矩形就是它的频谱。
 
-\paragraph{这和那三个积分公式有什么关系。}
+\paragraph{与三个积分公式的关系。}
 傅里叶变换在 $\omega=0$ 处的值，就是把整个信号加起来：$X(0)=\int_{-\infty}^{+\infty}x(t)\d t$。所以
 \begin{itemize}
 \item \textbf{公式 1} $\displaystyle\int_{-\infty}^{+\infty}\frac{\sin t}{t}\d t=\pi$，意思是\textbf{矩形频谱的高度是 $\pi$}；
@@ -1135,11 +1135,11 @@ X(\omega)=\begin{cases}\pi,&|\omega|<1\\[2pt]0,&|\omega|>1\end{cases}
 \caption{公式 3 的图解：左列是时域，右列是频谱。$\omega_0$ 从 $1$ 增大到 $3$，时域曲线变得\textbf{又高又窄}（峰高 $\omega_0$），频谱的矩形变得\textbf{更宽}（宽 $2\omega_0$），\textbf{高度始终是 $\pi$}。}
 \end{figure}
 
-\paragraph{一个值得记住的规律：时域窄，频域宽。}上图说明，一个信号在时间上挤得越窄、越尖，它占据的频率范围就越宽，反之亦然。这条规律（时间和频率不能同时都窄）在整门课里反复出现。
+\paragraph{规律：时域窄，频域宽。}上图说明，一个信号在时间上挤得越窄、越尖，它占据的频率范围就越宽，反之亦然。这条规律（时间和频率不能同时都窄）在整门课里反复出现。
 
 \paragraph{为什么 $\Sa(t)$ 重要。}一个理想低通滤波器，把低于截止频率的成分原样放过、高于截止频率的全部去掉，它的频率响应就是上面那个矩形，它对应的时域响应就是 $\Sa$ 形状的曲线。后面讲采样和信号重建时，$\Sa(t)$ 会一再出现。
 
-\paragraph{局限与小心。}
+\paragraph{局限与注意事项。}
 \begin{itemize}[nosep]
 \item $\Sa(t)$ 从 $-\infty$ 延伸到 $+\infty$，实际中做不出来（不可实现）。
 \item 前面证明过它\textbf{不是绝对可积}（条件收敛），所以它的傅里叶变换积分也只在条件收敛的意义下成立，这是矩形频谱边缘处值不确定的原因之一。
@@ -1147,7 +1147,7 @@ X(\omega)=\begin{cases}\pi,&|\omega|<1\\[2pt]0,&|\omega|>1\end{cases}
 \end{itemize}
 
 %==================================================================
-\section{基本的离散时间信号（书上第 15 页起）}
+\section{基本的离散时间信号（教材第 15 页起）}
 
 \subsection{\texorpdfstring{单位脉冲序列 $\delta[n]$}{单位脉冲序列 δ[n]}}
 \[
@@ -1209,18 +1209,6 @@ $n=0,1,2,\dots$ 处都是 $1$，一直向右延伸；$n<0$ 处全是 $0$。
 \end{center}
 \textbf{$\delta(t)$ 和 $\delta[n]$ 不是一回事}，不要混淆：$\delta[n]$ 是普通信号（$n=0$ 处为 1，其余为 0）；$\delta(t)$ 是奇异信号，第二章才严格定义。区分办法见前面「圆括号连续、方括号离散」的规则。
 
-%==================================================================
-\section{本节要记住的清单}
-\begin{enumerate}[nosep]
-\item $x(t)$ 连续，$x[n]$ 离散；没有 $x[t]$ 与 $x(n)$。
-\item 偶 $+$ 奇分解：$x_e=\frac{x(t)+x(-t)}2$，$x_o=\frac{x(t)-x(-t)}2$，唯一。
-\item 能量信号：$E<\infty$；功率信号：$P<\infty$。
-\item $u(t)$：$t>0$ 为 1、$t<0$ 为 0，$u(0)$ 可任取；$\delta(t)=\frac{\d u}{\d t}$，$\int\delta=1$。
-\item $\Sa(t)=\frac{\sin t}{t}$：偶函数，$\Sa(0)=1$，零点 $\pm k\pi$。
-\item $\int_{-\infty}^{\infty}\Sa(t)\d t=\pi$；$\int_0^{\infty}\Sa(t)\d t=\frac\pi2$；$\int_{-\infty}^{\infty}\frac{\sin\omega t}{t}\d t=\pi\ (\omega>0)$。
-\item $\delta[n]$、$u[n]$ 是离散里的对应物；$\delta[n]\neq\delta(t)$。
-\end{enumerate}
-
 \appendix
 \section{附录：广义函数（generalized function）的说明}
 
@@ -1228,15 +1216,12 @@ $n=0,1,2,\dots$ 处都是 $1$，一直向右延伸；$n<0$ 处全是 $0$。
 本附录用分布论（distribution theory）的标准结论，解释正文里「$\delta(t)$ 不是普通函数」「$u(t)$ 在 $0$ 处不可导却有导数」「$u(0)$ 可以任取」这几句话；课程内的严格定义见第二章。
 \end{note}
 
-\subsection*{A.1 一句话主干}\phantomsection\addcontentsline{toc}{subsection}{A.1 一句话主干}
-\textbf{普通函数是「每个点给一个值」；广义函数不给点值，只规定「它作用在别的函数上，会得到一个什么数」。}$\delta(t)$ 就是这样的东西。下面一步一步讲，每一步只加一个新概念。
-
-\subsection*{A.2 第一步：为什么普通函数这套说法不够用}\phantomsection\addcontentsline{toc}{subsection}{A.2 第一步：为什么普通函数这套说法不够用}
+\subsection*{A.1 第一步：为什么普通函数这套说法不够用}\phantomsection\addcontentsline{toc}{subsection}{A.1 第一步：为什么普通函数这套说法不够用}
 普通函数的想法是：给我一个 $t$，我告诉你函数值。$\delta(t)$ 想描述的是「一个极短、极强的冲击」，在 $t=0$ 处它的值是「无穷大」，而无穷大不是一个数，所以按「每点一个值」的办法，根本没法把 $\delta(t)$ 写成一个函数。
 
 但这个冲击有一件事是\textbf{确定而有限}的：它对别的东西产生的\emph{总效果}。比如一个力的冲量（作用的总量），或者它去「抽取」另一个信号在某一点的值。数学家的办法是：\textbf{不去问它每点的值，只问它的总效果}。
 
-\subsection*{A.3 第二步：测试函数（test function）——用来「试探」的工具}\phantomsection\addcontentsline{toc}{subsection}{A.3 第二步：测试函数（test function）——用来「试探」的工具}
+\subsection*{A.2 第二步：测试函数（test function）——用来「试探」的工具}\phantomsection\addcontentsline{toc}{subsection}{A.2 第二步：测试函数（test function）——用来「试探」的工具}
 先准备一类很乖的函数，叫\textbf{测试函数} $\varphi(t)$：
 \begin{itemize}[nosep]
 \item 无穷次可导（非常光滑，没有尖角、没有跳变）；
@@ -1244,8 +1229,8 @@ $n=0,1,2,\dots$ 处都是 $1$，一直向右延伸；$n<0$ 处全是 $0$。
 \end{itemize}
 它的作用像一把「探针」：用它去碰一碰广义函数，看反应。
 
-\subsection*{A.4 第三步：广义函数 $=$ 一台「输入探针、输出一个数」的机器}\phantomsection\addcontentsline{toc}{subsection}{A.4 第三步：广义函数 = 一台「输入探针、输出一个数」的机器}
-\textbf{广义函数}就是一台机器：你把一个测试函数 $\varphi$ 放进去，它吐出一个数，记作 $\langle T,\varphi\rangle$。（还要求这台机器是线性的、并且「探针变化很小则输出变化也很小」，初学可以先不管。）
+\subsection*{A.3 第三步：广义函数 $=$ 一台「输入探针、输出一个数」的机器}\phantomsection\addcontentsline{toc}{subsection}{A.3 第三步：广义函数 = 一台「输入探针、输出一个数」的机器}
+\textbf{广义函数}就是一台机器：你把一个测试函数 $\varphi$ 放进去，它吐出一个数，记作 $\langle T,\varphi\rangle$。（严格定义还要求这台机器是线性的，并且「探针变化很小则输出变化也很小」（连续性）。）
 
 \begin{remember}
 \begin{itemize}[nosep]
@@ -1256,7 +1241,7 @@ $n=0,1,2,\dots$ 处都是 $1$，一直向右延伸；$n<0$ 处全是 $0$。
 \end{remember}
 $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有}任何普通函数能产生「$\varphi\mapsto\varphi(0)$」这台机器。
 
-\subsection*{A.5 第四步：为什么说 $\delta$ 是窄脉冲的「极限」}\phantomsection\addcontentsline{toc}{subsection}{A.5 第四步：为什么说 δ 是窄脉冲的「极限」}
+\subsection*{A.4 第四步：为什么说 $\delta$ 是窄脉冲的「极限」}\phantomsection\addcontentsline{toc}{subsection}{A.4 第四步：为什么说 δ 是窄脉冲的「极限」}
 正文里用宽 $\Delta$、高 $1/\Delta$ 的矩形脉冲 $\delta_\Delta(t)$ 来想象 $\delta(t)$。现在可以说清楚这个极限是什么意思了：
 \[
 \langle\delta_\Delta,\varphi\rangle=\frac{1}{\Delta}\int_0^{\Delta}\varphi(t)\d t
@@ -1266,7 +1251,7 @@ $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有
 
 这叫\textbf{弱收敛}：不是「每一点的函数值收敛」，而是「放进每一个探针，输出都收敛」。逐点看，$\delta_\Delta(0)$ 是 $1/\Delta\to\infty$ 的，根本不收敛；但用探针一试，它收敛得很好。这也解释了为什么\textbf{换成三角形、高斯曲线等别的窄脉冲，只要面积是 $1$、宽度趋于 $0$，结果都一样}：探针看到的只是「面积 $1$、集中在 $0$」这件事。
 
-\subsection*{A.6 第五步：广义导数——解释 $\delta(t)=\dfrac{\d u(t)}{\d t}$}\phantomsection\addcontentsline{toc}{subsection}{A.6 第五步：广义导数——解释 δ(t)=du(t)/dt}
+\subsection*{A.5 第五步：广义导数——解释 $\delta(t)=\dfrac{\d u(t)}{\d t}$}\phantomsection\addcontentsline{toc}{subsection}{A.5 第五步：广义导数——解释 δ(t)=du(t)/dt}
 先看普通函数。对光滑的 $f$，用分部积分（探针在两头为 $0$，边界项消失）：
 \[
 \int f'(t)\varphi(t)\d t=-\int f(t)\varphi'(t)\d t .
@@ -1284,7 +1269,7 @@ $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有
 =-\int_{0}^{+\infty}\varphi'(t)\d t\\
 &=-\bigl[\varphi(+\infty)-\varphi(0)\bigr]=\varphi(0)=\langle\delta,\varphi\rangle .
 \end{align*}
-（用到了 $u(t)$ 只在 $t>0$ 取 $1$，以及 $\varphi$ 在远处为 $0$。）所以 $u'=\delta$ \textbf{在广义函数的意义下严格成立}，不是工程上的近似。「不能作为定义式」是因为：这个等式要先有「广义导数」这套规则才有意义，而 $\delta$ 的定义本身（A.4 的筛选规则）不依赖它。
+（用到了 $u(t)$ 只在 $t>0$ 取 $1$，以及 $\varphi$ 在远处为 $0$。）所以 $u'=\delta$ \textbf{在广义函数的意义下严格成立}，不是工程上的近似。「不能作为定义式」是因为：这个等式要先有「广义导数」这套规则才有意义，而 $\delta$ 的定义本身（A.3 的筛选规则）不依赖它。
 
 用同样的办法：
 \begin{itemize}[nosep]
@@ -1292,21 +1277,21 @@ $\delta$ 之所以叫\textbf{奇异}的（singular），就是因为\emph{没有
 \item 一个信号在 $t_0$ 处有向上跳变 $A$，它的广义导数 $=$ 普通导数（$t\neq t_0$ 处的斜率）$+\ A\,\delta(t-t_0)$。正文里的 $5\delta(t)$、$\delta(t-2)$ 都是它的特例。
 \end{itemize}
 
-\subsection*{A.7 第六步：为什么 $u(0)$ 可以取任意值}\phantomsection\addcontentsline{toc}{subsection}{A.7 第六步：为什么 u(0) 可以取任意值}
+\subsection*{A.6 第六步：为什么 $u(0)$ 可以取任意值}\phantomsection\addcontentsline{toc}{subsection}{A.6 第六步：为什么 u(0) 可以取任意值}
 广义函数是靠「积分的结果」来识别的。如果两个普通函数只在\textbf{一个点（或有限个点）}上不同，那么对任何探针 $\varphi$，$\int f\varphi\d t$ 的结果完全一样，因为一个点的「宽度」是零，对积分没有贡献。所以这两个函数产生的是\textbf{同一台机器}，也就是同一个广义函数。
 
 $u(0)$ 取 $0$、$\tfrac12$、$1$ 甚至 $-1$，只改变了 $t=0$ 这一个点的值，机器完全不变，所以信号与系统里它是「可以任取」的。
 
 反过来，这也说明了一个重要的限制：\textbf{广义函数没有「某一点的值」这回事}。问「$\delta(0)$ 等于几」本身就是没意义的问题，正文里写的「$t=0$ 处为 $+\infty$」只是帮助想象的说法。
 
-\subsection*{A.8 几条要小心的限制}\phantomsection\addcontentsline{toc}{subsection}{A.8 几条要小心的限制}
+\subsection*{A.7 使用上的限制}\phantomsection\addcontentsline{toc}{subsection}{A.7 使用上的限制}
 \begin{itemize}
 \item \textbf{没有点值}：见上，不能问 $\delta(t_0)$ 是多少。
 \item \textbf{不能随便相乘}：$\delta(t)\cdot\delta(t)$ 没有意义（两个广义函数一般不能相乘）。但「广义函数 $\times$ 光滑函数」是可以的，比如 $f(t)\delta(t)=f(0)\delta(t)$（$f$ 光滑），这是筛选性质的另一种写法。
 \item \textbf{「连续、间断」这类说法用不上}：这是逐点的概念，而广义函数不逐点定义。
 \end{itemize}
 
-\subsection*{A.9 小结}\phantomsection\addcontentsline{toc}{subsection}{A.9 小结}
+\subsection*{A.8 普通函数与广义函数对照}\phantomsection\addcontentsline{toc}{subsection}{A.8 普通函数与广义函数对照}
 \begin{center}
 \begin{tabular}{p{0.2\textwidth}p{0.36\textwidth}p{0.3\textwidth}}
 \toprule
