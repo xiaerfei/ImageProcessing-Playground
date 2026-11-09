@@ -15,6 +15,13 @@
 \usepackage{tikz}
 \usetikzlibrary{arrows.meta,positioning,calc}
 \usepackage{float}
+\usepackage{fancyhdr}
+% 页眉页脚清空，只在右下角保留页号（含首页）
+\fancypagestyle{plain}{%
+  \fancyhf{}%
+  \fancyfoot[R]{\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+  \renewcommand{\footrulewidth}{0pt}}
 \usepackage[hidelinks,unicode,bookmarksnumbered,bookmarksopen=true,bookmarksopenlevel=2,pdftitle={线性时不变（LTI）系统的定义}]{hyperref}
 \usepackage{bookmark}% XeTeX 下 hyperref 自带的大纲不生效，用 bookmark 宏包生成 PDF 书签（需编译两遍）
 
@@ -22,11 +29,11 @@
 \setCJKsansfont{PingFang SC}
 
 \newmdenv[backgroundcolor=blue!4,linecolor=blue!50!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{rememberbox}
-\newenvironment{remember}{\begin{rememberbox}\textbf{必须背下来}\par\smallskip}{\end{rememberbox}}
+\newenvironment{remember}{\begin{rememberbox}\textbf{重点}\par\smallskip}{\end{rememberbox}}
 \newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt,nobreak=true]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
 \newmdenv[backgroundcolor=gray!8,linecolor=gray!60,linewidth=0.8pt,innertopmargin=5pt,innerbottommargin=5pt]{skipbox}
-\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过（补充）}\par\smallskip}{\end{skipbox}}
+\newenvironment{skippable}{\begin{skipbox}\textbf{可跳过}\par\smallskip}{\end{skipbox}}
 
 % ---------------------------------------------------------------- 画图用的小宏
 % 一行「输入 -> 系统 -> 输出」。#1 纵坐标，#2 输入，#3 输出，#4 右侧备注（灰字）
@@ -52,7 +59,7 @@
   subsubsection={format=\raggedright\normalsize\bfseries\color{ptteal},
                  beforeskip=1.8ex plus .5ex minus .3ex, afterskip=0.8ex}
 }
-% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+% 例题标题：\example{标题}{结论}{}（第三个参数是标题后的灰色小字附注，一般留空）。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
 \newcounter{ex}[section]
 \newcommand{\example}[3]{%
   \refstepcounter{ex}\phantomsection
@@ -72,18 +79,15 @@
 \date{}
 
 \begin{document}
+\pagestyle{plain}
 \maketitle
 
-\begin{note}
-口述按视频转写整理（错字已按板书改正）；标「（补充）」的是编者所加。视频 00:00--21:22，结束在「LTI 很简单」这句刚写完时——为什么简单，后面的视频才展开。
-\end{note}
-
 %==================================================================
-\section{LTI 是什么（00:00--05:55）}
-第二章「LTI 系统的时域分析」（教材第 35 页）开篇。教材没有把 LTI 是什么讲清楚，先补定义。
+\section{LTI 是什么}
+第二章「LTI 系统的时域分析」（教材第 35 页）的研究对象是 LTI 系统，先给出它的定义。
 
 \subsection{名字}
-\textbf{LTI} 是三个英文词的首字母：Linear、Time-Invariant、System。
+\textbf{LTI} 是 Linear Time-Invariant 的首字母：L 取自 Linear（线性），T、I 取自 Time-Invariant（时不变）。后面再加上 System（系统），就是 \textbf{LTI 系统}。
 
 \begin{figure}[H]
 \centering
@@ -91,69 +95,90 @@
   \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.2cm,minimum height=1.0cm,align=center] (a) at (0,0) {线性\\{\small \textbf{L}inear}};
   \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.8cm,minimum height=1.0cm,align=center] (b) at (4.4,0) {时不变\\{\small \textbf{T}ime-\textbf{I}nvariant}};
   \node[draw,rounded corners=3pt,fill=blue!6,minimum width=3.2cm,minimum height=1.0cm,align=center] (c) at (8.8,0) {系统\\{\small \textbf{S}ystem}};
-  \node[font=\Large\bfseries] (lti) at (4.4,-2.0) {L\;T\;I};
-  \draw[->,thick] (a.south) -- ($(lti.north)+(-0.6,0)$);
-  \draw[->,thick] (b.south) -- (lti.north);
-  \draw[->,thick] (c.south) -- ($(lti.north)+(0.6,0)$);
-  \node[anchor=west,gray!55!black,font=\footnotesize,align=left] at (5.4,-2.0) {中文「线性时不变系统」和\\英文 Linear Time-Invariant System\\都叫 LTI 系统};
+  \node[font=\Large\bfseries] (l) at (3.4,-2.0) {L};
+  \node[font=\Large\bfseries] (ti) at (4.2,-2.0) {T\,I};
+  \node[font=\Large\bfseries] (s) at (5.2,-2.0) {系统};
+  \draw[->,thick] (a.south) -- (l.north);
+  \draw[->,thick] (b.south) -- (ti.north);
+  \draw[->,thick] (c.south) -- (s.north);
+  \node[anchor=west,gray!55!black,font=\footnotesize,align=left] at (6.4,-2.25) {中文「线性时不变系统」和\\英文 Linear Time-Invariant System\\都叫 LTI 系统};
 \end{tikzpicture}
-\caption{LTI 取 Linear、Time、Invariant 三个词的首字母，不是缩写拼写。}
+\caption{L 取自 Linear，T、I 取自 Time-Invariant；LTI 本身只是「线性时不变」，加上「系统」才是 LTI 系统。}
 \end{figure}
 
 \begin{remember}
 \textbf{如果一个系统既线性、又时不变，就叫它线性时不变系统}（Linear Time-Invariant System，简称 LTI）。两个条件必须\textbf{同时}满足：只满足一个、或两个都不满足，都不是 LTI。
 \end{remember}
-线性指齐次性 $+$ 叠加性，时不变指输入平移多少、输出也平移多少（定义见上一份笔记）。
+线性指齐次性 $+$ 叠加性，时不变指输入平移多少、输出也平移多少（定义见《典型的系统》）。
 
 %==================================================================
 \needspace{11cm}
-\section{六个性质的英文对照（02:19--05:35）}
-六个性质的中英文及反面（板书）：
+\section{六个性质的英文对照}
+六个性质的中英文及反面：
 
 \begin{center}
 \small
 \begin{tabular}{@{}lll@{}}
 \toprule
-性质（中文） & 英文（黑板） & 反面（英文）\\
+性质（中文） & 英文 & 反面（英文）\\
 \midrule
 线性系统 & Linear System & non-linear\\
 时不变系统 & Time-Invariant System & time-variant\\
-因果系统 & Causal System & 板书作 uncausal（an 还是 in 不确定）\\
+因果系统 & Causal System & non-causal（也有写作 uncausal 的）\\
 无记忆系统 & Memoryless System & memory（有记忆）\\
-可逆系统 & Invertible System & 板书未写 \\
+可逆系统 & Invertible System & non-invertible \\
 稳定系统 & Stable System & unstable\\
 \bottomrule
 \end{tabular}
 \end{center}
 
-两处英文要注意：
+三处英文要注意：
 \begin{itemize}[nosep]
-\item 因果的反面：板书作 \texttt{uncausal}（口述不确定是 an 还是 in），常见写法 \texttt{non-causal}。
-\item 不可逆的反面：板书未写，常用写法 \texttt{non-invertible}；时变也写作 \texttt{time-varying}。
+\item 因果的反面：常见写法 \texttt{non-causal}，也有写作 \texttt{uncausal} 的。
+\item 不可逆写作 \texttt{non-invertible}；时变也写作 \texttt{time-varying}。
 \item 可逆的拼写是 \texttt{Invertible}（-ible 结尾），不是 \texttt{Invertable}。
 \end{itemize}
 
 %==================================================================
-\section{为什么研究 LTI 系统（05:55--21:22）}
-LTI 是本课的重点，三个理由：\textcircled{1} 为什么研究\textbf{线性}；\textcircled{2} 为什么研究\textbf{时不变}；\textcircled{3} LTI 本身\textbf{很简单}。前两个说明「这两个假设为什么合理」，第三个说明「它为什么好算」。
+\section{为什么研究 LTI 系统}
+LTI 系统是本课程的重点，研究它有三个理由：\textcircled{1} 为什么研究\textbf{线性}；\textcircled{2} 为什么研究\textbf{时不变}；\textcircled{3} LTI 本身\textbf{很简单}。前两个说明「这两个假设为什么合理」，第三个说明「它为什么好算」。
 
-\subsection{理由一：线性（07:04--16:38）}
-\subsubsection{世界上没有绝对线性的系统（07:04--09:41）}
+\subsection{理由一：线性}
+\subsubsection{世界上没有绝对线性的系统}
 以喇叭为例（输入电流、输出声音）。\textbf{齐次性做不到}：通 1、2、3 单位电流，声音可以分别大 1、2、3 倍；但通 100、10000 单位电流时，声音不可能相应放大 100、10000 倍——任何物理系统都有极限。\textbf{叠加性也做不到}：一个人说话喇叭能放出，两个人、三个人叠加，总有一次放不下。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth,x=1.0cm,y=0.8cm]
+  \draw[->] (0,0) -- (7.0,0) node[right] {输入电流};
+  \draw[->] (0,0) -- (0,5.6) node[above] {声音大小};
+  \foreach \k in {1,...,6} { \draw (\k,0.08) -- (\k,-0.08) node[below,font=\scriptsize,fill=white,inner sep=1pt] {$\k$}; }
+  \foreach \y in {1,...,5} { \draw (0.08,\y) -- (-0.08,\y) node[left,font=\scriptsize,fill=white,inner sep=1pt] {$\y$}; }
+  \node[below left,font=\scriptsize] at (0,0) {$0$};
+  % 理想线性：输出始终与输入成正比
+  \draw[thick,dashed,gray!70!black] (0,0) -- (5.2,5.2) node[right,font=\small] {理想线性：始终成正比};
+  % 实际：小输入时与直线重合，大输入时饱和
+  \draw[very thick,blue!60!black] (0,0) -- (3,3);
+  \draw[very thick,blue!60!black] plot[smooth] coordinates {(3,3) (3.5,3.42) (4,3.7) (5,3.95) (6,4.05)};
+  \node[blue!60!black,anchor=west,font=\small] at (6.05,4.05) {实际：放不大了};
+  \draw[dotted,gray] (3,0) -- (3,3) -- (0,3);
+\end{tikzpicture}
+\caption{喇叭的输入--输出关系（示意，相对单位）。输入不超过 $3$ 时，实际曲线与直线重合，输入翻几倍、声音就大几倍；输入再大，声音不再跟着变大（饱和），齐次性被打破。}
+\end{figure}
 
 \begin{remember}
 世界上没有绝对意义的线性系统：齐次性与叠加性在足够大的输入上都会被物理极限打破。
 \end{remember}
 
-\subsubsection{线性是合理的近似（09:41--16:38）}
-板书结论：\textbf{线性只是对现实问题的近似}。理由不是「世界上有很多线性系统」，而是：现实系统太复杂，\textbf{只能用最简单的模型——线性——去近似}。
+\subsubsection{线性是合理的近似}
+结论：\textbf{线性只是对现实问题的近似}。理由不是「世界上有很多线性系统」，而是：现实系统太复杂，\textbf{只能用最简单的模型——线性——去近似}。
 
 \begin{remember}
 研究线性系统的理由：没有绝对的线性系统，但线性模型是最简单的近似，工程上常用它分析复杂问题。
 \end{remember}
 
-\example{摩擦力公式~\texorpdfstring{$F=\mu N$}{F=μN}}{线性近似}{10:40--14:57}
-\textbf{模型}：压力 $N$ 与摩擦力 $F$ 的经验公式（板书标注「经验公式」）
+\example{摩擦力公式~\texorpdfstring{$F=\mu N$}{F=μN}}{线性近似}{}
+\textbf{模型}：压力 $N$ 与摩擦力 $F$ 的经验公式
 \[
 F=\mu N,
 \]
@@ -187,12 +212,12 @@ F\approx S'(0)\,N.
   \node[gray!55!black,font=\footnotesize,anchor=west] at (0.15,3.6) {$N$ 小：陡（要使劲拉）};
   \node[gray!55!black,font=\footnotesize,anchor=west] at (3.4,4.3) {$N$ 很大：又陡};
 \end{tikzpicture}
-\caption{摩擦力和压力的关系（13:40--14:20，形状示意，无数值）：从原点几乎竖直上冲，拐弯后平缓，过了右边的点又往上翘。\textbf{只在中间一段，$F$ 才近似正比于 $N$。}}
+\caption{摩擦力和压力的关系（形状示意）：从原点几乎竖直上冲，拐弯后平缓，过了右边的点又往上翘。\textbf{只在中间一段，$F$ 才近似正比于 $N$。}}
 \end{figure}
 
 这样近似并不精确，但不这样做就无法分析摩擦力与压力的关系：决定因素很多，只能取最简单的模型。
 
-\example{三极管}{线性近似}{15:03--16:38}
+\example{三极管}{线性近似}{}
 \textbf{模型}：电路课把三极管三个引线的电流写成
 \[
 I,\qquad \beta I,\qquad (\beta+1)I,
@@ -214,16 +239,16 @@ I,\qquad \beta I,\qquad (\beta+1)I,
   \node[red!70!black,font=\bfseries] at (3.2,0.2) {不是};
   \node[anchor=west,gray!55!black,font=\footnotesize,align=left] at (3.9,0) {实际电流并不严格\\是这样的比例};
 \end{tikzpicture}
-\caption{三极管的线性模型（15:03--15:40）：进去 $I$，上面 $\beta I$，下面 $(\beta+1)I$。}
+\caption{三极管的线性模型：进去 $I$，上面 $\beta I$，下面 $(\beta+1)I$。}
 \end{figure}
 
-（补充：按 NPN 三极管的标准符号，进线是\textbf{基极}(base)，上面是\textbf{集电极}(collector)，下面带箭头的是\textbf{发射极}(emitter)；$\beta$ 是\textbf{电流放大系数}(current gain)，$I_C=\beta I_B$ 正是一个线性关系，真实三极管只在放大区近似如此。）
+按 NPN 三极管的标准符号，进线是\textbf{基极}(base)，上面是\textbf{集电极}(collector)，下面带箭头的是\textbf{发射极}(emitter)；$\beta$ 是\textbf{电流放大系数}(current gain)，$I_C=\beta I_B$ 正是一个线性关系。
 
-\textbf{实际}：真实三极管并不严格满足这组线性关系。
+\textbf{实际}：真实三极管并不严格满足这组线性关系，只在放大区近似如此。
 
-\textbf{说明}：不这样近似就无法分析三极管；更精确的做法是用 PSPICE、Protel 里的\textbf{非线性}模型；若只需考试或建立\textbf{感性认识}，线性模型够用。
+不这样近似就无法分析三极管。更精确的做法是用 PSPICE、Protel 等电路软件里的\textbf{非线性}模型；手工分析或只需建立\textbf{感性认识}时，线性模型够用。
 
-\subsection{理由二：时不变（16:38--19:33）}
+\subsection{理由二：时不变}
 「时不变」的日常版：今天输入 $x(t)$ 得 $y(t)$，明天输入同样的信号 $x(t-t_0)$，得同样的输出 $y(t-t_0)$；后天、永远如此，$t_0$ 任意。
 
 \begin{figure}[H]
@@ -233,7 +258,7 @@ I,\qquad \beta I,\qquad (\beta+1)I,
   \sysline{-1.0}{明天：$x(t-t_0)$}{$y(t-t_0)$}{同样的信号，晚了 $t_0$ 才送进去}
   \sysline{-2.0}{后天、大后天……}{同样的输出}{$t_0$ 是任意实数，永远如此}
 \end{tikzpicture}
-\caption{时不变的日常版（左边的式子是按《典型的系统》里的定义补的，原板书只写了「今天、明天、永永远远得到同样的输出」）。注意三行里的「系统」是\textbf{同一台}机器，它的脾气不随日子变。}
+\caption{时不变的日常版：同一个信号晚 $t_0$ 送进去，输出也只是晚 $t_0$ 出来，形状不变；今天、明天、永远都如此。三行里的「系统」是\textbf{同一台}机器，它的脾气不随日子变。}
 \end{figure}
 
 \textbf{绝对的时不变不存在。}若有这种系统，世界就「不老」了。有些东西能在较长时间内不变，但连宇宙都可能毁灭，所以没有绝对意义的时不变系统。
@@ -249,54 +274,20 @@ I,\qquad \beta I,\qquad (\beta+1)I,
 研究时不变系统的理由：没有绝对的时不变，但时不变是对自然的合理近似；不假设，连研究都没法开始。
 \end{remember}
 
-\subsection{理由三：LTI 很简单（19:33--21:22）}
-\textbf{LTI 本身很简单}。板书（视频在写完整句时结束）：
+\subsection{理由三：LTI 很简单}
+\textbf{LTI 本身很简单}，核心是下面这句：
 \begin{remember}
 知道 LTI 系统的\emph{一个} $x(t)$ 对应的 $y(t)$，就知道\emph{所有} $x(t)$ 对应的 $y(t)$。
 \end{remember}
 第二章那么多数学、公式，核心就是这一句；后面的卷积、冲激响应都在回答「怎么从那一个推出所有」。
 
 \begin{skippable}
-（补充）那「一个」不能是任意信号：取「输入恒 $0$、输出恒 $0$」，什么也推不出来。它必须是有代表性的信号——单位冲激 $\delta(t)$，其响应叫\textbf{冲激响应}。任意信号可拆成冲激的叠加（线性），每个冲激只是平移（时不变），所以知道 $\delta(t)$ 的响应就能求任意输入的输出。
+那「一个」不能是任意信号：取「输入恒 $0$、输出恒 $0$」，什么也推不出来。它必须是有代表性的信号——单位冲激 $\delta(t)$，其响应叫\textbf{冲激响应}。任意信号可拆成冲激的叠加（线性），每个冲激只是平移（时不变），所以知道 $\delta(t)$ 的响应就能求任意输入的输出。
 \end{skippable}
 
 %==================================================================
 \needspace{6cm}
-\section{与上一份笔记的关系}
-上一份笔记（《典型的系统》）讲「怎么判断一个系统有没有某个性质」；这一节讲「为什么要关心这些性质」：给出 LTI 的定义、六个性质的英文、三个研究理由。判断方法见上一份笔记，这里不重复。
-
-%==================================================================
-\section{一页总结}
-\begin{remember}
-\begin{enumerate}[nosep]
-\item \textbf{LTI}：Linear Time-Invariant System，线性时不变系统，两个条件同时满足。
-\item \textbf{英文}：线性 Linear/non-linear；时不变 Time-Invariant/time-variant；因果 Causal/non-causal（板书 uncausal）；无记忆 Memoryless/memory；可逆 Invertible/non-invertible（板书未写）；稳定 Stable/unstable。
-\item \textbf{三个研究理由}：没有绝对的线性（喇叭有极限），线性是最简单的近似（摩擦力 $F=\mu N$、三极管电流）；没有绝对的时不变（否则人不老），但必须假设；LTI 很简单——知道一个 $x(t)\to y(t)$ 就知道全部。
-\item \textbf{对近似}：近似不是缺点；不做最简单的近似，复杂问题就没法分析。
-\end{enumerate}
-\end{remember}
-
-\section*{转写里听错的地方（对照用）}\phantomsection\addcontentsline{toc}{section}{转写里听错的地方（对照用）}
-\begin{center}
-\begin{tabular}{@{}ll@{}}
-\toprule
-转写原文 & 实际应是\\
-\midrule
-食欲分析 & 时域分析\\
-实不变、十不变系统 & 时不变系统\\
-其次性 & 齐次性\\
-英国（「接下来英国」） & 因果\\
-可力、可利、不可利 & 可逆、不可逆\\
-近视（「线性只是对现实问题的近视」） & 近似\\
-刘顿力学 & 牛顿力学\\
-近摩擦力 & 静摩擦力\\
-三级管 & 三极管\\
-原级、三级和漏级 / 原极、三极和陋极 & 疑似「源极、栅极、漏极」（疑为口误，课上画的是三极管）\\
-C-SPICE & PSPICE\\
-我孕育我要讲课 & 我要讲课（口误，前后文是「我把气提升一倍」）\\
-杨杨杀杀、杨阳莎莎讲了这么多 & 洋洋洒洒讲了这么多\\
-\bottomrule
-\end{tabular}
-\end{center}
+\section{与《典型的系统》的关系}
+《典型的系统》讲「怎么判断一个系统有没有某个性质」；本笔记讲「为什么要关心这些性质」：给出 LTI 的定义、六个性质的英文、三个研究理由。判断方法见《典型的系统》，这里不重复。
 
 \end{document}
