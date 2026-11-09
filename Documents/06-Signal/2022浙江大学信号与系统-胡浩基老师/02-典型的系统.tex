@@ -46,7 +46,7 @@
   subsection={format=\raggedright\large\bfseries\color{secblue},
               beforeskip=2.4ex plus .8ex minus .4ex, afterskip=1.0ex}
 }
-% 例题标题：\example{标题}{结论}{视频时刻}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
+% 例题标题：\example{标题}{结论}{备注}。左边橙色实心「例 n」，右边结论标签；同时进 PDF 大纲（第 3 级）。
 \newcounter{ex}[section]
 \newcommand{\example}[3]{%
   \refstepcounter{ex}\phantomsection
@@ -269,7 +269,7 @@ $y[n]=\displaystyle\sum_{k=-\infty}^{n}x[k]$ & 从最早加到现在（\textbf{�
 \textbf{快速检查：全零输入必须得到全零输出}。齐次性里 $a$ 可取 $0$，所以线性系统对零输入一定给零输出；$y(t)=x(t)+1$ 就栽在这里。反过来\textbf{不成立}：$y(t)=x(t)^2$ 对零输入给零，却不是线性的。所以这个检查只能「判死刑」，不能「判线性」。
 \end{skippable}
 
-\subsection{应付考试的判据：两句话}
+\subsection{线性的快速判据：两句话}
 这个办法不能覆盖所有系统，但能覆盖 70\%--80\% 以上。
 
 \begin{remember}
@@ -340,7 +340,7 @@ $e^{x}=1+x+\dfrac{x^2}{2!}+\cdots$（泰勒展开，Taylor expansion），里面
 \centering
 \begin{tikzpicture}[>=stealth,
   box/.style={draw,rounded corners=4pt,align=center,minimum width=5.4cm,minimum height=1.6cm,inner sep=6pt}]
-  \node[box,fill=blue!6] (L) at (0,0) {\textbf{书上定义}\\ $a\,x_1+b\,x_2\to a\,y_1+b\,y_2$\\ 对任意 $a,b$};
+  \node[box,fill=blue!6] (L) at (0,0) {\textbf{合并写}\\ $a\,x_1+b\,x_2\to a\,y_1+b\,y_2$\\ 对任意 $a,b$};
   \node[box,fill=green!8] (R) at (9.2,0) {\textbf{分开写}\\ 齐次性 + 叠加性};
   \draw[->,thick,bend left=22] (L.north east) to node[above,align=center,font=\footnotesize] {特殊情况：取 $a=1,b=0$ 得齐次性\\ 取 $a=b=1$ 得叠加性} (R.north west);
   \draw[->,thick,bend left=22] (R.south west) to node[below,align=center,font=\footnotesize] {先对 $x_1$ 用齐次，对 $x_2$ 用齐次\\ 再把两个「包」用叠加加起来} (L.south east);
@@ -357,7 +357,7 @@ $e^{x}=1+x+\dfrac{x^2}{2!}+\cdots$（泰勒展开，Taylor expansion），里面
 \item[(H)] 齐次性：若 $x\to y$，则对任意实数 $c$，有 $c\,x\to c\,y$；
 \item[(S)] 叠加性：若 $x_A\to y_A$、$x_B\to y_B$，则 $x_A+x_B\to y_A+y_B$。
 \end{itemize}
-\textbf{要证}（书上的定义）：任取 $x_1\to y_1$、$x_2\to y_2$，任取实数 $a,b$，都有
+\textbf{要证}（合并写的定义）：任取 $x_1\to y_1$、$x_2\to y_2$，任取实数 $a,b$，都有
 \[
 a\,x_1(t)+b\,x_2(t)\ \to\ a\,y_1(t)+b\,y_2(t).
 \]
@@ -376,7 +376,7 @@ b\,x_2(t)\ \to\ b\,y_2(t).
 u+v\ \to\ a\,y_1+b\,y_2,\qquad\text{即}\qquad a\,x_1(t)+b\,x_2(t)\ \to\ a\,y_1(t)+b\,y_2(t).
 \]
 \end{enumerate}
-$x_1,x_2,a,b$ 都是任取的，所以书上的定义对\textbf{任意}输入、任意 $a,b$ 成立。证毕。
+$x_1,x_2,a,b$ 都是任取的，所以合并写的定义对\textbf{任意}输入、任意 $a,b$ 成立。证毕。
 
 \begin{figure}[H]
 \centering
@@ -400,14 +400,14 @@ $x_1,x_2,a,b$ 都是任取的，所以书上的定义对\textbf{任意}输入、
 \end{itemize}
 若觉得绕、烧脑，核心是没有理解「任意」。日常用哪个都行：分开写更适合入门证明，合并写更适合推别的结论。
 
-\subsection{课后思考题：缺一不可}
+\subsection{思考题：缺一不可}
 \begin{remember}
 \begin{enumerate}[nosep]
 \item 请举一个系统，\textbf{满足齐次性，不满足叠加性}；
 \item 请再举一个系统，\textbf{满足叠加性，不满足齐次性}。
 \end{enumerate}
 \end{remember}
-这是第一次作业里的一道思考题，两道里\textbf{有一道特别难}（提示：$a$ 可取负数）。
+两道里\textbf{有一道特别难}（提示：$a$ 可取负数）。
 
 \begin{skippable}
 \textbf{第 1 道}：$y(t)=\dfrac{x(t)^2}{x(t-1)}$（分母为 $0$ 时约定输出 $0$）满足齐次性：$\dfrac{a^2x(t)^2}{a\,x(t-1)}=a\cdot\dfrac{x(t)^2}{x(t-1)}$；但取某一时刻 $(x_1(t),x_1(t-1))=(1,1)$、$(x_2(t),x_2(t-1))=(1,2)$，则 $y_1=1$、$y_2=\tfrac12$，而和的输出是 $\tfrac{2^2}{3}=\tfrac43\neq\tfrac32$，叠加性不成立。第 2 道很难：$a$ 取任意实数时，叠加性已能推出整数、分数的齐次性，反例只能靠「病态」函数（柯西函数方程的非线性解，需借助选择公理）。
@@ -423,7 +423,7 @@ x(t-t_0)\ \to\ y(t-t_0),
 \]
 那么它是\textbf{时不变系统}(time-invariant system)；否则是\textbf{时变系统}(time-varying system)。
 
-\emph{大白话：输入晚到 $t_0$ 秒，输出也恰好晚 $t_0$ 秒，形状一点不变。}
+\emph{直观理解：输入晚到 $t_0$ 秒，输出也恰好晚 $t_0$ 秒，形状一点不变。}
 \end{remember}
 $x(t-t_0)$ 就是把 $x$ \textbf{右移 $t_0$ 个单位}（$t_0$ 为负则左移）。
 
@@ -670,13 +670,17 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
     \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
     \draw[thick,blue!70!black] (0,0) -- (0,1); \fill[blue!70!black] (0,1) circle (1.6pt);
     \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输入 $\delta[n]$};
-    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+    \draw[->] (0,-0.2) -- (0,1.15);
+    \draw (0.15,1) -- (-0.15,1) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
+    \foreach \k in {0,...,5} { \draw (\k,0.08) -- (\k,-0.08) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
   \end{scope}
   \begin{scope}[shift={(10,0)}]
     \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
     \draw[thick,blue!70!black] (3,0) -- (3,1); \fill[blue!70!black] (3,1) circle (1.6pt);
     \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输出 $y[n]=x[3-n]$};
-    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+    \draw[->] (0,-0.2) -- (0,1.15);
+    \draw (0.15,1) -- (-0.15,1) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
+    \foreach \k in {0,...,5} { \draw (\k,0.08) -- (\k,-0.08) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
   \end{scope}
   \draw[->,gray] (7.2,0.5) -- (8.2,0.5);
   % 第二行
@@ -684,14 +688,18 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
     \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
     \draw[thick,blue!70!black] (1,0) -- (1,1); \fill[blue!70!black] (1,1) circle (1.6pt);
     \node[font=\scriptsize,anchor=south] at (2.5,1.2) {输入 $\delta[n-1]$：右移 1};
-    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+    \draw[->] (0,-0.2) -- (0,1.15);
+    \draw (0.15,1) -- (-0.15,1) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
+    \foreach \k in {0,...,5} { \draw (\k,0.08) -- (\k,-0.08) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
   \end{scope}
   \begin{scope}[shift={(10,-2.8)}]
     \draw[->] (-1.5,0) -- (6.5,0) node[right,font=\scriptsize] {$n$};
     \draw[thick,red!75!black] (2,0) -- (2,1); \fill[red!75!black] (2,1) circle (1.6pt);
     \draw[thick,green!50!black,dashed] (4,0) -- (4,1); \fill[green!50!black] (4,1) circle (1.6pt);
     \node[font=\scriptsize,anchor=south] at (2.5,1.2) {\textcolor{red!75!black}{实际 $n=2$}\ \ \textcolor{green!40!black}{希望 $n=4$}};
-    \foreach \k in {0,...,5} { \node[font=\tiny,below] at (\k,0) {\k}; }
+    \draw[->] (0,-0.2) -- (0,1.15);
+    \draw (0.15,1) -- (-0.15,1) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
+    \foreach \k in {0,...,5} { \draw (\k,0.08) -- (\k,-0.08) node[below,font=\tiny,fill=white,inner sep=1pt] {$\k$}; }
   \end{scope}
   \draw[->,gray] (7.2,-2.3) -- (8.2,-2.3);
 \end{tikzpicture}
@@ -710,8 +718,8 @@ $t\ge1$ 时两者相差 $1$（如 $t=1$：实际为 $1$，期望为 $0$），故
 
 对照：$y(t)=x(t)+5$ 加的是常数，实际 $x(t-t_0)+5=$ 期望 $x(t-t_0)+5$，是时不变。
 
-\subsection{应付考试的判据：两句话}
-这个办法能解决 80\% 以上的题。
+\subsection{时不变的快速判据：两句话}
+这个办法能覆盖 80\% 以上的常见系统。
 
 \begin{remember}
 时不变系统的判据：
@@ -881,8 +889,8 @@ $y[n]=x[2n]$ & 记忆 & $n$ 点的输出依赖 $x$ 在 $2n$ 点的值\\
 \end{tabular}
 \end{center}
 
-\point{一道常考的判断题：无记忆系统一定是因果系统吗？}
-\textbf{对}。这是常考的判断题。因果判据是「$x$ 括号里的数恒小于或等于 $y$ 括号里的数」，无记忆两个括号里的数\textbf{恰好相等}，落在「等于」这一种情况里，所以一定因果；反过来不成立：$y(t)=x(t-1)$ 因果但有记忆。
+\point{无记忆系统一定是因果系统吗？}
+\textbf{对}。因果判据是「$x$ 括号里的数恒小于或等于 $y$ 括号里的数」，无记忆两个括号里的数\textbf{恰好相等}，落在「等于」这一种情况里，所以一定因果；反过来不成立：$y(t)=x(t-1)$ 因果但有记忆。
 
 %==================================================================
 \section{可逆系统}
@@ -1004,13 +1012,16 @@ $M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blac
     \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
     \draw[->] (0.6,-0.1) -- (0.6,1.3);
     \draw[very thick,blue!70!black] (-0.3,0) -- (0.6,0) -- (0.6,0.8) -- (2.3,0.8);
-    \node[font=\scriptsize,blue!70!black] at (1.5,1.1) {$x=u(t)$：有界};
+    \draw (0.6,0.06) -- (0.6,-0.06) node[below,font=\tiny,fill=white,inner sep=1pt] {$0$};
+    \draw (0.66,0.8) -- (0.54,0.8) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
+    \node[font=\scriptsize,blue!70!black,anchor=west] at (0.7,1.1) {$x=u(t)$：有界};
     \draw[->,gray] (2.9,0.5) -- (3.6,0.5) node[midway,above,font=\tiny,gray] {求导};
   \end{scope}
   \begin{scope}[shift={(4.0,0)}]
     \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
     \draw[->] (0.6,-0.1) -- (0.6,1.9);
     \draw[->,very thick,red!75!black] (0.6,0) -- (0.6,1.8);
+    \draw (0.6,0.06) -- (0.6,-0.06) node[below,font=\tiny,fill=white,inner sep=1pt] {$0$};
     \node[font=\scriptsize,red!75!black,anchor=west] at (0.75,1.55) {$\delta(t)$：$\to\infty$};
   \end{scope}
   % 右：积分器
@@ -1018,6 +1029,8 @@ $M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blac
     \draw[->] (-0.3,0) -- (2.4,0) node[right,font=\scriptsize] {$t$};
     \draw[->] (0.6,-0.1) -- (0.6,1.3);
     \draw[very thick,blue!70!black] (-0.3,0.8) -- (2.3,0.8);
+    \draw (0.6,0.06) -- (0.6,-0.06) node[below,font=\tiny,fill=white,inner sep=1pt] {$0$};
+    \draw (0.66,0.8) -- (0.54,0.8) node[left,font=\tiny,fill=white,inner sep=1pt] {$1$};
     \node[font=\scriptsize,blue!70!black] at (1.5,1.1) {$x\equiv1$：有界};
     \draw[->,gray] (2.9,0.5) -- (3.6,0.5) node[midway,above,font=\tiny,gray] {积分};
   \end{scope}
@@ -1025,7 +1038,8 @@ $M^3+2M^2+M+1$ 是固定上界，故 $y(t)$ 有界，系统稳定。\hfill$\blac
     \draw[->] (-0.3,0) -- (2.2,0) node[right,font=\scriptsize] {$t$};
     \draw[->] (0.6,-0.1) -- (0.6,1.9);
     \draw[->,very thick,red!75!black] (-0.2,0.1) -- (2.1,1.8);
-    \node[font=\scriptsize,red!75!black,anchor=west] at (0.1,1.75) {$\to\infty$};
+    \draw (0.6,0.06) -- (0.6,-0.06) node[below,font=\tiny,fill=white,inner sep=1pt] {$0$};
+    \node[font=\scriptsize,red!75!black,anchor=west] at (0.75,1.75) {$\to\infty$};
   \end{scope}
 \end{tikzpicture}
 \caption{左：微分器把一个有界的阶跃变成无穷大的冲激。右：积分器把一个有界的常数 $1$ 越积越大，没有上限。}
@@ -1054,7 +1068,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 \bottomrule
 \end{tabular}
 \end{center}
-（$\checkmark$ 表示「是」，$\times$ 表示「否」；最后一格为 $\times$。）
+（$\checkmark$ 表示「是」，$\times$ 表示「否」。）
 
 \subsection{第一行~\texorpdfstring{$y(t)=e^{x(t)}$}{y(t)=exp(x(t))}}
 \begin{itemize}[nosep]
@@ -1067,7 +1081,7 @@ $y(t)=\dfrac{\mathrm{d}x(t)}{\mathrm{d}t}$ & $\checkmark$ & $\checkmark$ & $\tim
 
 \subsection{第二行~\texorpdfstring{$y[n]=x[n]\,x[n-1]$}{y[n]=x[n]x[n-1]}}
 \begin{itemize}[nosep]
-\item 线性\textbf{否}：「这里两个 $x$ 了」，$x$ 不是一次；
+\item 线性\textbf{否}：两个 $x$ 相乘，$x$ 不是一次；
 \item 时不变\textbf{是}：$n$ 只在 $x$ 括号里，括号里是 $n$ 和 $n-1$（只平移）。
 \item 无记忆\textbf{否}：$y[n]$ 还跟 $x[n-1]$ 有关；
 \item 因果\textbf{是}：$x$ 括号里是 $n$ 和 $n-1$，都不大于 $y$ 括号里的 $n$；
