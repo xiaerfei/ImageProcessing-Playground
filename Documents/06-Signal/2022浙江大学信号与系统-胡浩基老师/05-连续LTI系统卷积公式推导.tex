@@ -32,6 +32,9 @@
 \newenvironment{remember}{\begin{rememberbox}\textbf{重点}\par\smallskip}{\end{rememberbox}}
 \newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
+% 存疑：左侧红竖线 + 浅底，整块内容待核实
+\newmdenv[backgroundcolor=red!2,linecolor=red!60!black,linewidth=1.5pt,topline=false,bottomline=false,rightline=false,innerleftmargin=10pt,innertopmargin=6pt,innerbottommargin=6pt]{doubtbox}
+\newenvironment{doubt}{\begin{doubtbox}\textcolor{red!60!black}{\textbf{存疑}}\par\smallskip}{\end{doubtbox}}
 
 % ---------------------------------------------------------------- 画图用的小宏
 % 连续信号坐标轴：\taxes[自变量名]{横轴起点}{横轴终点}{纵轴顶端}。原点标 0（放在左下，避开纵轴）。
@@ -552,13 +555,152 @@ $\delta_\Delta(t-\Delta)$ 是把 $0$ 到 $\Delta$ 的方波右移 $\Delta$，变
 \caption{一块矩形是怎么来的：$\delta_\Delta(t)$ 高 $\frac1\Delta$，乘 $\Delta$ 后高 $1$，再乘 $x(0)$ 后高 $x(0)$（蓝色块）。把方波右移 $\Delta$、乘 $x(\Delta)$，得到紫色块。}
 \end{figure}
 
+\begin{doubt}
+从这里到「取极限」之前的内容不是课程讲授内容，是另行推导的。课上只讲了「乘 $\Delta$ 把高度 $\frac1\Delta$ 变成 $1$」；其余部分（两种读法、每个 $t$ 只有一项不为零、$\delta_\Delta$ 的分段定义、三角形积木得到折线）只对照过 MIT 2.161 讲义，尚未对照本课教材核实。
+\medskip
+
+\point{和式算出的是高度，不是面积。}$x(k\Delta)\cdot\Delta$ 看上去像「高度乘宽度」，容易误以为在求面积。把乘法换一种方式组合：
+\[
+x(k\Delta)\cdot\underbrace{\big[\delta_\Delta(t-k\Delta)\cdot\Delta\big]}_{\text{高 }1\text{、宽 }\Delta\text{ 的门}} .
+\]
+中括号里乘的 $\Delta$ 只起一个作用：把 $\delta_\Delta$ 的高度 $\frac1\Delta$ 抵消成 $1$。再乘 $x(k\Delta)$，得到高度为 $x(k\Delta)$ 的台阶。
+
+另一种组合 $\big[x(k\Delta)\cdot\Delta\big]\cdot\delta_\Delta(t-k\Delta)$ 也成立：$x(k\Delta)\cdot\Delta$ 是这块矩形的面积，$\delta_\Delta$ 再把这块面积摊在宽 $\Delta$ 的格子上，高度 $=$ 面积 $\div$ 宽 $=x(k\Delta)$。两种读法结果相同，在任一个 $t$ 上读到的都是高度。
+
+不直接写成「高度 $\times$ 门」，是为了第三步取极限：$\Delta\to0$ 时 $\delta_\Delta\to\delta$、$\Delta\to\mathrm{d}\tau$，和式才能变成积分；而「高 $1$ 的门」在 $\Delta\to0$ 时会变成一条宽度为零的线，取不出有用的极限。
+
+\point{每个 $t$ 上只有一项不为零。}和式有无穷多项，但对一个固定的 $t$，只有一项不为零，所以 $x_\Delta(t)$ 等于那一格的高度。这一点要把 $\delta_\Delta$ 的定义代进去才能算出来：$\delta_\Delta$ 是一个分段函数，
+\[
+\delta_\Delta(t)=
+\begin{cases}
+\dfrac1\Delta, & 0\le t<\Delta,\\[4pt]
+0, & \text{其他}.
+\end{cases}
+\]
+\begin{enumerate}[nosep]
+\item \textbf{代入}：把 $t$ 换成 $t-k\Delta$，
+\[
+\delta_\Delta(t-k\Delta)=
+\begin{cases}
+\dfrac1\Delta, & 0\le t-k\Delta<\Delta,\\[4pt]
+0, & \text{其他}.
+\end{cases}
+\]
+\item \textbf{解不等式}：$t$ 是要求的那个时刻，固定不动；未知的是 $k$。把 $0\le t-k\Delta<\Delta$ 拆成两半：
+\begin{align*}
+0\le t-k\Delta &\;\Longrightarrow\; k\Delta\le t \;\Longrightarrow\; k\le \frac t\Delta,\\
+t-k\Delta<\Delta &\;\Longrightarrow\; t-\Delta<k\Delta \;\Longrightarrow\; k>\frac t\Delta-1.
+\end{align*}
+合起来：
+\[
+\frac t\Delta-1<k\le\frac t\Delta .
+\]
+\item \textbf{数整数}：这个区间长度正好为 $1$，左端开、右端闭。$k$ 只能取整数，而长度为 $1$ 的左开右闭区间里\textbf{恰好有一个整数}：长度为 $1$，所以至少有一个；左端是开的，所以不会两端都是整数，最多只有一个。这个整数就是 $\frac t\Delta$ 向下取整(floor)，记作 $\big\lfloor \frac t\Delta\big\rfloor$（去掉小数部分，例如 $\lfloor 2.4\rfloor=2$）。
+\item \textbf{结论}：除 $k=\lfloor t/\Delta\rfloor$ 外，其余各项的 $\delta_\Delta(t-k\Delta)=0$，整项为 $0$。
+\end{enumerate}
+
+\begin{remember}
+$\delta_\Delta$ 在宽 $\Delta$ 的一小段以外都等于 $0$，所以对固定的 $t$，和式中只有 $k=\lfloor t/\Delta\rfloor$ 这一项不为零：
+\[
+x_\Delta(t)=x\big(\lfloor t/\Delta\rfloor\,\Delta\big),
+\]
+即 $t$ 所在那一格左端点处 $x$ 的值。
+\end{remember}
+
+\example{代数字验算}{只剩 $k=2$}{}
+\textbf{题目}：$\Delta=0.5$，求 $x_\Delta(1.2)$；再求格子边界上的 $x_\Delta(1.0)$。
+
+\textbf{解}：$t=1.2$ 时 $\frac t\Delta=2.4$，范围 $1.4<k\le2.4$，其中的整数只有 $k=2$。逐项检查 $t-k\Delta$ 是否落在 $[0,0.5)$：
+
+\begin{center}
+\begin{tabular}{@{}cccc@{}}
+\toprule
+$k$ & $t-k\Delta$ & 在 $[0,0.5)$ 里吗 & 这一项\\
+\midrule
+$0$ & $1.2$ & 太大 & $0$\\
+$1$ & $0.7$ & 太大 & $0$\\
+$\mathbf{2}$ & $\mathbf{0.2}$ & \textbf{在} & $x(1.0)\cdot\frac1{0.5}\cdot0.5=\boldsymbol{x(1.0)}$\\
+$3$ & $-0.3$ & 负数 & $0$\\
+$4$ & $-0.8$ & 负数 & $0$\\
+\bottomrule
+\end{tabular}
+\end{center}
+$k$ 太小时 $t-k\Delta$ 偏大，$k$ 太大时 $t-k\Delta$ 为负，只有中间一个 $k$ 合适。所以 $x_\Delta(1.2)=0+\cdots+0+x(1.0)+0+\cdots=x(1.0)$。
+
+$t=1.0$ 时 $\frac t\Delta=2$，范围 $1<k\le2$：$k=1$ 不满足（左端不含），只有 $k=2$。格子写成左闭右开 $[k\Delta,(k+1)\Delta)$，边界点 $1.0$ 只归第 $2$ 格，仍然只有一项，$x_\Delta(1.0)=x(1.0)$。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=3.2cm,y=1.1cm]
+  \taxes{-0.2}{2.35}{2.0}
+  \foreach \k/\c in {0/blue,1/violet,3/green}{%
+    \draw[\c!60!black,thick,fill=\c!6] ({\k*0.5},0) rectangle ({\k*0.5+0.5},1);
+    \node[font=\scriptsize,\c!60!black] at ({\k*0.5+0.25},1.25) {$k=\k$};}
+  \draw[red!70!black,very thick,fill=red!20] (1,0) rectangle (1.5,1);
+  \node[font=\scriptsize,red!70!black] at (1.37,1.25) {$k=2$};
+  \draw[dashed,red!70!black,thick] (1.2,-0.05) -- (1.2,1.7) node[above,font=\scriptsize] {$t=1.2$};
+  \fill[red!70!black] (1.2,1) circle (1.6pt);
+  \foreach \p in {0.5,1,1.5,2}{\xt{\p}{\p}}
+  \yt{1}{1}
+\end{tikzpicture}
+\caption{$\Delta=0.5$ 时各项 $\delta_\Delta(t-k\Delta)\cdot\Delta$ 都是高 $1$、宽 $0.5$ 的门，依次占据 $[0,0.5)$、$[0.5,1)$、$[1,1.5)$、$[1.5,2)$，不重叠、无空隙。竖虚线 $t=1.2$ 只穿过 $k=2$ 的门（红色），其余门在这里都是 $0$。}
+\end{figure}
+
+\point{$\delta_\Delta$ 的分段定义是人为规定的。}$\delta_\Delta$ 不是推出来的，而是为了拼台阶专门设计的积木。按用途，它要满足三条：
+\begin{enumerate}[nosep]
+\item \textbf{只占宽 $\Delta$ 的一格，格外为 $0$}：每块积木只管自己那一格，相邻积木互不干扰；
+\item \textbf{面积为 $1$}：$\Delta\to0$ 时它成为冲激函数 $\delta(t)$，后面才能得到卷积积分；
+\item \textbf{宽度 $\Delta$ 可以任意缩小}：$\Delta$ 越小，台阶越细，近似越准。
+\end{enumerate}
+满足这三条最简单的形状是矩形：宽 $\Delta$、高 $\frac1\Delta$。矩形在格内一个值、格外另一个值，写出来就是分段函数。
+
+\textbf{可以换的规定}：
+\begin{itemize}[nosep]
+\item \textbf{开闭}：写成 $[0,\Delta)$ 还是 $(0,\Delta]$，只影响格子边界上那一点归哪一格，每个 $t$ 仍然只落在一格里。取左闭右开是习惯。
+\item \textbf{形状}：换成底宽 $2\Delta$、面积为 $1$ 的三角形，相邻三角形会重叠，一个 $t$ 上同时有两项不为零，叠加出来的是把各采样点用直线连起来的折线，不再是台阶（下图）。所以「每个 $t$ 只有一项不为零」是\textbf{选了矩形}才有的性质。
+\end{itemize}
+
+\textbf{不受影响的结论}：只要积木面积为 $1$、宽度能缩到 $0$，$\Delta\to0$ 的极限都是同一个 $\delta(t)$，最后得到的卷积积分与中间选矩形还是三角形无关（$\delta(t)$ 的多种极限形式见「冲激函数的性质」笔记「冲激函数的多样性」一节）。
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.85cm,y=0.85cm]
+  \begin{scope}
+    \taxes{-1.6}{5.6}{2.6}
+    \draw[thick,gray!60!black,domain=-0.2:4.2,samples=60] plot (\x,{xf(\x)});
+    \foreach \a in {0,1,2,3}{%
+      \pgfmathsetmacro{\h}{xf(\a)}
+      \draw[red!70!black,thick,fill=red!12,fill opacity=0.7] (\a,0) rectangle ({\a+1},\h);}
+    \xt{1}{\Delta}\xt{2}{2\Delta}\xt{3}{3\Delta}\xt{4}{4\Delta}
+    \yt{1}{1}\yt{2}{2}
+    \node[anchor=west,font=\footnotesize] at (0.15,2.5) {矩形积木：台阶};
+  \end{scope}
+  \begin{scope}[shift={(8.6,0)}]
+    \taxes{-1.6}{5.6}{2.6}
+    \draw[thick,gray!60!black,domain=-0.2:4.2,samples=60] plot (\x,{xf(\x)});
+    \foreach \a in {0,1,2,3,4}{%
+      \pgfmathsetmacro{\h}{xf(\a)}
+      \draw[dashed,red!50!black] ({\a-1},0) -- (\a,\h) -- ({\a+1},0);}
+    \pgfmathsetmacro{\ha}{xf(0)}\pgfmathsetmacro{\hb}{xf(1)}\pgfmathsetmacro{\hc}{xf(2)}
+    \pgfmathsetmacro{\hd}{xf(3)}\pgfmathsetmacro{\he}{xf(4)}
+    \draw[res] (-1,0) -- (0,\ha) -- (1,\hb) -- (2,\hc) -- (3,\hd) -- (4,\he) -- (5,0);
+    \xt{1}{\Delta}\xt{2}{2\Delta}\xt{3}{3\Delta}\xt{4}{4\Delta}
+    \yt{1}{1}\yt{2}{2}
+    \node[anchor=west,font=\footnotesize] at (0.15,2.5) {三角形积木：折线};
+  \end{scope}
+\end{tikzpicture}
+\caption{同一条 $x(t)$（灰色）。左：矩形积木互不重叠，每个 $t$ 只有一块起作用，拼出台阶。右：底宽 $2\Delta$ 的三角形积木（虚线）相邻两块重叠，每个 $t$ 上有两块起作用，相加得到经过各采样点 $\big(k\Delta,x(k\Delta)\big)$ 的折线（红实线）。两端的斜边是最外两块三角形的一半，没有邻居与它相加。}
+\end{figure}
+
+\end{doubt}
+
 \point{取极限。}$\Delta$ 取得特别小时，阶梯函数与 $x(t)$ 保持一致：
 \[
 \lim_{\Delta\to0}x_\Delta(t)=x(t).
 \]
 
+\needspace{16\baselineskip}
 \subsection{第二步：逐条性质推出输出}
-\needspace{12\baselineskip}
 \begin{center}
 \renewcommand{\arraystretch}{1.5}
 \begin{tabular}{@{}p{4.3cm}p{4.3cm}p{6.3cm}@{}}
