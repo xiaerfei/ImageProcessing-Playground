@@ -32,9 +32,8 @@
 \newenvironment{remember}{\begin{rememberbox}\textbf{重点}\par\smallskip}{\end{rememberbox}}
 \newmdenv[backgroundcolor=yellow!8,linecolor=orange!70!black,linewidth=1pt,innertopmargin=6pt,innerbottommargin=6pt]{notebox}
 \newenvironment{note}{\begin{notebox}\textbf{说明}\par\smallskip}{\end{notebox}}
-% 存疑：左侧红竖线 + 浅底，整块内容待核实
-\newmdenv[backgroundcolor=red!2,linecolor=red!60!black,linewidth=1.5pt,topline=false,bottomline=false,rightline=false,innerleftmargin=10pt,innertopmargin=6pt,innerbottommargin=6pt]{doubtbox}
-\newenvironment{doubt}{\begin{doubtbox}\textcolor{red!60!black}{\textbf{存疑}}\par\smallskip}{\end{doubtbox}}
+% 存疑标签：\doubtmark{理由}，红色小字，标出尚未在教材中找到依据的说法
+\newcommand{\doubtmark}[1]{\textcolor{red!60!black}{\footnotesize\textbf{【存疑】}#1}}
 
 % ---------------------------------------------------------------- 画图用的小宏
 % 连续信号坐标轴：\taxes[自变量名]{横轴起点}{横轴终点}{纵轴顶端}。原点标 0（放在左下，避开纵轴）。
@@ -555,9 +554,9 @@ $\delta_\Delta(t-\Delta)$ 是把 $0$ 到 $\Delta$ 的方波右移 $\Delta$，变
 \caption{一块矩形是怎么来的：$\delta_\Delta(t)$ 高 $\frac1\Delta$，乘 $\Delta$ 后高 $1$，再乘 $x(0)$ 后高 $x(0)$（蓝色块）。把方波右移 $\Delta$、乘 $x(\Delta)$，得到紫色块。}
 \end{figure}
 
-\begin{doubt}
-从这里到「取极限」之前的内容不是课程讲授内容，是另行推导的。课上只讲了「乘 $\Delta$ 把高度 $\frac1\Delta$ 变成 $1$」；其余部分（两种读法、每个 $t$ 只有一项不为零、$\delta_\Delta$ 的分段定义、三角形积木得到折线）只对照过 MIT 2.161 讲义，尚未对照本课教材核实。
-\medskip
+\begin{note}
+从这里到「取极限」之前的内容，依据见 Oppenheim《Signals and Systems》（第 2 版）第 92--93 页式 (2.24)--(2.27)、图 2.12--2.13，以及第 128 页 2.5.1 节。唯一例外是「三角形积木得到折线」，见下文的存疑标记。
+\end{note}
 
 \point{和式算出的是高度，不是面积。}$x(k\Delta)\cdot\Delta$ 看上去像「高度乘宽度」，容易误以为在求面积。把乘法换一种方式组合：
 \[
@@ -657,7 +656,7 @@ $t=1.0$ 时 $\frac t\Delta=2$，范围 $1<k\le2$：$k=1$ 不满足（左端不�
 \textbf{可以换的规定}：
 \begin{itemize}[nosep]
 \item \textbf{开闭}：写成 $[0,\Delta)$ 还是 $(0,\Delta]$，只影响格子边界上那一点归哪一格，每个 $t$ 仍然只落在一格里。取左闭右开是习惯。
-\item \textbf{形状}：换成底宽 $2\Delta$、面积为 $1$ 的三角形，相邻三角形会重叠，一个 $t$ 上同时有两项不为零，叠加出来的是把各采样点用直线连起来的折线，不再是台阶（下图）。所以「每个 $t$ 只有一项不为零」是\textbf{选了矩形}才有的性质。
+\item \textbf{形状}：换成底宽 $2\Delta$、面积为 $1$ 的三角形，相邻三角形会重叠，一个 $t$ 上同时有两项不为零，叠加出来的是把各采样点用直线连起来的折线，不再是台阶（下图）。所以「每个 $t$ 只有一项不为零」是\textbf{选了矩形}才有的性质。\doubtmark{Oppenheim 第 2.2、2.5 节只讲三角形脉冲取极限仍是 $\delta(t)$，没讲用它拼 $x(t)$ 得到折线；这里的依据是一阶保持(first-order hold)的标准结论。}
 \end{itemize}
 
 \textbf{不受影响的结论}：只要积木面积为 $1$、宽度能缩到 $0$，$\Delta\to0$ 的极限都是同一个 $\delta(t)$，最后得到的卷积积分与中间选矩形还是三角形无关（$\delta(t)$ 的多种极限形式见「冲激函数的性质」笔记「冲激函数的多样性」一节）。
@@ -689,10 +688,8 @@ $t=1.0$ 时 $\frac t\Delta=2$，范围 $1<k\le2$：$k=1$ 不满足（左端不�
     \node[anchor=west,font=\footnotesize] at (0.15,2.5) {三角形积木：折线};
   \end{scope}
 \end{tikzpicture}
-\caption{同一条 $x(t)$（灰色）。左：矩形积木互不重叠，每个 $t$ 只有一块起作用，拼出台阶。右：底宽 $2\Delta$ 的三角形积木（虚线）相邻两块重叠，每个 $t$ 上有两块起作用，相加得到经过各采样点 $\big(k\Delta,x(k\Delta)\big)$ 的折线（红实线）。两端的斜边是最外两块三角形的一半，没有邻居与它相加。}
+\caption{同一条 $x(t)$（灰色）。左：矩形积木互不重叠，每个 $t$ 只有一块起作用，拼出台阶。右：底宽 $2\Delta$ 的三角形积木（虚线）相邻两块重叠，每个 $t$ 上有两块起作用，相加得到经过各采样点 $\big(k\Delta,x(k\Delta)\big)$ 的折线（红实线）。两端的斜边是最外两块三角形的一半，没有邻居与它相加。右图的结论存疑，见上文。}
 \end{figure}
-
-\end{doubt}
 
 \point{取极限。}$\Delta$ 取得特别小时，阶梯函数与 $x(t)$ 保持一致：
 \[
