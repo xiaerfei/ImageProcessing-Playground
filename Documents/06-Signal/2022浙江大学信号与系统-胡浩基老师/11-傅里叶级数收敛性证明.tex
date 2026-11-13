@@ -86,6 +86,8 @@
 \section{要证明的定理}\label{sec:thm}
 傅里叶只说了：\textbf{如果} $x(t)$ 能写成傅里叶级数，系数 $B_0$、$B_k$、$C_k$ 就按积分公式计算。他没有证明\textbf{什么样的} $x(t)$ 才能写成这种形式。狄利克雷(Dirichlet)在 1829 年给出了第一个严格证明，条件就是狄利克雷条件(Dirichlet conditions)。
 
+学这个证明有三点好处：数学上变得严格；证明中用到前面学过的冲激函数 $\delta(t)$、自变量变换等知识，正好复习一遍；也能看清楚对什么样的 $x(t)$，傅里叶级数的等号才成立。
+
 \point{部分和。}傅里叶级数有无穷多项，不能直接谈「等于」，要先截断：只保留 $k=1$ 到 $N$ 的项，得到部分和(partial sum) $X_N(t)$，再看 $N\to+\infty$ 时 $X_N(t)$ 是否趋于 $x(t)$。
 
 \begin{remember}
@@ -343,11 +345,11 @@ g(u)=\frac{u-2\sin\frac u2}{2u\sin\frac u2}.
 \]
 $u\to0$ 时分子、分母都趋于 $0$，用洛必达法则(L'H\^opital's rule)，分子、分母分别对 $u$ 求导：
 \[
-\lim_{u\to0}g(u)=\lim_{u\to0}\frac{1-\cos\frac u2}{2\sin\frac u2+u\cos\frac u2}.
+\lim_{u\to0}g(u)=\lim_{u\to0}\frac{1-\cos\frac u2}{2\big[\sin\frac u2+\frac u2\cos\frac u2\big]}.
 \]
-仍是 $\frac00$，再求一次导：
+$u\to0$ 时分子 $1-\cos\frac u2\to0$，分母 $\to0$，仍是 $\frac00$，再求一次导：
 \[
-\lim_{u\to0}g(u)=\lim_{u\to0}\frac{\frac12\sin\frac u2}{\cos\frac u2+\cos\frac u2-\frac u2\sin\frac u2}=\frac{0}{2}=0 .
+\lim_{u\to0}g(u)=\lim_{u\to0}\frac{\frac12\sin\frac u2}{2\big[\frac12\cos\frac u2+\frac12\cos\frac u2-\frac14u\sin\frac u2\big]}=\frac{0}{2}=0 .
 \]
 
 \point{用泰勒展开核对。}$\sin\frac u2=\frac u2-\frac{u^3}{48}+\cdots$，分子 $u-2\sin\frac u2=\frac{u^3}{24}+\cdots$，分母 $2u\sin\frac u2=u^2+\cdots$，所以 $u$ 很小时 $g(u)\approx\frac{u}{24}$，确实趋于 $0$（数值：$g(0.1)=0.004168$，$\frac{0.1}{24}=0.004167$）。
@@ -371,11 +373,11 @@ $u\to0$ 时分子、分母都趋于 $0$，用洛必达法则(L'H\^opital's rule)
 \caption{$g(u)$ 在 $[-\pi,\pi]$ 上的形状（红）。它在 $u=0$ 处平滑地经过 $0$，附近与 $\frac{u}{24}$（灰虚线）重合；整个区间上 $|g(u)|\le\frac12-\frac1\pi\approx0.18$，没有无限上冲。}
 \end{figure}
 
-\point{结论。}补充定义 $g(0)=0$，$g(u)$ 在 $[-\pi,\pi]$ 上处处有确定的有限值、连续且有界。于是
+\point{结论。}补充定义 $g(0)=0$。这样 $g(u)$ 在 $[-\pi,\pi]$ 上不论 $u=0$ 还是 $u\ne0$，都有确定的有限值，并且处处可导、有界。于是把第一项中方括号外的部分整个看成一个函数
 \[
 y(u)=x\Big(\frac{u}{\omega_0}+t\Big)\,g(u)
 \]
-满足 $|y(u)|\le0.19\,\big|x\big(\frac{u}{\omega_0}+t\big)\big|$，仍绝对可积。$y(u)$ 乘以无限快的振荡 $\sin\big((N+\frac12)u\big)$ 后在一个周期上积分，由引理一，
+它满足狄利克雷三条件：$|y(u)|\le0.19\,\big|x\big(\frac{u}{\omega_0}+t\big)\big|$，仍绝对可积；$g(u)$ 单调、处处可导，相乘不会产生无穷多个极值或新的不连续点。$y(u)$ 乘以无限快的振荡 $\sin\big((N+\frac12)u\big)$ 后在一个周期上积分，由引理一，
 \[
 \lim_{N\to+\infty}\frac{1}{\pi}\int_{-\pi}^{\pi}y(u)\sin\!\Big(\big(N+\tfrac12\big)u\Big)\,\mathrm{d}u=0 .
 \]
@@ -413,7 +415,7 @@ x\Big(\frac{0}{\omega_0}+t\Big)=x(t).
 \end{enumerate}
 \end{remember}
 
-第七步把 $\frac{\sin((N+\frac12)u)}{u}$ 当成 $\pi\delta(u)$ 用，正是 $\delta$ 函数「又高又窄、面积不变」的思想。狄利克雷当年没有 $\delta$ 这个记号（它由狄拉克(Dirac)在 20 世纪 20 年代末引入），他是直接对积分取极限论证的；但这个证明里已经有了 $\delta$ 函数思想的雏形。
+前面几步（代入系数、积化和差、换元、利用周期性）是常规运算；证明的关键在后面：用「减一项再加一项」去掉奇点，再把 $\frac{\sin((N+\frac12)u)}{u}$ 当成 $\pi\delta(u)$ 用。后者正是 $\delta$ 函数「又高又窄、面积不变」的思想。狄利克雷当年没有 $\delta$ 这个记号（它由狄拉克(Dirac)在 20 世纪 20 年代末引入），他是直接对积分取极限论证的；但这个证明里已经有了 $\delta$ 函数思想的雏形。
 
 %==================================================================
 \section{证明中的细节与数值验证}\label{sec:detail}
