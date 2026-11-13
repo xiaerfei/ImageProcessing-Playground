@@ -94,9 +94,35 @@ $\delta_\Delta(t)$ 是从 $0$ 到 $\Delta$ 的方波，宽度 $\Delta$，高度 
 \delta(t)=\lim_{\Delta\to0}\delta_\Delta(t).
 \]
 \end{remember}
+\point{$\frac1\Delta$ 就是方波的高度。}取极限之前，$\delta_\Delta(t)$ 是一个普通的矩形：宽 $\Delta$、高 $\frac1\Delta$、面积恒为 $1$。$\Delta$ 越小，矩形越窄越高，面积不变：
+\begin{center}
+\begin{tabular}{cccc}
+\toprule
+$\Delta$ & 宽 & 高 $\frac1\Delta$ & 面积\\
+\midrule
+$0.1$ & $0.1$ & $10$ & $1$\\
+$0.01$ & $0.01$ & $100$ & $1$\\
+$0.001$ & $0.001$ & $1000$ & $1$\\
+\bottomrule
+\end{tabular}
+\end{center}
+取极限 $\Delta\to0$ 之后，得到的 $\delta(t)$ 不再是普通函数，「高度」这个说法也就没有意义了。
+
+\point{常见的写法。}很多地方把冲激写成
+\[
+\delta(t)=\begin{cases}+\infty,&t=0\\0,&t\ne0\end{cases},\qquad\int_{-\infty}^{+\infty}\delta(t)\,\mathrm{d}t=1 .
+\]
+做题、画图、算筛选积分时可以照这个理解：它就是一个无限窄、面积为 $1$ 的脉冲。但它不是普通函数的定义：
+\begin{itemize}[nosep]
+\item 普通函数在每个 $t$ 上取一个确定的实数，$+\infty$ 不是实数；
+\item 一个只在一点不为 $0$ 的普通函数，积分一定是 $0$，不可能等于 $1$。
+\end{itemize}
+这个写法只是把「$\delta_\Delta(t)$ 越压越窄、面积保持为 $1$」的极限过程浓缩成一个记号。$\delta(t)$ 的含义要通过积分来理解：它与别的函数相乘再积分的结果（性质二），就是它的全部内容（见第 \ref{sec:equal} 节的定义三）。离散的 $\delta[n]$（$n=0$ 时为 $1$，其余为 $0$）则是普通的序列，没有这个问题。
+
 下面的性质一、二直接从这个定义出发证明；性质三起要用到「两个函数相等」的新定义（第 \ref{sec:equal} 节）。
 
 %==================================================================
+\needspace{10\baselineskip}
 \section{性质一：积分为 1}\label{sec:p1}
 \begin{remember}
 \[
@@ -176,6 +202,14 @@ $x(t)$ 与冲激相乘再积分，只「筛」出冲激所在那一点的值。�
 \end{align*}
 \textbf{积分中值定理}：函数在一段区间上的积分，等于区间内某一点 $\xi$ 处的函数值乘区间长度。
 
+\point{第二个等号：积分区间为什么缩成 $[0,\Delta]$。}把 $(-\infty,+\infty)$ 拆成三段：
+\begin{itemize}[nosep]
+\item $t<0$：$\delta_\Delta(t)=0$，被积函数 $x(t)\delta_\Delta(t)=0$，这一段积分为 $0$；
+\item $t>\Delta$：同样 $\delta_\Delta(t)=0$，积分为 $0$；
+\item $0\le t\le\Delta$：$\delta_\Delta(t)=\frac1\Delta$，被积函数是 $x(t)\cdot\frac1\Delta$。
+\end{itemize}
+被积函数恒为 $0$ 的那几段对积分没有贡献，可以直接去掉，只剩中间一段。若用对称的方波（第 \ref{sec:many} 节）定义 $\delta_\Delta(t)$，积分限就变成 $-\frac\Delta2$ 到 $\frac\Delta2$，取极限后结果相同。
+
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=1.5cm,y=1.2cm]
@@ -241,7 +275,8 @@ $x(t)$ 与冲激相乘再积分，只「筛」出冲激所在那一点的值。�
 
 \begin{note}
 \begin{itemize}[nosep]
-\item 「任意 $y(t)$」不包括 $\delta(t)$ 这类奇异函数：$y(t)$ 不能取冲激。
+\item 「任意 $y(t)$」不包括 $\delta(t)$ 这类奇异函数：$y(t)$ 不能取冲激。原因：若允许 $y(t)=\delta(t)$，由性质二，两个积分分别是 $f_1(0)$ 和 $f_2(0)$；只在 $t=0$ 一点不同的两个函数就会被判成不相等，与定义二矛盾。严格地说，$y(t)$ 要取性质很好的普通函数，叫测试函数(test function)：处处光滑（任意阶可导），并且在某个有限区间以外为 $0$。
+\item 角色不要搞反：在 $\int x(t)\,\delta(t)\,\mathrm{d}t$ 里，$\delta(t)$ 是被检验的对象，$x(t)$ 才是用来检验它的函数。像 $\delta(t)$ 这样只能通过「与测试函数相乘再积分」来定义的对象，叫广义函数或分布(distribution)。
 \item 「在有限个点上不等」指这些点上都是确定的有限值。若一个函数在某点有冲激、另一个没有，它们不相等。
 \item 若某个 $y(t)$ 让积分不收敛（例如趋于 $+\infty$），则要求两边同时不收敛、且趋向相同。
 \end{itemize}
@@ -256,6 +291,8 @@ $x(t)$ 与冲激相乘再积分，只「筛」出冲激所在那一点的值。�
 \int_{-\infty}^{+\infty}y(t)f_2(t)\,\mathrm{d}t=\int_{t_1}^{t_2}f_2(t)\,\mathrm{d}t .
 \]
 由于 $t_1\le t\le t_2$ 时 $f_2(t)>f_1(t)$，所以后者严格大于前者，两个积分不等。哪怕这一段区间很短，两个函数也不相等。
+
+这里的方波 $y(t)$ 在 $t_1$、$t_2$ 处有跳变，不是光滑的测试函数。严格时可以改用一个光滑的「小鼓包」：在 $[t_1,t_2]$ 内部为正、外面为 $0$。结论不变，因为 $y(t)\big(f_2(t)-f_1(t)\big)$ 在一段有长度的区间上为正，积分仍大于 $0$。
 
 \begin{figure}[H]
 \centering
@@ -523,6 +560,53 @@ c=0.7\,5\,1\,4\,8\,3\,2\,6\cdots
 严格的证明还要处理 $0.0999\cdots=0.1$ 这类有两种小数写法的数，这里只讲构造思路。
 \end{note}
 
+\subsection{判断两个函数是否相等：看「总长度」}\label{sub:measure}
+定义三下，两个函数相等与否，不看它们在多少个点上不同，而看这些点合起来的\textbf{总长度}，正式名称是勒贝格测度(Lebesgue measure)。
+
+\begin{remember}
+设 $f_1$、$f_2$ 不相等的点组成集合 $E$。
+\begin{itemize}[nosep]
+\item $E$ 的总长度为 $0$：按定义三，$f_1=f_2$；
+\item $E$ 的总长度大于 $0$（例如包含一段区间）：$f_1\ne f_2$。
+\end{itemize}
+\end{remember}
+
+\point{总长度怎么算。}
+\begin{itemize}[nosep]
+\item 一个点没有宽度，长度为 $0$；有限个点，长度 $0+0+\cdots=0$。例：$\{2,5\}$ 的总长度为 $0$。
+\item 区间 $[a,b]$（$a<b$）的长度为 $b-a$。例：$[6,8]$ 的长度为 $2$。
+\item 混合：$\{2,5\}\cup[6,8]$ 的总长度为 $0+2=2$。两个函数只在 $\{2,5\}$ 上不同，则相等；在 $[6,8]$ 上不同，则不相等。
+\item 可数个点（例如全体有理数）：总长度仍为 $0$。把它们排成一列 $r_1,r_2,r_3,\dots$（第 \ref{sec:count} 节），用长度为 $\frac{\varepsilon}{2}$、$\frac{\varepsilon}{4}$、$\frac{\varepsilon}{8}$、……的小区间依次盖住 $r_1,r_2,r_3,\dots$，总长度不超过 $\varepsilon\big(\frac12+\frac14+\cdots\big)=\varepsilon$。$\varepsilon$ 可以任意小，所以总长度为 $0$。
+\end{itemize}
+
+\point{点多不等于有长度：康托集(Cantor set)。}从 $[0,1]$ 开始，挖掉中间三分之一 $\big(\frac13,\frac23\big)$，剩下 $\big[0,\frac13\big]$、$\big[\frac23,1\big]$；再把剩下的每一段各挖掉中间三分之一；无限重复。最后剩下的点组成康托集。挖掉的总长度是
+\[
+\frac13+2\cdot\frac19+4\cdot\frac1{27}+\cdots=\frac13\Big(1+\frac23+\frac49+\cdots\Big)=\frac13\cdot\frac{1}{1-\frac23}=1,
+\]
+所以康托集的总长度为 $1-1=0$。但它包含不可数个点（比有理数还多），只是这些点连不成任何一小段区间。两个函数只在康托集上不同，按定义三仍然相等。
+
+\begin{center}
+\begin{tabular}{lccc}
+\toprule
+不相等的点 & 点的个数 & 总长度 & 定义三下\\
+\midrule
+有限个点（如 $\{2,5\}$） & 有限 & $0$ & 相等\\
+全体有理数 & 可数无穷 & $0$ & 相等\\
+康托集 & 不可数无穷 & $0$ & 相等\\
+区间 $[t_1,t_2]$（$t_1<t_2$） & 不可数无穷 & $t_2-t_1>0$ & 不相等\\
+\bottomrule
+\end{tabular}
+\end{center}
+「有无穷多个点不同，函数就不相等」是错的；只有不同的点合起来有大于 $0$ 的总长度，才不相等。卷积、滤波、傅里叶变换都是积分运算，看不出总长度为 $0$ 的点集上的差别，所以信号与系统中不在乎这些点上的取值。
+
+\point{做题步骤。}
+\begin{enumerate}[nosep]
+\item 找出 $f_1(t)\ne f_2(t)$ 的所有点，组成集合 $E$；
+\item 判断 $E$ 的总长度：有限个点、可数个点、康托集这类为 $0$；含有一段区间则大于 $0$；
+\item 总长度为 $0$：相等，理由是任何 $y(t)$ 乘上去积分都看不出差别；
+\item 总长度大于 $0$：不相等，取一个只在那段区间上为正的 $y(t)$ 作为反例（如第 \ref{sec:equal} 节例题「区间上不同的两个函数」）。
+\end{enumerate}
+
 %==================================================================
 \section{性质三：与冲激相乘}\label{sec:p3}
 \begin{remember}
@@ -775,7 +859,6 @@ $\delta(t)$ 不只有「$[0,\Delta]$ 上的窄方波取极限」这一种写法�
 
 \subsection{三角形脉冲}
 $\delta_\Delta(t)$ 取底边为 $[-\Delta,\Delta]$、顶点高度为 $\frac1\Delta$ 的三角形（面积 $\frac12\cdot2\Delta\cdot\frac1\Delta=1$），$\Delta\to0$ 时同样等于 $\delta(t)$。证明方法相同，只是积分要分左右两段讨论，计算更繁琐。
-
 \begin{figure}[H]
 \centering
 \begin{tikzpicture}[x=1.6cm,y=1.0cm]
@@ -805,6 +888,66 @@ $\delta_\Delta(t)$ 取底边为 $[-\Delta,\Delta]$、顶点高度为 $\frac1\Del
 \end{tikzpicture}
 \caption{三种 $\delta_\Delta(t)$，面积都是 $1$。$\Delta\to0$ 时三者都等于 $\delta(t)$。}
 \end{figure}
+
+\begin{remember}
+\[
+\lim_{\Delta\to0}\Lambda_\Delta(t)=\delta(t),\qquad
+\Lambda_\Delta(t)=\begin{cases}\dfrac1\Delta\Big(1-\dfrac{|t|}{\Delta}\Big),&|t|\le\Delta\\[6pt]0,&|t|>\Delta\end{cases}.
+\]
+\end{remember}
+
+\point{要用的工具：带权的积分中值定理。}若 $y(t)$ 在 $[a,b]$ 上连续，$w(t)\ge0$，则存在 $\xi\in[a,b]$，使
+\[
+\int_a^b w(t)\,y(t)\,\mathrm{d}t=y(\xi)\int_a^b w(t)\,\mathrm{d}t .
+\]
+$w(t)\equiv1$ 时就是性质二用到的积分中值定理。三角形的高度随 $t$ 变化，不能把它当常数提出来，所以要用这个带权的版本；$w(t)\ge0$ 这个条件不能少。
+
+\point{证明。}由判定方法，只需证明对任意 $y(t)$（在 $t=0$ 处连续），$\lim\limits_{\Delta\to0}\displaystyle\int_{-\infty}^{+\infty}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t=y(0)$。
+\begin{enumerate}[nosep]
+\item \textbf{缩小积分区间}：$|t|>\Delta$ 时 $\Lambda_\Delta(t)=0$，所以
+\[
+\int_{-\infty}^{+\infty}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t=\int_{-\Delta}^{0}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t+\int_{0}^{\Delta}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t .
+\]
+\item \textbf{算两半的面积}：左右两半都是底 $\Delta$、高 $\frac1\Delta$ 的直角三角形，面积各为 $\frac12\cdot\Delta\cdot\frac1\Delta=\frac12$。
+\item \textbf{左右两段分别用带权中值定理}（权 $w=\Lambda_\Delta\ge0$）：存在 $\xi_1\in[-\Delta,0]$、$\xi_2\in[0,\Delta]$，使
+\[
+\int_{-\Delta}^{0}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t=\frac12\,y(\xi_1),\qquad
+\int_{0}^{\Delta}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t=\frac12\,y(\xi_2).
+\]
+\item \textbf{取极限}：$\Delta\to0$ 时 $\xi_1$、$\xi_2$ 都被夹到 $0$，由 $y(t)$ 在 $0$ 处连续，
+\[
+\lim_{\Delta\to0}\Big[\frac12\,y(\xi_1)+\frac12\,y(\xi_2)\Big]=\frac12\,y(0)+\frac12\,y(0)=y(0).
+\]
+\end{enumerate}
+所以 $\lim\limits_{\Delta\to0}\Lambda_\Delta(t)=\delta(t)$。不分左右两段、直接在 $[-\Delta,\Delta]$ 上用一次带权中值定理也可以：
+\[
+\int_{-\Delta}^{\Delta}y(t)\,\Lambda_\Delta(t)\,\mathrm{d}t=y(\xi)\cdot1,\qquad \xi\in[-\Delta,\Delta],
+\]
+再令 $\Delta\to0$。
+
+\example{\texorpdfstring{取 $y(t)=e^t$ 验算}{取 y(t)=exp(t) 验算}}{\texorpdfstring{极限为 $1=e^0$}{极限为 1}}{}
+右半段：
+\[
+\int_0^\Delta\frac1\Delta\Big(1-\frac t\Delta\Big)e^t\,\mathrm{d}t
+=\frac1\Delta\big(e^\Delta-1\big)-\frac1{\Delta^2}\big[(\Delta-1)e^\Delta+1\big]
+=\frac{e^\Delta-1-\Delta}{\Delta^2};
+\]
+同理左半段为 $\dfrac{e^{-\Delta}-1+\Delta}{\Delta^2}$。相加：
+\[
+\int_{-\Delta}^{\Delta}\Lambda_\Delta(t)\,e^t\,\mathrm{d}t=\frac{e^\Delta+e^{-\Delta}-2}{\Delta^2}.
+\]
+$\Delta=1,\ 0.1,\ 0.01$ 时分别为 $1.0862$、$1.000834$、$1.0000083$，趋于 $e^0=1$（泰勒展开 $e^\Delta+e^{-\Delta}-2=\Delta^2+\frac{\Delta^4}{12}+\cdots$，所以结果约为 $1+\frac{\Delta^2}{12}$）。
+
+\point{证明「某个脉冲族趋于 $\delta(t)$」的做题步骤。}
+\begin{enumerate}[nosep]
+\item 写出脉冲 $\delta_\Delta(t)$ 的表达式，确认它非负；
+\item 算面积，确认对任意 $\Delta$ 都等于 $1$（分段的就分段算）；
+\item 乘任意 $y(t)$ 积分，按「脉冲为 $0$ 的部分去掉」缩小积分区间；
+\item 用积分中值定理（脉冲不是常数时用带权的版本）把积分写成 $y(\xi)\times$面积；
+\item 令 $\Delta\to0$，$\xi$ 被夹到 $0$，得到 $y(0)$。
+\end{enumerate}
+只需说清思路时，写两句即可：对任意 $\Delta$ 面积恒为 $1$；$\Delta\to0$ 时脉冲向原点收缩，只在原点附近非零。
+
 
 \subsection{抽样函数的极限}\label{sec:sa}
 \begin{remember}
