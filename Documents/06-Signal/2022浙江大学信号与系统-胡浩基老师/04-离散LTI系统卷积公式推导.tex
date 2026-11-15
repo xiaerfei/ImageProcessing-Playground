@@ -96,6 +96,80 @@
   \node[font=\footnotesize,above] at (7.4,{#1+0.5}) {LTI};
   \node[font=\large] at (9.4,{#1+0.5}) {$y[n]=\,?$};}
 
+% ---------------------------------------------------------------- 4.3 例 1：翻转、平移的对齐图
+% \barsat{基线 y}{起始下标}{取值列表}{颜色}{1 或 -1}：在给定基线上画一串火柴杆，杆端旁写数值（白底）。
+% 最后一个参数决定数值写在杆的左边还是右边，让上下两排的数字横向错开、不互相压。
+% 坐标单位由外层 tikzpicture 的 x=... / y=... 决定。
+\newcommand{\barsat}[5]{%
+  \foreach \v [count=\i from 0] in {#3}{%
+    \pgfmathtruncatemacro{\kk}{#2+\i}%
+    \draw[thick,#4] (\kk,#1) -- (\kk,#1+\v);
+    \node[circle,fill=#4,inner sep=1.1pt] at (\kk,#1+\v) {};
+    \ifnum\v>0 \def\barvside{south}\else\def\barvside{north}\fi
+    \ifnum\kk<0
+      \ifnum#5=1 \def\barhside{east}\else\def\barhside{west}\fi
+    \else
+      \ifnum#5=1 \def\barhside{west}\else\def\barhside{east}\fi
+    \fi
+    \edef\baranchor{\barvside\space\barhside}%
+    \node[font=\scriptsize,#4,anchor=\baranchor,inner sep=0.8pt,fill=white] at (\kk,#1+\v) {$\v$};}}
+% 本例固定：x[k] 在 k=-1..2 为 3,2,1,-1；h 翻转后为 -1,2,1,1。
+% 再右移 n，h[n-k] 的四根杆落在 k=n-2..n+1，值仍是 -1,2,1,1，只是位置变了。
+% \convrow{n}{竖直偏移}{乘积式}{结果}：上排 x[k]（蓝，固定），下排 h[n-k]（橙），
+% 淡黄竖条标出两排都有杆的下标 k，即这一步要相乘的位置；
+% 最后两个参数在这一行右侧当场写出 y[n] 的乘积与结果（可用 \boxed 框住结果）。
+\newcommand{\convrow}[4]{%
+  \begin{scope}[shift={(0,#2)}]
+    \pgfmathtruncatemacro{\kleft}{max(-1,#1-2)}%
+    \pgfmathtruncatemacro{\kright}{min(2,#1+1)}%
+    \foreach \k in {-4,...,5}{%
+      \ifnum\k<\kleft\relax\else
+        \ifnum\k>\kright\relax\else
+          \fill[yellow!22,draw=orange!35,very thin] (\k-0.5,-4.6) rectangle (\k+0.5,5.0);
+        \fi
+      \fi
+      \draw[very thin,gray!25,dashed] (\k,-4.6) -- (\k,5.0);}
+    \draw[thin,gray!55] (-4.7,1.5) -- (5.9,1.5);
+    \draw[thin,gray!55] (-4.7,-3.0) -- (5.9,-3.0);
+    \barsat{1.5}{-1}{3,2,1,-1}{blue!60!black}{1}
+    \barsat{-3.0}{#1-2}{-1,2,1,1}{orange!85!black}{-1}
+    \node[anchor=east,font=\footnotesize] at (-5.0,-0.6) {$n=#1$};
+    \node[anchor=west,font=\footnotesize] at (6.4,1.1) {$y[#1]=#3$};
+    \node[anchor=west,font=\footnotesize] at (6.4,-1.1) {$\quad=#4$};
+  \end{scope}}
+% \convaxis{最下面一行的竖直偏移}：补一条 k 轴和 -4..5 的刻度。
+\newcommand{\convaxis}[1]{%
+  \draw[->,thin] (-4.7,#1-4.9) -- (6.0,#1-4.9) node[right,font=\tiny] {$k$};
+  \foreach \k in {-4,...,5}{%
+    \node[font=\tiny,gray!60!black,fill=white,inner sep=0.8pt] at (\k,#1-6.0) {$\k$};}}
+
+% ---------------------------------------------------------------- 4.3 例 2 专用：5 个 1 与 5 个 1 的对齐图
+% x[k]=1 在 k=0..4；翻转后的 h[-k]=1 在 k=-4..0；右移 n 后 h[n-k] 在 k=n-4..n。
+% \convrowone{n}{竖直偏移}{算式}：一行对齐图（上蓝下橙 + 黄条）和右侧当场算出的结果。
+\newcommand{\convrowone}[3]{%
+  \begin{scope}[shift={(0,#2)}]
+    \pgfmathtruncatemacro{\kleft}{max(0,#1-4)}%
+    \pgfmathtruncatemacro{\kright}{min(4,#1)}%
+    \foreach \k in {-5,...,8}{%
+      \ifnum\k<\kleft\relax\else
+        \ifnum\k>\kright\relax\else
+          \fill[yellow!22,draw=orange!35,very thin] (\k-0.5,-4.6) rectangle (\k+0.5,5.0);
+        \fi
+      \fi
+      \draw[very thin,gray!25,dashed] (\k,-4.6) -- (\k,5.0);}
+    \draw[thin,gray!55] (-5.7,1.5) -- (8.9,1.5);
+    \draw[thin,gray!55] (-5.7,-3.0) -- (8.9,-3.0);
+    \barsat{1.5}{0}{1,1,1,1,1}{blue!60!black}{1}
+    \barsat{-3.0}{#1-4}{1,1,1,1,1}{orange!85!black}{-1}
+    \node[anchor=east,font=\footnotesize] at (-6.0,-0.6) {$n=#1$};
+    \node[anchor=west,font=\footnotesize] at (9.4,0) {$y[#1]=#3$};
+  \end{scope}}
+% \convaxisone{最下面一行的竖直偏移}：k 轴和 -5..8 的刻度。
+\newcommand{\convaxisone}[1]{%
+  \draw[->,thin] (-5.7,#1-4.9) -- (9.2,#1-4.9) node[right,font=\tiny] {$k$};
+  \foreach \k in {-5,...,8}{%
+    \node[font=\tiny,gray!60!black,fill=white,inner sep=0.8pt] at (\k,#1-6.0) {$\k$};}}
+
 % ---------------------------------------------------------------- 标题层级
 % 章(section)、小节(subsection)：深蓝；例题：橙色徽章；小标题(\point，由原来的 \paragraph 改来)：青色三角。
 \definecolor{secblue}{RGB}{31,78,121}
@@ -699,28 +773,61 @@ x[n]\ast h[n]=\sum_{k=-\infty}^{+\infty}x[k]\;h\bigl[-(k-n)\bigr].
 
 \paragraph{第一步，和列表法完全一样：确定范围。}$y$ 的最左边 $(-1)+(-1)=-2$，最右边 $2+2=4$，所以 $n=-2..4$ 有值。关键是后面这些值怎么算。
 
-\paragraph{第二步：把 $h$ 翻转。}$h[n]$ 从左抄到右是 $1,1,2,-1$；翻转的意思是\textbf{把它从右抄到左}，也就是 $h[-n]$：从左到右写是 $-1,2,1,1$。
+\paragraph{第二步：把 $h$ 翻转，自变量统一记成 $k$。}公式是对 $k$ 求和，所以先把 $h[n]$ 的自变量改叫 $k$：$h[k]$ 在 $k=-1,0,1,2$ 处是 $1,1,2,-1$。翻转就是\textbf{把同一串数从右往左抄一遍}，$h[-k]$ 落在 $k=-2,-1,0,1$，值为 $-1,2,1,1$：
 
-\paragraph{第三步：不断平移、相乘、求和。}把 $x$ 从左抄到右写好（$3,2,1,-1$），再把翻转过的 $h$（$-1,2,1,1$）\textbf{一格一格往右挪}，每挪一格，就把\textbf{重合在一起的数两两相乘再相加}，得到 $y$ 在这一个位置的值：
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[x=0.8cm,y=0.28cm]
+  \foreach \k in {-4,...,5}{\draw[very thin,gray!25,dashed] (\k,-4.6) -- (\k,5.0);}
+  \draw[thin,gray!55] (-4.7,1.5) -- (5.9,1.5);
+  \draw[thin,gray!55] (-4.7,-3.0) -- (5.9,-3.0);
+  \barsat{1.5}{-1}{1,1,2,-1}{blue!60!black}{1}
+  \barsat{-3.0}{-2}{-1,2,1,1}{orange!85!black}{-1}
+  \node[anchor=east,font=\footnotesize] at (-5.0,1.5) {$h[k]$};
+  \node[anchor=east,font=\footnotesize] at (-5.0,-3.0) {$h[-k]$};
+  \convaxis{0}
+\end{tikzpicture}
+\caption{翻转：上排 $h[k]$ 从左到右是 $1,1,2,-1$，下排从右往左抄，得 $h[-k]$ 从左到右是 $-1,2,1,1$。}
+\end{figure}
 
-\begin{center}
-\begin{tabular}{@{}c|p{4.3cm}|p{5.2cm}|c@{}}
-\toprule
-$n$ & 重合的数（上面 $x$，下面翻转后的 $h$） & 乘积 & 相加\\
-\midrule
-$-2$ & $3$ 和 $1$ & $3\times1$ & $3$\\
-$-1$ & $3,2$ 和 $1,1$ & $3\times1+2\times1$ & $5$\\
-$0$ & $3,2,1$ 和 $2,1,1$ & $3\times2+2\times1+1\times1$ & $9$\\
-$1$ & $3,2,1,-1$ 和 $-1,2,1,1$ & $3\times(-1)+2\times2+1\times1+(-1)\times1$ & $1$\\
-$2$ & $2,1,-1$ 和 $-1,2,1$ & $2\times(-1)+1\times2+(-1)\times1$ & $-1$\\
-$3$ & $1,-1$ 和 $-1,2$ & $1\times(-1)+(-1)\times2$ & $-3$\\
-$4$ & $-1$ 和 $-1$ & $(-1)\times(-1)$ & $1$\\
-\bottomrule
-\end{tabular}
-\end{center}
-（$n=-2$ 时：翻转的 $h$ 最右边的 $1$ 和 $x$ 最左边的 $3$ 对上；每挪一格，多一个数重合，直到 4 个全重合，再逐渐退出。）
+\paragraph{第三步：把翻转后的 $h$ 一格一格往右挪。}$h[n-k]$ 就是把 $h[-k]$ 整体右移 $n$ 格（$n<0$ 时相当于左移 $|n|$ 格）。它\textbf{非零的四根杆永远在 $k=n-2,\dots,n+1$，值永远是 $-1,2,1,1$}，变的只有位置；$x[k]$ 的四根杆\textbf{固定在 $k=-1..2$，值 $3,2,1,-1$，始终不动}。
 
-结果是 $3,5,9,1,-1,-3,1$，\textbf{和列表法、和第 \ref{sec:draw} 节例~\ref{ex:four} 的蛮力法完全一样}，正是公式所描述的内容。
+对某一个 $n$，只有\textbf{上下都有杆}的 $k$ 才产生乘积（图中的淡黄竖条）：$x[k]\ne0$ 要求 $-1\le k\le2$，$h[n-k]\ne0$ 要求 $n-2\le k\le n+1$，所以
+\[\max(-1,\,n-2)\ \le\ k\ \le\ \min(2,\,n+1).\]
+把这些 $k$ 上的 $x[k]$ 与 $h[n-k]$ 相乘再相加，就是 $y[n]$。图中每根杆端旁边的小数字，就是该 $k$ 上的取值；\textbf{每行右侧当场写出这一行的乘积与结果}，框起来的数就是 $y[n]$。
+
+\begin{figure}[H]
+\centering
+{\footnotesize\textcolor{blue!60!black}{$\blacksquare$}\,蓝杆 $x[k]$（上排，不动）\quad
+\textcolor{orange!85!black}{$\blacksquare$}\,橙杆 $h[n-k]$（下排，每下一行右移一格）\quad
+\colorbox{yellow!22}{\strut\quad}\,黄条：要相乘的 $k$}\par\smallskip
+\begin{tikzpicture}[x=0.72cm,y=0.24cm]
+  \convrow{-2}{0}{3\times1}{\boxed{3}}
+  \convrow{-1}{-12}{3\times1+2\times1}{\boxed{5}}
+  \convrow{0}{-24}{3\times2+2\times1+1\times1}{\boxed{9}}
+  \convrow{1}{-36}{3\times(-1)+2\times2+1\times1+(-1)\times1}{-3+4+1-1=\boxed{1}}
+  \convrow{2}{-48}{2\times(-1)+1\times2+(-1)\times1}{-2+2-1=\boxed{-1}}
+  \convrow{3}{-60}{1\times(-1)+(-1)\times2}{-1-2=\boxed{-3}}
+  \convrow{4}{-72}{(-1)\times(-1)}{\boxed{1}}
+  \convaxis{-72}
+\end{tikzpicture}
+\caption{$n=-2..4$ 共七步：橙杆每往下一行右移一格，先逐渐移进蓝杆（黄条 $1,2,3,4$，$n=1$ 时四列全重合），再逐渐移出（$3,2,1$）；每行右侧是当场算出的乘积与结果，框起来的数就是 $y[n]$。}
+\end{figure}
+
+把图中右侧框起来的七个数依次读出，结果是 $3,5,9,1,-1,-3,1$，\textbf{和列表法、和第 \ref{sec:draw} 节例~\ref{ex:four} 的蛮力法完全一样}，正是公式所描述的内容。把这七个数按 $n$ 立起来，就是最终的输出序列：
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[>=stealth]
+  \node[font=\footnotesize] at (0.6,2.5) {$y[n]=x[n]\ast h[n]$};
+  \stemat{0.6}{0}{-2}{3,5,9,1,-1,-3,1}{0.18}
+\end{tikzpicture}
+\caption{最终结果汇总：$y[n]$ 在 $n=-2..4$ 依次为 $3,5,9,1,-1,-3,1$，其余位置都是 $0$。}
+\end{figure}
+
+\begin{note}
+\textbf{为什么「挪一格」就能算下一个值}：每一项都是 $x[k]\,h[n-k]$，两个下标相加恒为 $k+(n-k)=n$，所以同一个 $n$ 的所有乘积都属于 $y[n]$。$n$ 加 $1$ 时橙杆整体右移一格，重叠区间跟着右移，条数按 $1,2,3,4,3,2,1$ 变化。列表法里的「每一行右挪一位」和这里的「橙杆右移一格」是同一件事。
+\end{note}
 
 \point{用公式法重做例 2-7、例 2-6。}
 
@@ -733,7 +840,27 @@ $u[n]$ 从 $0$ 起一直是 $1$，$u[n-5]$ 从 $5$ 起一直是 $1$，相减只�
 \item $h$ 翻转后还是 5 个 $1$（所以 $h[-n]$ 也是 5 个 1）；
 \item 往右挪：$n=0$ 时只有一个 $1$ 对上，得 $1$；右挪 1 格，两对，得 $2$；……右挪 4 格，五对全重合，得 $5$；再往右，重合数逐渐减少，$4,3,2,1$。
 \end{enumerate}
-得到的结果和列表法的 $1,2,3,4,5,4,3,2,1$ 一致。
+得到的结果和列表法的 $1,2,3,4,5,4,3,2,1$ 一致。整个过程画出来就是：
+
+\begin{figure}[H]
+\centering
+{\footnotesize\textcolor{blue!60!black}{$\blacksquare$}\,蓝杆 $x[k]$（上排 5 个 $1$，不动）\quad
+\textcolor{orange!85!black}{$\blacksquare$}\,橙杆 $h[n-k]$（下排，每下一行右移一格）\quad
+\colorbox{yellow!22}{\strut\quad}\,黄条：要相乘的 $k$}\par\smallskip
+\begin{tikzpicture}[x=0.72cm,y=0.20cm]
+  \convrowone{0}{0}{1=\boxed{1}}
+  \convrowone{1}{-11}{1+1=\boxed{2}}
+  \convrowone{2}{-22}{1+1+1=\boxed{3}}
+  \convrowone{3}{-33}{1+1+1+1=\boxed{4}}
+  \convrowone{4}{-44}{1+1+1+1+1=\boxed{5}}
+  \convrowone{5}{-55}{1+1+1+1=\boxed{4}}
+  \convrowone{6}{-66}{1+1+1=\boxed{3}}
+  \convrowone{7}{-77}{1+1=\boxed{2}}
+  \convrowone{8}{-88}{1=\boxed{1}}
+  \convaxisone{-88}
+\end{tikzpicture}
+\caption{$n=0..8$ 的完整过程：翻转后的 $h$（5 个 $1$）每往下一行右移一格，黄条数依次是 $1,2,3,4,5,4,3,2,1$；每一列是两个 $1$ 相乘（仍是 $1$），所以右侧只写相加的个数，框起来的数就是 $y[n]$。}
+\end{figure}
 
 \example{教材例 2-6（公式法）}{与列表法一致}{}
 $x[n]=a^nu[n]$，$h[n]=u[n]$。范围 $n\ge0$；把 $h$ 翻转，往右挪，$n=0$ 时只有 $x[0]=1$ 一项，$n=1$ 时 $1+a$，$n=2$ 时 $1+a+a^2$，……得到的规律
